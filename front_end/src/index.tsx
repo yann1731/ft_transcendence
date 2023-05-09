@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import ResponsiveAppBar from './Components/ToolBar'
-import ChatContainer from './Components/Chat'
-import GameContainer from './Components/Game'
 import DividerStack from './Components/Divider';
 import reportWebVitals from './reportWebVitals';
 

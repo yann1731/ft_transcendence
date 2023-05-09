@@ -9,8 +9,8 @@ export default function ChatContainer() {
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
-        <Box sx={{bgcolor: '#cfe8ff', boxShadow: 4, textAlign: 'center', fontWeight: 'bold'}}>CHAT</Box>
-        <Box sx={{ bgcolor: '#cfe8fc', height: '75vh', boxShadow: 4}} />
+        <Box sx={{bgcolor: '#cfe8ff', boxShadow: 4, textAlign: 'center', fontWeight: 'bold', width: '20vw'}}>CHAT</Box>
+        <Box sx={{ bgcolor: '#cfe8fc', height: '85vh', boxShadow: 4, width: '20vw'}} />
       </Container>
     </React.Fragment>
   );
