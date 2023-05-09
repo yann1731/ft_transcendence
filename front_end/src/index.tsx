@@ -13,8 +13,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <div>
     <ResponsiveAppBar />
-    <br>
-    </br>
+    <br></br>
     <DividerStack />
   </div>
 );

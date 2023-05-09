@@ -8,7 +8,6 @@ import GameContainer from './Game';
 import GameBottomContainer from './Game bottom';
 import ScoresContainer from './Scores';
 
-
 export default function DividerStack() {
   return (
     <div>
