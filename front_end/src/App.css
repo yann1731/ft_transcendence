@@ -37,13 +37,3 @@
   }
 }
 
-.Game-Bottom {
-  height: 100%;
-  display: flex;
-  background-color: steelblue;
-  align-items: center;
-  min-height: 100%;
-  /* fallback style for browsers that do not support the `vh` unit */
-  min-height: 25vh;
-  bottom: auto;
-}

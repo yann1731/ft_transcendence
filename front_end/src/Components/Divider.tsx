@@ -5,7 +5,6 @@ import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import ChatContainer from './Chat';
 import GameContainer from './Game';
-import GameBottomContainer from './Game bottom';
 import ScoresContainer from './Scores';
 
 export default function DividerStack() {
@@ -14,11 +13,11 @@ export default function DividerStack() {
       <Stack
         direction="row"
         divider={<Divider orientation="vertical" flexItem />}
-        spacing={2}
-      >
-		<ScoresContainer></ScoresContainer>
-		<GameContainer></GameContainer>
-		<ChatContainer></ChatContainer>
+        spacing={3}
+        >
+            <ScoresContainer></ScoresContainer>
+            <GameContainer></GameContainer>
+            <ChatContainer></ChatContainer>
       </Stack>
     </div>
   );

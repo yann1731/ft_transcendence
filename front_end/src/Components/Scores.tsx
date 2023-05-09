@@ -9,8 +9,8 @@ export default function ScoresContainer() {
     <React.Fragment>
       <CssBaseline />
         <Container maxWidth="lg">
-        <Box sx={{bgcolor: '#B0BF1F',boxShadow: 4, textAlign: 'center', fontWeight: 'bold'}}>SCORE</Box>
-        <Box sx={{ bgcolor: '#B0BF1A', height: '75vh', boxShadow: 4}} />
+        <Box sx={{bgcolor: '#B0BF1F',boxShadow: 4, textAlign: 'center', fontWeight: 'bold', width: '20vw'}}>SCORE</Box>
+        <Box sx={{ bgcolor: '#B0BF1A', height: '85vh', boxShadow: 4, width: '20vw'}} />
       </Container>
     </React.Fragment>
   );
