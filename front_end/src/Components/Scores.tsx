@@ -3,14 +3,15 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import { theme } from '../Theme'
 
 export default function ScoresContainer() {
   return (
     <React.Fragment>
       <CssBaseline />
         <Container maxWidth="lg">
-        <Box sx={{bgcolor: '#B0BF1F',boxShadow: 4, textAlign: 'center', fontWeight: 'bold', width: '20vw'}}>SCORE</Box>
-        <Box sx={{ bgcolor: '#B0BF1A', height: '85vh', boxShadow: 4, width: '20vw'}} />
+        <Box sx={{bgcolor: theme.palette.primary.main,boxShadow: 4, textAlign: 'center', fontWeight: 'bold', width: '20vw', color: 'cyan'}}>SCORE</Box>
+        <Box sx={{ bgcolor: theme.palette.secondary.main, height: '85vh', boxShadow: 4, width: '20vw'}} />
       </Container>
     </React.Fragment>
   );

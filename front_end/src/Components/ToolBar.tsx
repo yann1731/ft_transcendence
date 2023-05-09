@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+import { theme } from '../Theme'
 
 const pages = ['Home', 'Join', 'Chat Room', 'Settings', 'Profile'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -36,10 +37,10 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ bgcolor: theme.palette.secondary.main }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <InsertEmoticonIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          <InsertEmoticonIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3 }} />
           <Typography
             variant="h6"
             noWrap
@@ -51,7 +52,7 @@ function ResponsiveAppBar() {
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
-              color: 'inherit',
+              //color: theme.palette.primary.main,
               textDecoration: 'none',
             }}
           >
@@ -114,12 +115,12 @@ function ResponsiveAppBar() {
           >
             TRANSCENDENCE
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, }}>
             {pages.map((page) => (
-              <Button
+              <Button variant="outlined"
                 key={page}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ my: 2, color: 'cyan', display: 'block', bgcolor: theme.palette.primary.main, border:'1px solid cyan', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "cyan", color: "#001828"} }}
               >
                 {page}
               </Button>
