@@ -9,11 +9,7 @@ export default function GameBottomContainer() {
     <React.Fragment>
       <CssBaseline />
         <Container maxWidth="lg">
-          <Typography align='center' >
-            GAME BUTT
-          </Typography>
-          <br></br>
-        <Box sx={{ bgcolor: '#7CB9E8', height: '25vh' }} />
+        <Box sx={{ bgcolor: '#7CB9E8', height: '10vh', boxShadow: 4}} />
       </Container>
     </React.Fragment>
   );
