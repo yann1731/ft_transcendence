@@ -40,7 +40,7 @@ function ResponsiveAppBar() {
     <AppBar position="static" sx={{ bgcolor: theme.palette.secondary.main }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <InsertEmoticonIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3 }} />
+          <InsertEmoticonIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15 }} />
           <Typography
             variant="h6"
             noWrap
@@ -52,11 +52,10 @@ function ResponsiveAppBar() {
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
-              //color: theme.palette.primary.main,
               textDecoration: 'none',
             }}
           >
-            <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/632d52a6376a2b001d128f18.jpg" alt="fat cat" width={65}>
+            <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/632d52a6376a2b001d128f18.jpg" alt="fat cat" width={65} style={{ position: 'fixed', top: 1, left: 55}}>
 			      </img>
           </Typography>
 
@@ -115,7 +114,7 @@ function ResponsiveAppBar() {
           >
             TRANSCENDENCE
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, position: 'fixed', left: 150 }}>
             {pages.map((page) => (
               <Button variant="outlined"
                 key={page}
@@ -129,7 +128,7 @@ function ResponsiveAppBar() {
 
           <Box sx={{ flexGrow: 0}}>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <IconButton onClick={handleOpenUserMenu} sx={{ position: 'fixed', right: 15, top: '5px' }}>
                 <Avatar alt="Criss de gros chat" src="https://pbs.twimg.com/profile_images/1633238286045962243/JfgDezi9_400x400.jpg" />
               </IconButton>
             </Tooltip>
