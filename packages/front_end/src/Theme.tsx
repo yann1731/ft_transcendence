@@ -1,15 +1,19 @@
 
 import { createTheme, ThemeOptions } from '@mui/material/styles';
+import "@fontsource/roboto"
 
 const themeOptions: ThemeOptions = {
   palette: {
-    mode: 'dark',
+    mode: 'light',
     primary: {
-      main: '#55b8d2',
+      main: '#152647',
     },
     secondary: {
-      main: '#378ea6',
+      main: '#001828',
     },
+  },
+  typography: {
+    fontFamily: 'Roboto',
   },
 };
 
