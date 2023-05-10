@@ -10,9 +10,9 @@ export default function GameContainer() {
     <React.Fragment>
       <CssBaseline />
         <Container maxWidth="xl">
-        <Box sx={{bgcolor: theme.palette.primary.main, boxShadow: 4, textAlign: 'center', fontWeight: 'bold', width: '50vw', color: 'cyan'}}>GAME</Box>
-        <Box sx={{ bgcolor: theme.palette.secondary.main, height: '65vh', boxShadow: 4, width: '50vw'}} />
-        <Box sx={{ bgcolor: theme.palette.secondary.main, height: '20vh', boxShadow: 4, width: '50vw'}} />
+        <Box sx={{bgcolor: theme.palette.primary.main, boxShadow: 4, textAlign: 'center', fontWeight: 'bold', width: '45vw', color: 'cyan'}}>GAME</Box>
+        <Box sx={{ bgcolor: theme.palette.secondary.main, height: '65vh', boxShadow: 4, width: '45vw'}} />
+        <Box sx={{ bgcolor: theme.palette.secondary.main, height: '20vh', boxShadow: 4, width: '45vw'}} />
       </Container>
     </React.Fragment>
   );
