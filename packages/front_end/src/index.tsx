@@ -2,22 +2,24 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import ResponsiveAppBar from './Components/ToolBar'
-import DividerStack from './Components/Divider';
+import Home from './Components/HomePage/Home';
 import reportWebVitals from './reportWebVitals';
 import { ThemeProvider } from '@mui/system';
 import { theme } from './Theme';
+import { BrowserRouter } from 'react-router-dom';
+import App from './Components/App'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <ThemeProvider theme={theme}>
-    <div>
-      <ResponsiveAppBar />
-      <br></br>
-      <DividerStack />
-    </div>
-    </ThemeProvider>  
+  <BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <div>
+        <App></App>
+      </div>
+      </ThemeProvider> 
+    </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -1,0 +1,38 @@
+import * as React from 'react';
+import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
+import ChatContainer from './Chat';
+import GameContainer from './Game';
+import ScoresContainer from './Scores';
+
+export default function DividerStack() {
+    return (
+      <div>
+        <Stack
+          direction="row"
+
+          divider={<Divider orientation="vertical" flexItem />}
+          spacing={0}
+          >
+              <ScoresContainer></ScoresContainer>
+              <GameContainer></GameContainer>
+              <ChatContainer></ChatContainer>
+        </Stack>
+      </div>
+    );
+  }
+
+//export default function DividerGrid() {
+//  return (
+//    <div style={{ 
+//      display: "grid",
+//      gridTemplateColumns: "repeat(3, 1fr))",
+//      gap: "1rem"
+//      }}
+//    >
+//      <ScoresContainer></ScoresContainer>
+//      <GameContainer></GameContainer>
+//      <ChatContainer></ChatContainer>
+//    </div>
+//  );
+//}
