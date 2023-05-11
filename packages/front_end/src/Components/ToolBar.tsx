@@ -13,8 +13,14 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import { theme } from '../Theme'
+import { Link } from 'react-router-dom';
+import FatCat from './FatCat';
 
-const pages = ['Home', 'Join', 'Chat Room', 'Settings', 'Profile'];
+const pages = [
+  { label: 'Home', link: '/Home' },
+  { label: 'Chat', link: '/Chat'},
+  { label: 'Profile', link: '/Profile'},
+];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
@@ -40,23 +46,22 @@ function ResponsiveAppBar() {
     <AppBar position="static" sx={{ bgcolor: theme.palette.secondary.main }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <InsertEmoticonIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3 }} />
+          <InsertEmoticonIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15 }} />
           <Typography
             variant="h6"
             noWrap
             component="a"
-            href="/"
+            href="/FatCat"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
-              //color: theme.palette.primary.main,
               textDecoration: 'none',
             }}
           >
-            <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/632d52a6376a2b001d128f18.jpg" alt="fat cat" width={65}>
+            <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/632d52a6376a2b001d128f18.jpg" alt="fat cat" width={65} style={{ position: 'fixed', top: 1, left: 55}}>
 			      </img>
           </Typography>
 
@@ -90,8 +95,8 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.label} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">{page.label}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -115,21 +120,23 @@ function ResponsiveAppBar() {
           >
             TRANSCENDENCE
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, position: 'fixed', left: 150 }}>
             {pages.map((page) => (
-              <Button variant="outlined"
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'cyan', display: 'block', bgcolor: theme.palette.primary.main, border:'1px solid cyan', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "cyan", color: "#001828"} }}
-              >
-                {page}
-              </Button>
+              <Link style={{textDecoration: 'none'}} to={page.link}>
+                <Button variant="outlined"
+                  key={page.label}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'cyan', display: 'block', bgcolor: theme.palette.primary.main, border:'1px solid cyan', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "cyan", color: "#001828"} }}
+                  >
+                  {page.label}
+                </Button>
+              </Link>
             ))}
           </Box>
 
           <Box sx={{ flexGrow: 0}}>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <IconButton onClick={handleOpenUserMenu} sx={{ position: 'fixed', right: 15, top: '5px' }}>
                 <Avatar alt="Criss de gros chat" src="https://pbs.twimg.com/profile_images/1633238286045962243/JfgDezi9_400x400.jpg" />
               </IconButton>
             </Tooltip>
