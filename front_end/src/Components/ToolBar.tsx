@@ -43,7 +43,7 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ bgcolor: theme.palette.secondary.main }}>
+    <AppBar position="fixed" sx={{ bgcolor: theme.palette.secondary.main }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <InsertEmoticonIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15 }} />
