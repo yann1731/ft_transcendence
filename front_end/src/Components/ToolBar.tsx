@@ -14,9 +14,10 @@ import MenuItem from '@mui/material/MenuItem';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
+import FatCat from './FatCat';
 
 const pages = [
-  { label: 'Home', link: '/Home' },
+  { label: 'Home', link: '/' },
   { label: 'Chat', link: '/Chat'},
   { label: 'Profile', link: '/Profile'},
 ];
@@ -50,7 +51,7 @@ function ResponsiveAppBar() {
             variant="h6"
             noWrap
             component="a"
-            href="/"
+            href="/FatCat"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },

@@ -6,7 +6,7 @@ function Profile() {
 	<div>
 		<h1>
 			<ResponsiveAppBar></ResponsiveAppBar>
-			This is the Profile Page
+			<br></br>
 		</h1>
 	</div>
 	)
