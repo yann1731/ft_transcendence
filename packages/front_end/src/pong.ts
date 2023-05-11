@@ -6,9 +6,12 @@ import { scene } from "./scene";
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	parent: 'game-content',
-	backgroundColor: '#001828',
-	width: 800,
-    height: 640,
+	backgroundColor: '#000000',
+	scale: {
+		mode: Phaser.Scale.ScaleModes.RESIZE,
+		width: window.innerWidth,
+		height: window.innerHeight,
+	},
 	physics: {
 		default: 'arcade',
 		arcade: {
@@ -18,4 +21,5 @@ const config: Phaser.Types.Core.GameConfig = {
 	scene: [scene]
 }
 
-export default new Phaser.Game(config)
+let game = new Phaser.Game(config);
+export default game;
