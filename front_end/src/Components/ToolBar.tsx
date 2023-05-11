@@ -13,8 +13,14 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import { theme } from '../Theme'
+import { Link } from 'react-router-dom';
+import FatCat from './FatCat';
 
-const pages = ['Home', 'Join', 'Chat Room', 'Settings', 'Profile'];
+const pages = [
+  { label: 'Home', link: '/' },
+  { label: 'Chat', link: '/Chat'},
+  { label: 'Profile', link: '/Profile'},
+];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
@@ -45,7 +51,7 @@ function ResponsiveAppBar() {
             variant="h6"
             noWrap
             component="a"
-            href="/"
+            href="/FatCat"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -89,8 +95,8 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.label} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">{page.label}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -116,13 +122,15 @@ function ResponsiveAppBar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, position: 'fixed', left: 150 }}>
             {pages.map((page) => (
-              <Button variant="outlined"
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'cyan', display: 'block', bgcolor: theme.palette.primary.main, border:'1px solid cyan', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "cyan", color: "#001828"} }}
-              >
-                {page}
-              </Button>
+              <Link style={{textDecoration: 'none'}} to={page.link}>
+                <Button variant="outlined"
+                  key={page.label}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'cyan', display: 'block', bgcolor: theme.palette.primary.main, border:'1px solid cyan', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "cyan", color: "#001828"} }}
+                  >
+                  {page.label}
+                </Button>
+              </Link>
             ))}
           </Box>
 
