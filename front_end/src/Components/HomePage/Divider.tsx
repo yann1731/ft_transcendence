@@ -11,7 +11,7 @@ export default function DividerStack() {
         <Stack
           direction="row"
           divider={<Divider orientation="vertical" flexItem />}
-          spacing={3}
+          spacing={0}
           >
               <ScoresContainer></ScoresContainer>
               <GameContainer></GameContainer>
