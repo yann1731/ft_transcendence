@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
 import FatCat from './FatCat';
@@ -43,10 +44,10 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ bgcolor: theme.palette.secondary.main }}>
+    <AppBar position="fixed" sx={{ bgcolor: theme.palette.secondary.main }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <InsertEmoticonIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15 }} />
+          <PokeBallIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15, color: 'cyan' }} />
           <Typography
             variant="h6"
             noWrap
@@ -101,7 +102,6 @@ function ResponsiveAppBar() {
               ))}
             </Menu>
           </Box>
-          <InsertEmoticonIcon sx={{display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
