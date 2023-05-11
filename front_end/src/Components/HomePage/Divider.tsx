@@ -10,6 +10,7 @@ export default function DividerStack() {
       <div>
         <Stack
           direction="row"
+
           divider={<Divider orientation="vertical" flexItem />}
           spacing={0}
           >
@@ -20,3 +21,18 @@ export default function DividerStack() {
       </div>
     );
   }
+
+//export default function DividerGrid() {
+//  return (
+//    <div style={{ 
+//      display: "grid",
+//      gridTemplateColumns: "repeat(3, 1fr))",
+//      gap: "1rem"
+//      }}
+//    >
+//      <ScoresContainer></ScoresContainer>
+//      <GameContainer></GameContainer>
+//      <ChatContainer></ChatContainer>
+//    </div>
+//  );
+//}
