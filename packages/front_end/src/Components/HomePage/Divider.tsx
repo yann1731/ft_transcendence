@@ -7,6 +7,7 @@ import ScoresContainer from './Scores';
 import BackgroundContainer from './Background'
 import Box from '@mui/material/Box';
 import { theme } from '../../Theme'
+import ResponsiveAppBar from '../ToolBar';
 
 
 export default function DividerStack() {

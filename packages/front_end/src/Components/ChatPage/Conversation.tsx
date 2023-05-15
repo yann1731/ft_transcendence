@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { theme } from '../../Theme'
-import OptionBar from './Options';
+import OptionBar from './OptionBarConversation';
 import FormControl, { FormControlState } from '@mui/base/FormControl';
 import Input, { inputClasses } from '@mui/base/Input';
 import { styled } from '@mui/system';
