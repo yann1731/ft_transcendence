@@ -22,10 +22,7 @@ export default function GameContainer() {
         </Box>
         <Box sx={{
           bgcolor: theme.palette.secondary.main,
-          aspectRatio: '16 / 9',
           boxShadow: 4,
-          boxSizing: 'border-box',
-          padding: '10px',
           border: '1px solid black',
           height: '85vh',
           width: '45vw'

@@ -3,6 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { theme } from '../../Theme'
+import { ContentCopy } from '@mui/icons-material';
 
 export default function ScoresContainer() {
   return (
@@ -10,12 +11,12 @@ export default function ScoresContainer() {
       <CssBaseline />
         <Container maxWidth="xl">
         <Box sx={{
-          bgcolor: theme.palette.primary.main,boxShadow: 4,
+          bgcolor: theme.palette.primary.main,
+          boxShadow: 4,
           textAlign: 'center',
           fontWeight: 'bold',
-          width: '20vw',
           color: 'cyan',
-          fontSize:'25px'
+          fontSize:'25px',
           }}
           >SCORE</Box>
         <Box sx={{ 
@@ -23,7 +24,6 @@ export default function ScoresContainer() {
           height: '85vh',
           boxShadow: 4,
           border: '1px solid black',
-          width: '20vw'
         }} 
           />
       </Container>
