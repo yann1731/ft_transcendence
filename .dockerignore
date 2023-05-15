@@ -1,0 +1,4 @@
+#packages/**/node_modules // verificar
+.gitignore
+.git
+*.md
