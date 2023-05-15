@@ -21,7 +21,8 @@ export default function SignIn() {
   return (
     <Container component="main" maxWidth="xs">
       <Box
-        sx={{  
+        sx={{
+			bgcolor: "white",
           marginTop: 8,
           display: "flex",
           flexDirection: "column",
