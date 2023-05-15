@@ -14,14 +14,13 @@ export default function ConversationContainer() {
     <React.Fragment>
       <CssBaseline />
         <Container maxWidth="xl">
-		<OptionBar></OptionBar>
-
-        <Box sx={{ bgcolor: theme.palette.secondary.main, height: '85vh', boxShadow: 4, mt: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-			<Box sx={{mt: '78vh'}}>
-				<FormControlFunctionChild></FormControlFunctionChild>
-			</Box>
-		</Box>
-      </Container>
+          <OptionBar></OptionBar>
+            <Box sx={{ width: '60vw',bgcolor: theme.palette.secondary.main, height: '85vh', boxShadow: 4, mt: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+              <Box sx={{mt: '78vh'}}>
+              <FormControlFunctionChild></FormControlFunctionChild>
+              </Box>
+            </Box>
+        </Container>
     </React.Fragment>
   );
 }

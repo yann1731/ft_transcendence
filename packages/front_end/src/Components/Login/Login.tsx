@@ -5,6 +5,8 @@ import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import { borders } from '@mui/system';
+
 
 export default function SignIn() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -17,7 +19,7 @@ export default function SignIn() {
   };
 
   return (
-    <Container component="main" maxWidth="xs" sx={{bgcolor: 'white'}}>
+    <Container component="main" maxWidth="xs" sx={{bgcolor: 'white', borderRadius: 1.5, boxShadow: 13}}>
       <Box
         sx={{
 			    bgcolor: "white",
@@ -27,7 +29,7 @@ export default function SignIn() {
           alignItems: "center",
         }}
       >
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
           Sign in
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
