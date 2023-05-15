@@ -24,8 +24,17 @@ export default function ScoresContainer() {
           boxShadow: 4,
           border: '1px solid black',
           width: '20vw'
-        }} 
-          />
+        }}>
+            <Box sx={{height: '33.33%', textAlign: 'center', }}>
+              <Box sx={{ color: 'cyan', fontSize: '20px', border: '0.5px solid black'}}>Hall of Fame</Box>
+            </Box>
+            <Box sx={{height: '33.33%', textAlign: 'center'}}>
+              <Box sx={{mt: 1, color: 'cyan', fontSize: '20px', border: '0.5px solid black'}}>Personnal Stats</Box>
+            </Box>
+            <Box sx={{height: '33.34%', textAlign: 'center',}}>
+              <Box sx={{mt: 1, color: 'cyan', fontSize: '20px', border: '0.5px solid black'}}>Opponent's Stats</Box>
+            </Box>
+        </Box>
       </Container>
     </React.Fragment>
   );
