@@ -4,23 +4,16 @@ import Stack from '@mui/material/Stack';
 import ContactContainer from './Contacts';
 import ConversationContainer from './Conversation';
 import Box from '@mui/material/Box';
+import BackgroundContainer from './Background';
 
 
 export default function DividerStack() {
   return (
     <div>
-      <Stack
-        direction="row"
-        divider={<Divider orientation="vertical" flexItem />}
-        spacing={0}
-        >
-          <Box sx={{width: '25vw'}}>
+      <BackgroundContainer>
             <ContactContainer></ContactContainer>
-          </Box>
-          <Box sx={{width: '70vw'}}>
             <ConversationContainer></ConversationContainer>
-          </Box>
-      </Stack>
+      </BackgroundContainer>
     </div>
   );
 }
