@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './HomePage/Home';
 import Chat from './ChatPage/Chat';
@@ -14,7 +15,6 @@ function App() {
 		<Route path='/Chat' element={ <Chat /> } />
 		<Route path='/FatCat' element={ <FatCat /> } />
 	</Routes>
-	)
+	);
 }
-
 export default App;

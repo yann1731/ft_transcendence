@@ -12,7 +12,7 @@ export default function DividerStack() {
       <Stack
         direction="row"
         divider={<Divider orientation="vertical" flexItem />}
-        spacing={1}
+        spacing={0}
         >
           <Box sx={{width: '25vw'}}>
             <ContactContainer></ContactContainer>
