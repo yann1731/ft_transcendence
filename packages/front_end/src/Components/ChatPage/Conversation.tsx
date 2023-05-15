@@ -15,12 +15,21 @@ export default function ConversationContainer() {
       <CssBaseline />
         <Container maxWidth="xl">
 		<OptionBar></OptionBar>
-			<FormControlFunctionChild></FormControlFunctionChild>
+
+        <Box sx={{ bgcolor: theme.palette.secondary.main, height: '85vh', boxShadow: 4, mt: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+			<Box sx={{mt: '78vh'}}>
+				<FormControlFunctionChild></FormControlFunctionChild>
+			</Box>
+		</Box>
       </Container>
     </React.Fragment>
   );
 }
 
+
+export function ConversationScreen() {
+
+}
 
 export function FormControlFunctionChild() {
   return (
@@ -41,15 +50,15 @@ const StyledInput = styled(Input)(
   display: inline-block;
 
   .${inputClasses.input} {
-    width: 320px;
+    width: 57vw;
     font-size: 0.875rem;
     font-family: IBM Plex Sans, sans-serif;
     font-weight: 400;
     line-height: 1.5;
     color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
     background: ${theme.palette.mode === 'dark' ? grey[900] : grey[50]};
-    border: 1px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[300]};
-    border-radius: 8px;
+    border: 2px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[300]};
+    border-radius: 15px;
     padding: 12px 12px;
 
     &:hover {
