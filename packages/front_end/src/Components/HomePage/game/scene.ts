@@ -6,6 +6,7 @@ export class scene extends Phaser.Scene{
     paddle1!: Phaser.Physics.Arcade.Sprite;
     paddle2!: Phaser.Physics.Arcade.Sprite;
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+    cat!: Phaser.Sound.BaseSound;
     keys: any = {};
     points1: number = 0;
     points2: number = 0;
@@ -28,6 +29,7 @@ export class scene extends Phaser.Scene{
     }
 
     create() {
+
 		this.ball = this.physics.add.sprite(
 			this.physics.world.bounds.width / 2,
 			this.physics.world.bounds.height / 2,
@@ -47,6 +49,7 @@ export class scene extends Phaser.Scene{
                 y *= -1;
             this.ball.setVelocityY(y);
         }
+
         this.ball.setScale(0.1, 0.1);
         this.ball.setCollideWorldBounds(true);
         this.ball.setBounce(1, 1);
@@ -68,10 +71,13 @@ export class scene extends Phaser.Scene{
 
         this.paddle1.setImmovable(true);
         this.paddle2.setImmovable(true);
+
         this.paddle2.setScale(0.1, 0.1);
         this.paddle1.setScale(0.1, 0.1);
+
         this.paddle1.setCollideWorldBounds(true)
         this.paddle2.setCollideWorldBounds(true)
+        
         this.physics.add.collider(this.ball, this.paddle1);
         this.physics.add.collider(this.ball, this.paddle2);
 
