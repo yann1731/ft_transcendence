@@ -3,7 +3,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { theme } from '../../Theme'
-import { ContentCopy } from '@mui/icons-material';
 
 export default function ScoresContainer() {
   return (

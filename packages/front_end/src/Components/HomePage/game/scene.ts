@@ -95,10 +95,10 @@ export class scene extends Phaser.Scene{
     update(time: number, delta: number) {
 
         if (this.ball.body)
-            if (this.ball.body?.x + this.ball.body.width == this.physics.world.bounds.width) {
+            if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
                 console.log("player 2 wins");
                 this.points2++;
-                if (this.points2 == 3){
+                if (this.points2 === 3){
                     this.ball.disableBody(true, true);
                     this.player2VictoryText.setVisible(true);
                     return;
@@ -109,10 +109,10 @@ export class scene extends Phaser.Scene{
             }
 
         if (this.ball.body && this.paddle1.body)
-            if (this.ball.body?.x == 0) {
+            if (this.ball.body?.x === 0) {
                 console.log("player 1 wins");
                 this.points1++;
-                if (this.points1 == 3){
+                if (this.points1 === 3){
                     this.ball.disableBody(true, true);
                     this.player1VictoryText.setVisible(true);
                     return;

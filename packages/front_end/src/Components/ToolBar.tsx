@@ -11,11 +11,9 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
-import FatCat from './FatCat';
 
 const pages = [
   { label: 'Home', link: '/Home' },

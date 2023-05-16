@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import ResponsiveAppBar from './Components/ToolBar'
-import Home from './Components/HomePage/Home';
 import reportWebVitals from './reportWebVitals';
 import { ThemeProvider } from '@mui/system';
 import { theme } from './Theme';
