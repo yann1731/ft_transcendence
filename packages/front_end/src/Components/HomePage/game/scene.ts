@@ -12,11 +12,11 @@ export class scene extends Phaser.Scene{
     player1VictoryText: any;
     player2VictoryText: any;
 
-    XVelocityMin1: number = 275;
-    XVelocityMax1: number = 325;
-    XVelocityMin2: number = -275;
-    XVelocityMax2: number = -325;
-    YvelocityMin: number = -250;
+    XVelocityMin1: number = 300;
+    XVelocityMax1: number = 350;
+    XVelocityMin2: number = -300;
+    XVelocityMax2: number = -350;
+    YvelocityMin: number = 100;
     YvelocityMax: number = 250;
 
 
@@ -34,23 +34,17 @@ export class scene extends Phaser.Scene{
 			"ball"		
         )
         
-        if (Math.random() === 0){
-            this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + 250);
-            let y: number = Math.random() * 1000 - 250;
-            if (y < 150 && y >= 0){
-                y += 50;
-            } else if (y > -150 && y < 0){
-                y -= 50;
-            }
+        if (Math.floor(Math.random() * 2) === 0){
+            this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
+            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+            if (Math.floor(Math.random() * 2) === 0)
+                y *= -1;            
             this.ball.setVelocityY(y);
         } else{
-            this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + -250);
-            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin);
-            if (y < 150 && y >= 0){
-                y += 50;
-            } else if (y > -150 && y < 0){
-                y -= 50;
-            }
+            this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2);
+            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+            if (Math.floor(Math.random() * 2) === 0)
+                y *= -1;
             this.ball.setVelocityY(y);
         }
         this.ball.setScale(0.1, 0.1);
@@ -118,7 +112,6 @@ export class scene extends Phaser.Scene{
 
         if (this.ball.body)
             if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
-                console.log("player 2 scores");
                 this.points2++;
                 if (this.points2 === 1000){
                     this.ball.disableBody(true, true);
@@ -129,20 +122,16 @@ export class scene extends Phaser.Scene{
                 } else{
                     this.ball.setX(this.physics.world.bounds.width / 2);
                     this.ball.setY(this.physics.world.bounds.height / 2);
-                    this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + 250);
-            let y: number = Math.random() * 1000 - 250;
-            if (y < 150 && y >= 0){
-                y += 50;
-            } else if (y > -150 && y < 0){
-                y -= 50;
-            }
-            this.ball.setVelocityY(y);
+                    this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
+                    let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+                    if (Math.floor(Math.random() * 2) === 0)
+                        y *= -1;
+                    this.ball.setVelocityY(y);
                 }
             }
 
         if (this.ball.body && this.paddle1.body)
             if (this.ball.body?.x === 0) {
-                console.log("player 1 scores");
                 this.points1++;
                 if (this.points1 === 1000){
                     this.ball.disableBody(true, true);
@@ -153,14 +142,11 @@ export class scene extends Phaser.Scene{
                 }else{
                     this.ball.setX(this.physics.world.bounds.width / 2);
                     this.ball.setY(this.physics.world.bounds.height / 2);
-                    this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + -250);
-            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin);
-            if (y < 150 && y >= 0){
-                y += 50;
-            } else if (y > -150 && y < 0){
-                y -= 50;
-            }
-            this.ball.setVelocityY(y);            
+                    this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2);
+                    let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+                    if (Math.floor(Math.random() * 2) === 0)
+                        y *= -1;
+                    this.ball.setVelocityY(y);            
                 }
             }
 
@@ -169,13 +155,13 @@ export class scene extends Phaser.Scene{
         this.paddle2.setVelocityY(0);
 
         if (this.cursors?.up.isDown)
-            this.paddle2.setVelocityY(-350);
+            this.paddle2.setVelocityY(-400);
         if (this.cursors?.down.isDown)
-            this.paddle2.setVelocityY(350);
+            this.paddle2.setVelocityY(400);
 
         if (this.keys.w.isDown)
-            this.paddle1.setVelocityY(-350);
+            this.paddle1.setVelocityY(-400);
         if (this.keys.s.isDown)
-            this.paddle1.setVelocityY(350);
+            this.paddle1.setVelocityY(400);
     }
 }
