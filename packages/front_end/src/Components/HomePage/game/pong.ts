@@ -22,9 +22,6 @@ const config: Phaser.Types.Core.GameConfig = {
 			gravity: { y: 0 },
 		},
 	},
-	audio: {
-        disableWebAudio: true // Set this to 'true' if you want to use HTML5 Audio instead of Web Audio
-    },
 	scene: [scene]
 }
 	let game = new Phaser.Game(config);
