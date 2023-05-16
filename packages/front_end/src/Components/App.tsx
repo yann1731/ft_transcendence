@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './HomePage/Home';
 import Chat from './ChatPage/Chat';

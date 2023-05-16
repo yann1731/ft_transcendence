@@ -1,15 +1,19 @@
-import { Link } from 'react-router-dom';
 import ResponsiveAppBar from '../ToolBar';
-import DividerStack from './Divider';
+import BackgroundContainer from '../../Background';
+import ScoresContainer from './Scores';
+import GameContainer from './Game';
+import ChatContainer from './Chat';
 
 function Home() {
 	return (
 	<div>
-		<h1>
+		<BackgroundContainer>
 			<ResponsiveAppBar />
 			<br></br>
-			<DividerStack />
-		</h1>
+			<ScoresContainer />
+			<GameContainer />
+			<ChatContainer />
+		</BackgroundContainer>
 	</div>
 	)
 }

@@ -10,7 +10,6 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { theme } from '../../Theme';
-import BackgroundContainer from './Background';
 
 //TODO Add contextual menu to profile picture icon update
 
