@@ -1,5 +1,4 @@
-# node_modules
-# npm-debug.log
-# Dockerfile
-# .dockerignore
-# # *.md
+packages/**/node_modules
+.gitignore
+.git
+*.md

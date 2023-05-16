@@ -6,5 +6,5 @@ COPY . .
 
 RUN yarn install
 
-# CMD ["yarn", "start"]
+CMD ["yarn", "start"]
 # ENTRYPOINT ["/bin/ash"]
