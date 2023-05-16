@@ -12,9 +12,14 @@ export class scene extends Phaser.Scene{
     player1VictoryText: any;
     player2VictoryText: any;
 
-    constructor() {
-		super('scene');
-	}
+    XVelocityMin1: number = 275;
+    XVelocityMax1: number = 325;
+    XVelocityMin2: number = -275;
+    XVelocityMax2: number = -325;
+    YvelocityMin: number = -250;
+    YvelocityMax: number = 250;
+
+
 
 	preload() {
         this.load.image("ball", 'https://cdn.intra.42.fr/users/f6c0fe45e4a0300d137c555fccf29f04/anhebert.jpg');
@@ -29,8 +34,25 @@ export class scene extends Phaser.Scene{
 			"ball"		
         )
         
-        //this.ball.setScale(0.1, 0.1);
-        this.ball.setVelocity(300);
+        if (Math.random() === 0){
+            this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + 250);
+            let y: number = Math.random() * 1000 - 250;
+            if (y < 150 && y >= 0){
+                y += 50;
+            } else if (y > -150 && y < 0){
+                y -= 50;
+            }
+            this.ball.setVelocityY(y);
+        } else{
+            this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + -250);
+            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin);
+            if (y < 150 && y >= 0){
+                y += 50;
+            } else if (y > -150 && y < 0){
+                y -= 50;
+            }
+            this.ball.setVelocityY(y);
+        }
         this.ball.setScale(0.1, 0.1);
         this.ball.setCollideWorldBounds(true);
         this.ball.setBounce(1, 1);
@@ -92,33 +114,53 @@ export class scene extends Phaser.Scene{
     }
     
     
-    update(time: number, delta: number) {
+    update() {
 
         if (this.ball.body)
             if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
-                console.log("player 2 wins");
+                console.log("player 2 scores");
                 this.points2++;
-                if (this.points2 === 3){
+                if (this.points2 === 1000){
                     this.ball.disableBody(true, true);
                     this.player2VictoryText.setVisible(true);
+                    this.paddle1.disableBody();
+                    this.paddle2.disableBody();
                     return;
                 } else{
                     this.ball.setX(this.physics.world.bounds.width / 2);
                     this.ball.setY(this.physics.world.bounds.height / 2);
+                    this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + 250);
+            let y: number = Math.random() * 1000 - 250;
+            if (y < 150 && y >= 0){
+                y += 50;
+            } else if (y > -150 && y < 0){
+                y -= 50;
+            }
+            this.ball.setVelocityY(y);
                 }
             }
 
         if (this.ball.body && this.paddle1.body)
             if (this.ball.body?.x === 0) {
-                console.log("player 1 wins");
+                console.log("player 1 scores");
                 this.points1++;
-                if (this.points1 === 3){
+                if (this.points1 === 1000){
                     this.ball.disableBody(true, true);
                     this.player1VictoryText.setVisible(true);
+                    this.paddle1.disableBody();
+                    this.paddle2.disableBody();
                     return;
                 }else{
                     this.ball.setX(this.physics.world.bounds.width / 2);
                     this.ball.setY(this.physics.world.bounds.height / 2);
+                    this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + -250);
+            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin);
+            if (y < 150 && y >= 0){
+                y += 50;
+            } else if (y > -150 && y < 0){
+                y -= 50;
+            }
+            this.ball.setVelocityY(y);            
                 }
             }
 

@@ -2,15 +2,18 @@
 import Phaser from "phaser";
 import { scene } from "./scene";
 
-
+document.addEventListener("DOMContentLoaded", function () {
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
-	parent: 'game-content',
+	parent: 'PONG',
 	backgroundColor: '#000000',
 	scale: {
-		mode: Phaser.Scale.ScaleModes.RESIZE,
-		width: window.innerWidth,
-		height: window.innerHeight,
+		mode: Phaser.Scale.FIT,
+		autoCenter: Phaser.Scale.CENTER_BOTH,
+		min: {
+			width: 480,
+			height: 480
+		}
 	},
 	physics: {
 		default: 'arcade',
@@ -20,6 +23,8 @@ const config: Phaser.Types.Core.GameConfig = {
 	},
 	scene: [scene]
 }
+	let game = new Phaser.Game(config);
+	return game;
+})
 
-let game = new Phaser.Game(config);
-export default game;
+/*export default game; */
