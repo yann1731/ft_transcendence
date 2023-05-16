@@ -1,6 +1,3 @@
-import { textAlign } from '@mui/system';
-
-
 function FatCat() {
 	return (
 	<div>
