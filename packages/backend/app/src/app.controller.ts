@@ -23,7 +23,7 @@ export class AppController {
   // Si no no tiene un ID Dinamico deben ir Primero
   @Get('products/filter')
   getProductFilter() {
-    return `Soy un FIlter`;
+    return `Soy un Filter`;
   }
 
   // Asi recibo un paramtro
