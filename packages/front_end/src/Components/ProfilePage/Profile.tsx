@@ -1,6 +1,6 @@
-import ResponsiveAppBar from '../ToolBar';
-import BackgroundContainer from './Background';
+import BackgroundContainer from '../../Background'
 import ProfileContainer from './ProfilePage';
+import ResponsiveAppBar from '../ToolBar';
 
 export default function DividerProfile() {
     return (

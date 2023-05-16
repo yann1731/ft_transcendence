@@ -1,14 +1,17 @@
 import ResponsiveAppBar from '../ToolBar';
-import DividerStack from './Divider';
+import BackgroundContainer from '../../Background';
+import ContactContainer from './Contacts';
+import ConversationContainer from './Conversation';
 
 function Chat() {
 	return (
 	<div>
-		<h1>
+		<BackgroundContainer>
 			<ResponsiveAppBar></ResponsiveAppBar>
 			<br></br>
-			<DividerStack></DividerStack>
-		</h1>
+			<ContactContainer></ContactContainer>
+			<ConversationContainer></ConversationContainer>
+		</BackgroundContainer>
 	</div>
 	)
 }
