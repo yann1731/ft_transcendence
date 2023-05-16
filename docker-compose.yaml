@@ -1,27 +1,46 @@
 version: '3.9'
 
 services:
-  backend:
-    container_name: backend
+  # backend:
+  #   container_name: backend
+  #   build:
+  #     context: ./packages/backend
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   networks:
+  #     - tr-net
+  #   volumes:
+  #     - home_back:/serv/app
+  #   ports:
+  #     - 4242:4242
+
+  frontend:
+    container_name: frontend
     build:
-      context: ./packages/backend
+      context: ./packages/front_end
       dockerfile: Dockerfile
     restart: always
     networks:
       - tr-net
     volumes:
-      - home_js:/serv/app
+      - home_front:/app
     ports:
-      - 80:80
       - 3000:3000
+    command: "yarn start"
 
 volumes:
-  home_js:
+  home_back:
     driver: local
     driver_opts:
       type: none
       o: bind
       device: ${HOME}/ft_transcendence/packages/backend/app
+  home_front:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${HOME}/ft_transcendence/packages/front_end
 
 networks:
     tr-net:

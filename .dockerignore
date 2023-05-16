@@ -1,4 +1,5 @@
-#packages/**/node_modules // verificar
-.gitignore
-.git
-*.md
+# node_modules
+# npm-debug.log
+# Dockerfile
+# .dockerignore
+# # *.md
