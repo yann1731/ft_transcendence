@@ -1,19 +1,12 @@
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
-import Avatar from '@mui/material/Avatar';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import Icon from '@mui/material/Icon';
-import { textAlign } from '@mui/system';
-
-
 
 export default function OptionBarConversation() {
     const settings = ['add', 'quit', 'kick', 'ban'];

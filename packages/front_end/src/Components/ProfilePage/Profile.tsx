@@ -1,9 +1,6 @@
-import { Link } from 'react-router-dom';
-import React from 'react';
 import ResponsiveAppBar from '../ToolBar';
 import { Box, IconButton } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
-import { borders, textAlign } from '@mui/system';
 import { experimentalStyled as styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
