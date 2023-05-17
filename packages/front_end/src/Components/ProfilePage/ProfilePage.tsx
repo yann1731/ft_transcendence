@@ -89,7 +89,7 @@ function ProfileContainer() {
 				</Menu>
 				<Modal open={open} onClose={handleClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
 					<div>
-						<img src={selectedPicture} alt="Picture" />
+						<img src={selectedPicture} alt="Profile" />
 					</div>
 				</Modal>
 				</div>
