@@ -41,40 +41,8 @@ export default function GameContainer() {
         <Container maxWidth="xl">
         <Box sx={{bgcolor: theme.palette.primary.main, boxShadow: 24, textAlign: 'center', fontWeight: 'bold', width: '50vw', color: 'cyan'}}>GAME</Box>
         <div id="PONG" style={{ height: '65vh', width: '50vw'}}></div>
-        <Box sx={{ bgcolor: theme.palette.secondary.main, height: '20vh', boxShadow: 4, width: '50vw'}} />
       </Container>
     </React.Fragment>
   );
 }
 
-/*
-import * as React from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import { theme } from '../../../Theme';
-import './pong.ts';
-
-export default function GameContainer() {
-  React.useEffect(() => {
-    // Initialize and start your Phaser game here
-    // Make sure to handle any necessary cleanup when unmounting
-
-    return () => {
-      // Clean up the Phaser game when unmounting or before navigating away
-      // Pause the game and perform any necessary cleanup
-    };
-  }, []);
-
-  return (
-    <React.Fragment>
-      <CssBaseline />
-      <Container maxWidth="xl">
-        <Box sx={{ bgcolor: theme.palette.primary.main, boxShadow: 24, textAlign: 'center', fontWeight: 'bold', width: '50vw', color: 'cyan' }}>GAME</Box>
-        <div id="PONG" style={{ height: '65vh', width: '50vw' }}></div>
-        <Box sx={{ bgcolor: theme.palette.secondary.main, height: '20vh', boxShadow: 4, width: '50vw' }} />
-      </Container>
-    </React.Fragment>
-  );
-}
-*/
