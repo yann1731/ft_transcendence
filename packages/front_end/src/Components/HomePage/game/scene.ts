@@ -12,6 +12,7 @@ export class scene extends Phaser.Scene{
     points2: number = 0;
     player1VictoryText: any;
     player2VictoryText: any;
+    score: any;
 
     XVelocityMin1: number = 300;
     XVelocityMax1: number = 350;
@@ -30,6 +31,7 @@ export class scene extends Phaser.Scene{
     }
 
     create() {
+
 		this.ball = this.physics.add.sprite(
 			this.physics.world.bounds.width / 2,
 			this.physics.world.bounds.height / 2,
@@ -98,21 +100,35 @@ export class scene extends Phaser.Scene{
                 fontSize: '50px',
             }
         );
+
         this.player2VictoryText.setOrigin(0.5);
         this.player2VictoryText.setVisible(false);
-    }
-    
-    
-    update() {
 
+        this.score = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 10,
+            `${this.points2}          ${this.points1}`,
+            {
+                fontFamily: 'Monaco, Courier, monospace',
+                fontSize: '20px',
+            }
+        );
+        this.score.setOrigin(0.5);
+    }
+
+    update() {
+        console.log("allo");
         if (this.ball.body)
             if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
                 this.points2++;
+                this.score.setText(`${this.points2}          ${this.points1}`);
+                
                 if (this.points2 === this.win){
                     this.ball.disableBody(true, true);
                     this.player2VictoryText.setVisible(true);
                     this.paddle1.disableBody();
                     this.paddle2.disableBody();
+                    this.scene.pause();
                     return;
                 } else{
                     this.ball.setX(this.physics.world.bounds.width / 2);
@@ -128,11 +144,13 @@ export class scene extends Phaser.Scene{
         if (this.ball.body && this.paddle1.body)
             if (this.ball.body?.x === 0) {
                 this.points1++;
+                this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points1 === this.win){
                     this.ball.disableBody(true, true);
                     this.player1VictoryText.setVisible(true);
                     this.paddle1.disableBody();
                     this.paddle2.disableBody();
+                    this.scene.pause();
                     return;
                 }else{
                     this.ball.setX(this.physics.world.bounds.width / 2);
