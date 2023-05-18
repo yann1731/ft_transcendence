@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
+import ThemeModeIcon from '@mui/icons-material/DarkMode'
 import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
 
@@ -42,10 +43,17 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="fixed" sx={{ bgcolor: theme.palette.secondary.main }}>
+    <AppBar position="fixed" style={{ backgroundImage: "none" }} sx={{ bgcolor: theme.palette.secondary.main }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <PokeBallIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15, color: 'cyan' }} />
+          <Tooltip title="Gotta catch em all!">
+            <PokeBallIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15, color: 'cyan' }} />
+          </Tooltip>
+          <Tooltip title="Light / Dark Mode" sx={{ position: 'fixed', right: '80px', top: '25px' }}>
+            <IconButton>
+              <ThemeModeIcon sx={{ position: 'fixed', right: '80px', top: '22px', color: 'cyan' }} />
+            </IconButton>
+          </Tooltip>
           <Typography
             variant="h6"
             noWrap
