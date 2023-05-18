@@ -9,14 +9,13 @@ import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 
 export default function OptionBarContacts() {
-    const settings = ['invite to play', 'invite to channel', 'block'];
+    const settings = ['add', 'invite to play', 'invite to channel', 'block'];
   
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
     };
-  
   
     const handleCloseUserMenu = () => {
       setAnchorElUser(null);
@@ -45,7 +44,7 @@ export default function OptionBarContacts() {
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
-            >
+              >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">{setting}</Typography>
