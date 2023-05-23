@@ -11,10 +11,14 @@ export default function ContactContainer() {
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
-        <OptionBarContact></OptionBarContact>
-        <ContactBox></ContactBox>
-        <OptionBarChans></OptionBarChans>
-        <ChannelBox></ChannelBox>
+        <Container maxWidth="lg">
+          <OptionBarContact></OptionBarContact>
+          <ContactBox></ContactBox>
+        </Container>
+        <Container maxWidth="lg">
+          <OptionBarChans></OptionBarChans>
+          <ChannelBox></ChannelBox>
+        </Container>
       </Container>
     </React.Fragment>
   );

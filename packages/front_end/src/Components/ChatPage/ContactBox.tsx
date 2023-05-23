@@ -8,26 +8,26 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import { ListItemButton } from '@mui/material';
+import { theme } from '../../Theme';
 
 const useStyles = makeStyles({
 	table: {
 	  minWidth: 650,
 	},
 	border: {
-		backgroundColor: 'white',
+		position: 'absolute',
+		top: 156,
+		left: 10,
+		backgroundColor: theme.palette.secondary.main,
 		overflowY: 'auto',
 		overflowX: 'auto',
 	},
   });
-  
-  import * as React from 'react';
-  import Box from '@mui/material/Box';
-  import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 
   export default function ContactBox() {
 	const classes = useStyles();
 	return(
-	<Grid item xs={3} className={classes.border} sx={{height: '450px', width: '300px'}}>
+	<Grid item xs={3} className={classes.border} sx={{height: '450px', width: '300px' }}>
 	<List>
 		<ListItemButton key="RemySharp">
 			<ListItemIcon>

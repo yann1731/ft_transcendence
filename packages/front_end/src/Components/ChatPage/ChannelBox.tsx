@@ -7,13 +7,17 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import { ListItemButton } from '@mui/material';
+import { theme } from '../../Theme';
 
 const useStyles = makeStyles({
 	table: {
 		minWidth: 650,
 	  },
 	  borders: {
-		  backgroundColor: 'white',
+		  position: 'absolute',
+		  left: 10,
+		  top: 645,	
+		  backgroundColor: theme.palette.secondary.main,
 		  overflowY: 'auto',
 		  overflowX: 'auto',
 	  }
@@ -22,7 +26,7 @@ const useStyles = makeStyles({
   export default function ChannelBox() {
 	const classes = useStyles();
 	return(
-	<Grid item xs={3} className={classes.borders} sx={{height: '450px', width: '300px'}}>
+	<Grid item xs={3} className={classes.borders} sx={{height: '38vh', width: '300px'}}>
 	<Divider />
 	<Grid item xs={12} style={{padding: '10px'}}>
 		<TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth />
