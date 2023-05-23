@@ -1,5 +1,6 @@
 
 import Phaser from "phaser";
+
 export class scene extends Phaser.Scene{
 
 	ball!: Phaser.Physics.Arcade.Sprite;
@@ -25,8 +26,11 @@ export class scene extends Phaser.Scene{
 
 
 	preload() {
-        this.load.image("ball", 'https://cdn.intra.42.fr/users/f6c0fe45e4a0300d137c555fccf29f04/anhebert.jpg');
-        this.load.image("paddle", 'https://i.scdn.co/image/ab67616d0000b2739e54086eac5b6cc2bd4cb46d');
+        const anto = require('../../../images/anhebert.png');
+        const paddle = require('../../../images/paddle.png');
+
+        this.load.image("ball", String(anto) );
+        this.load.image("paddle", String(paddle));
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
 
@@ -65,17 +69,17 @@ export class scene extends Phaser.Scene{
             this.ball.setVelocityY(y);
         }
         
-        this.ball.setScale(0.1, 0.1);
+        this.ball.setScale(0.2, 0.2);
         this.ball.setCollideWorldBounds(true);
         this.ball.setBounce(1, 1);
 
         this.paddle1.setImmovable(true);
-        this.paddle1.setScale(0.1, 0.1);
+        this.paddle1.setScale(0.5, 0.5);
         this.paddle1.setCollideWorldBounds(true)
         this.physics.add.collider(this.ball, this.paddle1);
         
         this.paddle2.setImmovable(true);
-        this.paddle2.setScale(0.1, 0.1);
+        this.paddle2.setScale(0.5, 0.5);
         this.paddle2.setCollideWorldBounds(true)
         this.physics.add.collider(this.ball, this.paddle2);
 
@@ -117,12 +121,12 @@ export class scene extends Phaser.Scene{
     }
 
     update() {
-        console.log("allo");
+        this.ball.angle++;
+
         if (this.ball.body)
             if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
                 this.points2++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
-                
                 if (this.points2 === this.win){
                     this.ball.disableBody(true, true);
                     this.player2VictoryText.setVisible(true);

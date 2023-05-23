@@ -25,13 +25,58 @@ export default function ScoresContainer() {
           border: '1px solid black'
         }}>
             <Box sx={{height: '33.33%', textAlign: 'center', }}>
-              <Box sx={{ color: 'cyan', fontSize: '20px', border: '0.5px solid black'}}>Hall of Fame</Box>
+              <Box sx={{color: 'cyan', fontSize: '20px', border: '0.5px solid black'}}>Hall of Fame</Box>
+                <p style={{color: 'red'}}>
+                  Nb games played:
+                </p>
+                <p style={{color: 'red'}}>
+                  Wins:
+                </p>
+                <p style={{color: 'red'}}>
+                  Losses:
+                </p>
+                <p style={{color: 'red'}}>
+                  Current win streak:
+                </p>
+                <p style={{color: 'red'}}>
+                  Best streak:
+                </p>
             </Box>
             <Box sx={{height: '33.33%', textAlign: 'center'}}>
               <Box sx={{mt: 1, color: 'cyan', fontSize: '20px', border: '0.5px solid black'}}>Personnal Stats</Box>
+                <p style={{color: 'red'}}>
+                  Nb games played: 
+                </p>
+                <p style={{color: 'red'}}>
+                  Wins:
+                </p>
+                <p style={{color: 'red'}}>
+                  Losses:
+                </p>
+                <p style={{color: 'red'}}>
+                  Current win streak:
+                </p>
+                <p style={{color: 'red'}}>
+                  Best streak:
+                </p>
             </Box>
             <Box sx={{height: '33.34%', textAlign: 'center',}}>
               <Box sx={{mt: 1, color: 'cyan', fontSize: '20px', border: '0.5px solid black'}}>Opponent's Stats</Box>
+                <p style={{color: 'red'}}>
+                  Nb games played:
+                </p>
+                <p style={{color: 'red'}}>
+                  Wins:
+                </p>
+                <p style={{color: 'red'}}>
+                  Losses:
+                </p>
+                <p style={{color: 'red'}}>
+                  Current win streak:
+                </p>
+                <p style={{color: 'red'}}>
+                  Best streak:
+                </p>
             </Box>
         </Box>
       </Container>

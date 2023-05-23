@@ -1,10 +1,10 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import { theme } from '../../Theme'
 import OptionBarContact from './OptionBarContacts';
 import OptionBarChans from './OptionBarChans';
+import ContactBox from './ContactBox';
+import ChannelBox from './ChannelBox';
 
 export default function ContactContainer() {
   return (
@@ -12,9 +12,9 @@ export default function ContactContainer() {
       <CssBaseline />
       <Container maxWidth="lg">
         <OptionBarContact></OptionBarContact>
-        <Box sx={{ bgcolor: theme.palette.secondary.main, height: '40.5vh', boxShadow: 4}} />
+        <ContactBox></ContactBox>
         <OptionBarChans></OptionBarChans>
-        <Box sx={{ bgcolor: theme.palette.secondary.main, height: '40.5vh', boxShadow: 4}} />
+        <ChannelBox></ChannelBox>
       </Container>
     </React.Fragment>
   );

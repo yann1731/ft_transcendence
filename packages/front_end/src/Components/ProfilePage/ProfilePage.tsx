@@ -12,6 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { theme } from '../../Theme';
 import { useState } from 'react';
 
+
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
 	...theme.typography.body2,
@@ -25,6 +26,10 @@ const settings = ['See profile picture', 'Upload profile picture'];
 
 
 function ProfileContainer() {
+	const [active, setActive] = useState(false);
+	const handleClick = () => {
+		setActive(!active);
+	};
 
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -123,7 +128,7 @@ function ProfileContainer() {
 						<Item sx={{bgcolor: 'white', color: 'grey'}}>Win Ratio: </Item>
 						</Grid>
 						<Grid item xs={13}>
-						<Button variant="contained" sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>Activate 2FA</Button>
+						<Button variant="contained" onClick={handleClick} sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>{active ? "Activate 2FA" : "Deactivate 2FA"}</Button>
 						</Grid>
 						<Grid item xs={13}>
 						<Button variant="contained" sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>Change Username</Button>
