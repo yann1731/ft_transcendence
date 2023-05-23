@@ -1,25 +1,20 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import { theme } from '../../Theme'
-import OptionBar from './OptionBarConversation';
+import OptionBarConversation from './OptionBarConversation';
 import FormControl, { FormControlState } from '@mui/base/FormControl';
 import Input, { inputClasses } from '@mui/base/Input';
 import { styled } from '@mui/system';
+import Chat from './ChatBox';
 
 
 export default function ConversationContainer() {
   return (
     <React.Fragment>
       <CssBaseline />
-        <Container maxWidth="xl">
-          <OptionBar></OptionBar>
-            <Box sx={{ width: '60vw',bgcolor: theme.palette.secondary.main, height: '85vh', boxShadow: 4, mt: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-              <Box sx={{mt: '78vh'}}>
-              <FormControlFunctionChild></FormControlFunctionChild>
-              </Box>
-            </Box>
+        <Container maxWidth="xl" sx={{width: '70vw', height: '70%'}}>
+          <OptionBarConversation></OptionBarConversation>
+              <Chat></Chat>
         </Container>
     </React.Fragment>
   );
