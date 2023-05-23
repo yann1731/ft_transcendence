@@ -7,7 +7,6 @@ import { scene } from './scene';
 
 export default function GameContainer() {
   React.useEffect(() => {
-    // Initialize Phaser game
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
       parent: 'PONG',

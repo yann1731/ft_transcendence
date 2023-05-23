@@ -1,24 +1,38 @@
 
 import Phaser from "phaser";
 
+class PowerUp extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene: Phaser.Scene, x: number, y: number) {
+      super(scene, x, y, "power");
+      scene.add.existing(this);
+      scene.physics.add.existing(this);
+    }
+  }
+
+
 export class scene extends Phaser.Scene{
 
 	ball!: Phaser.Physics.Arcade.Sprite;
     paddle1!: Phaser.Physics.Arcade.Sprite;
     paddle2!: Phaser.Physics.Arcade.Sprite;
+
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     cat!: Phaser.Sound.BaseSound;
+
     keys: any = {};
     points1: number = 0;
     points2: number = 0;
     player1VictoryText: any;
     player2VictoryText: any;
     score: any;
+    power!: PowerUp;
 
-    XVelocityMin1: number = 300;
-    XVelocityMax1: number = 350;
-    XVelocityMin2: number = -300;
-    XVelocityMax2: number = -350;
+    paddlespeed: number = 400;
+
+    XVelocityMin1: number = 350;
+    XVelocityMax1: number = 400;
+    XVelocityMin2: number = -350;
+    XVelocityMax2: number = -400;
     YvelocityMin: number = 100;
     YvelocityMax: number = 250;
 
@@ -26,11 +40,9 @@ export class scene extends Phaser.Scene{
 
 
 	preload() {
-        const anto = require('../../../images/anhebert.png');
-        const paddle = require('../../../images/paddle.png');
-
-        this.load.image("ball", String(anto) );
-        this.load.image("paddle", String(paddle));
+        this.load.image("ball", String(require('../../../images/anhebert.png')));
+        this.load.image("paddle", String(require('../../../images/paddle.png')));
+        this.load.image("power", String(require('../../../images/test.png')));
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
 
@@ -39,17 +51,17 @@ export class scene extends Phaser.Scene{
 		this.ball = this.physics.add.sprite(
 			this.physics.world.bounds.width / 2,
 			this.physics.world.bounds.height / 2,
-			"ball"		
+			"ball"
         )
         this.paddle1 = this.physics.add.sprite(
-            (this.ball.width * 0.1) / 2 + 10,
+            (this.ball.width * 0.2) / 2 + 10,
             this.physics.world.bounds.height / 2,
-            "paddle"	
+            "paddle"
         )
         this.paddle2 = this.physics.add.sprite(
-            this.physics.world.bounds.width - (this.ball.width * 0.1) / 2 - 1,
+            this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
             this.physics.world.bounds.height / 2,
-            "paddle"	
+            "paddle"
         )
 
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -69,9 +81,14 @@ export class scene extends Phaser.Scene{
             this.ball.setVelocityY(y);
         }
         
+        this.ball.setDamping(true);
         this.ball.setScale(0.2, 0.2);
         this.ball.setCollideWorldBounds(true);
         this.ball.setBounce(1, 1);
+        this.ball.setDrag(1.05);
+        
+        this.power = new PowerUp(this, Phaser.Math.RND.between(0, this.physics.world.bounds.width), Phaser.Math.RND.between(0, this.physics.world.bounds.height));
+        this.physics.add.overlap(this.ball, this.power, this.power_up, undefined, this);
 
         this.paddle1.setImmovable(true);
         this.paddle1.setScale(0.5, 0.5);
@@ -104,7 +121,6 @@ export class scene extends Phaser.Scene{
                 fontSize: '50px',
             }
         );
-
         this.player2VictoryText.setOrigin(0.5);
         this.player2VictoryText.setVisible(false);
 
@@ -137,11 +153,14 @@ export class scene extends Phaser.Scene{
                 } else{
                     this.ball.setX(this.physics.world.bounds.width / 2);
                     this.ball.setY(this.physics.world.bounds.height / 2);
+                    this.paddle1.setY(this.physics.world.bounds.height / 2);
+                    this.paddle2.setY(this.physics.world.bounds.height / 2);
                     this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
                     let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
                     if (Math.floor(Math.random() * 2) === 0)
                         y *= -1;
                     this.ball.setVelocityY(y);
+                    this.paddlespeed = 400;
                 }
             }
 
@@ -159,26 +178,42 @@ export class scene extends Phaser.Scene{
                 }else{
                     this.ball.setX(this.physics.world.bounds.width / 2);
                     this.ball.setY(this.physics.world.bounds.height / 2);
+                    this.paddle1.setY(this.physics.world.bounds.height / 2);
+                    this.paddle2.setY(this.physics.world.bounds.height / 2);
                     this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2);
                     let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
                     if (Math.floor(Math.random() * 2) === 0)
                         y *= -1;
-                    this.ball.setVelocityY(y);            
+                    this.ball.setVelocityY(y);
+                    this.paddlespeed = 400;
                 }
             }
-
+        
 
         this.paddle1.setVelocityY(0);
         this.paddle2.setVelocityY(0);
 
         if (this.cursors?.up.isDown)
-            this.paddle2.setVelocityY(-400);
+            this.paddle2.setVelocityY(-this.paddlespeed);
         if (this.cursors?.down.isDown)
-            this.paddle2.setVelocityY(400);
+            this.paddle2.setVelocityY(this.paddlespeed);
 
         if (this.keys.w.isDown)
-            this.paddle1.setVelocityY(-400);
+            this.paddle1.setVelocityY(-this.paddlespeed);
         if (this.keys.s.isDown)
-            this.paddle1.setVelocityY(400);
+            this.paddle1.setVelocityY(this.paddlespeed);
+        
+        if (this.paddlespeed < 600)
+            this.paddlespeed += 0.5;
+    }
+
+    power_up() {
+        this.power.disableBody(true, true);
+
+        this.time.delayedCall(Phaser.Math.RND.between(2000, 7000), () => {
+            this.power.enableBody(true, this.power.x, this.power.y, true, true);
+        }, [], this);
+
+        this.power.setPosition(Phaser.Math.RND.between(0, this.physics.world.bounds.width), Phaser.Math.RND.between(0, this.physics.world.bounds.height))
     }
 }

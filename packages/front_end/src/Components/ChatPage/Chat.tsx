@@ -2,8 +2,6 @@ import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
 import ContactContainer from './Contacts';
 import ConversationContainer from './Conversation';
-import { AlignHorizontalLeft } from '@mui/icons-material';
-
 
 function Chat() {
 	return (
