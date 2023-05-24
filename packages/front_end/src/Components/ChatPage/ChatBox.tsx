@@ -16,17 +16,14 @@ const useStyles = makeStyles({
     minWidth: 650,
   },
   chatSection: {
-    width: '100%',
     backgroundImage: "none",
     backgroundColor: theme.palette.secondary.main,
+    borderRadius: 10,
   },
   messageArea: {
     height: '70vh',
     overflowY: 'auto',
   },
-  borders: {
-    
-  }
 });
 
 const Chat = () => {

@@ -7,10 +7,15 @@ import ContactBox from './ContactBox';
 import ChannelBox from './ChannelBox';
 
 export default function ContactContainer() {
+  const sideContainerStyle = {
+    height: '80vh',
+    width: '380px',
+  }
+  
   return (
     <React.Fragment>
       <CssBaseline />
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" style={ sideContainerStyle }>
         <Container maxWidth="lg">
           <OptionBarContact></OptionBarContact>
           <ContactBox></ContactBox>

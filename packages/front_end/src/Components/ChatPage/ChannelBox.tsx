@@ -14,19 +14,19 @@ const useStyles = makeStyles({
 		minWidth: 650,
 	  },
 	  borders: {
-		  position: 'absolute',
-		  left: 10,
-		  top: 645,	
+		  position: 'relative',
 		  backgroundColor: theme.palette.secondary.main,
 		  overflowY: 'auto',
 		  overflowX: 'auto',
+		  borderRadius: 10,
+		  height: '37vh',
 	  }
 });
   
   export default function ChannelBox() {
 	const classes = useStyles();
 	return(
-	<Grid item xs={3} className={classes.borders} sx={{height: '38vh', width: '300px'}}>
+	<Grid item xs={3} className={classes.borders}>
 	<Divider />
 	<Grid item xs={12} style={{padding: '10px'}}>
 		<TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth />

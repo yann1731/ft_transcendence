@@ -22,7 +22,7 @@ export default function OptionBarContacts() {
       setAnchorElUser(null);
     };
   return (
-      <AppBar position="fixed" sx={{ width: '300px', top: '115px', left: '10px' }}>
+      <AppBar position="relative" sx={{ boxShadow: 'none' }}>
       <Box sx={{ flexGrow: 0, bgcolor: theme.palette.primary.main }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>

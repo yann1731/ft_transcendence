@@ -23,8 +23,8 @@ export default function OptionBarChans() {
       setAnchorElUser(null);
     };
   return (
-      <AppBar position="fixed" sx={{width: '300px', left: '10px', top: '605px' }}>
-      <Box sx={{ flexGrow: 0, bgcolor: theme.palette.primary.main }}>
+      <AppBar position="relative" sx={{ boxShadow: '0' }}>
+      <Box sx={{ bgcolor: theme.palette.primary.main }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>
                 <DehazeIcon></DehazeIcon>
@@ -32,7 +32,7 @@ export default function OptionBarChans() {
             </Tooltip>
             Channels
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: '40px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{

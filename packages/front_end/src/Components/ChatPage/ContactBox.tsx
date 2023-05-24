@@ -15,19 +15,19 @@ const useStyles = makeStyles({
 	  minWidth: 650,
 	},
 	border: {
-		position: 'absolute',
-		top: 156,
-		left: 10,
+		position: 'relative',
 		backgroundColor: theme.palette.secondary.main,
 		overflowY: 'auto',
 		overflowX: 'auto',
+		height: '37vh',
+		borderRadius: 10,
 	},
   });
 
   export default function ContactBox() {
 	const classes = useStyles();
 	return(
-	<Grid item xs={3} className={classes.border} sx={{height: '450px', width: '300px' }}>
+	<Grid item xs={3} className={classes.border} sx={{ height: '33.5vh' }}>
 	<List>
 		<ListItemButton key="RemySharp">
 			<ListItemIcon>

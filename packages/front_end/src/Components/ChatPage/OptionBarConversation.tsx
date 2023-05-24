@@ -23,8 +23,8 @@ export default function OptionBarConversation() {
       setAnchorElUser(null);
     };
   return (
-      <AppBar position="static">
-      <Box sx={{ flexGrow: 0, bgcolor: theme.palette.primary.main }}>
+      <AppBar position="relative" sx={{ borderRadius: 10, boxShadow: 'none' }}>
+      <Box sx={{ bgcolor: theme.palette.primary.main }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>
                 <DehazeIcon></DehazeIcon>

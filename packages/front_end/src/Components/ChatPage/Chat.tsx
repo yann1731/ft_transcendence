@@ -7,15 +7,17 @@ import ConversationContainer from './Conversation';
 
 function Chat() {
 	return (
-	  <BackgroundContainer>
-		  <div>
+	  <div style={{ display: 'flex' }}>
+	  	<BackgroundContainer>
+		  <div style={{ flex: 1 }}>
 			<ResponsiveAppBar />
 			<ContactContainer />
 		  </div>
-		  <div>
+		  <div style={{ flex: 1 }}>
 			<ConversationContainer />
 		  </div>
-	  </BackgroundContainer>
+	  	</BackgroundContainer>
+	  </div>
 	);
   }
   
