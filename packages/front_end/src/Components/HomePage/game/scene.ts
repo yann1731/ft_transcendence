@@ -17,8 +17,12 @@ export class scene extends Phaser.Scene{
     paddle1!: Phaser.Physics.Arcade.Sprite;
     paddle2!: Phaser.Physics.Arcade.Sprite;
 
+    wall1!: Phaser.Physics.Arcade.Sprite;
+    wall2!: Phaser.Physics.Arcade.Sprite;
+    wall3!: Phaser.Physics.Arcade.Sprite;
+    wall4!: Phaser.Physics.Arcade.Sprite;
+
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
-    cat!: Phaser.Sound.BaseSound;
 
     keys: any = {};
     points1: number = 0;
@@ -28,7 +32,7 @@ export class scene extends Phaser.Scene{
     score: any;
     power!: PowerUp;
 
-    paddlespeed: number = 425;
+    paddlespeed: number = 450;
     modifier1: number = 1;
     modifier2: number = 1;
 
@@ -41,10 +45,11 @@ export class scene extends Phaser.Scene{
 
     win: number = 5;
 
-
 	preload() {
         this.load.image("ball", String(require('../../../images/anhebert.png')));
-        this.load.image("paddle", String(require('../../../images/paddle.png')));
+        this.load.image("paddle1", String(require('../../../images/lmoreno.png')));
+        this.load.image("paddle2", String(require('../../../images/bperron.png')));
+        this.load.image("wall", "https://cdn.intra.42.fr/users/4154c50a46d7aeb2cea25b8a4834d4ef/ewurstei.jpg");
         this.load.image("power", "https://cdn.intra.42.fr/users/3c08dbaf4b23e2af86168c9147631ace/malord.jpg");
         this.load.image("background", "https://cdn.intra.42.fr/users/02bd0e2e6838f9e0f6d36bd7968465d6/yst-laur.jpg");
         this.cursors = this.input.keyboard?.createCursorKeys();
@@ -52,9 +57,9 @@ export class scene extends Phaser.Scene{
 
     create() {
 
-        const background = this.add.sprite(0, 0, "background");
-        background.setOrigin(0, 0);
-        background.setScale(this.scale.width / background.width, this.scale.height / background.height);
+        //const background = this.add.sprite(0, 0, "background");
+        //background.setOrigin(0, 0);
+        //background.setScale(this.scale.width / background.width, this.scale.height / background.height);
 
 		this.ball = this.physics.add.sprite(
 			this.physics.world.bounds.width / 2,
@@ -64,12 +69,12 @@ export class scene extends Phaser.Scene{
         this.paddle1 = this.physics.add.sprite(
             (this.ball.width * 0.2) / 2 + 10,
             this.physics.world.bounds.height / 2,
-            "paddle"
+            "paddle1"
         )
         this.paddle2 = this.physics.add.sprite(
             this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
             this.physics.world.bounds.height / 2,
-            "paddle"
+            "paddle2"
         )
 
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -99,12 +104,14 @@ export class scene extends Phaser.Scene{
         this.physics.add.overlap(this.ball, this.power, this.power_up, undefined, this);
 
         this.paddle1.setImmovable(true);
-        this.paddle1.setScale(0.5);
-        this.paddle1.setCollideWorldBounds(true)
+        this.paddle1.setOrigin(0.5);
+        this.paddle1.setScale(0.15, 0.25);
+        this.paddle1.setCollideWorldBounds(true);
         this.physics.add.collider(this.ball, this.paddle1);
         
         this.paddle2.setImmovable(true);
-        this.paddle2.setScale(0.5);
+        this.paddle2.setOrigin(0.5);
+        this.paddle2.setScale(0.15, 0.25);
         this.paddle2.setCollideWorldBounds(true)
         this.physics.add.collider(this.ball, this.paddle2);
 
@@ -141,8 +148,71 @@ export class scene extends Phaser.Scene{
                 fontSize: '20px',
             }
         );
-        this.score.setTint(0x000000)
+        //this.score.setTint(0x000000)
         this.score.setOrigin(0.5);
+
+        //if (Phaser.Math.RND.between(0, 100) === 50){
+            this.wall1 = this.physics.add.sprite(
+                Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), 
+                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
+                "wall"
+            )
+            this.wall2 = this.physics.add.sprite(
+                Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), 
+                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
+                "wall"
+            )
+            this.wall3 = this.physics.add.sprite(
+                Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), 
+                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
+                "wall"
+            )
+            this.wall4 = this.physics.add.sprite(
+                Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), 
+                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
+                "wall"
+            )
+            this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall4.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall1.setImmovable(true);
+            this.wall2.setImmovable(true);
+            this.wall3.setImmovable(true);
+            this.wall4.setImmovable(true);
+            this.wall1.setOrigin(0.5);
+            this.wall2.setOrigin(0.5);
+            this.wall3.setOrigin(0.5);
+            this.wall4.setOrigin(0.5);
+            this.physics.add.collider(this.ball, this.wall1);
+            this.physics.add.collider(this.ball, this.wall2);
+            this.physics.add.collider(this.ball, this.wall3);
+            this.physics.add.collider(this.ball, this.wall4);
+        //}
+
+    }
+
+    new_point() {
+        this.ball.setX(this.physics.world.bounds.width / 2);
+        this.ball.setY(this.physics.world.bounds.height / 2);
+        this.paddle1.setY(this.physics.world.bounds.height / 2);
+        this.paddle2.setY(this.physics.world.bounds.height / 2);
+        this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
+        let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+        if (Math.floor(Math.random() * 2) === 0)
+            y *= -1;
+        this.ball.setVelocityY(y);
+        this.paddlespeed = 400;
+        this.modifier1 = 1;
+        this.modifier2 = 1;
+        this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+        this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+        this.wall3.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+        this.wall4.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+        this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+        this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+        this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+        this.wall4.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
     }
 
     update() {
@@ -159,20 +229,8 @@ export class scene extends Phaser.Scene{
                     this.paddle2.disableBody();
                     this.scene.pause();
                     return;
-                } else{
-                    this.ball.setX(this.physics.world.bounds.width / 2);
-                    this.ball.setY(this.physics.world.bounds.height / 2);
-                    this.paddle1.setY(this.physics.world.bounds.height / 2);
-                    this.paddle2.setY(this.physics.world.bounds.height / 2);
-                    this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
-                    let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
-                    if (Math.floor(Math.random() * 2) === 0)
-                        y *= -1;
-                    this.ball.setVelocityY(y);
-                    this.paddlespeed = 400;
-                    this.modifier1 = 1;
-                    this.modifier2 = 1;
-                }
+                } else
+                    this.new_point();
             }
 
         if (this.ball.body && this.paddle1.body)
@@ -186,20 +244,8 @@ export class scene extends Phaser.Scene{
                     this.paddle2.disableBody();
                     this.scene.pause();
                     return;
-                }else{
-                    this.ball.setX(this.physics.world.bounds.width / 2);
-                    this.ball.setY(this.physics.world.bounds.height / 2);
-                    this.paddle1.setY(this.physics.world.bounds.height / 2);
-                    this.paddle2.setY(this.physics.world.bounds.height / 2);
-                    this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2);
-                    let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
-                    if (Math.floor(Math.random() * 2) === 0)
-                        y *= -1;
-                    this.ball.setVelocityY(y);
-                    this.paddlespeed = 400;
-                    this.modifier1 = 1;
-                    this.modifier2 = 1;
-                }
+                }else
+                    this.new_point();
             }
         
 
@@ -221,6 +267,7 @@ export class scene extends Phaser.Scene{
     }
 
     power_up() {
+
         this.power.disableBody(true, true);
         if (this.ball.body)
             switch(Phaser.Math.RND.between(1, 3)){
@@ -230,14 +277,14 @@ export class scene extends Phaser.Scene{
                     break;
                 case 2:
                     if (this.ball.body.velocity.x > 0){
-                        this.paddle1.setScale(1.5);
+                        this.paddle1.setScale(0.5, 0.90);
                         this.time.delayedCall(7500, () => {
-                            this.paddle1.setScale(0.5);
+                            this.paddle1.setScale(0.15, 0.25);
                         }, [], this);
                     } else{
-                        this.paddle2.setScale(1.5);
+                        this.paddle2.setScale(0.5, 0.90);
                         this.time.delayedCall(7500, () => {
-                            this.paddle2.setScale(0.5);
+                            this.paddle2.setScale(0.15, 0.25);
                         }, [], this);
                     }
                     break;
