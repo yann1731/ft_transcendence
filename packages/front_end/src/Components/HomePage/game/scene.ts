@@ -20,7 +20,6 @@ export class scene extends Phaser.Scene{
     wall1!: Phaser.Physics.Arcade.Sprite;
     wall2!: Phaser.Physics.Arcade.Sprite;
     wall3!: Phaser.Physics.Arcade.Sprite;
-    wall4!: Phaser.Physics.Arcade.Sprite;
 
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
 
@@ -43,13 +42,15 @@ export class scene extends Phaser.Scene{
     YvelocityMin: number = 100;
     YvelocityMax: number = 250;
 
+    wall: boolean = false
     win: number = 5;
 
 	preload() {
         this.load.image("ball", String(require('../../../images/anhebert.png')));
+        this.load.image("bigball", String(require('../../../images/jrossign.png')))
         this.load.image("paddle1", String(require('../../../images/lmoreno.png')));
         this.load.image("paddle2", String(require('../../../images/bperron.png')));
-        this.load.image("wall", "https://cdn.intra.42.fr/users/4154c50a46d7aeb2cea25b8a4834d4ef/ewurstei.jpg");
+        this.load.image("wall", "https://cdn.intra.42.fr/users/795abdc885871d07fa86ceee9218d673/tguiter2.jpg");
         this.load.image("power", "https://cdn.intra.42.fr/users/3c08dbaf4b23e2af86168c9147631ace/malord.jpg");
         this.load.image("background", "https://cdn.intra.42.fr/users/02bd0e2e6838f9e0f6d36bd7968465d6/yst-laur.jpg");
         this.cursors = this.input.keyboard?.createCursorKeys();
@@ -57,9 +58,73 @@ export class scene extends Phaser.Scene{
 
     create() {
 
-        //const background = this.add.sprite(0, 0, "background");
-        //background.setOrigin(0, 0);
-        //background.setScale(this.scale.width / background.width, this.scale.height / background.height);
+       /*  const background = this.add.sprite(0, 0, "background");
+        background.setOrigin(0, 0);
+        background.setScale(this.scale.width / background.width, this.scale.height / background.height);
+ */
+
+        const map: number = Phaser.Math.RND.between(0, 50);
+        if (map === 40){
+            this.wall = true;
+            this.wall1 = this.physics.add.sprite(
+                Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), 
+                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
+                "wall"
+            )
+            this.wall2 = this.physics.add.sprite(
+                Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), 
+                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
+                "wall"
+            )
+            this.wall3 = this.physics.add.sprite(
+                Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), 
+                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
+                "wall"
+            )
+            this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall1.setImmovable(true);
+            this.wall2.setImmovable(true);
+            this.wall3.setImmovable(true);
+            this.wall1.setOrigin(0.5);
+            this.wall2.setOrigin(0.5);
+            this.wall3.setOrigin(0.5);
+            this.physics.add.collider(this.ball, this.wall1);
+            this.physics.add.collider(this.ball, this.wall2);
+            this.physics.add.collider(this.ball, this.wall3);
+       }
+       else if (map === 10){
+            this.wall1 = this.physics.add.sprite(
+                this.physics.world.bounds.width * 0.5,
+                this.physics.world.bounds.height * 0.1,
+                "wall"
+            )
+            this.wall1.setScale(0.4, 0.05);
+            this.wall1.setOrigin(0.5);
+            this.wall1.setImmovable(true);
+            this.physics.add.collider(this.ball, this.wall1);
+
+            this.wall2 = this.physics.add.sprite(
+                this.physics.world.bounds.width * 0.3,
+                this.physics.world.bounds.height * 0.8,
+                "wall"
+            )
+            this.wall2.setScale(0.05, 0.4);
+            this.wall2.setOrigin(0.5);
+            this.wall2.setImmovable(true);
+            this.physics.add.collider(this.ball, this.wall2);
+
+            this.wall3 = this.physics.add.sprite(
+                this.physics.world.bounds.width * 0.7,
+                this.physics.world.bounds.height * 0.5,
+                "wall"
+            )
+            this.wall3.setScale(0.05, 0.6);
+            this.wall3.setOrigin(0.5);
+            this.wall3.setImmovable(true);
+            this.physics.add.collider(this.ball, this.wall3);
+       }
 
 		this.ball = this.physics.add.sprite(
 			this.physics.world.bounds.width / 2,
@@ -114,6 +179,8 @@ export class scene extends Phaser.Scene{
         this.paddle2.setScale(0.15, 0.25);
         this.paddle2.setCollideWorldBounds(true)
         this.physics.add.collider(this.ball, this.paddle2);
+        
+       
 
         this.player1VictoryText = this.add.text(
             this.physics.world.bounds.width / 2,
@@ -151,45 +218,6 @@ export class scene extends Phaser.Scene{
         //this.score.setTint(0x000000)
         this.score.setOrigin(0.5);
 
-        //if (Phaser.Math.RND.between(0, 100) === 50){
-            this.wall1 = this.physics.add.sprite(
-                Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), 
-                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
-                "wall"
-            )
-            this.wall2 = this.physics.add.sprite(
-                Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), 
-                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
-                "wall"
-            )
-            this.wall3 = this.physics.add.sprite(
-                Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), 
-                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
-                "wall"
-            )
-            this.wall4 = this.physics.add.sprite(
-                Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), 
-                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
-                "wall"
-            )
-            this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
-            this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
-            this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
-            this.wall4.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
-            this.wall1.setImmovable(true);
-            this.wall2.setImmovable(true);
-            this.wall3.setImmovable(true);
-            this.wall4.setImmovable(true);
-            this.wall1.setOrigin(0.5);
-            this.wall2.setOrigin(0.5);
-            this.wall3.setOrigin(0.5);
-            this.wall4.setOrigin(0.5);
-            this.physics.add.collider(this.ball, this.wall1);
-            this.physics.add.collider(this.ball, this.wall2);
-            this.physics.add.collider(this.ball, this.wall3);
-            this.physics.add.collider(this.ball, this.wall4);
-        //}
-
     }
 
     new_point() {
@@ -205,14 +233,14 @@ export class scene extends Phaser.Scene{
         this.paddlespeed = 400;
         this.modifier1 = 1;
         this.modifier2 = 1;
-        this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
-        this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
-        this.wall3.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
-        this.wall4.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
-        this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
-        this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
-        this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
-        this.wall4.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+        if (this.wall === true){
+            this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+            this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+            this.wall3.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+            this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+        }
     }
 
     update() {
@@ -270,7 +298,7 @@ export class scene extends Phaser.Scene{
 
         this.power.disableBody(true, true);
         if (this.ball.body)
-            switch(Phaser.Math.RND.between(1, 3)){
+            switch(Phaser.Math.RND.between(1, 4)){
                 case 1:
                     if (this.ball.body)
                         this.ball.setVelocityX(this.ball.body.velocity.x * 2);
@@ -300,6 +328,14 @@ export class scene extends Phaser.Scene{
                             this.modifier1 = 1;
                         }, [], this);
                     }
+                    break;
+                case 4:
+                    this.ball.setTexture("bigball")
+                    this.ball.setScale(1, 1);
+                    this.time.delayedCall(5000, () => {
+                                this.ball.setScale(0.2);
+                        this.ball.setTexture("ball")
+                    }, [], this);
                     break;
             }
 
