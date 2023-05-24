@@ -29,7 +29,7 @@ export default function OptionBarContacts() {
                 <DehazeIcon></DehazeIcon>
               </IconButton>
             </Tooltip>
-            Contacts
+            Friends
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"

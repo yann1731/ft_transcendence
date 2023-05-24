@@ -1,16 +1,19 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
-import OptionBarContact from './OptionBarContacts';
+import OptionBarContact from './OptionBarFriends';
 import OptionBarChans from './OptionBarChans';
 import ContactBox from './ContactBox';
 import ChannelBox from './ChannelBox';
 
 export default function ContactContainer() {
-  const sideContainerStyle = {
+  const sideContainerStyle: React.CSSProperties = {
     height: '80vh',
-    width: '380px',
-  }
+    width: 'min(35vw, 400px)',
+    top: '9vh',
+    left: '1vw',
+    position: 'fixed',
+  };
   
   return (
     <React.Fragment>

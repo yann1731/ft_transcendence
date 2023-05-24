@@ -10,16 +10,12 @@ import { ListItemButton } from '@mui/material';
 import { theme } from '../../Theme';
 
 const useStyles = makeStyles({
-	table: {
-		minWidth: 650,
-	  },
 	  borders: {
-		  position: 'relative',
 		  backgroundColor: theme.palette.secondary.main,
 		  overflowY: 'auto',
 		  overflowX: 'auto',
 		  borderRadius: 10,
-		  height: '37vh',
+		  height: '37.7vh',
 	  }
 });
   

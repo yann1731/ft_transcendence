@@ -1,7 +1,7 @@
 import React from 'react';
 import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
-import ContactContainer from './Contacts';
+import ContactContainer from './FriendsAndChannels';
 import ConversationContainer from './Conversation';
 
 
