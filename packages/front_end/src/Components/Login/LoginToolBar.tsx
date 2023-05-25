@@ -8,7 +8,7 @@ import { theme } from '../../Theme'
 
 function LoginToolBar() {
   return (
-    <AppBar position="fixed" sx={{ bgcolor: theme.palette.secondary.main }}>
+    <AppBar position="fixed" style={{ backgroundImage: "none" }} sx={{ bgcolor: theme.palette.secondary.main }}>
       <Container>
         <Toolbar 
             sx={{ 
