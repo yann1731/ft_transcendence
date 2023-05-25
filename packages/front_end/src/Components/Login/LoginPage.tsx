@@ -6,15 +6,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useEffect } from "react";
-import { useTheme } from '@mui/system';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../../Theme';
 
-
 export default function SignIn() {
-
-  const theme = useTheme();
-  const color = theme.palette.secondary.main;
   
   useEffect(() => {
     const handleResize = () => {
@@ -57,7 +52,12 @@ export default function SignIn() {
             required
             fullWidth
             id="email"
-            label="Login"
+            label={
+              <Typography
+                style={{ color: 'grey' }} >
+                  Login
+                </Typography>
+            }
             name="email"
             autoComplete="email"
             autoFocus
@@ -69,7 +69,7 @@ export default function SignIn() {
             name="password"
             label={
               <Typography
-                style={{ color: theme.palette.secondary.main }} >
+                style={{ color: 'grey' }} >
                   Password
                 </Typography>
             }
