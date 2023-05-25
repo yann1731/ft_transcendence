@@ -1,8 +1,7 @@
 import React from 'react';
 import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
-import ContactContainer from './FriendsAndChannels';
-import ConversationContainer from './Conversation';
+import ChatContainer from './ChatStyles';
 
 
 function Chat() {
@@ -11,10 +10,7 @@ function Chat() {
 	  	<BackgroundContainer>
 		  <div style={{ flex: 1 }}>
 			<ResponsiveAppBar />
-			<ContactContainer />
-		  </div>
-		  <div style={{ flex: 1 }}>
-			<ConversationContainer />
+			<ChatContainer />
 		  </div>
 	  	</BackgroundContainer>
 	  </div>
