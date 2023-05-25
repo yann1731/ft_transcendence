@@ -9,7 +9,7 @@ import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 
 export default function OptionBarContacts() {
-    const settings = ['add', 'invite to play', 'invite to channel', 'block'];
+    const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
   
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   
@@ -28,7 +28,7 @@ export default function OptionBarContacts() {
                 <DehazeIcon></DehazeIcon>
               </IconButton>
             </Tooltip>
-            Contacts
+            Friends
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"

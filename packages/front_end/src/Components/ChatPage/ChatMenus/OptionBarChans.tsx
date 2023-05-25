@@ -9,7 +9,9 @@ import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 
 export default function OptionBarChans() {
-    const settings = ['create', 'delete', 'join'];
+    /*Delete seulement si User Owner d'au minimum un Channel*/  
+    const Chansettings = ['Create'];
+    const OwnerChansettings = ['Create', 'Delete'];
   
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   
@@ -46,7 +48,7 @@ export default function OptionBarChans() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
+              {Chansettings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
