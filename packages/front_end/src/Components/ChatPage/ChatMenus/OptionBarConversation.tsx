@@ -7,10 +7,12 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import { theme } from '../../Theme';
+import { theme } from '../../../Theme';
 
-export default function OptionBarChans() {
-    const settings = ['create', 'delete', 'join'];
+export default function OptionBarConversation() {
+    /* Settings vont être pris directement dans les objets Users, qui seront divisé en 3 categories, Owner, Admin et Standard*/
+    const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'View Members'];
+    const PublicUserSettings = ['Add', 'Quit', 'View Members'];
   
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   
@@ -30,9 +32,9 @@ export default function OptionBarChans() {
                 <DehazeIcon></DehazeIcon>
               </IconButton>
             </Tooltip>
-            Channels
+            Channel
             <Menu
-              sx={{ mt: '40px' }}
+              sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -47,7 +49,7 @@ export default function OptionBarChans() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
+              {AdminSettings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>

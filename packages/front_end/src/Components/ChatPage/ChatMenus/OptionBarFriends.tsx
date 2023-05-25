@@ -7,10 +7,10 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import { theme } from '../../Theme';
+import { theme } from '../../../Theme';
 
 export default function OptionBarContacts() {
-    const settings = ['add', 'invite to play', 'invite to channel', 'block'];
+    const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
   
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   

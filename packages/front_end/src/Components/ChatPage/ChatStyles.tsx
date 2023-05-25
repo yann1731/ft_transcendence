@@ -1,10 +1,10 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import OptionBarContact from './OptionBarFriends';
-import OptionBarChans from './OptionBarChans';
+import OptionBarContact from './ChatMenus/OptionBarFriends';
+import OptionBarChans from './ChatMenus/OptionBarChans';
 import ContactBox from './FriendBox';
 import ChannelBox from './ChannelBox';
-import OptionBarConversation from './OptionBarConversation';
+import OptionBarConversation from './ChatMenus/OptionBarConversation';
 import Chat from './ChatBox';
 
 export default function MainContainer() {
