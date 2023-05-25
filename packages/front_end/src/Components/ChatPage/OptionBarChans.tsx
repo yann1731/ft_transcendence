@@ -7,6 +7,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
+import { theme } from '../../Theme';
 
 export default function OptionBarChans() {
     const settings = ['create', 'delete', 'join'];
@@ -22,8 +23,8 @@ export default function OptionBarChans() {
       setAnchorElUser(null);
     };
   return (
-      <AppBar position="static" sx={{width: '300px'}}>
-      <Box sx={{ flexGrow: 0}}>
+      <AppBar position="relative" sx={{ boxShadow: '0' }}>
+      <Box sx={{ bgcolor: theme.palette.primary.main }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>
                 <DehazeIcon></DehazeIcon>
@@ -31,7 +32,7 @@ export default function OptionBarChans() {
             </Tooltip>
             Channels
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: '40px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{

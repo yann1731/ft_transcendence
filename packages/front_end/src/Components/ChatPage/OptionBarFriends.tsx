@@ -7,6 +7,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
+import { theme } from '../../Theme';
 
 export default function OptionBarContacts() {
     const settings = ['add', 'invite to play', 'invite to channel', 'block'];
@@ -21,14 +22,14 @@ export default function OptionBarContacts() {
       setAnchorElUser(null);
     };
   return (
-      <AppBar position="static" sx={{width: '300px'}}>
-      <Box sx={{ flexGrow: 0}}>
+      <AppBar position="relative" sx={{ boxShadow: 'none' }}>
+      <Box sx={{ flexGrow: 0, bgcolor: theme.palette.primary.main }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>
                 <DehazeIcon></DehazeIcon>
               </IconButton>
             </Tooltip>
-            Contacts
+            Friends
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"

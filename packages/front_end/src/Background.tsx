@@ -15,7 +15,7 @@ export default function BackgroundContainer({ children }: { children: React.Reac
                     left: 0,
                     minHeight: '100vh',
                     minWidth: '100vw',
-                    backgroundColor: theme.palette.primary.main, 
+                    backgroundColor: theme.palette.background.default, 
                     display:'flex',
                     justifyContent: 'center',
                     alignItems: 'center',

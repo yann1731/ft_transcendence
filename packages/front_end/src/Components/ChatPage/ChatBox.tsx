@@ -8,6 +8,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Fab from '@mui/material/Fab';
 import SendIcon from '@mui/icons-material/Send';
+import { theme } from '../../Theme';
 
 
 const useStyles = makeStyles({
@@ -15,12 +16,14 @@ const useStyles = makeStyles({
     minWidth: 650,
   },
   chatSection: {
-    width: '100%',
+    backgroundImage: "none",
+    backgroundColor: theme.palette.secondary.main,
+    borderRadius: 10,
   },
   messageArea: {
     height: '70vh',
     overflowY: 'auto',
-  }
+  },
 });
 
 const Chat = () => {
