@@ -1,8 +1,8 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
-import OptionBarContact from './OptionBarContacts';
-import OptionBarChans from './OptionBarChans';
+import OptionBarContact from './ChatMenus/OptionBarContacts';
+import OptionBarChans from './ChatMenus/OptionBarChans';
 import ContactBox from './ContactBox';
 import ChannelBox from './ChannelBox';
 
