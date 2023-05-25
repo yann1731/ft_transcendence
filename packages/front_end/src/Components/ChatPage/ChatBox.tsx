@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import { Grid, Paper, List, ListItem, ListItemText, Divider, TextField, Fab, Avatar, Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import { theme } from '../../Theme';
 import ContactMenu from './ChatMenus/ContactMenu';
 
 const useStyles = makeStyles({
@@ -9,9 +11,9 @@ const useStyles = makeStyles({
     minWidth: 650,
   },
   chatSection: {
-    width: '100%',
-    overflowX: 'scroll',
-    overflowY: 'auto',
+    backgroundImage: "none",
+    backgroundColor: theme.palette.secondary.main,
+    borderRadius: 10,
   },
   messageArea: {
     height: '70vh',

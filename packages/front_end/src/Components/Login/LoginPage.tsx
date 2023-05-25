@@ -6,10 +6,11 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useEffect } from "react";
-
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '../../Theme';
 
 export default function SignIn() {
-
+  
   useEffect(() => {
     const handleResize = () => {
       const root = document.documentElement;
@@ -39,9 +40,10 @@ export default function SignIn() {
   };
 
   return (
+    
     <Container component="main" maxWidth="xs" id="container" sx={{bgcolor: 'white', borderRadius: 2.5, boxShadow: 13}}>
         <br></br>
-        <Typography component="h1" variant="h5" sx={{ mt: 1, textAlign: 'center' }}>
+        <Typography component="h1" variant="h5" sx={{ mt: 1, textAlign: 'center', color: theme.palette.secondary.main }}>
           Sign in
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
@@ -50,7 +52,12 @@ export default function SignIn() {
             required
             fullWidth
             id="email"
-            label="Login"
+            label={
+              <Typography
+                style={{ color: 'grey' }} >
+                  Login
+                </Typography>
+            }
             name="email"
             autoComplete="email"
             autoFocus
@@ -60,15 +67,27 @@ export default function SignIn() {
             required
             fullWidth
             name="password"
-            label="Password"
+            label={
+              <Typography
+                style={{ color: 'grey' }} >
+                  Password
+                </Typography>
+            }
             type="password"
             id="password"
             autoComplete="current-password"
           />
+          <ThemeProvider theme={ theme }>  
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
+            control={<Checkbox value="remember" style={{ color: theme.palette.secondary.main }} />}
+            label={
+              <Typography
+                style={{ color: theme.palette.secondary.main }} >
+                  Remember me
+              </Typography>
+            }
+            />
+          </ThemeProvider>
           <Button
             type="submit"
             fullWidth
