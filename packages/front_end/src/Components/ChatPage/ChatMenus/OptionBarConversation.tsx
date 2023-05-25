@@ -7,7 +7,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import { theme } from '../../Theme';
+import { theme } from '../../../Theme';
 
 export default function OptionBarConversation() {
     /* Settings vont être pris directement dans les objets Users, qui seront divisé en 3 categories, Owner, Admin et Standard*/

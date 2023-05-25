@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import React, { useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import { Grid, Paper, List, ListItem, ListItemText, Divider, TextField, Fab, Avatar, Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
@@ -18,7 +17,7 @@ const useStyles = makeStyles({
   messageArea: {
     height: '70vh',
     overflowY: 'auto',
-    overflowX: 'scroll',
+    //overflowX: 'scroll', // TODO fix horizontal scrolling on long message
   },
 });
 
