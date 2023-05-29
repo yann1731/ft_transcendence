@@ -12,18 +12,6 @@ import MenuItem from '@mui/material/MenuItem';
 import { theme } from '../../Theme';
 import { useState } from 'react';
 
-const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
-
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
 	...theme.typography.body2,
@@ -34,8 +22,6 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const profilePicture = 'https://pbs.twimg.com/profile_images/1633238286045962243/JfgDezi9_400x400.jpg';
 const settings = ['See profile picture', 'Upload profile picture'];
-
-
 
 function ProfileContainer() {
 	const [active, setActive] = useState(false);

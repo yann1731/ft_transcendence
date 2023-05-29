@@ -12,7 +12,6 @@ import { theme } from '../../../Theme';
 export default function OptionBarConversation() {
     /* Settings vont être pris directement dans les objets Users, qui seront divisé en 3 categories, Owner, Admin et Standard*/
     const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'View Members'];
-    const PublicUserSettings = ['Add', 'Quit', 'View Members'];
   
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   

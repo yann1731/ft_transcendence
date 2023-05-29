@@ -16,6 +16,11 @@ code {
     monospace;
 }
 
+@font-face {
+  font-family: 'pong';
+  src: url("../public/pong.ttf");
+}
+
 .container {
   border: 2px solid #dedede;
   background-color: #f1f1f1;

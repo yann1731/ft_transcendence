@@ -8,12 +8,19 @@ class PowerUp extends Phaser.Physics.Arcade.Sprite {
       scene.add.existing(this);
       scene.physics.add.existing(this);
     }
-  }
+}
 
+interface gameData {
+    wall: boolean;
+    random: boolean;
+    power: boolean;
+    face: boolean;
+}
 
 export class game extends Phaser.Scene{
 
 	ball!: Phaser.Physics.Arcade.Sprite;
+    paddle!: Phaser.Physics.Arcade.Sprite;
     paddle1!: Phaser.Physics.Arcade.Sprite;
     paddle2!: Phaser.Physics.Arcade.Sprite;
 
@@ -32,8 +39,6 @@ export class game extends Phaser.Scene{
     player2VictoryText!: Phaser.GameObjects.Text;
     score!: Phaser.GameObjects.Text;
     
-    power!: PowerUp;
-    
     paddlespeed: number = 450;
     modifier1: number = 1;
     modifier2: number = 1;
@@ -43,17 +48,36 @@ export class game extends Phaser.Scene{
     XVelocityMax2: number = -400;
     YvelocityMin: number = 125;
     YvelocityMax: number = 225;
-
+    oldVelocityX!: number;
+    newOldVelocityX: number = 0;
+    power!: PowerUp;
+    
+    face: boolean = false;
     wall: boolean = false;
-    yarn: boolean = false;
+    random: boolean = false;
+    powerup: boolean = false;
+
+    bigPaddle!: Phaser.GameObjects.Text;
+    bigBall!: Phaser.GameObjects.Text;
+    smash!: Phaser.GameObjects.Text;
+    inverse!: Phaser.GameObjects.Text;
+
 
     constructor() {
         super('pong');
     }
 
+    init (data: gameData) {
+        this.wall = data.wall;
+        this.random = data.random;
+        this.powerup = data.power;
+        this.face = data.face; 
+    }
+
 	preload() {
         this.load.image("ball", String(require('../../../images/anhebert.png')));
-        this.load.image("bigball", String(require('../../../images/jrossign.png')))
+        this.load.image("bigball", String(require('../../../images/jrossign.png')));
+        //this.load.image("paddle", String(require('../../../images/paddle.png')));
         this.load.image("paddle1", String(require('../../../images/lmoreno.png')));
         this.load.image("paddle2", String(require('../../../images/bperron.png')));
         this.load.image("wall", "https://cdn.intra.42.fr/users/795abdc885871d07fa86ceee9218d673/tguiter2.jpg");
@@ -63,9 +87,13 @@ export class game extends Phaser.Scene{
     }
 
     map_init() {
-        const map: number = Phaser.Math.RND.between(0, 60);
-        if (map >= 20 && map < 40){
-            this.wall = true;
+        if (this.face === true){
+            console.log("allo")
+            const background = this.add.sprite(0, 0, "background");
+            background.setOrigin(0, 0);
+            background.setScale(this.scale.width / background.width, this.scale.height / background.height);
+       }
+        if (this.random === true){
             this.wall1 = this.physics.add.sprite(
                 Phaser.Math.RND.between(this.physics.world.bounds.width * 0.2, this.physics.world.bounds.width - this.physics.world.bounds.width * 0.2), 
                 Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
@@ -91,7 +119,7 @@ export class game extends Phaser.Scene{
             this.wall2.setOrigin(0.5);
             this.wall3.setOrigin(0.5);
        }
-       else if (map >= 40){
+       else if (this.wall === true){
             this.wall1 = this.physics.add.sprite(
                 this.physics.world.bounds.width * 0.5,
                 this.physics.world.bounds.height * 0.15,
@@ -116,12 +144,6 @@ export class game extends Phaser.Scene{
             this.wall1.setOrigin(0.5);
             this.wall2.setOrigin(0.5);
             this.wall3.setOrigin(0.5);
-       }
-       else{
-            this.yarn = true;
-            const background = this.add.sprite(0, 0, "background");
-            background.setOrigin(0, 0);
-            background.setScale(this.scale.width / background.width, this.scale.height / background.height);
        }
     }
 
@@ -152,7 +174,7 @@ export class game extends Phaser.Scene{
         this.ball.setBounce(1, 1);
         this.ball.setDrag(1.05);
 
-        if (this.wall1){
+        if (this.wall === true || this.random === true){
             this.physics.add.collider(this.ball, this.wall1);
             this.physics.add.collider(this.ball, this.wall2);
             this.physics.add.collider(this.ball, this.wall3);
@@ -161,16 +183,31 @@ export class game extends Phaser.Scene{
     }
 
     paddle_init() {
-        this.paddle1 = this.physics.add.sprite(
-            (this.ball.width * 0.2) / 2 + 10,
-            this.physics.world.bounds.height / 2,
-            "paddle1"
-        )
-        this.paddle2 = this.physics.add.sprite(
-            this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
-            this.physics.world.bounds.height / 2,
-            "paddle2"
-        )
+        if (this.face === true){
+            this.paddle1 = this.physics.add.sprite(
+                (this.ball.width * 0.2) / 2 + 10,
+                this.physics.world.bounds.height / 2,
+                "paddle1"
+            )
+            this.paddle2 = this.physics.add.sprite(
+                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
+                this.physics.world.bounds.height / 2,
+                "paddle2"
+            )
+        }
+        else{
+            this.paddle1 = this.physics.add.sprite(
+                (this.ball.width * 0.2) / 2 + 10,
+                this.physics.world.bounds.height / 2,
+                "paddle1"
+            )
+            this.paddle2 = this.physics.add.sprite(
+                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
+                this.physics.world.bounds.height / 2,
+                "paddle1"
+            )
+        }
+            
 
         this.paddle1.setImmovable(true);
         this.paddle1.setOrigin(0.5);
@@ -191,7 +228,7 @@ export class game extends Phaser.Scene{
             this.physics.world.bounds.height / 2,
             'player 1 wins!',
             {
-                fontFamily: 'Monaco, Courier, monospace',
+                fontFamily: 'pong',
                 fontSize: '50px',
             }
         );
@@ -203,7 +240,7 @@ export class game extends Phaser.Scene{
             this.physics.world.bounds.height / 2,
             'player 2 wins!',
             {
-                fontFamily: 'Monaco, Courier, monospace',
+                fontFamily: 'pong',
                 fontSize: '50px',
             }
         );
@@ -215,27 +252,77 @@ export class game extends Phaser.Scene{
             this.physics.world.bounds.height / 10,
             `${this.points2}          ${this.points1}`,
             {
-                fontFamily: 'Monaco, Courier, monospace',
+                fontFamily: 'pong',
                 fontSize: '20px',
             }
         );
 
-        if (this.yarn === true)
+        if (this.face === true)
             this.score.setTint(0x000000)
         this.score.setOrigin(0.5);
+
+        this.bigBall = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2,
+            'Big Ball Activated!',
+            {
+                fontFamily: 'pong',
+                fontSize: '25px',
+            }
+        );
+        this.bigBall.setOrigin(0.5);
+        this.bigBall.setVisible(false);
+
+        this.bigPaddle = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2,
+            'Big Paddle Activated!',
+            {
+                fontFamily: 'pong',
+                fontSize: '25px',
+            }
+        );
+        this.bigPaddle.setOrigin(0.5);
+        this.bigPaddle.setVisible(false);
+
+        this.smash = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2,
+            'Smash Activated!',
+            {
+                fontFamily: 'pong',
+                fontSize: '25px',
+            }
+        );
+        this.smash.setOrigin(0.5);
+        this.smash.setVisible(false);
+
+        this.inverse = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2,
+            'Inverted Control Activated!',
+            {
+                fontFamily: 'pong',
+                fontSize: '25px',
+            }
+        );
+        this.inverse.setOrigin(0.5);
+        this.inverse.setVisible(false);
     }
 
     create() {
         this.map_init();
+        this.text_init();
         this.ball_init();
         this.paddle_init();
-        this.text_init();
 
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        
         
-        this.power = new PowerUp(this, Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1));
-        this.physics.add.overlap(this.ball, this.power, this.power_up, undefined, this);
+        if (this.powerup){
+            this.power = new PowerUp(this, Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1));
+            this.physics.add.overlap(this.ball, this.power, this.power_up, undefined, this);
+        }
 
 
     }
@@ -256,7 +343,11 @@ export class game extends Phaser.Scene{
         this.paddlespeed = 400;
         this.modifier1 = 1;
         this.modifier2 = 1;
-        if (this.wall === true){
+        this.paddle1.setScale(0.15, 0.25);
+        this.paddle2.setScale(0.15, 0.25);
+        this.ball.setTexture("ball")
+        this.ball.setScale(0.2);
+        if (this.random === true){
             this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
             this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
             this.wall3.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
@@ -281,6 +372,10 @@ export class game extends Phaser.Scene{
     update() {
         if (this.ball.body)
             if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
+                this.smash.setVisible(false);
+                this.bigBall.setVisible(false);
+                this.bigPaddle.setVisible(false);
+                this.inverse.setVisible(false);
                 this.points2++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points2 === this.win)
@@ -291,6 +386,10 @@ export class game extends Phaser.Scene{
         
         if (this.ball.body && this.paddle1.body)
             if (this.ball.body?.x === 0) {
+                this.smash.setVisible(false);
+                this.bigBall.setVisible(false);
+                this.bigPaddle.setVisible(false);
+                this.inverse.setVisible(false);
                 this.points1++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points1 === this.win)
@@ -314,24 +413,41 @@ export class game extends Phaser.Scene{
         
         if (this.paddlespeed < 625)
             this.paddlespeed += 0.5;
-        if (this.ball.body)
-            if(this.ball.body.velocity.x === 750){
-                console.log("allo");
+        if (this.ball.body){
+            if (this.newOldVelocityX !== 0)
+                if (this.ball.body.velocity.x !== this.newOldVelocityX){
+                    this.ball.body.velocity.x = this.oldVelocityX;
+                    this.oldVelocityX = 0;
+                    this.newOldVelocityX = 0;
+                    this.ball.setDrag(1.05)
+                }
+            if(this.ball.body.velocity.x === 750)
                 this.ball.setDrag(1);
-            }
+        }
         this.ball.angle++;
     }
 
-    power_up() {
-
+    power_up() { 
         this.power.disableBody(true, true);
         if (this.ball.body)
             switch(Phaser.Math.RND.between(1, 4)){
                 case 1:
-                    if (this.ball.body)
+                    this.smash.setVisible(true);
+                    this.time.delayedCall(1000, () => {
+                        this.smash.setVisible(false)
+                    }, [], this);
+                    if (this.ball.body){
+                        this.oldVelocityX = this.ball.body.velocity.x;
+                        this.ball.setDrag(1);
                         this.ball.setVelocityX(this.ball.body.velocity.x * 2);
+                        this.newOldVelocityX = this.ball.body.velocity.x;
+                    }
                     break;
                 case 2:
+                    this.bigPaddle.setVisible(true);
+                    this.time.delayedCall(1000, () => {
+                        this.bigPaddle.setVisible(false)
+                    }, [], this);
                     if (this.ball.body.velocity.x > 0){
                         this.paddle1.setScale(0.5, 0.90);
                         this.time.delayedCall(7500, () => {
@@ -345,6 +461,10 @@ export class game extends Phaser.Scene{
                     }
                     break;
                 case 3:
+                    this.inverse.setVisible(true);
+                    this.time.delayedCall(1000, () => {
+                        this.inverse.setVisible(false)
+                    }, [], this);
                     if (this.ball.body.velocity.x > 0){
                         this.modifier2 = -1;
                         this.time.delayedCall(5000, () => {
@@ -358,11 +478,15 @@ export class game extends Phaser.Scene{
                     }
                     break;
                 case 4:
+                    this.bigBall.setVisible(true);
+                    this.time.delayedCall(1000, () => {
+                        this.bigBall.setVisible(false)
+                    }, [], this);
                     this.ball.setTexture("bigball")
                     this.ball.setScale(1, 1);
                     this.time.delayedCall(5000, () => {
-                                this.ball.setScale(0.2);
                         this.ball.setTexture("ball")
+                        this.ball.setScale(0.2);
                     }, [], this);
                     break;
             }
