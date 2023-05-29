@@ -16,16 +16,29 @@ const useStyles = makeStyles({
 		  overflowX: 'auto',
 		  borderRadius: 10,
 		  height: '37.7vh',
-	  }
+	  },
+	  focusedTextField: {
+		'& Mui.OutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+			borderColor: 'white',
+		},
+		'& .MuiInputLabel-root.Mui-focused': {
+			color:'white',
+		},
+		'& .MuiOutlinedInput-root.Mui-focused': {
+			'& fieldset': {
+			  borderWidth: 1,
+			  borderColor: 'white',
+			},
+		},
+	},
 });
   
   export default function ChannelBox() {
 	const classes = useStyles();
 	return(
 	<Grid item xs={3} className={classes.borders}>
-	<Divider />
 	<Grid item xs={12} style={{padding: '10px'}}>
-		<TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth />
+		<TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth className={classes.focusedTextField} />
 	</Grid>
 	<Divider />
 	<List>

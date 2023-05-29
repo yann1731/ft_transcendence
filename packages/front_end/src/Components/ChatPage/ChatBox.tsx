@@ -6,20 +6,29 @@ import { theme } from '../../Theme';
 import ContactMenu from './ChatMenus/ContactMenu';
 
 const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
   chatSection: {
     backgroundImage: "none",
     backgroundColor: theme.palette.secondary.main,
     borderRadius: 10,
-  },
-  messageArea: {
-    height: '70vh',
+    height: '77.9vh',
     overflowY: 'auto',
-    //overflowX: 'scroll', // TODO fix horizontal scrolling on long message
+  },
+  focusedTextField: {
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'white',
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: 'white',
+    },
+    '& .MuiOutlinedInput-root.Mui=focused': {
+      '& fieldset': {
+        borderWidth: 1,
+        borderColor: 'white',
+      },
+    },
   },
 });
+
 
 interface Message {
   text: string;
@@ -64,43 +73,39 @@ const Chat = () => {
     }
   };
 
-  
   return (
-    <div style={{overflowWrap: 'break-word'}}>
-      <Grid container>
-        <Grid item xs={12}></Grid>
-      </Grid>
-      <Grid container component={Paper} className={classes.chatSection}>
-        <Grid item xs={12}>
-          <List className={classes.messageArea}>
-            {messages.map((message, index) => (
-              <ListItem key={index}>
-                <Grid container>
-                  <Grid item xs={12} sx={{display: 'flex'}}>
-                    <ContactMenu></ContactMenu>
-                    <ListItemText sx={{}} primary={message.text}></ListItemText>
-                  </Grid>
-                  <Grid>
-                    <ListItemText sx={{ align: 'right'}} secondary={`${message.nickname}, ${message.timestamp}`}></ListItemText>
-                  </Grid>
+    <Grid container component={Paper} className={classes.chatSection}>
+      <Grid item xs={12} style={{ flexGrow: 1 }}>
+        <List>
+          {messages.map((message, index) => (
+            <ListItem key={index}>
+              <Grid container>
+                <Grid item xs={12} sx={{display: 'flex'}}>
+                  <ContactMenu></ContactMenu>
+                  <ListItemText sx={{}} primary={message.text}></ListItemText>
                 </Grid>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
+                <Grid>
+                  <ListItemText sx={{ align: 'right'}} secondary={`${message.nickname}, ${message.timestamp}`}></ListItemText>
+                </Grid>
+              </Grid>
+            </ListItem>
+          ))}
+        </List>
+        </Grid>
+        <Grid item xs={12} style={{ marginTop: 'auto' }}>
+        <Divider />
           <Grid container style={{ padding: '20px' }}>
-            <Grid item sx={{ width: '75%' }}>
-              <TextField id="message-input" label="Type Something" fullWidth onKeyDown={handleKeyDown} />
+            <Grid item xs={10.5} sx={{ width: '75%' }}>
+              <TextField id="message-input" label="Type Something" fullWidth onKeyDown={handleKeyDown} className={classes.focusedTextField}/>
             </Grid>
-            <Grid sx={{ ml: 'auto', align: 'right' }}>
+            <Grid item xs={1.5} sx={{ display: 'flex', justifyContent: 'flex-end'}}>
               <Fab color="primary" aria-label="add" onClick={handleClick}>
                 <SendIcon />
               </Fab>
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
-    </div>
+    </Grid>
   );
 };
-export default Chat;
+ export default Chat;
