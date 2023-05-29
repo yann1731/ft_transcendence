@@ -12,7 +12,6 @@ import { theme } from '../../../Theme';
 export default function OptionBarChans() {
     /*Delete seulement si User Owner d'au minimum un Channel*/  
     const Chansettings = ['Create'];
-    const OwnerChansettings = ['Create', 'Delete'];
   
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   
