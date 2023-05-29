@@ -73,6 +73,7 @@ const Chat = () => {
     }
   };
 
+  //FIXME TextField, Divider and Fab Component disappear with vertical scrolling
   return (
     <Grid container component={Paper} className={classes.chatSection}>
       <Grid item xs={12} style={{ flexGrow: 1 }}>
