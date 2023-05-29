@@ -16,6 +16,19 @@ services:
     tty: true
     ports:
       - 4242:4242
+      - 5000:5000
+  database:
+    container_name: database
+    image: postgres:15-alpine3.17
+    ports:
+      - 5432:5432
+    tty: true
+    environment:
+      POSTGRES_USER: puser
+      POSTGRES_PASSWORD: 123
+      POST_DB: nest
+    networks:
+      - tr-net
 
   # frontend:
   #   container_name: frontend
@@ -29,6 +42,7 @@ services:
   #     - "./packages/front_end/src:/app/src"
   #   ports:
   #     - 3000:3000
+
 
 networks:
     tr-net:
