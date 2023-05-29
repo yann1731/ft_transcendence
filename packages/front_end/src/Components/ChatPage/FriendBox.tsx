@@ -8,23 +8,26 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import { ListItemButton } from '@mui/material';
+import { theme } from '../../Theme';
 
 const useStyles = makeStyles({
 	table: {
 	  minWidth: 650,
 	},
 	border: {
-		backgroundColor: 'white',
+		position: 'relative',
+		backgroundColor: theme.palette.secondary.main,
 		overflowY: 'auto',
 		overflowX: 'auto',
+		height: '37vh',
+		borderRadius: 10,
 	},
   });
-  
 
   export default function ContactBox() {
 	const classes = useStyles();
 	return(
-	<Grid item xs={3} className={classes.border} sx={{height: '450px', width: '300px'}}>
+	<Grid item xs={3} className={classes.border} sx={{ height: '33.5vh' }}>
 	<List>
 		<ListItemButton key="RemySharp">
 			<ListItemIcon>

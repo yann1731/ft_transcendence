@@ -7,9 +7,10 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
+import { theme } from '../../../Theme';
 
-export default function OptionBarConversation() {
-    const settings = ['add', 'quit', 'kick', 'ban'];
+export default function OptionBarContacts() {
+    const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
   
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   
@@ -17,19 +18,18 @@ export default function OptionBarConversation() {
       setAnchorElUser(event.currentTarget);
     };
   
-  
     const handleCloseUserMenu = () => {
       setAnchorElUser(null);
     };
   return (
-      <AppBar position="static">
-      <Box sx={{ flexGrow: 0}}>
+      <AppBar position="relative" sx={{ boxShadow: 'none' }}>
+      <Box sx={{ flexGrow: 0, bgcolor: theme.palette.primary.main }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>
                 <DehazeIcon></DehazeIcon>
               </IconButton>
             </Tooltip>
-            Channel
+            Friends
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
@@ -45,7 +45,7 @@ export default function OptionBarConversation() {
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
-            >
+              >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">{setting}</Typography>

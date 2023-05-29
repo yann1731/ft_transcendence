@@ -4,7 +4,10 @@ import "@fontsource/roboto"
 
 const themeOptions: ThemeOptions = {
   palette: {
-    mode: 'light',
+    mode: 'dark',
+    background: {
+      default: '#152647',
+    },
     primary: {
       main: '#152647',
     },

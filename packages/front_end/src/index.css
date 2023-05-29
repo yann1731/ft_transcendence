@@ -64,3 +64,8 @@ code {
   float: left;
   color: #999;
 }
+
+.container-left,
+.container-right {
+	flex: 1;
+}

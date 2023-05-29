@@ -7,9 +7,12 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
+import { theme } from '../../../Theme';
 
-export default function OptionBarContacts() {
-    const settings = ['add', 'invite to play', 'invite to channel', 'block'];
+export default function OptionBarChans() {
+    /*Delete seulement si User Owner d'au minimum un Channel*/  
+    const Chansettings = ['Create'];
+    const OwnerChansettings = ['Create', 'Delete'];
   
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   
@@ -17,20 +20,21 @@ export default function OptionBarContacts() {
       setAnchorElUser(event.currentTarget);
     };
   
+  
     const handleCloseUserMenu = () => {
       setAnchorElUser(null);
     };
   return (
-      <AppBar position="static" sx={{width: '300px'}}>
-      <Box sx={{ flexGrow: 0}}>
+      <AppBar position="relative" sx={{ boxShadow: '0' }}>
+      <Box sx={{ bgcolor: theme.palette.primary.main }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>
                 <DehazeIcon></DehazeIcon>
               </IconButton>
             </Tooltip>
-            Contacts
+            Channels
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: '40px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -44,8 +48,8 @@ export default function OptionBarContacts() {
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
-              >
-              {settings.map((setting) => (
+            >
+              {Chansettings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>

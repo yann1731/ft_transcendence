@@ -1,7 +1,7 @@
 import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
 import ScoresContainer from './Scores';
-import GameContainer from './game/Game';
+import GameContainer from './game/Config';
 import ChatContainer from './Chat';
 
 function Home() {
