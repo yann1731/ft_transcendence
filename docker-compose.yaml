@@ -30,18 +30,18 @@ services:
     networks:
       - tr-net
 
-  # frontend:
-  #   container_name: frontend
-  #   build:
-  #     context: ./packages/front_end
-  #     dockerfile: Dockerfile
-  #   restart: always
-  #   networks:
-  #     - tr-net
-  #   volumes:
-  #     - "./packages/front_end/src:/app/src"
-  #   ports:
-  #     - 3000:3000
+  frontend:
+    container_name: frontend
+    build:
+      context: ./packages/front_end
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - tr-net
+    volumes:
+      - "./packages/front_end/src:/app/src"
+    ports:
+      - 3000:3000
 
 
 networks:
