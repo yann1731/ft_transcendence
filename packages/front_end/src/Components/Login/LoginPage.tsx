@@ -5,11 +5,33 @@ import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../../Theme';
+import { makeStyles } from "@mui/styles";
 
 export default function SignIn() {
+  
+  const useStyles = makeStyles({
+      focusedTextField: {
+        '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+          borderColor: 'grey',
+          borderWidth: 1,
+        },
+        '& .MuiInputLabel-root': {
+          color: 'grey',
+          borderWidth: 1,
+        },
+        '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+          borderColor: theme.palette.secondary.main, // Replace 'hover-color' with the desired hover color
+          borderWidth: 2,
+        },
+      },
+  });
+  const classes = useStyles();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   
   useEffect(() => {
     const handleResize = () => {
@@ -33,10 +55,13 @@ export default function SignIn() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    if (email != "" && password != "")
+      alert({
+       email: data.get("email"),
+       password: data.get("password"),
+     });
+    setEmail("");
+    setPassword("");
   };
 
   return (
@@ -48,36 +73,42 @@ export default function SignIn() {
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
+            className={classes.focusedTextField}
             margin="normal"
-            required
             fullWidth
             id="email"
             label={
               <Typography
-                style={{ color: 'grey' }} >
+                style={{ color: 'grey'}} >
                   Login
                 </Typography>
             }
             name="email"
             autoComplete="email"
             autoFocus
-          />
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            InputProps={{style: {color: 'black'}}}
+            />
           <TextField
+            className={classes.focusedTextField}
             margin="normal"
-            required
             fullWidth
             name="password"
             label={
               <Typography
-                style={{ color: 'grey' }} >
+              style={{ color: 'grey' }} >
                   Password
                 </Typography>
             }
             type="password"
             id="password"
             autoComplete="current-password"
-          />
-          <ThemeProvider theme={ theme }>  
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{style: {color: 'black'}}}
+            />
+          <ThemeProvider theme={ theme }>
           <FormControlLabel
             control={<Checkbox value="remember" style={{ color: theme.palette.secondary.main }} />}
             label={
@@ -97,7 +128,7 @@ export default function SignIn() {
             Sign In
           </Button>
         </Box>
-        <br></br>
+        <br />
     </Container>
     );
 }
