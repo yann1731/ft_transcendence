@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@mui/styles';
-import { Grid, Paper, List, ListItem, ListItemText, Divider, TextField, Fab, Avatar, Button } from '@mui/material';
+import { Grid, Paper, List, ListItem, ListItemText, Divider, TextField, Fab } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { theme } from '../../Theme';
 import ContactMenu from './ChatMenus/ContactMenu';
