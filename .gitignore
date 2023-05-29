@@ -209,3 +209,4 @@ dist
 # Personal
 /**/node_modules/
 .vscode
+.devcontainer
