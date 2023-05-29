@@ -3,11 +3,11 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { theme } from '../../../Theme'
-import { scene } from './scene';
+import { game } from './Game';
+import { option } from './Option';
 
 export default function GameContainer() {
   React.useEffect(() => {
-    // Initialize Phaser game
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
       parent: 'PONG',
@@ -26,12 +26,15 @@ export default function GameContainer() {
           gravity: { y: 0 },
         },
       },
-      scene: [scene],
+      scene: [
+        option,
+        game
+      ]
     };
-
-    const game = new Phaser.Game(config);
+    
+    const pong = new Phaser.Game(config);
     return () => {
-      game.destroy(true);
+      pong.destroy(true);
     }
   }, []);
 
