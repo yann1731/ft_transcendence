@@ -10,7 +10,8 @@ services:
     networks:
       - tr-net
     volumes:
-        - ./packages/backend:/serv/app
+        - ./packages/backend:/serv/backend
+        # - ./packages:/serv
         # - bk:/srv/app
     tty: true
     ports:
