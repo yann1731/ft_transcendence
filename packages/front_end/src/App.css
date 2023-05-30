@@ -17,3 +17,23 @@
     border-color: white;
   }
   
+  .mainContainerStyle {
+    display: flex;
+    height: 80vh;
+    position: fixed;
+    top: 9vh;
+    left: 0;
+    right: 0;
+  }
+  
+  .friendsAndChannelStyle {
+    width: min(35vw, 400px);
+    margin-left: 20px;
+  }
+  
+  .conversationStyle {
+    flex-grow: 1;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  

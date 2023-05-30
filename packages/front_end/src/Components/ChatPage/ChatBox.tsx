@@ -13,7 +13,7 @@ interface Message {
   nickname: string;
   UserAvatar: string;
 }
-
+// TODO LOOK HERE FOR THE CHAT BOX - (Your CSS conversions are working til now)
 const Chat = () => {
 
   const [messages, setMessages] = useState<Message[]>([]);
