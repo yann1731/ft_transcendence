@@ -48,7 +48,7 @@ export class option extends Phaser.Scene{
 		wall.setOrigin(0.5)
 		
 		
-		this.powerButton = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.4, 'Power Up', {
+		this.powerButton = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.4, 'Power Ups', {
 		  fontFamily: 'pong',
 		  fontSize: '24px',
 		  color: '#ffffff',

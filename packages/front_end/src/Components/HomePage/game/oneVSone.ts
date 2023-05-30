@@ -17,9 +17,10 @@ interface gameData {
     face: boolean;
 }
 
-export class game extends Phaser.Scene{
+export class oneVSone extends Phaser.Scene{
 
 	ball!: Phaser.Physics.Arcade.Sprite;
+    multiball!: Phaser.Physics.Arcade.Sprite;
     paddle!: Phaser.Physics.Arcade.Sprite;
     paddle1!: Phaser.Physics.Arcade.Sprite;
     paddle2!: Phaser.Physics.Arcade.Sprite;
@@ -36,7 +37,9 @@ export class game extends Phaser.Scene{
     win: number = 5;
 
     player1VictoryText!: Phaser.GameObjects.Text;
+    player1Score!: Phaser.GameObjects.Text;
     player2VictoryText!: Phaser.GameObjects.Text;
+    player2Score!: Phaser.GameObjects.Text;
     score!: Phaser.GameObjects.Text;
     
     paddlespeed: number = 450;
@@ -50,21 +53,24 @@ export class game extends Phaser.Scene{
     YvelocityMax: number = 225;
     oldVelocityX!: number;
     newOldVelocityX: number = 0;
+    rotation: number = 1;
     power!: PowerUp;
     
     face: boolean = false;
     wall: boolean = false;
     random: boolean = false;
     powerup: boolean = false;
+    multi: boolean = false;
 
     bigPaddle!: Phaser.GameObjects.Text;
     bigBall!: Phaser.GameObjects.Text;
     smash!: Phaser.GameObjects.Text;
     inverse!: Phaser.GameObjects.Text;
+    multiBall!: Phaser.GameObjects.Text;
 
 
     constructor() {
-        super('pong');
+        super('oneVSone');
     }
 
     init (data: gameData) {
@@ -185,7 +191,7 @@ export class game extends Phaser.Scene{
     paddle_init() {
         if (this.face === true){
             this.paddle1 = this.physics.add.sprite(
-                (this.ball.width * 0.2) / 2 + 10,
+                (this.ball.width * 0.2) / 2 + 1,
                 this.physics.world.bounds.height / 2,
                 "paddle1"
             )
@@ -197,7 +203,7 @@ export class game extends Phaser.Scene{
         }
         else{
             this.paddle1 = this.physics.add.sprite(
-                (this.ball.width * 0.2) / 2 + 10,
+                (this.ball.width * 0.2) / 2 + 1,
                 this.physics.world.bounds.height / 2,
                 "paddle1"
             )
@@ -234,6 +240,18 @@ export class game extends Phaser.Scene{
         );
         this.player1VictoryText.setOrigin(0.5);
         this.player1VictoryText.setVisible(false);
+
+        this.player1Score = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2,
+            'player 1 scored!',
+            {
+                fontFamily: 'pong',
+                fontSize: '50px',
+            }
+        );
+        this.player1Score.setOrigin(0.5);
+        this.player1Score.setVisible(false);
     
         this.player2VictoryText = this.add.text(
             this.physics.world.bounds.width / 2,
@@ -246,6 +264,18 @@ export class game extends Phaser.Scene{
         );
         this.player2VictoryText.setOrigin(0.5);
         this.player2VictoryText.setVisible(false);
+
+        this.player2Score = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2,
+            'player 2 scored!',
+            {
+                fontFamily: 'pong',
+                fontSize: '50px',
+            }
+        );
+        this.player2Score.setOrigin(0.5);
+        this.player2Score.setVisible(false);
 
         this.score = this.add.text(
             this.physics.world.bounds.width / 2,
@@ -308,6 +338,18 @@ export class game extends Phaser.Scene{
         );
         this.inverse.setOrigin(0.5);
         this.inverse.setVisible(false);
+
+        this.multiBall = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2,
+            'Multi Ball Activated!',
+            {
+                fontFamily: 'pong',
+                fontSize: '25px',
+            }
+        );
+        this.multiBall.setOrigin(0.5);
+        this.multiBall.setVisible(false);
     }
 
     create() {
@@ -328,41 +370,61 @@ export class game extends Phaser.Scene{
     }
 
     new_point(player: number) {
-        this.ball.setX(this.physics.world.bounds.width / 2);
-        this.ball.setY(this.physics.world.bounds.height / 2);
-        this.paddle1.setY(this.physics.world.bounds.height / 2);
-        this.paddle2.setY(this.physics.world.bounds.height / 2);
+        this.paddle1.disableBody();
+        this.paddle2.disableBody();
+        this.ball.disableBody();
+        if (this.multi === true)
+            this.multiball.disableBody();
         if (player === 1)
-            this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
+            this.player1Score.setVisible(true);
         else
-            this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2);
-        let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
-        if (Math.floor(Math.random() * 2) === 0)
-            y *= -1;
-        this.ball.setVelocityY(y);
-        this.paddlespeed = 400;
-        this.modifier1 = 1;
-        this.modifier2 = 1;
-        this.paddle1.setScale(0.15, 0.25);
-        this.paddle2.setScale(0.15, 0.25);
-        this.ball.setTexture("ball")
-        this.ball.setScale(0.2);
-        if (this.random === true){
-            this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
-            this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
-            this.wall3.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
-            this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
-            this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
-            this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
-        }
+            this.player2Score.setVisible(true);
+        this.rotation = 0;
+        this.time.delayedCall(1500, () => {
+            this.rotation = 1;
+            this.player1Score.setVisible(false);
+            this.player2Score.setVisible(false);
+            this.paddle1.enableBody();
+            this.paddle2.enableBody();
+            this.ball.enableBody();
+            this.ball.setX(this.physics.world.bounds.width / 2);
+            this.ball.setY(this.physics.world.bounds.height / 2);
+            this.paddle1.setY(this.physics.world.bounds.height / 2);
+            this.paddle2.setY(this.physics.world.bounds.height / 2);
+            if (this.multi === true)
+                this.multiball.destroy(true);
+            this.multi = false;
+            if (player === 1)
+                this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
+            else
+                this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2);
+            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+            if (Math.floor(Math.random() * 2) === 0)
+                y *= -1;
+            this.ball.setVelocityY(y);
+            this.paddlespeed = 400;
+            this.modifier1 = 1;
+            this.modifier2 = 1;
+            this.paddle1.setScale(0.15, 0.25);
+            this.paddle2.setScale(0.15, 0.25);
+            this.ball.setTexture("ball")
+            this.ball.setScale(0.2);
+            if (this.random === true){
+                this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                this.wall3.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            }
+        }, [], this);
     }
 
     end(player: number) {
-        this.ball.disableBody(true, true);
         if (player === 1)
-            this.player1VictoryText.setVisible(true);
-        else
             this.player2VictoryText.setVisible(true);
+        else
+            this.player1VictoryText.setVisible(true);
         this.paddle1.disableBody();
         this.paddle2.disableBody();
         this.scene.pause();
@@ -372,10 +434,12 @@ export class game extends Phaser.Scene{
     update() {
         if (this.ball.body)
             if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
+                this.ball.body.x = this.physics.world.bounds.width - 1;
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
                 this.inverse.setVisible(false);
+                this.multiBall.setVisible(false);
                 this.points2++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points2 === this.win)
@@ -383,13 +447,32 @@ export class game extends Phaser.Scene{
                 else
                     this.new_point(1);
             }
+
+        if (this.multi)
+            if (this.multiball.body)
+                if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width) {
+                    this.multiball.body.x = this.physics.world.bounds.width - 1;
+                    this.smash.setVisible(false);
+                    this.bigBall.setVisible(false);
+                    this.bigPaddle.setVisible(false);
+                    this.inverse.setVisible(false);
+                    this.multiBall.setVisible(false);
+                    this.points2++;
+                    this.score.setText(`${this.points2}          ${this.points1}`);
+                    if (this.points2 === this.win)
+                        this.end(2);
+                    else
+                        this.new_point(1);
+                }
         
-        if (this.ball.body && this.paddle1.body)
+        if (this.ball.body)
             if (this.ball.body?.x === 0) {
+                this.ball.body.x = 1;
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
                 this.inverse.setVisible(false);
+                this.multiBall.setVisible(false);
                 this.points1++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points1 === this.win)
@@ -397,6 +480,23 @@ export class game extends Phaser.Scene{
                 else
                     this.new_point(2);
             }
+
+        if (this.multi)
+            if (this.multiball.body)
+                if (this.multiball.body?.x === 0) {
+                    this.multiball.body.x = 1;
+                    this.smash.setVisible(false);
+                    this.bigBall.setVisible(false);
+                    this.bigPaddle.setVisible(false);
+                    this.inverse.setVisible(false);
+                    this.multiBall.setVisible(false);
+                    this.points1++;
+                    this.score.setText(`${this.points2}          ${this.points1}`);
+                    if (this.points1 === this.win)
+                        this.end(1);
+                    else
+                        this.new_point(2);
+                }
         
         this.paddle1.setVelocityY(0);
         this.paddle2.setVelocityY(0);
@@ -424,13 +524,13 @@ export class game extends Phaser.Scene{
             if(this.ball.body.velocity.x === 750)
                 this.ball.setDrag(1);
         }
-        this.ball.angle++;
+        this.ball.angle += this.rotation;
     }
 
     power_up() { 
         this.power.disableBody(true, true);
         if (this.ball.body)
-            switch(Phaser.Math.RND.between(1, 4)){
+            switch(this.multi ? Phaser.Math.RND.between(1, 4) : Phaser.Math.RND.between(5, 5)){
                 case 1:
                     this.smash.setVisible(true);
                     this.time.delayedCall(1000, () => {
@@ -488,6 +588,49 @@ export class game extends Phaser.Scene{
                         this.ball.setTexture("ball")
                         this.ball.setScale(0.2);
                     }, [], this);
+                    break;
+                case 5:
+                    if (this.ball.body){
+                        this.multiBall.setVisible(true);
+                        this.time.delayedCall(1000, () => {
+                            this.multiBall.setVisible(false)
+                        }, [], this);
+                        this.multiball = this.physics.add.sprite(
+                            this.physics.world.bounds.width / 2,
+			                this.physics.world.bounds.height / 2,
+                            "ball"
+                        )
+
+                        if (this.ball.body.velocity.x < 0){
+                            this.multiball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
+                            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+                            if (Math.floor(Math.random() * 2) === 0)
+                                y *= -1;            
+                            this.multiball.setVelocityY(y);
+                        } else{
+                            this.multiball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2);
+                            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+                            if (Math.floor(Math.random() * 2) === 0)
+                                y *= -1;
+                            this.multiball.setVelocityY(y);
+                        }
+
+                        this.multiball.setDamping(true);
+                        this.multiball.setScale(0.2);
+                        this.multiball.setCollideWorldBounds(true);
+                        this.multiball.setBounce(1, 1);
+                        this.multiball.setDrag(1.05);
+                        this.physics.add.collider(this.multiball, this.paddle1);
+                        this.physics.add.collider(this.multiball, this.paddle2);
+                
+                        if (this.wall === true || this.random === true){
+                            this.physics.add.collider(this.multiball, this.wall1);
+                            this.physics.add.collider(this.multiball, this.wall2);
+                            this.physics.add.collider(this.multiball, this.wall3);
+                        }
+                        this.physics.add.overlap(this.multiball, this.power, this.power_up, undefined, this);
+                        this.multi = true;
+                    }
                     break;
             }
 

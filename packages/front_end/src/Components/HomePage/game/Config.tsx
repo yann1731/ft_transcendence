@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { theme } from '../../../Theme'
-import { game } from './Game';
+import { oneVSone } from './oneVSone';
 import { option } from './Option';
 
 export default function GameContainer() {
@@ -28,7 +28,7 @@ export default function GameContainer() {
       },
       scene: [
         option,
-        game
+        oneVSone
       ]
     };
     
