@@ -6,14 +6,14 @@ import ChatContainer from './ChatStyles';
 
 function Chat() {
 	return (
-	  <div style={{ display: 'flex' }}>
+	  
 	  	<BackgroundContainer>
-		  <div style={{ display: 'flex' }}>
+		  <div>
 			<ResponsiveAppBar />
 			<ChatContainer />
 		  </div>
 	  	</BackgroundContainer>
-	  </div>
+	  
 	);
   }
   

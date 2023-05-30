@@ -18,6 +18,15 @@ const themeOptions: ThemeOptions = {
   typography: {
     fontFamily: 'Roboto',
   },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        ':root': {
+          '--secondary-color': '#001828',
+        },
+      },
+    },
+  },
 };
 
 export const theme = createTheme(themeOptions);

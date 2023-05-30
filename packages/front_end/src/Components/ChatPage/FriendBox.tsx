@@ -35,7 +35,7 @@ const useStyles = makeStyles({
 	},
   });
 
-  export default function ContactBox() {
+  export default function FriendBox() {
 	const classes = useStyles();
 	return(
 	<Grid item xs={3} className={classes.border} sx={{ height: '33.5vh' }}>

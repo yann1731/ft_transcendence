@@ -1,34 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { makeStyles } from '@mui/styles';
-import { Grid, Paper, List, ListItem, ListItemText, Divider, TextField, Fab, Avatar, Button } from '@mui/material';
+import {  Paper, List, ListItem, ListItemText, Divider, TextField, Fab } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import { theme } from '../../Theme';
 import ContactMenu from './ChatMenus/ContactMenu';
 import Box from '@mui/material/Box';
-
-const useStyles = makeStyles({
-  chatSection: {
-    backgroundImage: "none",
-    backgroundColor: theme.palette.secondary.main,
-    borderRadius: 10,
-    height: '77.9vh',
-    overflowY: 'auto',
-  },
-  focusedTextField: {
-    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'white',
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: 'white',
-    },
-    '& .MuiOutlinedInput-root.Mui=focused': {
-      '& fieldset': {
-        borderWidth: 1,
-        borderColor: 'white',
-      },
-    },
-  },
-});
+//import { useStyles } from './ChatStyles';
+import '../../App.css';
 
 
 interface Message {
@@ -40,7 +16,6 @@ interface Message {
 
 const Chat = () => {
 
-  const classes = useStyles();
   const [messages, setMessages] = useState<Message[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -84,7 +59,7 @@ const Chat = () => {
   };
 
   return (
-  <Box component={Paper} className={classes.chatSection} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+  <Box component={Paper} className={"chat-section"} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <Box sx={{ flexGrow: 1, overflow: 'auto' }} ref={chatContainerRef}>
       <List>
         {messages.map((message, index) => (
@@ -113,7 +88,7 @@ const Chat = () => {
             id="message-input"
             label="Type Something"
             onKeyDown={handleKeyDown}
-            className={classes.focusedTextField}
+            className={"focusedTextField .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline"}
           />
           <Fab color="primary" aria-label="add" onClick={handleClick} sx={{ flexShrink: 0}}>
             <SendIcon />
