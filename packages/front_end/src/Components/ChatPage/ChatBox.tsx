@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 import { Grid, Paper, List, ListItem, ListItemText, Divider, TextField, Fab, Avatar, Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { theme } from '../../Theme';
 import ContactMenu from './ChatMenus/ContactMenu';
+import Box from '@mui/material/Box';
 
 const useStyles = makeStyles({
   chatSection: {
@@ -38,8 +39,17 @@ interface Message {
 }
 
 const Chat = () => {
+
   const classes = useStyles();
   const [messages, setMessages] = useState<Message[]>([]);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages]);
 
   const sendMessage = (messageText: string) => {
     const newMessage: Message = {
@@ -73,40 +83,45 @@ const Chat = () => {
     }
   };
 
-  //FIXME TextField, Divider and Fab Component disappear with vertical scrolling
   return (
-    <Grid container component={Paper} className={classes.chatSection}>
-      <Grid item xs={12} style={{ flexGrow: 1 }}>
-        <List>
-          {messages.map((message, index) => (
-            <ListItem key={index}>
-              <Grid container>
-                <Grid item xs={12} sx={{display: 'flex'}}>
-                  <ContactMenu></ContactMenu>
-                  <ListItemText sx={{}} primary={message.text}></ListItemText>
-                </Grid>
-                <Grid>
-                  <ListItemText sx={{ align: 'right'}} secondary={`${message.nickname}, ${message.timestamp}`}></ListItemText>
-                </Grid>
-              </Grid>
-            </ListItem>
-          ))}
-        </List>
-        </Grid>
-        <Grid item xs={12} style={{ marginTop: 'auto' }}>
-        <Divider />
-          <Grid container style={{ padding: '20px' }}>
-            <Grid item xs={10.5} sx={{ width: '75%' }}>
-              <TextField id="message-input" label="Type Something" fullWidth onKeyDown={handleKeyDown} className={classes.focusedTextField}/>
-            </Grid>
-            <Grid item xs={1.5} sx={{ display: 'flex', justifyContent: 'flex-end'}}>
-              <Fab color="primary" aria-label="add" onClick={handleClick}>
-                <SendIcon />
-              </Fab>
-            </Grid>
-          </Grid>
-        </Grid>
-    </Grid>
+  <Box component={Paper} className={classes.chatSection} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Box sx={{ flexGrow: 1, overflow: 'auto' }} ref={chatContainerRef}>
+      <List>
+        {messages.map((message, index) => (
+          <ListItem key={index}>
+            <Box>
+              <Box sx={{ display: 'flex' }}>
+                <ContactMenu></ContactMenu>
+                <ListItemText primary={message.text}></ListItemText>
+              </Box>
+              <Box sx={{ textAlign: 'right' }}>
+                <ListItemText
+                  secondary={`${message.nickname}, ${message.timestamp}`}
+                ></ListItemText>
+              </Box>
+            </Box>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+    <Box sx={{ marginTop: 'auto' }}>
+      <Divider />
+      <Box style={{ padding: '20px' }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-end', width: '100%' }}>
+          <TextField
+            sx={{ flexGrow: 1, marginRight: '20px' }}
+            id="message-input"
+            label="Type Something"
+            onKeyDown={handleKeyDown}
+            className={classes.focusedTextField}
+          />
+          <Fab color="primary" aria-label="add" onClick={handleClick} sx={{ flexShrink: 0}}>
+            <SendIcon />
+          </Fab>
+        </Box>
+      </Box>
+    </Box>
+  </Box>
   );
-};
+}
  export default Chat;
