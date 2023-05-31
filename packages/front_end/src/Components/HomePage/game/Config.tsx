@@ -3,8 +3,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { theme } from '../../../Theme'
-import { oneVSone } from './oneVSone';
-import { option } from './Option';
+import oneVSone from './oneVSone';
+import option from './Option';
+import threeVSone from './threeVSone'
 
 export default function GameContainer() {
   React.useEffect(() => {
@@ -15,10 +16,6 @@ export default function GameContainer() {
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        min: {
-          width: 480,
-          height: 480,
-        },
       },
       physics: {
         default: 'arcade',
@@ -28,7 +25,8 @@ export default function GameContainer() {
       },
       scene: [
         option,
-        oneVSone
+        oneVSone,
+        threeVSone
       ]
     };
     

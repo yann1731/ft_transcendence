@@ -1,7 +1,7 @@
 
 import Phaser from "phaser";
 
-export class option extends Phaser.Scene{
+export default class option extends Phaser.Scene{
 
 	wall: boolean = false;
 	random: boolean = false;
@@ -10,7 +10,7 @@ export class option extends Phaser.Scene{
 	single: boolean = true;
 	multiple: boolean = false;
 
-	rateSpeed: number = 0.05;
+	rateSpeed: number = 0.0006;
 
 	start!: Phaser.GameObjects.Text;
 	powerButton!: Phaser.GameObjects.Text;
@@ -85,10 +85,15 @@ export class option extends Phaser.Scene{
 				this.start.setVisible(false);
 				this.powerButton.setVisible(false);
 				this.settingOneButton.setVisible(false);
+				this.settingThreeButton.setVisible(false);
 				this.wallButton.setVisible(false);
 				this.randomButton.setVisible(false);
 				this.mode.setVisible(false);
 				this.wallText.setVisible(false);
+				this.rate.setVisible(false);
+				this.fast.setVisible(false);
+				this.medium.setVisible(false);
+				this.slow.setVisible(false);
 				
 			  this.time.delayedCall(1000, () => {
 				  game.setText('game starting in 2');
@@ -97,8 +102,11 @@ export class option extends Phaser.Scene{
 				  game.setText('game starting in 1');
 			  }, [], this);
 			  this.time.delayedCall(3000, () => {
-				  this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
-			  }, [], this);
+					if (this.single === true)
+				  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
+					else
+						this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
+				}, [], this);
 			});
   
   
@@ -399,16 +407,16 @@ export class option extends Phaser.Scene{
 		  this.fast.setInteractive();
 		  this.fast.setVisible(false);
 		  this.fast.on('pointerdown', () => {
-			if (this.rateSpeed !== 0.1){
-				if (this.rateSpeed === 0.05){
+			if (this.rateSpeed !== 0.0009){
+				if (this.rateSpeed === 0.0006){
 					this.medium.setColor('#ffffff');
 					this.medium.setStyle({ backgroundColor: '#000000' });
 				}
-				if (this.rateSpeed === 0.01){
+				if (this.rateSpeed === 0.0003){
 					this.slow.setColor('#ffffff');
 					this.slow.setStyle({ backgroundColor: '#000000' });
 				}
-				this.rateSpeed = 0.1;
+				this.rateSpeed = 0.0009;
 				this.fast.setColor('#000000');
 				this.fast.setStyle({ backgroundColor: '#ffffff' });
 			}
@@ -428,16 +436,16 @@ export class option extends Phaser.Scene{
 		  this.medium.setInteractive();
 		  this.medium.setVisible(false);
 		  this.medium.on('pointerdown', () => {
-			if (this.rateSpeed !== 0.05){
-				if (this.rateSpeed === 0.1){
+			if (this.rateSpeed !== 0.0006){
+				if (this.rateSpeed === 0.0009){
 					this.fast.setColor('#ffffff');
 					this.fast.setStyle({ backgroundColor: '#000000' });
 				}
-				if (this.rateSpeed === 0.01){
+				if (this.rateSpeed === 0.0003){
 					this.slow.setColor('#ffffff');
 					this.slow.setStyle({ backgroundColor: '#000000' });
 				}
-				this.rateSpeed = 0.05;
+				this.rateSpeed = 0.0006;
 				this.medium.setColor('#000000');
 				this.medium.setStyle({ backgroundColor: '#ffffff' });
 			}
@@ -457,16 +465,16 @@ export class option extends Phaser.Scene{
 		  this.slow.setInteractive();
 		  this.slow.setVisible(false);
 		  this.slow.on('pointerdown', () => {
-			if (this.rateSpeed !== 0.01){
-				if (this.rateSpeed === 0.05){
+			if (this.rateSpeed !== 0.0003){
+				if (this.rateSpeed === 0.0006){
 					this.medium.setColor('#ffffff');
 					this.medium.setStyle({ backgroundColor: '#000000' });
 				}
-				if (this.rateSpeed === 0.1){
+				if (this.rateSpeed === 0.0009){
 					this.fast.setColor('#ffffff');
 					this.fast.setStyle({ backgroundColor: '#000000' });
 				}
-				this.rateSpeed = 0.01;
+				this.rateSpeed = 0.0003;
 				this.slow.setColor('#000000');
 				this.slow.setStyle({ backgroundColor: '#ffffff' });
 			}
@@ -519,13 +527,13 @@ export class option extends Phaser.Scene{
 
 			 switch(Phaser.Math.RND.between(1, 3)){
 				case 1:
-					this.rateSpeed = 0.1;
+					this.rateSpeed = 0.0003;
 					break;
 				case 2:
-					this.rateSpeed = 0.05;
+					this.rateSpeed = 0.0006;
 					break;
 				case 3:
-					this.rateSpeed = 0.01;
+					this.rateSpeed = 0.0009;
 					break;
 			 }
 				
@@ -536,7 +544,7 @@ export class option extends Phaser.Scene{
 				  game.setText('game starting in 1');
 			  }, [], this);
 			  this.time.delayedCall(3000, () => {
-				  this.scene.start('threeVSone', {power: this.powerUp, rate: this.rate});
+				  this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed});
 			  }, [], this);
 			});
 	}
