@@ -55,6 +55,7 @@ export default class oneVSthree extends Phaser.Scene{
     
     powerup: boolean = false;
     multi: boolean = false;
+    reduce: boolean = true;
 
     bigPaddle!: Phaser.GameObjects.Text;
     bigBall!: Phaser.GameObjects.Text;
@@ -133,14 +134,14 @@ export default class oneVSthree extends Phaser.Scene{
             this.physics.world.bounds.height - (this.ball.width * 0.2) / 2 - 1 ,
             "sidePaddle"
         )
-            
+        
         this.paddle1.setImmovable(true);
         this.paddle1.setOrigin(0.5);
         this.paddle1.setScale(0.15, 0.25);
         this.paddle1.setCollideWorldBounds(true);
         this.physics.add.collider(this.ball, this.paddle1);
         
-        this.paddle2.setImmovable(true);
+		this.paddle2.setImmovable(true);
         this.paddle2.setOrigin(0.5);
         this.paddle2.setScale(0.15, 0.25);
         this.paddle2.setCollideWorldBounds(true)
@@ -148,7 +149,7 @@ export default class oneVSthree extends Phaser.Scene{
 
 		this.paddle3.setImmovable(true);
         this.paddle3.setOrigin(0.5);
-        this.paddle3.setScale(0.25, 0.15);
+        this.paddle3.setScale(0.35, 0.15);
         this.paddle3.setCollideWorldBounds(true);
         this.physics.add.collider(this.paddle3, [this.paddle1, this.paddle2, this.ball]);
 
@@ -312,8 +313,9 @@ export default class oneVSthree extends Phaser.Scene{
             this.player2Score.setVisible(true);
         this.rotation = 0;
         this.time.delayedCall(1500, () => {
-			this.paddleScale = 1.5;
+            this.paddleScale = 1.5;
             this.rotation = 1;
+            this.reduce = true;
             this.player1Score.setVisible(false);
             this.player2Score.setVisible(false);
             this.paddle1.enableBody();
@@ -343,7 +345,7 @@ export default class oneVSthree extends Phaser.Scene{
             this.modifier2 = 1;
             this.paddle1.setScale(0.15, 0.25);
             this.paddle2.setScale(0.15, 0.25);
-			this.paddle3.setScale(0.25, 0.15);
+			this.paddle3.setScale(0.35, 0.15);
 			this.paddle4.setScale(1.5, 0.15);
             this.ball.setTexture("ball")
             this.ball.setScale(0.2);
@@ -448,14 +450,22 @@ export default class oneVSthree extends Phaser.Scene{
         this.paddle4.setVelocityX(0);
         
 		if (this.keys.w.isDown)
-		this.paddle1.setVelocityY(-this.paddlespeed * this.modifier1);
+            if (this.paddle1.body && this.paddle3.body)
+                if (this.paddle1.body.y - this.paddle1.body.height * 0.1 > this.paddle3.body.y + this.paddle3.body.height)
+		            this.paddle1.setVelocityY(-this.paddlespeed * this.modifier1);
 		if (this.keys.s.isDown)
-		this.paddle1.setVelocityY(this.paddlespeed * this.modifier1);
+            if (this.paddle1.body && this.paddle4.body)
+                if (this.paddle1.body.y + this.paddle1.body.height + this.paddle1.body.height * 0.1 < this.paddle4.body.y)
+		            this.paddle1.setVelocityY(this.paddlespeed * this.modifier1);
 
         if (this.cursors?.up.isDown)
-        	this.paddle2.setVelocityY(-this.paddlespeed * this.modifier1);
+            if (this.paddle2.body && this.paddle3.body)
+                if (this.paddle2.body.y - this.paddle2.body.height * 0.1 > this.paddle3.body.y + this.paddle3.body.height)
+        	        this.paddle2.setVelocityY(-this.paddlespeed * this.modifier1);
         if (this.cursors?.down.isDown)
-        	this.paddle2.setVelocityY(this.paddlespeed * this.modifier1);
+            if (this.paddle2.body && this.paddle4.body)
+                if (this.paddle2.body.y + this.paddle2.body.height + this.paddle2.body.height * 0.1 < this.paddle4.body.y)
+        	        this.paddle2.setVelocityY(this.paddlespeed * this.modifier1);
         
 		if (this.keys.a.isDown)
 			this.paddle3.setVelocityX(-this.paddlespeed * this.modifier1)
@@ -467,8 +477,7 @@ export default class oneVSthree extends Phaser.Scene{
         if (this.cursors?.left.isDown)
         	this.paddle4.setVelocityX(-this.paddlespeed * this.modifier2);
 
-        if (this.paddlespeed < 625)
-            this.paddlespeed += 0.5;
+        this.ball.angle += this.rotation;
         if (this.ball.body){
             if (this.newOldVelocityX !== 0)
                 if (this.ball.body.velocity.x !== this.newOldVelocityX){
@@ -480,22 +489,27 @@ export default class oneVSthree extends Phaser.Scene{
             if(this.ball.body.velocity.x >= 1000)
                 this.ball.setDrag(1);
         }
-        this.ball.angle += this.rotation;
+        
+        if (this.paddlespeed < 700)
+            this.paddlespeed += 0.5;
 		this.paddleScale -= this.rate;
-		this.paddle4.setScale(this.paddleScale, 0.15)
-		if (this.paddleScale === 0.25){
-			this.smash.setVisible(false);
-            this.bigBall.setVisible(false);
-            this.bigPaddle.setVisible(false);
-            this.inverse.setVisible(false);
-            this.multiBall.setVisible(false);
-            this.points2++;
-            this.score.setText(`${this.points2}          ${this.points1}`);
-            if (this.points2 === this.win)
-                this.end(2);
-            else
-                this.new_point(1);
-		}
+        if (this.reduce === true){
+		    this.paddle4.setScale(this.paddleScale, 0.15)
+		    if (this.paddleScale <= 0.35){
+                this.reduce = false;
+		    	this.smash.setVisible(false);
+                this.bigBall.setVisible(false);
+                this.bigPaddle.setVisible(false);
+                this.inverse.setVisible(false);
+                this.multiBall.setVisible(false);
+                this.points2++;
+                this.score.setText(`${this.points2}          ${this.points1}`);
+                if (this.points2 === this.win)
+                    this.end(2);
+                else
+                    this.new_point(1);
+		    }
+        }
     }
 
     power_up() { 

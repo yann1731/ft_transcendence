@@ -522,6 +522,7 @@ export default class option extends Phaser.Scene{
 			  this.fast.setVisible(false);
 			  this.medium.setVisible(false);
 			  this.mode.setVisible(false);
+			  this.rate.setVisible(false);
 			  
 			  this.powerUp = Phaser.Math.RND.frac() ? true : false;
 
