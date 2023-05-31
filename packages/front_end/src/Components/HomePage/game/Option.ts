@@ -28,18 +28,6 @@ export default class option extends Phaser.Scene{
 	slow!: Phaser.GameObjects.Text;
 	mode!: Phaser.GameObjects.Text;
 
-	wall: boolean = false;
-	random: boolean = false;
-	powerUp: boolean = false;
-	faces: boolean = false;
-
-	start!: Phaser.GameObjects.Text;
-	powerButton!: Phaser.GameObjects.Text;
-	wallButton!: Phaser.GameObjects.Text;
-	randomButton!: Phaser.GameObjects.Text;
-	settingButton!: Phaser.GameObjects.Text;
-
-
 	constructor() {
         super('menu');
     }
@@ -433,33 +421,6 @@ export default class option extends Phaser.Scene{
 				this.fast.setStyle({ backgroundColor: '#ffffff' });
 			}
 		});
-		wall.setOrigin(0.5)
-		
-		
-		this.powerButton = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.4, 'Power Up', {
-		  fontFamily: 'pong',
-		  fontSize: '24px',
-		  color: '#ffffff',
-		  backgroundColor: '#000000',
-		  padding: {
-			x: 10,
-			y: 6
-		  }
-		});
-		this.powerButton.setOrigin(0.5);
-		this.powerButton.setInteractive();
-		this.powerButton.on('pointerdown', () => {
-			this.powerUp = !this.powerUp;
-			if (this.powerUp === true){
-				this.powerButton.setColor('#000000');
-				this.powerButton.setStyle({ backgroundColor: '#ffffff' });
-			}
-			if (this.powerUp === false){
-				this.powerButton.setColor('#ffffff');
-				this.powerButton.setStyle({ backgroundColor: '#000000' });
-			}
-		});
-
 
 		this.medium = this.add.text(this.physics.world.bounds.width * 0.5, this.physics.world.bounds.height * 0.8, 'medium', {
 			fontFamily: 'pong',
@@ -489,25 +450,6 @@ export default class option extends Phaser.Scene{
 				this.medium.setStyle({ backgroundColor: '#ffffff' });
 			}
 		});
-		this.wallButton.setOrigin(0.5);
-		this.wallButton.setInteractive();
-		this.wallButton.on('pointerdown', () => {
-		  this.wall = !this.wall;
-		  if (this.wall === true){
-			if (this.random === true){
-				this.random = false;
-				this.randomButton.setColor('#ffffff');
-				this.randomButton.setStyle({ backgroundColor: '#000000' });
-			}
-			this.wallButton.setColor('#000000');
-			this.wallButton.setStyle({ backgroundColor: '#ffffff' });
-		}
-		if (this.wall === false){
-			this.wallButton.setColor('#ffffff');
-			this.wallButton.setStyle({ backgroundColor: '#000000' });
-		  }
-		});
-		
 
 		this.slow = this.add.text(this.physics.world.bounds.width * 0.7, this.physics.world.bounds.height * 0.8, 'slow', {
 			fontFamily: 'pong',
