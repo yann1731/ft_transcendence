@@ -19,7 +19,6 @@ export default function OptionBarConversation() {
       setAnchorElUser(event.currentTarget);
     };
   
-  
     const handleCloseUserMenu = () => {
       setAnchorElUser(null);
     };
@@ -33,7 +32,7 @@ export default function OptionBarConversation() {
             </Tooltip>
             Channel
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: '40px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{

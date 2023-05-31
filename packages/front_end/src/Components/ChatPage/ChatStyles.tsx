@@ -8,7 +8,7 @@ import OptionBarConversation from './ChatMenus/OptionBarConversation';
 import Chat from './ChatBox';
 import '../../App.css';
 
-export default function                                                                                                                                                                                                                                                                                                                                                                                                                                                                   MainContainer() {
+export default function MainContainer() {
 
   return (
     <React.Fragment>
