@@ -1,11 +1,13 @@
 
 
-.chat-section {
+.chatSection {
     background-image: none;
     background-color: var(--secondary-color);
     border-radius: 10px;
-    height: 77.9vh;
+    height: 81.3vh;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
   
   .focusedTextField .MuiInputLabel-root.Mui-focused {
@@ -19,7 +21,6 @@
   
   .mainContainerStyle {
     display: flex;
-    height: 80vh;
     position: fixed;
     top: 9vh;
     left: 0;
@@ -35,5 +36,31 @@
     flex-grow: 1;
     margin-left: 20px;
     margin-right: 20px;
+  }
+
+  .chatTextField {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+  }
+
+  .friendsAndChannelBoxes {
+    position: relative;
+    background-color: var(--secondary-color);
+    overflow-y: auto;
+    overflow-x: auto;
+    height: 39vh;
+    border-radius: 10px;
+    padding: 10px;
+  }
+
+  .chatOptionBars {
+    flex-grow: 0;
+    background-color: var(--primary-color);
+  }
+
+  .chatBar {
+    position: relative;
+    box-shadow: none;
   }
   

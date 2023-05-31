@@ -23,6 +23,7 @@ const themeOptions: ThemeOptions = {
       styleOverrides: {
         ':root': {
           '--secondary-color': '#001828',
+          '--primary-color': '#152647',
         },
       },
     },

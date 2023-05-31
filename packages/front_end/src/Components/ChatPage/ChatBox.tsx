@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {  Paper, List, ListItem, ListItemText, Divider, TextField, Fab } from '@mui/material';
+import { List, ListItem, ListItemText, Divider, TextField, Fab } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import ContactMenu from './ChatMenus/ContactMenu';
 import Box from '@mui/material/Box';
-//import { useStyles } from './ChatStyles';
 import '../../App.css';
 
 
@@ -13,12 +12,13 @@ interface Message {
   nickname: string;
   UserAvatar: string;
 }
-// TODO LOOK HERE FOR THE CHAT BOX - (Your CSS conversions are working til now)
+
 const Chat = () => {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  // Handles the scrollbar to the bottom on scrolling chat messages
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
     if (chatContainer) {
@@ -59,13 +59,13 @@ const Chat = () => {
   };
 
   return (
-  <Box component={Paper} className={"chat-section"} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-    <Box sx={{ flexGrow: 1, overflow: 'auto' }} ref={chatContainerRef}>
+  <Box className={"chatSection"}>
+    <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
       <List>
         {messages.map((message, index) => (
           <ListItem key={index}>
             <Box>
-              <Box sx={{ display: 'flex' }}>
+              <Box>
                 <ContactMenu></ContactMenu>
                 <ListItemText primary={message.text}></ListItemText>
               </Box>
@@ -82,7 +82,7 @@ const Chat = () => {
     <Box sx={{ marginTop: 'auto' }}>
       <Divider />
       <Box style={{ padding: '20px' }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-end', width: '100%' }}>
+        <Box className={"chatTextField"}>
           <TextField
             sx={{ flexGrow: 1, marginRight: '20px' }}
             id="message-input"
