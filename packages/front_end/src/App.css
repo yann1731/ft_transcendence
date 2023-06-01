@@ -1,58 +1,64 @@
-.App {
-  text-align: center;
-}
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.chatSection {
+    background-image: none;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    height: 81.3vh;
+    display: flex;
+    flex-direction: column;
+}
+  
+  .focusedTextField .MuiInputLabel-root.Mui-focused {
+    color: white;
   }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+  
+  .focusedTextField .MuiOutlinedInput-root.Mui-focused fieldset {
+    border-width: 1px;
+    border-color: white;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .mainContainerStyle {
+    display: flex;
+    position: fixed;
+    top: 9vh;
+    left: 0;
+    right: 0;
   }
-}
+  
+  .friendsAndChannelStyle {
+    width: min(35vw, 400px);
+    margin-left: 20px;
+  }
+  
+  .conversationStyle {
+    flex-grow: 1;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
 
-.container {
-  width: 80%;
-  margin: auto;
-  margin-top: 2rem;
-  letter-spacing: 0.5px;
-  height: 80%;
-}
+  .chatTextField {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+  }
 
-.MuiOutlinedInput-notchedOutline{
-  border-color: #001828 !important;
-}
+  .friendsAndChannelBoxes {
+    background-color: var(--secondary-color);
+    overflow-y: auto;
+    overflow-x: auto;
+    height: 39vh;
+    border-radius: 10px;
+    padding: 10px;
+  }
 
-.MuiFilledInput-root {
-  border-bottom: 1px solid #001828 !important;
-}
+  .chatOptionBars {
+    flex-grow: 0;
+    background-color: var(--primary-color);
+  }
 
-.MuiInput-root {
-  border-bottom: 1px solid #001828 !important;
-}
+  .chatBar {
+    position: relative;
+    box-shadow: none;
+  }
+  

@@ -7,7 +7,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import { theme } from '../../../Theme';
 
 export default function OptionBarConversation() {
     /* Settings vont être pris directement dans les objets Users, qui seront divisé en 3 categories, Owner, Admin et Standard*/
@@ -19,13 +18,12 @@ export default function OptionBarConversation() {
       setAnchorElUser(event.currentTarget);
     };
   
-  
     const handleCloseUserMenu = () => {
       setAnchorElUser(null);
     };
   return (
-      <AppBar position="relative" sx={{ boxShadow: '0' }}>
-      <Box sx={{ bgcolor: theme.palette.primary.main }}>
+    <AppBar position="relative" sx={{ boxShadow: '0' }}>
+      <Box className={"chatOptionBars"}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>
                 <DehazeIcon></DehazeIcon>
@@ -33,7 +31,7 @@ export default function OptionBarConversation() {
             </Tooltip>
             Channel
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: '40px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
