@@ -530,7 +530,7 @@ export default class oneVSone extends Phaser.Scene{
     power_up() { 
         this.power.disableBody(true, true);
         if (this.ball.body)
-            switch(this.multi ? Phaser.Math.RND.between(1, 4) : Phaser.Math.RND.between(5, 5)){
+            switch(this.multi ? Phaser.Math.RND.between(1, 4) : Phaser.Math.RND.between(1, 5)){
                 case 1:
                     this.smash.setVisible(true);
                     this.time.delayedCall(1000, () => {
