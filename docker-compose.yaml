@@ -31,7 +31,7 @@ services:
     environment:
       POSTGRES_USER: puser
       POSTGRES_PASSWORD: 123
-      POST_DB: nest
+      POSTGRES_DB: mydb
     networks:
       - tr-net
 
