@@ -2,43 +2,25 @@ import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import OptionBarContact from './ChatMenus/OptionBarFriends';
 import OptionBarChans from './ChatMenus/OptionBarChans';
-import ContactBox from './FriendBox';
+import FriendBox from './FriendBox';
 import ChannelBox from './ChannelBox';
 import OptionBarConversation from './ChatMenus/OptionBarConversation';
 import Chat from './ChatBox';
+import '../../App.css';
 
 export default function MainContainer() {
-  const mainContainerStyle: React.CSSProperties = {
-    display: 'flex',
-    height: '80vh',
-    position: 'fixed',
-    top: '9vh',
-    left: '0',
-    right: '0',
-  };
-
-  const friendsAndChannelsStyle: React.CSSProperties = {
-    width: 'min(35vw, 400px)',
-    marginLeft: '20px',
-  };
-
-  const conversationStyle: React.CSSProperties = {
-    flexGrow: 1,
-    marginLeft: '20px',
-    marginRight: '20px',
-  };
 
   return (
     <React.Fragment>
       <CssBaseline />
-      <div style={mainContainerStyle}>
-        <div style={friendsAndChannelsStyle}>
+      <div className="mainContainerStyle">
+        <div className="friendsAndChannelStyle">
           <OptionBarContact />
-          <ContactBox />
+          <FriendBox />
           <OptionBarChans />
           <ChannelBox />
         </div>
-        <div style={conversationStyle}>
+        <div className="conversationStyle">
           <OptionBarConversation />
           <Chat />
         </div>

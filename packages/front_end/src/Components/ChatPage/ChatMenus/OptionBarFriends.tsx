@@ -1,5 +1,5 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
+import { AppBar } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -7,7 +7,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import { theme } from '../../../Theme';
+import '../../../App.css';
 
 export default function OptionBarContacts() {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
@@ -22,8 +22,8 @@ export default function OptionBarContacts() {
       setAnchorElUser(null);
     };
   return (
-      <AppBar position="relative" sx={{ boxShadow: 'none' }}>
-      <Box sx={{ flexGrow: 0, bgcolor: theme.palette.primary.main }}>
+      <AppBar position="relative" sx={{ boxShadow: '0' }}>
+      <Box className={"chatOptionBars"}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>
                 <DehazeIcon></DehazeIcon>

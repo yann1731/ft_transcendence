@@ -1,25 +1,11 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@mui/styles';
-import { Grid, Paper, List, ListItem, ListItemText, Divider, TextField, Fab } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
-import { theme } from '../../Theme';
-import ContactMenu from './ChatMenus/ContactMenu';
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-  chatSection: {
-    backgroundImage: "none",
-    backgroundColor: theme.palette.secondary.main,
-    borderRadius: 10,
-  },
-  messageArea: {
-    height: '70vh',
-    overflowY: 'auto',
-    //overflowX: 'scroll', // TODO fix horizontal scrolling on long message
-  },
-});
+import React, { useState, useRef, useEffect } from 'react';
+import { List, ListItem, ListItemText, Divider, TextField, Fab } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import ContactMenu from './ChatMenus/ContactMenu';
+import Box from '@mui/material/Box';
+import '../../App.css';
+
 
 interface Message {
   text: string;
@@ -29,8 +15,17 @@ interface Message {
 }
 
 const Chat = () => {
-  const classes = useStyles();
+
   const [messages, setMessages] = useState<Message[]>([]);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Handles the scrollbar to the bottom on scrolling chat messages
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages]);
 
   const sendMessage = (messageText: string) => {
     const newMessage: Message = {
@@ -64,43 +59,45 @@ const Chat = () => {
     }
   };
 
-  
   return (
-    <div style={{overflowWrap: 'break-word'}}>
-      <Grid container>
-        <Grid item xs={12}></Grid>
-      </Grid>
-      <Grid container component={Paper} className={classes.chatSection}>
-        <Grid item xs={12}>
-          <List className={classes.messageArea}>
-            {messages.map((message, index) => (
-              <ListItem key={index}>
-                <Grid container>
-                  <Grid item xs={12} sx={{display: 'flex'}}>
-                    <ContactMenu></ContactMenu>
-                    <ListItemText sx={{}} primary={message.text}></ListItemText>
-                  </Grid>
-                  <Grid>
-                    <ListItemText sx={{ align: 'right'}} secondary={`${message.nickname}, ${message.timestamp}`}></ListItemText>
-                  </Grid>
-                </Grid>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <Grid container style={{ padding: '20px' }}>
-            <Grid item sx={{ width: '75%' }}>
-              <TextField id="message-input" label="Type Something" fullWidth onKeyDown={handleKeyDown} />
-            </Grid>
-            <Grid sx={{ ml: 'auto', align: 'right' }}>
-              <Fab color="primary" aria-label="add" onClick={handleClick}>
-                <SendIcon />
-              </Fab>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-    </div>
+  <Box className={"chatSection"}>
+    <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
+      <List>
+        {messages.map((message, index) => (
+          <ListItem key={index}>
+            <Box>
+              <Box>
+                <ContactMenu></ContactMenu>
+                <ListItemText primary={message.text}></ListItemText>
+              </Box>
+              <Box sx={{ textAlign: 'right' }}>
+                <ListItemText
+                  secondary={`${message.nickname}, ${message.timestamp}`}
+                ></ListItemText>
+              </Box>
+            </Box>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+    <Box sx={{ marginTop: 'auto' }}>
+      <Divider />
+      <Box style={{ padding: '20px' }}>
+        <Box className={"chatTextField"}>
+          <TextField
+            sx={{ flexGrow: 1, marginRight: '20px' }}
+            id="message-input"
+            label="Type Something"
+            onKeyDown={handleKeyDown}
+            className={"focusedTextField .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline"}
+          />
+          <Fab color="primary" aria-label="add" onClick={handleClick} sx={{ flexShrink: 0}}>
+            <SendIcon />
+          </Fab>
+        </Box>
+      </Box>
+    </Box>
+  </Box>
   );
-};
-export default Chat;
+}
+ export default Chat;
