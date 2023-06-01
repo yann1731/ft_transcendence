@@ -553,20 +553,28 @@ export default class oneVSone extends Phaser.Scene{
         if (this.keys.w.isDown)
         this.paddle1.setVelocityY(-this.paddlespeed * this.modifier1);
         if (this.keys.s.isDown)
-        this.paddle1.setVelocityY(this.paddlespeed * this.modifier1);
+            if (this.paddle1.body){
+                if (this.paddle1.body.y + this.paddle1.body.height + this.paddle1.body.height * 0.1 < this.physics.world.bounds.height / 2)
+                    this.paddle1.setVelocityY(this.paddlespeed * this.modifier1);}
 		
         if (this.keys.q.isDown)
-        this.paddle3.setVelocityY(-this.paddlespeed * this.modifier1);
+            if (this.paddle3.body)
+                if (this.paddle3.body.y - this.paddle3.body.height * 0.1 > this.physics.world.bounds.height / 2)
+                    this.paddle3.setVelocityY(-this.paddlespeed * this.modifier1);
         if (this.keys.a.isDown)
-        this.paddle3.setVelocityY(this.paddlespeed * this.modifier1);
+            this.paddle3.setVelocityY(this.paddlespeed * this.modifier1);
 		
         if (this.cursors?.up.isDown)
         this.paddle2.setVelocityY(-this.paddlespeed * this.modifier2);
         if (this.cursors?.down.isDown)
-        this.paddle2.setVelocityY(this.paddlespeed * this.modifier2);
+            if (this.paddle2.body)
+                if (this.paddle2.body.y + this.paddle2.body.height + this.paddle2.body.height * 0.1 < this.physics.world.bounds.height / 2)
+                    this.paddle2.setVelocityY(this.paddlespeed * this.modifier2);
 
         if (this.keys.e.isDown)
-        this.paddle4.setVelocityY(-this.paddlespeed * this.modifier2);
+            if (this.paddle4.body)
+                if (this.paddle4.body.y - this.paddle4.body.height * 0.1 > this.physics.world.bounds.height / 2)
+                    this.paddle4.setVelocityY(-this.paddlespeed * this.modifier2);
         if (this.keys.d.isDown)
         this.paddle4.setVelocityY(this.paddlespeed * this.modifier2);
         
