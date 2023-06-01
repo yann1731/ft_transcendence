@@ -5,7 +5,8 @@ import Container from '@mui/material/Container';
 import { theme } from '../../../Theme'
 import oneVSone from './oneVSone';
 import option from './Option';
-import threeVSone from './threeVSone'
+import threeVSone from './threeVSone';
+import '../../../App.css';
 
 export default function GameContainer() {
   React.useEffect(() => {
@@ -39,10 +40,9 @@ export default function GameContainer() {
   return (
     <React.Fragment>
       <CssBaseline />
-        <Container maxWidth="xl">
-        <Box sx={{bgcolor: theme.palette.primary.main, boxShadow: 24, textAlign: 'center', fontWeight: 'bold', width: '50vw', color: 'cyan'}}>GAME</Box>
-        <div id="PONG" style={{ height: '65vh', width: '50vw'}}></div>
-      </Container>
+        <div id="PONG" style={{ height: '65vh', width: '50vw'}}>
+          <Box className={"gameBoxBar"}>GAME</Box>
+        </div>
     </React.Fragment>
   );
 }
