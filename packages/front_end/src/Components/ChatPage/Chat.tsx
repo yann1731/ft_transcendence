@@ -13,7 +13,6 @@ function Chat() {
 			<ChatContainer />
 		  </div>
 	  	</BackgroundContainer>
-	  
 	);
   }
   

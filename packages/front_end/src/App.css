@@ -5,7 +5,6 @@
     background-color: var(--secondary-color);
     border-radius: 10px;
     height: 81.3vh;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
@@ -45,7 +44,6 @@
   }
 
   .friendsAndChannelBoxes {
-    position: relative;
     background-color: var(--secondary-color);
     overflow-y: auto;
     overflow-x: auto;
