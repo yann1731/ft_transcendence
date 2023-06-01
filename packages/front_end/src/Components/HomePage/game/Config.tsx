@@ -3,11 +3,12 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { theme } from '../../../Theme'
-import { scene } from './scene';
+import oneVSone from './oneVSone';
+import option from './Option';
+import threeVSone from './threeVSone'
 
 export default function GameContainer() {
   React.useEffect(() => {
-    // Initialize Phaser game
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
       parent: 'PONG',
@@ -15,10 +16,6 @@ export default function GameContainer() {
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        min: {
-          width: 480,
-          height: 480,
-        },
       },
       physics: {
         default: 'arcade',
@@ -26,12 +23,16 @@ export default function GameContainer() {
           gravity: { y: 0 },
         },
       },
-      scene: [scene],
+      scene: [
+        option,
+        oneVSone,
+        threeVSone
+      ]
     };
-
-    const game = new Phaser.Game(config);
+    
+    const pong = new Phaser.Game(config);
     return () => {
-      game.destroy(true);
+      pong.destroy(true);
     }
   }, []);
 
