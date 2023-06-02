@@ -83,7 +83,7 @@ export default class oneVSone extends Phaser.Scene{
 	preload() {
         this.load.image("ball", String(require('../../../images/anhebert.png')));
         this.load.image("bigball", String(require('../../../images/jrossign.png')));
-        //this.load.image("paddle", String(require('../../../images/paddle.png')));
+        //this.load.image("paddle", String(require('../../../images/paddletest.png')));
         this.load.image("paddle1", String(require('../../../images/lmoreno.png')));
         this.load.image("paddle2", String(require('../../../images/bperron.png')));
         this.load.image("wall", "https://cdn.intra.42.fr/users/795abdc885871d07fa86ceee9218d673/tguiter2.jpg");
@@ -184,6 +184,16 @@ export default class oneVSone extends Phaser.Scene{
             this.physics.add.collider(this.ball, this.wall1);
             this.physics.add.collider(this.ball, this.wall2);
             this.physics.add.collider(this.ball, this.wall3);
+            if (this.wall === false){
+                this.physics.add.overlap(this.ball, [this.wall1, this.wall2, this.wall3], () => {
+                    this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                    this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                    this.wall3.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                    this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                    this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                    this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                }, undefined, this);
+            }
         }
 
     }
@@ -364,23 +374,25 @@ export default class oneVSone extends Phaser.Scene{
         if (this.powerup){
             this.power = new PowerUp(this, Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1));
             this.physics.add.overlap(this.ball, this.power, this.power_up, undefined, this);
+            if (this.wall === true || this.random === true)
+                this.physics.add.overlap(this.power, [this.wall1, this.wall2, this.wall3], () => {
+                    this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
+                }, undefined, this);
         }
-
-
     }
 
     new_point(player: number) {
         this.paddle1.disableBody();
         this.paddle2.disableBody();
         this.ball.disableBody();
-        if (this.multi === true)
-            this.multiball.disableBody();
         if (player === 1)
             this.player1Score.setVisible(true);
         else
             this.player2Score.setVisible(true);
         this.rotation = 0;
         this.time.delayedCall(1500, () => {
+            if (this.multi === true)
+                    this.multiball.destroy();
             this.rotation = 1;
             this.player1Score.setVisible(false);
             this.player2Score.setVisible(false);
@@ -409,6 +421,10 @@ export default class oneVSone extends Phaser.Scene{
             this.paddle2.setScale(0.15, 0.25);
             this.ball.setTexture("ball")
             this.ball.setScale(0.2);
+            if (this.powerup === true){
+                this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
+                this.power.enableBody(true, this.power.x, this.power.y, true, true);
+            }
             if (this.random === true){
                 this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
                 this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
@@ -440,6 +456,8 @@ export default class oneVSone extends Phaser.Scene{
                 this.bigPaddle.setVisible(false);
                 this.inverse.setVisible(false);
                 this.multiBall.setVisible(false);
+                if (this.multi === true)
+                    this.multiball.disableBody();
                 this.points2++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points2 === this.win)
@@ -458,6 +476,7 @@ export default class oneVSone extends Phaser.Scene{
                     this.inverse.setVisible(false);
                     this.multiBall.setVisible(false);
                     this.points2++;
+                    this.multiball.disableBody();
                     this.score.setText(`${this.points2}          ${this.points1}`);
                     if (this.points2 === this.win)
                         this.end(2);
@@ -473,6 +492,8 @@ export default class oneVSone extends Phaser.Scene{
                 this.bigPaddle.setVisible(false);
                 this.inverse.setVisible(false);
                 this.multiBall.setVisible(false);
+                if (this.multi === true)
+                    this.multiball.disableBody();
                 this.points1++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points1 === this.win)
@@ -490,6 +511,7 @@ export default class oneVSone extends Phaser.Scene{
                     this.bigPaddle.setVisible(false);
                     this.inverse.setVisible(false);
                     this.multiBall.setVisible(false);
+                    this.multiball.disableBody();
                     this.points1++;
                     this.score.setText(`${this.points2}          ${this.points1}`);
                     if (this.points1 === this.win)
@@ -627,6 +649,16 @@ export default class oneVSone extends Phaser.Scene{
                             this.physics.add.collider(this.multiball, this.wall1);
                             this.physics.add.collider(this.multiball, this.wall2);
                             this.physics.add.collider(this.multiball, this.wall3);
+                            if (this.wall === false){
+                                this.physics.add.overlap(this.ball, [this.wall1, this.wall2, this.wall3], () => {
+                                    this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                                    this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                                    this.wall3.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                                    this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                                    this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                                    this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                                }, undefined, this);
+                            }
                         }
                         this.physics.add.overlap(this.multiball, this.power, this.power_up, undefined, this);
                         this.multi = true;

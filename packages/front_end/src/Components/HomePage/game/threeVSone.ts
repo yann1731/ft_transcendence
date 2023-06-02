@@ -349,6 +349,10 @@ export default class oneVSthree extends Phaser.Scene{
 			this.paddle4.setScale(1.5, 0.15);
             this.ball.setTexture("ball")
             this.ball.setScale(0.2);
+            if (this.powerup === true){
+                this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
+                this.power.enableBody(true, this.power.x, this.power.y, true, true);
+            }
         }, [], this);
     }
 
@@ -375,6 +379,8 @@ export default class oneVSthree extends Phaser.Scene{
 					this.ball.body.x = 1;
 				else
 					this.ball.body.y = 1;
+                if (this.multi === true)
+                    this.multiball.disableBody();
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
@@ -398,6 +404,7 @@ export default class oneVSthree extends Phaser.Scene{
 						this.multiball.body.x = 1;
 					else
 						this.multiball.body.y = 1;
+                    this.multiball.disableBody();
                     this.smash.setVisible(false);
                     this.bigBall.setVisible(false);
                     this.bigPaddle.setVisible(false);
@@ -420,6 +427,8 @@ export default class oneVSthree extends Phaser.Scene{
                 this.inverse.setVisible(false);
                 this.multiBall.setVisible(false);
                 this.points1++;
+                if (this.multi === true)
+                    this.multiball.disableBody();
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points1 === this.win)
                     this.end(1);
@@ -437,6 +446,7 @@ export default class oneVSthree extends Phaser.Scene{
                     this.inverse.setVisible(false);
                     this.multiBall.setVisible(false);
                     this.points1++;
+                    this.multiball.disableBody();
                     this.score.setText(`${this.points2}          ${this.points1}`);
                     if (this.points1 === this.win)
                         this.end(1);
