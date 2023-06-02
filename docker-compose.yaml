@@ -28,10 +28,8 @@ services:
     tty: true
     volumes:
       - ./packages/backend/db:/var/lib/postgresql
-    environment:
-      POSTGRES_USER: puser
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: mydb
+    env_file:
+      - .env
     networks:
       - tr-net
 
