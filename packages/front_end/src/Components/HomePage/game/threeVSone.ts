@@ -74,14 +74,12 @@ export default class oneVSthree extends Phaser.Scene{
     }
 
 	preload() {
-        this.load.image("ball", String(require('../../../images/anhebert.png')));
-        this.load.image("bigball", String(require('../../../images/jrossign.png')));
-        //this.load.image("paddle", String(require('../../../images/paddle.png')));
-        this.load.image("paddle1", String(require('../../../images/lmoreno.png')));
-        this.load.image("paddle2", String(require('../../../images/bperron.png')));
-        this.load.image("sidePaddle", String(require('../../../images/lmoreno2.png')));
-        this.load.image("wall", "https://cdn.intra.42.fr/users/795abdc885871d07fa86ceee9218d673/tguiter2.jpg");
-        this.load.image("power", "https://cdn.intra.42.fr/users/3c08dbaf4b23e2af86168c9147631ace/malord.jpg");
+        this.textures.addBase64('ball', String(require("../../../images/ball.png")));
+        this.textures.addBase64('bigBall', String(require("../../../images/bigBall.png")));
+        this.textures.addBase64('paddle', String(require("../../../images/paddle.png")));
+        this.textures.addBase64('sidePaddle', String(require("../../../images/sidePaddle.png")));
+        this.textures.addBase64('wall', String(require("../../../images/wall.png")));
+        this.load.image("power", String(require("../../../images/power.png")));
         this.cursors = this.input.keyboard?.createCursorKeys();
     }
 
@@ -117,12 +115,12 @@ export default class oneVSthree extends Phaser.Scene{
         this.paddle1 = this.physics.add.sprite(
             (this.ball.width * 0.2) / 2 + 1,
             this.physics.world.bounds.height / 2,
-            "paddle1"
+            "paddle"
         )
         this.paddle2 = this.physics.add.sprite(
             this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
             this.physics.world.bounds.height / 2,
-            "paddle1"
+            "paddle"
         )
         this.paddle3 = this.physics.add.sprite(
             this.physics.world.bounds.width / 2,
@@ -349,6 +347,10 @@ export default class oneVSthree extends Phaser.Scene{
 			this.paddle4.setScale(1.5, 0.15);
             this.ball.setTexture("ball")
             this.ball.setScale(0.2);
+            if (this.powerup === true){
+                this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
+                this.power.enableBody(true, this.power.x, this.power.y, true, true);
+            }
         }, [], this);
     }
 
@@ -375,6 +377,8 @@ export default class oneVSthree extends Phaser.Scene{
 					this.ball.body.x = 1;
 				else
 					this.ball.body.y = 1;
+                if (this.multi === true)
+                    this.multiball.disableBody();
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
@@ -398,6 +402,7 @@ export default class oneVSthree extends Phaser.Scene{
 						this.multiball.body.x = 1;
 					else
 						this.multiball.body.y = 1;
+                    this.multiball.disableBody();
                     this.smash.setVisible(false);
                     this.bigBall.setVisible(false);
                     this.bigPaddle.setVisible(false);
@@ -420,6 +425,8 @@ export default class oneVSthree extends Phaser.Scene{
                 this.inverse.setVisible(false);
                 this.multiBall.setVisible(false);
                 this.points1++;
+                if (this.multi === true)
+                    this.multiball.disableBody();
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points1 === this.win)
                     this.end(1);
@@ -437,6 +444,7 @@ export default class oneVSthree extends Phaser.Scene{
                     this.inverse.setVisible(false);
                     this.multiBall.setVisible(false);
                     this.points1++;
+                    this.multiball.disableBody();
                     this.score.setText(`${this.points2}          ${this.points1}`);
                     if (this.points1 === this.win)
                         this.end(1);

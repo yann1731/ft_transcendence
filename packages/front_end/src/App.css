@@ -1,4 +1,8 @@
 
+@font-face {
+  font-family: 'pong';
+  src: url("../public/pong.ttf");
+}
 
 .chatSection {
     background-image: none;
