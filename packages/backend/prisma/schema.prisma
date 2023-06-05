@@ -10,11 +10,113 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id Int @id @default(autoincrement())
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+enum userPermission {
+  owner
+  admin
+  regular
+}
 
-  email String
-  hash String
+enum chatRoomState {
+  public
+  private
+  pwProtected
+}
+
+enum onlineStatus {
+  online
+  offline
+  inGame
+}
+
+model User {
+  id                   String            @id @default(uuid())
+  avatar               String            @default("default.png")
+  username             String            @unique
+  password             String
+  email                String            @unique
+  win                  Int               @default(0)
+  loss                 Int               @default(0)
+  gamesPlayed          Int               @default(0)
+  userStatus           onlineStatus      @default(offline)
+  twoFaEnabled         Boolean           @default(false)
+  friendListA          UserFriendship[]  @relation("userA")
+  friendListB          UserFriendship[]  @relation("userB")
+  blockedUsers         UserBlocks[]      @relation("blocker")
+  blockedBy            UserBlocks[]      @relation("blocked")
+  chatrooms            ChatroomUser[]
+  sentMessages         PrivateMessage[]  @relation("sentMessages")
+  receivedMessages     PrivateMessage[]  @relation("receivedMessages")
+  sentChatroomMessages ChatroomMessage[]
+  Chatroom             Chatroom[]
+}
+
+model Chatroom {
+  id            String            @id @default(uuid())
+  messages      ChatroomMessage[]
+  state         chatRoomState     @default(public)
+  chatroomOwner User              @relation(fields: [userId], references: [id])
+  password      String?
+  users         ChatroomUser[]
+  userId        String
+  @@map("Chatrooms")
+}
+
+model ChatroomUser {
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  chatroomId String
+  chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
+
+  permission userPermission @default(regular)
+  banStatus  Boolean @default(false)
+  banUntil   DateTime?
+  muteStatus Boolean @default(false)
+
+  @@id([userId, chatroomId])
+  @@map("ChatroomUsers")
+}
+
+model PrivateMessage {
+  id String @id @default(uuid())
+
+  content   String
+  createdAt DateTime @default(now())
+
+  senderId    String
+  sender      User   @relation("sentMessages", fields: [senderId], references: [id])
+  recipientId String
+  receiver    User   @relation("receivedMessages", fields: [recipientId], references: [id])
+}
+
+model ChatroomMessage {
+  id String @id @default(uuid())
+
+  content   String
+  createdAt DateTime @default(now())
+
+  senderId   String
+  sender     User     @relation(fields: [senderId], references: [id])
+  chatroomId String
+  chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
+}
+
+model UserFriendship {
+  id      String @id @default(uuid())
+  userAId String
+  userA   User   @relation("userA", fields: [userAId], references: [id], onDelete: Cascade)
+  userBId String
+  userB   User   @relation("userB", fields: [userBId], references: [id], onDelete: Cascade)
+
+  @@unique([userAId, userBId])
+}
+
+model UserBlocks {
+  id String @id @default(uuid())
+
+  blockerId     String
+  blocker       User   @relation("blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blockedUserId String
+  blockedUser   User   @relation("blocked", fields: [blockedUserId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedUserId])
 }

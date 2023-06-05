@@ -12,5 +12,6 @@ RUN npm install
 
 COPY . .
 
-ENTRYPOINT [ "npm", "run", "start:dev"]
-# ENTRYPOINT [ "/bin/ash" ]
+# ENTRYPOINT [ "npm", "run", "start:dev"]
+ENTRYPOINT [ "/bin/sh", "./script/dbstartup.sh" ]
+# ENTRYPOINT [ "/bin/sh" ]
