@@ -28,8 +28,8 @@ services:
     ports:
       - 5432:5432
     tty: true
-    volumes:
-      - ./packages/backend/db:/var/lib/postgresql
+    # volumes:
+    #   - ./packages/backend/db:/var/lib/postgresql
     env_file:
       - .env
     networks:
