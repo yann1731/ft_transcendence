@@ -16,6 +16,11 @@
     color: white;
   }
 
+  .focusedTextField .MuiOutlinedInput-root.Mui-focused fieldset {
+    border-width: 1px;
+    border-color: white;
+  }
+
   .homeScoreBar {
     background-color: var(--primary-color);
     box-shadow: 4;
@@ -54,11 +59,6 @@
     height: 85vh;
     box-shadow: 4;
     border-radius: 10px;
-  }
-  
-  .focusedTextField .MuiOutlinedInput-root.Mui-focused fieldset {
-    border-width: 1px;
-    border-color: white;
   }
   
   .mainContainerStyle {
@@ -105,3 +105,38 @@
     box-shadow: none;
   }
   
+  .loginBox {
+    background-color: white;
+    border-radius: 10px;
+  }
+
+  .loginTextField .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+    border-color: var(--secondary-color);
+    border-width: 1px;
+  }
+
+  .loginTextField .MuiInputLabel-root {
+    color: grey;
+    border-width: 1px;
+    display: flex;
+    align-items: center;
+  }
+
+  .loginTextField .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: var(--secondary-color);
+    border-width: 2px;
+  }
+
+  .loginTextField .MuiTypography-root {
+    color: grey;
+  }
+
+  .signInStyle {
+    margin-top: 1;
+    text-align: center;
+    color: var(--secondary-color);
+  }
+
+  .loginTextFieldText input {
+    color:black;
+  }
