@@ -10,7 +10,8 @@ import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { theme } from '../../Theme';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -54,11 +55,68 @@ function ProfileContainer() {
 	const handleMenuItemClick = (setting: string) => {
 		if (setting === 'See profile picture') {
 			handleOpen(profilePicture);
-		} 
+		}
+		else if (setting === 'Upload profile picture') {
+			handleChangePicture();
+		}
 		else
 			handleClose();
 	}
 	
+	const [Username, setUserame] = useState('')
+	const handleChangeUsername = async () => {
+/* 		try {
+			const response = axios.put('http://localhost:3000/api/users')
+			setUserame(response.data.Username);
+			}
+			catch(err) {
+				console.error(err)
+			}; */
+	}
+
+	const [Password, setPassword] = useState('')
+	const handleChangePassword = async () => {
+/* 		try {
+			const response = axios.put('http://localhost:3000/api/users')
+			setPassword(response.data.Password);
+			}
+			catch(err) {
+				console.error(err)
+			}; */
+	}
+
+	const [Picture, setPicture] = useState('')
+	const handleChangePicture = async () => {
+/* 		try {
+			const response = axios.put('http://localhost:3000/api/users')
+			setPicture(response.data.Picture);
+			}
+			catch(err) {
+				console.error(err)
+			}; */
+	}
+
+	const [userStatistics, setUserStatistics] = useState({
+		gamesPlayed: 0,
+		wins: 0,
+		losses: 0,
+		winRatio: 0,
+	});
+	
+	useEffect(() => {
+		const fetchUserStatistics = async () => {
+			try {
+				const response = await axios.get('http://localhost:3000/api/users');
+				setUserStatistics(response.data);
+			}
+			catch (err) {
+				console.error(err);
+			}
+		};
+
+		fetchUserStatistics();
+	}, []);
+
 	return (
 		<Box sx={{bgcolor: theme.palette.primary.main}}>
 				<Avatar alt="Profile Picture" src={profilePicture} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
@@ -114,25 +172,25 @@ function ProfileContainer() {
 				<Box sx={{ width: '95%', mt: 3, boxShadow: 10, bgcolor: theme.palette.secondary.main,}}>
 					<Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
 						<Grid item sx={{width: '99%'}}>
-						<Item sx={{bgcolor: 'white', color: 'grey'}}>Nb Games Played: </Item>
+						<Item sx={{bgcolor: 'white', color: 'grey'}}>Nb Games Played: {userStatistics.gamesPlayed} </Item>
 						</Grid>
 						<Grid item sx={{width: '99%'}}>
-						<Item sx={{bgcolor: 'white', color: 'grey'}}>Wins: </Item>
+						<Item sx={{bgcolor: 'white', color: 'grey'}}>Wins: {userStatistics.wins}</Item>
 						</Grid>
 						<Grid item sx={{width: '99%'}}>
-						<Item sx={{bgcolor: 'white', color: 'grey'}}>Losses: </Item>
+						<Item sx={{bgcolor: 'white', color: 'grey'}}>Losses: {userStatistics.losses}</Item>
 						</Grid>
 						<Grid item sx={{width: '99%'}}>
-						<Item sx={{bgcolor: 'white', color: 'grey'}}>Win Ratio: </Item>
+						<Item sx={{bgcolor: 'white', color: 'grey'}}>Win Ratio: {userStatistics.winRatio}</Item>
 						</Grid>
 						<Grid item xs={13}>
 						<Button variant="contained" onClick={handleClick} sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>{active ? "Activate 2FA" : "Deactivate 2FA"}</Button>
 						</Grid>
 						<Grid item xs={13}>
-						<Button variant="contained" sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>Change Username</Button>
+						<Button variant="contained" onClick={handleChangeUsername} sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>Change Username</Button>
 						</Grid>
 						<Grid item xs={13}>
-						<Button variant="contained" sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>Change Password</Button>
+						<Button variant="contained" onClick={handleChangePassword} sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>Change Password</Button>
 						</Grid>
 					</Grid>
     			</Box>

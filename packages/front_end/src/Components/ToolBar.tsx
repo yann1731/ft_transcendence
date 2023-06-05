@@ -102,9 +102,11 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page.label} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page.label}</Typography>
-                </MenuItem>
+                  <Link style={{textDecoration: 'none'}} to={page.link}>
+                    <MenuItem key={page.label} onClick={handleCloseNavMenu} sx={{ color: 'white', fontWeight: 'bold', ":hover": { bgcolor: "cyan", color: "#001828"} }}>
+                      <Typography textAlign="center">{page.label}</Typography>
+                    </MenuItem>
+                </Link>
               ))}
             </Menu>
           </Box>
