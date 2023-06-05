@@ -83,13 +83,25 @@ export default class oneVSone extends Phaser.Scene{
     }
 
 	preload() {
-        this.load.image("ball", String(require('../../../images/anhebert.png')));
-        this.load.image("bigball", String(require('../../../images/jrossign.png')));
-        //this.load.image("paddle", String(require('../../../images/paddle.png')));
+        if (this.face === true){
+            this.load.image("ball", String(require('../../../images/anhebert.png')));
+            this.load.image("bigBall", String(require('../../../images/jrossign.png')));
+        }
+        else{
+            this.textures.addBase64('ball', String(require("../../../images/ball.png")));
+            this.textures.addBase64('bigBall', String(require("../../../images/bigBall.png")));
+        }
+        this.textures.addBase64('paddle', String(require("../../../images/paddle.png")));
         this.load.image("paddle1", String(require('../../../images/lmoreno.png')));
         this.load.image("paddle2", String(require('../../../images/bperron.png')));
-        this.load.image("wall", "https://cdn.intra.42.fr/users/795abdc885871d07fa86ceee9218d673/tguiter2.jpg");
-        this.load.image("power", "https://cdn.intra.42.fr/users/3c08dbaf4b23e2af86168c9147631ace/malord.jpg");
+        if (this.face)
+            this.load.image("wall", "https://cdn.intra.42.fr/users/795abdc885871d07fa86ceee9218d673/tguiter2.jpg");
+        else
+        this.textures.addBase64('wall', String(require("../../../images/wall.png")));
+        if (this.face)
+            this.load.image("power", "https://cdn.intra.42.fr/users/3c08dbaf4b23e2af86168c9147631ace/malord.jpg");
+        else
+            this.load.image("power", String(require("../../../images/power.png")));
         if (this.face)
             this.load.image("background", "https://cdn.intra.42.fr/users/02bd0e2e6838f9e0f6d36bd7968465d6/yst-laur.jpg");
         this.cursors = this.input.keyboard?.createCursorKeys();
@@ -130,7 +142,7 @@ export default class oneVSone extends Phaser.Scene{
        else if (this.wall === true){
             this.wall1 = this.physics.add.sprite(
                 this.physics.world.bounds.width * 0.5,
-                this.physics.world.bounds.height * 0.15,
+                this.physics.world.bounds.height * 0.175,
                 "wall"
             )
             this.wall2 = this.physics.add.sprite(
@@ -227,22 +239,22 @@ export default class oneVSone extends Phaser.Scene{
             this.paddle1 = this.physics.add.sprite(
                 (this.ball.width * 0.2) / 2 + 1,
                 this.physics.world.bounds.height / 4,
-                "paddle1"
+                "paddle"
             )
             this.paddle2 = this.physics.add.sprite(
                 this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
                 this.physics.world.bounds.height / 4,
-                "paddle2"
+                "paddle"
             )
             this.paddle3 = this.physics.add.sprite(
                 (this.ball.width * 0.2) / 2 + 1,
                 this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4,
-                "paddle1"
+                "paddle"
             )
             this.paddle4 = this.physics.add.sprite(
                 this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
                 this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4,
-                "paddle2"
+                "paddle"
             )
         }
             
@@ -489,6 +501,11 @@ export default class oneVSone extends Phaser.Scene{
             this.player2VictoryText.setVisible(true);
         else
             this.player1VictoryText.setVisible(true);
+        if (this.random === true || this.wall === true){
+            this.wall1.setVisible(false);
+            this.wall2.setVisible(false);
+            this.wall3.setVisible(false);
+        }
         this.paddle1.disableBody();
         this.paddle2.disableBody();
         this.scene.pause();
@@ -681,7 +698,7 @@ export default class oneVSone extends Phaser.Scene{
                     this.time.delayedCall(1000, () => {
                         this.bigBall.setVisible(false)
                     }, [], this);
-                    this.ball.setTexture("bigball")
+                    this.ball.setTexture("bigBall")
                     this.ball.setScale(1, 1);
                     this.time.delayedCall(5000, () => {
                         this.ball.setTexture("ball")

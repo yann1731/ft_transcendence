@@ -412,7 +412,7 @@ export default class option extends Phaser.Scene{
 			  this.mode.setVisible(false);
 			  this.wallText.setVisible(false);
 			  
-			if (Phaser.Math.RND.between(1, 100) === 50)
+			if (Phaser.Math.RND.between(50, 51) === 50)
 				this.faces = true;
 			
 
@@ -437,9 +437,9 @@ export default class option extends Phaser.Scene{
 			  }, [], this);
 			  this.time.delayedCall(3000, () => {
 					if (this.single === true)
-				  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
+				  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, face: this.faces});
 				  	else
-						this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
+						this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, face: this.faces});
 			  }, [], this);
 			});
 	}
