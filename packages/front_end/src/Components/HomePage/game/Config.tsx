@@ -5,8 +5,9 @@ import Container from '@mui/material/Container';
 import { theme } from '../../../Theme'
 import oneVSone from './oneVSone';
 import option from './Option';
-import threeVSone from './threeVSone';
 import '../../../App.css';
+import threeVSone from './threeVSone'
+import twoVStwo from './twoVStwo'
 
 export default function GameContainer() {
   React.useEffect(() => {
@@ -27,7 +28,8 @@ export default function GameContainer() {
       scene: [
         option,
         oneVSone,
-        threeVSone
+        threeVSone,
+        twoVStwo
       ]
     };
     

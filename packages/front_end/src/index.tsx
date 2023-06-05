@@ -1,5 +1,4 @@
 import ReactDOM from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
 import { ThemeProvider } from '@mui/system';
 import { theme } from './Theme';
 import { BrowserRouter } from 'react-router-dom';
@@ -19,4 +18,3 @@ root.render(
     </BrowserRouter>
 );
 
-reportWebVitals();
