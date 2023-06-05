@@ -395,6 +395,11 @@ export default class oneVSone extends Phaser.Scene{
     }
 
     new_point(player: number) {
+        if (this.random === true || this.wall === true){
+            this.wall1.setVisible(false);
+            this.wall2.setVisible(false);
+            this.wall3.setVisible(false);
+        }
         this.paddle1.disableBody();
         this.paddle2.disableBody();
         this.ball.disableBody();
@@ -434,6 +439,11 @@ export default class oneVSone extends Phaser.Scene{
             this.paddle2.setScale(0.15, 0.25);
             this.ball.setTexture("ball")
             this.ball.setScale(0.2);
+            if (this.random === true || this.wall === true){
+                this.wall1.setVisible(true);
+                this.wall2.setVisible(true);
+                this.wall3.setVisible(true);
+            }
             if (this.powerup === true){
                 this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
                 this.power.enableBody(true, this.power.x, this.power.y, true, true);
@@ -450,15 +460,15 @@ export default class oneVSone extends Phaser.Scene{
     }
 
     end(player: number) {
-        if (player === 1)
-            this.player2VictoryText.setVisible(true);
-        else
-            this.player1VictoryText.setVisible(true);
         if (this.random === true || this.wall === true){
             this.wall1.setVisible(false);
             this.wall2.setVisible(false);
             this.wall3.setVisible(false);
         }
+        if (player === 1)
+            this.player2VictoryText.setVisible(true);
+        else
+            this.player1VictoryText.setVisible(true);
         this.paddle1.disableBody();
         this.paddle2.disableBody();
         this.scene.pause();
@@ -468,7 +478,7 @@ export default class oneVSone extends Phaser.Scene{
     update() {
         if (this.ball.body)
             if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
-                this.ball.body.x = this.physics.world.bounds.width - 1;
+                this.ball.body.x = this.physics.world.bounds.width - 1 - this.ball.body.width;
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
@@ -487,7 +497,7 @@ export default class oneVSone extends Phaser.Scene{
         if (this.multi)
             if (this.multiball.body)
                 if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width) {
-                    this.multiball.body.x = this.physics.world.bounds.width - 1;
+                    this.multiball.body.x = this.physics.world.bounds.width - 1 - this.multiball.body.width;;
                     this.smash.setVisible(false);
                     this.bigBall.setVisible(false);
                     this.bigPaddle.setVisible(false);
