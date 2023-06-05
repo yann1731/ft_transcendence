@@ -1,5 +1,6 @@
 
 import Phaser from "phaser";
+import '../../../App.css';
 
 export default class option extends Phaser.Scene{
 

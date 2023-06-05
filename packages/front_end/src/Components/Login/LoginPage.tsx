@@ -5,11 +5,14 @@ import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../../Theme';
 
 export default function SignIn() {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   
   useEffect(() => {
     const handleResize = () => {
@@ -33,49 +36,71 @@ export default function SignIn() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+
+    if (email !== "" && password !== "") {
+      alert({
+        email: data.get("email"),
+        password: data.get("password"),
+      });
+  
+      setEmail("");
+      setPassword("");
+    }
   };
+  
 
   return (
     
-    <Container component="main" maxWidth="xs" id="container" sx={{bgcolor: 'white', borderRadius: 2.5, boxShadow: 13}}>
+    <Container component="main" maxWidth="xs" id="container" className="loginBox">
         <br></br>
-        <Typography component="h1" variant="h5" sx={{ mt: 1, textAlign: 'center', color: theme.palette.secondary.main }}>
+        <Typography component="h1" variant="h5" className="signInStyle">
           Sign in
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
+            className="loginTextField"
             required
             fullWidth
             id="email"
+            InputLabelProps={{
+              className: 'loginTextField',
+            }}
             label={
-              <Typography
-                style={{ color: 'grey' }} >
-                  Login
+              <Typography>
+                 Login  
                 </Typography>
             }
             name="email"
             autoComplete="email"
-            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            InputProps={{
+              className:'loginTextFieldText',
+            }}
           />
           <TextField
             margin="normal"
+            className="loginTextField"
             required
             fullWidth
             name="password"
+            InputLabelProps={{
+              className: 'loginTextField',
+            }}
             label={
-              <Typography
-                style={{ color: 'grey' }} >
+              <Typography>
                   Password
                 </Typography>
             }
             type="password"
             id="password"
             autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              className:'loginTextFieldText',
+            }}
           />
           <ThemeProvider theme={ theme }>  
           <FormControlLabel
@@ -97,7 +122,7 @@ export default function SignIn() {
             Sign In
           </Button>
         </Box>
-        <br></br>
+        <br />
     </Container>
     );
 }
