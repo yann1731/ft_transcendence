@@ -1,74 +1,44 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import { theme } from '../../Theme'
 
 export default function ScoresContainer() {
   return (
     <React.Fragment>
       <CssBaseline />
-        <Container maxWidth="xl">
         <Box className={"homeScoreBar"}>
-          SCORE
+          DASHBOARD
+        <Box className={"homeScoreBox"}>
+            <Box sx={{ textAlign: 'center', }}>
+              <Box sx={{color: 'cyan', fontSize: '20px' }}>Hall of Fame</Box>
+              <Box sx={{ color: 'red', fontSize: '15px' }}>Nb games played:</Box><br />
+              <Box sx={{ color: 'red', fontSize: '15px' }}>Wins:</Box><br />
+              <Box sx={{ color: 'red', fontSize: '15px' }}>Losses:</Box><br />
+              <Box sx={{ color: 'red', fontSize: '15px' }}>Current win streak:</Box><br />
+              <Box sx={{ color: 'red', fontSize: '15px' }}>Best streak:</Box>
+            </Box>
         </Box>
         <Box className={"homeScoreBox"}>
-            <Box sx={{height: '33.33%', textAlign: 'center', }}>
-              <Box sx={{color: 'cyan', fontSize: '20px' }}>Hall of Fame</Box>
-                <p style={{color: 'red'}}>
-                  Nb games played:
-                </p>
-                <p style={{color: 'red'}}>
-                  Wins:
-                </p>
-                <p style={{color: 'red'}}>
-                  Losses:
-                </p>
-                <p style={{color: 'red'}}>
-                  Current win streak:
-                </p>
-                <p style={{color: 'red'}}>
-                  Best streak:
-                </p>
-            </Box>
-            <Box sx={{height: '33.33%', textAlign: 'center'}}>
-              <Box sx={{mt: 1, color: 'cyan', fontSize: '20px'}}>Personnal Stats</Box>
-                <p style={{color: 'red'}}>
-                  Nb games played: 
-                </p>
-                <p style={{color: 'red'}}>
-                  Wins:
-                </p>
-                <p style={{color: 'red'}}>
-                  Losses:
-                </p>
-                <p style={{color: 'red'}}>
-                  Current win streak:
-                </p>
-                <p style={{color: 'red'}}>
-                  Best streak:
-                </p>
-            </Box>
-            <Box sx={{height: '33.34%', textAlign: 'center',}}>
-              <Box sx={{mt: 1, color: 'cyan', fontSize: '20px'}}>Opponent's Stats</Box>
-                <p style={{color: 'red'}}>
-                  Nb games played:
-                </p>
-                <p style={{color: 'red'}}>
-                  Wins:
-                </p>
-                <p style={{color: 'red'}}>
-                  Losses:
-                </p>
-                <p style={{color: 'red'}}>
-                  Current win streak:
-                </p>
-                <p style={{color: 'red'}}>
-                  Best streak:
-                </p>
+            <Box sx={{ textAlign: 'center'}}>
+              <Box sx={{mt: 1, color: 'cyan', fontSize: '20px'}}>Personal Stats</Box>
+                <Box sx={{ color: 'red', fontSize: '15px' }}>Nb games played:</Box><br />
+                <Box sx={{ color: 'red', fontSize: '15px' }}>Wins:</Box><br />
+                <Box sx={{ color: 'red', fontSize: '15px' }}>Losses:</Box><br />
+                <Box sx={{ color: 'red', fontSize: '15px' }}>Current win streak:</Box><br />
+                <Box sx={{ color: 'red', fontSize: '15px' }}>Best streak:</Box>
             </Box>
         </Box>
-      </Container>
+        <Box className={"homeScoreBox"}>
+            <Box sx={{height: '34%', textAlign: 'center',}}>
+              <Box sx={{mt: 1, color: 'cyan', fontSize: '20px'}}>Opponent's Stats</Box>
+                <Box sx={{ color: 'red', fontSize: '15px' }}>Nb games played:</Box><br />
+                <Box sx={{ color: 'red', fontSize: '15px' }}>Wins:</Box><br />
+                <Box sx={{ color: 'red', fontSize: '15px' }}>Losses:</Box><br />
+                <Box sx={{ color: 'red', fontSize: '15px' }}>Current win streak:</Box><br />
+                <Box sx={{ color: 'red', fontSize: '15px' }}>Best streak:</Box><br />
+            </Box>
+        </Box>
+        </Box>
     </React.Fragment>
   );
 }

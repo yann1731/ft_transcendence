@@ -6,15 +6,17 @@ import ChatContainer from './Chat';
 
 function Home() {
 	return (
-	<div>
 		<BackgroundContainer>
 			<ResponsiveAppBar />
 			<br></br>
-			<ScoresContainer />
-			<GameContainer />
+			<div>
+				<ScoresContainer />
+			</div>
+			<div>
+				<GameContainer />
+			</div>
 			<ChatContainer />
 		</BackgroundContainer>
-	</div>
 	)
 }
 

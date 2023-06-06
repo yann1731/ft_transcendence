@@ -29,6 +29,7 @@
     font-weight: bold;
     color: cyan;
     font-size: 25px;
+    position: relative;
   }
 
   .gameBoxBar {
@@ -50,14 +51,14 @@
 
   .ingameChatBox {
     background-color: var(--secondary-color);
-    height: 85vh;
+    height: 25vh;
     border-radius: 10px;
 
   }
 
   .homeScoreBox {
     background-color: var(--secondary-color);
-    height: 85vh;
+    height: 27vh;
     box-shadow: 4;
     border-radius: 10px;
   }
