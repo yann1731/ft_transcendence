@@ -11,24 +11,6 @@ import { theme } from '../../Theme';
 import { makeStyles } from "@mui/styles";
 
 export default function SignIn() {
-  
-  const useStyles = makeStyles({
-      focusedTextField: {
-        '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
-          borderColor: 'grey',
-          borderWidth: 1,
-        },
-        '& .MuiInputLabel-root': {
-          color: 'grey',
-          borderWidth: 1,
-        },
-        '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-          borderColor: theme.palette.secondary.main, // Replace 'hover-color' with the desired hover color
-          borderWidth: 2,
-        },
-      },
-  });
-  const classes = useStyles();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -55,51 +37,62 @@ export default function SignIn() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    if (email !== "" && password !== "")
-    {
+
+    if (email !== "" && password !== "") {
       alert({
-       email: data.get("email"),
-       password: data.get("password"),
+        email: data.get("email"),
+        password: data.get("password"),
       });
+  
       setEmail("");
       setPassword("");
     }
   };
+  
 
   return (
     
-    <Container component="main" maxWidth="xs" id="container" sx={{bgcolor: 'white', borderRadius: 2.5, boxShadow: 13}}>
+    <Container component="main" maxWidth="xs" id="container" className="loginBox">
         <br></br>
-        <Typography component="h1" variant="h5" sx={{ mt: 1, textAlign: 'center', color: theme.palette.secondary.main }}>
+        <Typography component="h1" variant="h5" className="signInStyle">
           Sign in
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             className={classes.focusedTextField}
             margin="normal"
+            className="loginTextField"
+            required
             fullWidth
             id="email"
+            InputLabelProps={{
+              className: 'loginTextField',
+            }}
             label={
-              <Typography
-                style={{ color: 'grey'}} >
-                  Login
+              <Typography>
+                 Login  
                 </Typography>
             }
             name="email"
             autoComplete="email"
-            autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            InputProps={{style: {color: 'black'}}}
-            />
+            InputProps={{
+              className:'loginTextFieldText',
+            }}
+          />
           <TextField
             className={classes.focusedTextField}
             margin="normal"
+            className="loginTextField"
+            required
             fullWidth
             name="password"
+            InputLabelProps={{
+              className: 'loginTextField',
+            }}
             label={
-              <Typography
-              style={{ color: 'grey' }} >
+              <Typography>
                   Password
                 </Typography>
             }
@@ -108,9 +101,11 @@ export default function SignIn() {
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            InputProps={{style: {color: 'black'}}}
-            />
-          <ThemeProvider theme={ theme }>
+            InputProps={{
+              className:'loginTextFieldText',
+            }}
+          />
+          <ThemeProvider theme={ theme }>  
           <FormControlLabel
             control={<Checkbox value="remember" style={{ color: theme.palette.secondary.main }} />}
             label={

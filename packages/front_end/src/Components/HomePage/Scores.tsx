@@ -9,23 +9,12 @@ export default function ScoresContainer() {
     <React.Fragment>
       <CssBaseline />
         <Container maxWidth="xl">
-        <Box sx={{
-          bgcolor: theme.palette.primary.main,
-          boxShadow: 4,
-          textAlign: 'center',
-          fontWeight: 'bold',
-          color: 'cyan',
-          fontSize:'25px'
-          }}
-          >SCORE</Box>
-        <Box sx={{ 
-          bgcolor: theme.palette.secondary.main,
-          height: '85vh',
-          boxShadow: 4,
-          border: '1px solid black'
-        }}>
+        <Box className={"homeScoreBar"}>
+          SCORE
+        </Box>
+        <Box className={"homeScoreBox"}>
             <Box sx={{height: '33.33%', textAlign: 'center', }}>
-              <Box sx={{color: 'cyan', fontSize: '20px', border: '0.5px solid black'}}>Hall of Fame</Box>
+              <Box sx={{color: 'cyan', fontSize: '20px' }}>Hall of Fame</Box>
                 <p style={{color: 'red'}}>
                   Nb games played:
                 </p>
@@ -43,7 +32,7 @@ export default function ScoresContainer() {
                 </p>
             </Box>
             <Box sx={{height: '33.33%', textAlign: 'center'}}>
-              <Box sx={{mt: 1, color: 'cyan', fontSize: '20px', border: '0.5px solid black'}}>Personnal Stats</Box>
+              <Box sx={{mt: 1, color: 'cyan', fontSize: '20px'}}>Personnal Stats</Box>
                 <p style={{color: 'red'}}>
                   Nb games played: 
                 </p>
@@ -61,7 +50,7 @@ export default function ScoresContainer() {
                 </p>
             </Box>
             <Box sx={{height: '33.34%', textAlign: 'center',}}>
-              <Box sx={{mt: 1, color: 'cyan', fontSize: '20px', border: '0.5px solid black'}}>Opponent's Stats</Box>
+              <Box sx={{mt: 1, color: 'cyan', fontSize: '20px'}}>Opponent's Stats</Box>
                 <p style={{color: 'red'}}>
                   Nb games played:
                 </p>
