@@ -1,5 +1,6 @@
 
 import Phaser from "phaser";
+import '../../../App.css';
 
 export default class option extends Phaser.Scene{
 
@@ -412,7 +413,7 @@ export default class option extends Phaser.Scene{
 			  this.mode.setVisible(false);
 			  this.wallText.setVisible(false);
 			  
-			if (Phaser.Math.RND.between(1, 100) === 50)
+			if (Phaser.Math.RND.between(50, 51) === 50)
 				this.faces = true;
 			
 

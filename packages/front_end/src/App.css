@@ -16,10 +16,50 @@
   .focusedTextField .MuiInputLabel-root.Mui-focused {
     color: white;
   }
-  
+
   .focusedTextField .MuiOutlinedInput-root.Mui-focused fieldset {
     border-width: 1px;
     border-color: white;
+  }
+
+  .homeScoreBar {
+    background-color: var(--primary-color);
+    box-shadow: 4;
+    text-align: center;
+    font-weight: bold;
+    color: cyan;
+    font-size: 25px;
+  }
+
+  .gameBoxBar {
+    background-color: var(--primary-color);
+    text-align: center;
+    font-weight: bold;
+    font-size: 25px;
+    width: 50vw;
+    color: cyan;
+  }
+
+  .ingameChatBar {
+    background-color: var(--primary-color);
+    text-align: center;
+    font-weight: bold;
+    color: cyan;
+    font-size: 25px;
+  }
+
+  .ingameChatBox {
+    background-color: var(--secondary-color);
+    height: 85vh;
+    border-radius: 10px;
+
+  }
+
+  .homeScoreBox {
+    background-color: var(--secondary-color);
+    height: 85vh;
+    box-shadow: 4;
+    border-radius: 10px;
   }
   
   .mainContainerStyle {
@@ -66,3 +106,38 @@
     box-shadow: none;
   }
   
+  .loginBox {
+    background-color: white;
+    border-radius: 10px;
+  }
+
+  .loginTextField .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+    border-color: var(--secondary-color);
+    border-width: 1px;
+  }
+
+  .loginTextField .MuiInputLabel-root {
+    color: grey;
+    border-width: 1px;
+    display: flex;
+    align-items: center;
+  }
+
+  .loginTextField .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: var(--secondary-color);
+    border-width: 2px;
+  }
+
+  .loginTextField .MuiTypography-root {
+    color: grey;
+  }
+
+  .signInStyle {
+    margin-top: 1;
+    text-align: center;
+    color: var(--secondary-color);
+  }
+
+  .loginTextFieldText input {
+    color:black;
+  }

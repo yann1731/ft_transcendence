@@ -1,5 +1,6 @@
 
 import Phaser from "phaser";
+import '../../../App.css';
 
 class PowerUp extends Phaser.Physics.Arcade.Sprite {
     constructor(scene: Phaser.Scene, x: number, y: number) {
@@ -469,6 +470,11 @@ export default class oneVSone extends Phaser.Scene{
             this.player2VictoryText.setVisible(true);
         else
             this.player1VictoryText.setVisible(true);
+        if (this.random === true || this.wall === true){
+            this.wall1.setVisible(false);
+            this.wall2.setVisible(false);
+            this.wall3.setVisible(false);
+        }
         this.paddle1.disableBody();
         this.paddle2.disableBody();
         this.scene.pause();
