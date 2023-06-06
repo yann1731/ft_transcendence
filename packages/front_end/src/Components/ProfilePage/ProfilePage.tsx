@@ -66,18 +66,18 @@ function ProfileContainer() {
 	const [Username, setUserame] = useState('')
 	const handleChangeUsername = async () => {
 /* 		try {
-			const response = axios.put('http://localhost:3000/api/users')
+			const response = await axios.put('http://localhost:3000/user')
 			setUserame(response.data.Username);
 			}
 			catch(err) {
 				console.error(err)
-			}; */
+			};
 	}
 
 	const [Password, setPassword] = useState('')
 	const handleChangePassword = async () => {
 /* 		try {
-			const response = axios.put('http://localhost:3000/api/users')
+			const response = axios.put('http://localhost:3000/user')
 			setPassword(response.data.Password);
 			}
 			catch(err) {
@@ -88,7 +88,7 @@ function ProfileContainer() {
 	const [Picture, setPicture] = useState('')
 	const handleChangePicture = async () => {
 /* 		try {
-			const response = axios.put('http://localhost:3000/api/users')
+			const response = axios.put('http://localhost:3000/user')
 			setPicture(response.data.Picture);
 			}
 			catch(err) {

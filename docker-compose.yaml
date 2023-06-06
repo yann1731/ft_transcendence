@@ -12,7 +12,7 @@ services:
     networks:
       - tr-net
     volumes:
-        - ./packages/backend:/serv/backend
+        - ./packages/backend/db:/var/lib/postgresql
         # - ./packages:/serv
         # - bk:/srv/app
     tty: true
