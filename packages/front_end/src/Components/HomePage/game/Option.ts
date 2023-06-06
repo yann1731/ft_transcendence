@@ -1,5 +1,6 @@
 
 import Phaser from "phaser";
+import '../../../App.css';
 
 export default class option extends Phaser.Scene{
 
@@ -8,6 +9,7 @@ export default class option extends Phaser.Scene{
 	powerUp: boolean = false;
 	faces: boolean = false;
 	single: boolean = true;
+	two: boolean = false;
 	multiple: boolean = false;
 
 	rateSpeed: number = 0.0006;
@@ -20,6 +22,7 @@ export default class option extends Phaser.Scene{
 	settingThreeButton!: Phaser.GameObjects.Text;
 	randomButton!: Phaser.GameObjects.Text;
 	one!: Phaser.GameObjects.Text;
+	twoButton!: Phaser.GameObjects.Text;
 	three!: Phaser.GameObjects.Text;
 	title!: Phaser.GameObjects.Text;
 	rate!: Phaser.GameObjects.Text;
@@ -104,8 +107,10 @@ export default class option extends Phaser.Scene{
 			  this.time.delayedCall(3000, () => {
 					if (this.single === true)
 				  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
-					else
+					else if (this.multiple === true)
 						this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
+					else
+				  		this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
 				}, [], this);
 			});
   
@@ -123,7 +128,7 @@ export default class option extends Phaser.Scene{
 		this.mode.setOrigin(0.5)
   
 		  
-		  this.one = this.add.text(this.physics.world.bounds.width * 0.4, this.physics.world.bounds.height * 0.5, '1 v 1', {
+		  this.one = this.add.text(this.physics.world.bounds.width * 0.3, this.physics.world.bounds.height * 0.5, '1 v 1', {
 			  fontFamily: 'pong',
 			  fontSize: '24px',
 			  color: '#000000',
@@ -143,6 +148,11 @@ export default class option extends Phaser.Scene{
 					  this.three.setColor('#ffffff');
 					  this.three.setStyle({ backgroundColor: '#000000' });
 				  }
+				  if (this.two === true){
+					this.two = false;
+					this.twoButton.setColor('#ffffff');
+					this.twoButton.setStyle({ backgroundColor: '#000000' });
+					}
 				  this.one.setColor('#000000');
 				  this.one.setStyle({ backgroundColor: '#ffffff' });
   
@@ -164,9 +174,57 @@ export default class option extends Phaser.Scene{
 				  this.settingThreeButton.setVisible(false);
 			  }
 		  });
+
+
+		  this.twoButton = this.add.text(this.physics.world.bounds.width * 0.5, this.physics.world.bounds.height * 0.5, '2 v 2', {
+			  fontFamily: 'pong',
+			  fontSize: '24px',
+			  color: '#ffffff',
+			  backgroundColor: '#000000',
+			  padding: {
+				  x: 10,
+				  y: 6
+			  }
+		  });
+		  this.twoButton.setOrigin(0.5);
+		  this.twoButton.setInteractive();
+		  this.twoButton.on('pointerdown', () => {
+			  if (this.two === false){
+				  this.two = true;
+				  if (this.multiple === true){
+					  this.multiple = false;
+					  this.three.setColor('#ffffff');
+					  this.three.setStyle({ backgroundColor: '#000000' });
+				  }
+				  if (this.single === true){
+					  this.single = false;
+					  this.one.setColor('#ffffff');
+					  this.one.setStyle({ backgroundColor: '#000000' });
+				  }
+				  this.twoButton.setColor('#000000');
+				  this.twoButton.setStyle({ backgroundColor: '#ffffff' });
+  
+				  this.wallButton.setInteractive(true)
+				  this.randomButton.setInteractive(true)
+				  this.settingOneButton.setInteractive(true)
+				  this.wallText.setVisible(true);
+				  this.wallButton.setVisible(true);
+				  this.randomButton.setVisible(true);
+				  this.settingOneButton.setVisible(true);
+				  this.settingThreeButton.setInteractive(false)
+				  this.slow.setInteractive(false);
+				  this.medium.setInteractive(false);
+				  this.fast.setInteractive(false);
+				  this.rate.setVisible(false);
+				  this.slow.setVisible(false);
+				  this.medium.setVisible(false);
+				  this.fast.setVisible(false);
+				  this.settingThreeButton.setVisible(false);
+			  }
+		  });
 		  
   
-		  this.three = this.add.text(this.physics.world.bounds.width * 0.6, this.physics.world.bounds.height * 0.5, '1 v 3', {
+		  this.three = this.add.text(this.physics.world.bounds.width * 0.7, this.physics.world.bounds.height * 0.5, '1 v 3', {
 			  fontFamily: 'pong',
 			  fontSize: '24px',
 			  color: '#ffffff',
@@ -185,6 +243,11 @@ export default class option extends Phaser.Scene{
 					  this.single = false;
 					  this.one.setColor('#ffffff');
 					  this.one.setStyle({ backgroundColor: '#000000' });
+				  }
+				  if (this.two === true){
+					  this.two = false;
+					  this.twoButton.setColor('#ffffff');
+					  this.twoButton.setStyle({ backgroundColor: '#000000' });
 				  }
 				  this.three.setColor('#000000');
 				  this.three.setStyle({ backgroundColor: '#ffffff' });
@@ -350,7 +413,7 @@ export default class option extends Phaser.Scene{
 			  this.mode.setVisible(false);
 			  this.wallText.setVisible(false);
 			  
-			if (Phaser.Math.RND.between(1, 100) === 50)
+			if (Phaser.Math.RND.between(50, 51) === 50)
 				this.faces = true;
 			
 
@@ -374,7 +437,10 @@ export default class option extends Phaser.Scene{
 				  game.setText('game starting in 1');
 			  }, [], this);
 			  this.time.delayedCall(3000, () => {
-				  this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
+					if (this.single === true)
+				  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, face: this.faces});
+				  	else
+						this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, face: this.faces});
 			  }, [], this);
 			});
 	}

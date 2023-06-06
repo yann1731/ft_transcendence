@@ -1,6 +1,5 @@
 
 import Phaser from "phaser";
-import '../../../App.css';
 
 class PowerUp extends Phaser.Physics.Arcade.Sprite {
     constructor(scene: Phaser.Scene, x: number, y: number) {
@@ -12,18 +11,25 @@ class PowerUp extends Phaser.Physics.Arcade.Sprite {
 }
 
 interface gameData {
+    wall: boolean;
+    random: boolean;
     power: boolean;
-    scaleRate: number;
+    face: boolean;
 }
 
-export default class oneVSthree extends Phaser.Scene{
+export default class oneVSone extends Phaser.Scene{
 
 	ball!: Phaser.Physics.Arcade.Sprite;
     multiball!: Phaser.Physics.Arcade.Sprite;
+    paddle!: Phaser.Physics.Arcade.Sprite;
     paddle1!: Phaser.Physics.Arcade.Sprite;
     paddle2!: Phaser.Physics.Arcade.Sprite;
-	paddle3!: Phaser.Physics.Arcade.Sprite;
-	paddle4!: Phaser.Physics.Arcade.Sprite;
+    paddle3!: Phaser.Physics.Arcade.Sprite;
+    paddle4!: Phaser.Physics.Arcade.Sprite;
+
+    wall1!: Phaser.Physics.Arcade.Sprite;
+    wall2!: Phaser.Physics.Arcade.Sprite;
+    wall3!: Phaser.Physics.Arcade.Sprite;
 
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     keys: any = {};
@@ -50,13 +56,13 @@ export default class oneVSthree extends Phaser.Scene{
     oldVelocityX!: number;
     newOldVelocityX: number = 0;
     rotation: number = 1;
-	rate!: number;
-	paddleScale: number = 1.5;
     power!: PowerUp;
     
+    face: boolean = false;
+    wall: boolean = false;
+    random: boolean = false;
     powerup: boolean = false;
     multi: boolean = false;
-    reduce: boolean = true;
 
     bigPaddle!: Phaser.GameObjects.Text;
     bigBall!: Phaser.GameObjects.Text;
@@ -66,22 +72,99 @@ export default class oneVSthree extends Phaser.Scene{
 
 
     constructor() {
-        super('threeVSone');
+        super('twoVStwo');
     }
 
     init (data: gameData) {
+        this.wall = data.wall;
+        this.random = data.random;
         this.powerup = data.power;
-		this.rate = data.scaleRate;
+        this.face = data.face; 
     }
 
 	preload() {
-        this.textures.addBase64('ball', String(require("../../../images/ball.png")));
-        this.textures.addBase64('bigBall', String(require("../../../images/bigBall.png")));
+        if (this.face === true){
+            this.load.image("ball", String(require('../../../images/anhebert.png')));
+            this.load.image("bigBall", String(require('../../../images/jrossign.png')));
+        }
+        else{
+            this.textures.addBase64('ball', String(require("../../../images/ball.png")));
+            this.textures.addBase64('bigBall', String(require("../../../images/bigBall.png")));
+        }
         this.textures.addBase64('paddle', String(require("../../../images/paddle.png")));
-        this.textures.addBase64('sidePaddle', String(require("../../../images/sidePaddle.png")));
+        this.load.image("paddle1", String(require('../../../images/lmoreno.png')));
+        this.load.image("paddle2", String(require('../../../images/bperron.png')));
+        if (this.face)
+            this.load.image("wall", "https://cdn.intra.42.fr/users/795abdc885871d07fa86ceee9218d673/tguiter2.jpg");
+        else
         this.textures.addBase64('wall', String(require("../../../images/wall.png")));
-        this.load.image("power", String(require("../../../images/power.png")));
+        if (this.face)
+            this.load.image("power", "https://cdn.intra.42.fr/users/3c08dbaf4b23e2af86168c9147631ace/malord.jpg");
+        else
+            this.load.image("power", String(require("../../../images/power.png")));
+        if (this.face)
+            this.load.image("background", "https://cdn.intra.42.fr/users/02bd0e2e6838f9e0f6d36bd7968465d6/yst-laur.jpg");
         this.cursors = this.input.keyboard?.createCursorKeys();
+    }
+
+    map_init() {
+        if (this.face === true){
+            const background = this.add.sprite(0, 0, "background");
+            background.setOrigin(0, 0);
+            background.setScale(this.scale.width / background.width, this.scale.height / background.height);
+       }
+        if (this.random === true){
+            this.wall1 = this.physics.add.sprite(
+                Phaser.Math.RND.between(this.physics.world.bounds.width * 0.2, this.physics.world.bounds.width - this.physics.world.bounds.width * 0.2), 
+                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
+                "wall"
+            )
+            this.wall2 = this.physics.add.sprite(
+                Phaser.Math.RND.between(this.physics.world.bounds.width * 0.2, this.physics.world.bounds.width - this.physics.world.bounds.width * 0.2), 
+                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
+                "wall"
+            )
+            this.wall3 = this.physics.add.sprite(
+                Phaser.Math.RND.between(this.physics.world.bounds.width * 0.2, this.physics.world.bounds.width - this.physics.world.bounds.width * 0.2), 
+                Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2),
+                "wall"
+            )
+            this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+            this.wall1.setImmovable(true);
+            this.wall2.setImmovable(true);
+            this.wall3.setImmovable(true);
+            this.wall1.setOrigin(0.5);
+            this.wall2.setOrigin(0.5);
+            this.wall3.setOrigin(0.5);
+       }
+       else if (this.wall === true){
+            this.wall1 = this.physics.add.sprite(
+                this.physics.world.bounds.width * 0.5,
+                this.physics.world.bounds.height * 0.175,
+                "wall"
+            )
+            this.wall2 = this.physics.add.sprite(
+                this.physics.world.bounds.width * 0.3,
+                this.physics.world.bounds.height * 0.8,
+                "wall"
+            )
+            this.wall3 = this.physics.add.sprite(
+                this.physics.world.bounds.width * 0.7,
+                this.physics.world.bounds.height * 0.5,
+                "wall"
+            )
+            this.wall1.setScale(0.4, 0.05);
+            this.wall2.setScale(0.05, 0.4);
+            this.wall3.setScale(0.05, 0.6);
+            this.wall1.setImmovable(true);
+            this.wall2.setImmovable(true);
+            this.wall3.setImmovable(true);
+            this.wall1.setOrigin(0.5);
+            this.wall2.setOrigin(0.5);
+            this.wall3.setOrigin(0.5);
+       }
     }
 
     ball_init() {
@@ -110,37 +193,79 @@ export default class oneVSthree extends Phaser.Scene{
         this.ball.setCollideWorldBounds(true);
         this.ball.setBounce(1, 1);
         this.ball.setDrag(1.05);
+
+        if (this.wall === true || this.random === true){
+            this.physics.add.collider(this.ball, this.wall1);
+            this.physics.add.collider(this.ball, this.wall2);
+            this.physics.add.collider(this.ball, this.wall3);
+            if (this.wall === false){
+                this.physics.add.overlap(this.ball, [this.wall1, this.wall2, this.wall3], () => {
+                    this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                    this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                    this.wall3.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                    this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                    this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                    this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                }, undefined, this);
+            }
+        }
+
     }
 
     paddle_init() {
-        this.paddle1 = this.physics.add.sprite(
-            (this.ball.width * 0.2) / 2 + 1,
-            this.physics.world.bounds.height / 2,
-            "paddle"
-        )
-        this.paddle2 = this.physics.add.sprite(
-            this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
-            this.physics.world.bounds.height / 2,
-            "paddle"
-        )
-        this.paddle3 = this.physics.add.sprite(
-            this.physics.world.bounds.width / 2,
-            (this.ball.width * 0.2) / 2 + 1,
-            "sidePaddle"
-        )
-        this.paddle4 = this.physics.add.sprite(
-            this.physics.world.bounds.width / 2,
-            this.physics.world.bounds.height - (this.ball.width * 0.2) / 2 - 1 ,
-            "sidePaddle"
-        )
-        
+        if (this.face === true){
+            this.paddle1 = this.physics.add.sprite(
+                (this.ball.width * 0.2) / 2 + 1,
+                this.physics.world.bounds.height / 4,
+                "paddle1"
+            )
+            this.paddle2 = this.physics.add.sprite(
+                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
+                this.physics.world.bounds.height / 4,
+                "paddle2"
+            )
+            this.paddle3 = this.physics.add.sprite(
+                (this.ball.width * 0.2) / 2 + 1,
+                this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4,
+                "paddle1"
+            )
+            this.paddle4 = this.physics.add.sprite(
+                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
+                this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4,
+                "paddle2"
+            )
+        }
+        else{
+            this.paddle1 = this.physics.add.sprite(
+                (this.ball.width * 0.2) / 2 + 1,
+                this.physics.world.bounds.height / 4,
+                "paddle"
+            )
+            this.paddle2 = this.physics.add.sprite(
+                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
+                this.physics.world.bounds.height / 4,
+                "paddle"
+            )
+            this.paddle3 = this.physics.add.sprite(
+                (this.ball.width * 0.2) / 2 + 1,
+                this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4,
+                "paddle"
+            )
+            this.paddle4 = this.physics.add.sprite(
+                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
+                this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4,
+                "paddle"
+            )
+        }
+            
+
         this.paddle1.setImmovable(true);
         this.paddle1.setOrigin(0.5);
         this.paddle1.setScale(0.15, 0.25);
         this.paddle1.setCollideWorldBounds(true);
         this.physics.add.collider(this.ball, this.paddle1);
         
-		this.paddle2.setImmovable(true);
+        this.paddle2.setImmovable(true);
         this.paddle2.setOrigin(0.5);
         this.paddle2.setScale(0.15, 0.25);
         this.paddle2.setCollideWorldBounds(true)
@@ -148,15 +273,15 @@ export default class oneVSthree extends Phaser.Scene{
 
 		this.paddle3.setImmovable(true);
         this.paddle3.setOrigin(0.5);
-        this.paddle3.setScale(0.35, 0.15);
-        this.paddle3.setCollideWorldBounds(true);
-        this.physics.add.collider(this.paddle3, [this.paddle1, this.paddle2, this.ball]);
+        this.paddle3.setScale(0.15, 0.25);
+        this.paddle3.setCollideWorldBounds(true)
+        this.physics.add.collider(this.ball, this.paddle3);
 
 		this.paddle4.setImmovable(true);
         this.paddle4.setOrigin(0.5);
-        this.paddle4.setScale(this.paddleScale, 0.15);
-        this.paddle4.setCollideWorldBounds(true);
-        this.physics.add.collider(this.paddle4, [this.paddle1, this.paddle2, this.ball]);
+        this.paddle4.setScale(0.15, 0.25);
+        this.paddle4.setCollideWorldBounds(true)
+        this.physics.add.collider(this.ball, this.paddle4);
     }
 
     text_init() {
@@ -217,6 +342,9 @@ export default class oneVSthree extends Phaser.Scene{
                 fontSize: '20px',
             }
         );
+
+        if (this.face === true)
+            this.score.setTint(0x000000)
         this.score.setOrigin(0.5);
 
         this.bigBall = this.add.text(
@@ -281,18 +409,25 @@ export default class oneVSthree extends Phaser.Scene{
     }
 
     create() {
+        this.map_init();
         this.text_init();
         this.ball_init();
         this.paddle_init();
 
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-        this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);  
-        this.keys.a  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);  
-        this.keys.d  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);  
+        this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        
+        this.keys.q  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+        this.keys.a  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);        
+        this.keys.e  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+        this.keys.d  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);        
         
         if (this.powerup){
             this.power = new PowerUp(this, Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1));
             this.physics.add.overlap(this.ball, this.power, this.power_up, undefined, this);
+            if (this.wall === true || this.random === true)
+                this.physics.add.overlap(this.power, [this.wall1, this.wall2, this.wall3], () => {
+                    this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
+                }, undefined, this);
         }
 
 
@@ -312,9 +447,7 @@ export default class oneVSthree extends Phaser.Scene{
             this.player2Score.setVisible(true);
         this.rotation = 0;
         this.time.delayedCall(1500, () => {
-            this.paddleScale = 1.5;
             this.rotation = 1;
-            this.reduce = true;
             this.player1Score.setVisible(false);
             this.player2Score.setVisible(false);
             this.paddle1.enableBody();
@@ -324,10 +457,10 @@ export default class oneVSthree extends Phaser.Scene{
             this.ball.enableBody();
             this.ball.setX(this.physics.world.bounds.width / 2);
             this.ball.setY(this.physics.world.bounds.height / 2);
-            this.paddle1.setY(this.physics.world.bounds.height / 2);
-            this.paddle2.setY(this.physics.world.bounds.height / 2);
-            this.paddle3.setX(this.physics.world.bounds.width / 2);
-            this.paddle4.setX(this.physics.world.bounds.width / 2);
+            this.paddle1.setY(this.physics.world.bounds.height / 4);
+            this.paddle2.setY(this.physics.world.bounds.height / 4);
+            this.paddle3.setY(this.physics.world.bounds.height / 4 + this.physics.world.bounds.height / 2);
+            this.paddle4.setY(this.physics.world.bounds.height / 4 + this.physics.world.bounds.height / 2);
             if (this.multi === true)
                 this.multiball.destroy(true);
             this.multi = false;
@@ -344,13 +477,21 @@ export default class oneVSthree extends Phaser.Scene{
             this.modifier2 = 1;
             this.paddle1.setScale(0.15, 0.25);
             this.paddle2.setScale(0.15, 0.25);
-			this.paddle3.setScale(0.35, 0.15);
-			this.paddle4.setScale(1.5, 0.15);
+            this.paddle3.setScale(0.15, 0.25);
+            this.paddle4.setScale(0.15, 0.25);
             this.ball.setTexture("ball")
             this.ball.setScale(0.2);
             if (this.powerup === true){
                 this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
                 this.power.enableBody(true, this.power.x, this.power.y, true, true);
+            }
+            if (this.random === true){
+                this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                this.wall3.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
             }
         }, [], this);
     }
@@ -360,31 +501,28 @@ export default class oneVSthree extends Phaser.Scene{
             this.player2VictoryText.setVisible(true);
         else
             this.player1VictoryText.setVisible(true);
+        if (this.random === true || this.wall === true){
+            this.wall1.setVisible(false);
+            this.wall2.setVisible(false);
+            this.wall3.setVisible(false);
+        }
         this.paddle1.disableBody();
         this.paddle2.disableBody();
-        this.paddle3.disableBody();
-        this.paddle4.disableBody();
         this.scene.pause();
         return;
     }
 
     update() {
-    	if (this.ball.body)
-           if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width || this.ball.body.x === 0 ||
-			this.ball.body.y === 0) {
-				if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width)
-                	this.ball.body.x = this.physics.world.bounds.width - 1;
-				else if (this.ball.body.x === 0)
-					this.ball.body.x = 1;
-				else
-					this.ball.body.y = 1;
-                if (this.multi === true)
-                    this.multiball.disableBody();
+        if (this.ball.body)
+            if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
+                this.ball.body.x = this.physics.world.bounds.width - 1;
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
                 this.inverse.setVisible(false);
                 this.multiBall.setVisible(false);
+                if (this.multi === true)
+                    this.multiball.disableBody();
                 this.points2++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points2 === this.win)
@@ -395,20 +533,14 @@ export default class oneVSthree extends Phaser.Scene{
 
         if (this.multi)
             if (this.multiball.body)
-				if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width || this.multiball.body.x === 0 ||
-					this.multiball.body.y === 0) {
-					if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width)
-                    	this.multiball.body.x = this.physics.world.bounds.width - 1;
-					else if (this.multiball.body.x === 0)
-						this.multiball.body.x = 1;
-					else
-						this.multiball.body.y = 1;
-                    this.multiball.disableBody();
+                if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width) {
+                    this.multiball.body.x = this.physics.world.bounds.width - 1;
                     this.smash.setVisible(false);
                     this.bigBall.setVisible(false);
                     this.bigPaddle.setVisible(false);
                     this.inverse.setVisible(false);
                     this.multiBall.setVisible(false);
+                    this.multiball.disableBody();
                     this.points2++;
                     this.score.setText(`${this.points2}          ${this.points1}`);
                     if (this.points2 === this.win)
@@ -416,18 +548,18 @@ export default class oneVSthree extends Phaser.Scene{
                     else
                         this.new_point(1);
                 }
-
+        
         if (this.ball.body)
-            if (this.ball.body?.y + this.ball.body.height === this.physics.world.bounds.height) {
-                this.ball.body.y = this.physics.world.bounds.height - 1;
+            if (this.ball.body?.x === 0) {
+                this.ball.body.x = 1;
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
                 this.inverse.setVisible(false);
                 this.multiBall.setVisible(false);
-                this.points1++;
                 if (this.multi === true)
                     this.multiball.disableBody();
+                this.points1++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points1 === this.win)
                     this.end(1);
@@ -437,56 +569,58 @@ export default class oneVSthree extends Phaser.Scene{
 
         if (this.multi)
             if (this.multiball.body)
-				if (this.multiball.body?.y + this.multiball.body.height === this.physics.world.bounds.height) {
-                	this.multiball.body.y = this.physics.world.bounds.height - 1;
+                if (this.multiball.body?.x === 0) {
+                    this.multiball.body.x = 1;
                     this.smash.setVisible(false);
                     this.bigBall.setVisible(false);
                     this.bigPaddle.setVisible(false);
                     this.inverse.setVisible(false);
                     this.multiBall.setVisible(false);
-                    this.points1++;
                     this.multiball.disableBody();
+                    this.points1++;
                     this.score.setText(`${this.points2}          ${this.points1}`);
                     if (this.points1 === this.win)
                         this.end(1);
                     else
                         this.new_point(2);
-                } 
+                }
         
         this.paddle1.setVelocityY(0);
         this.paddle2.setVelocityY(0);
-        this.paddle3.setVelocityX(0);
-        this.paddle4.setVelocityX(0);
+        this.paddle3.setVelocityY(0);
+        this.paddle4.setVelocityY(0);
         
-		if (this.keys.w.isDown)
-            if (this.paddle1.body && this.paddle3.body)
-                if (this.paddle1.body.y - this.paddle1.body.height * 0.1 > this.paddle3.body.y + this.paddle3.body.height)
-		            this.paddle1.setVelocityY(-this.paddlespeed * this.modifier1);
-		if (this.keys.s.isDown)
-            if (this.paddle1.body && this.paddle4.body)
-                if (this.paddle1.body.y + this.paddle1.body.height + this.paddle1.body.height * 0.1 < this.paddle4.body.y)
-		            this.paddle1.setVelocityY(this.paddlespeed * this.modifier1);
-
+        
+        if (this.keys.w.isDown)
+        this.paddle1.setVelocityY(-this.paddlespeed * this.modifier1);
+        if (this.keys.s.isDown)
+            if (this.paddle1.body){
+                if (this.paddle1.body.y + this.paddle1.body.height + this.paddle1.body.height * 0.1 < this.physics.world.bounds.height / 2)
+                    this.paddle1.setVelocityY(this.paddlespeed * this.modifier1);}
+		
+        if (this.keys.q.isDown)
+            if (this.paddle3.body)
+                if (this.paddle3.body.y - this.paddle3.body.height * 0.1 > this.physics.world.bounds.height / 2)
+                    this.paddle3.setVelocityY(-this.paddlespeed * this.modifier1);
+        if (this.keys.a.isDown)
+            this.paddle3.setVelocityY(this.paddlespeed * this.modifier1);
+		
         if (this.cursors?.up.isDown)
-            if (this.paddle2.body && this.paddle3.body)
-                if (this.paddle2.body.y - this.paddle2.body.height * 0.1 > this.paddle3.body.y + this.paddle3.body.height)
-        	        this.paddle2.setVelocityY(-this.paddlespeed * this.modifier1);
+        this.paddle2.setVelocityY(-this.paddlespeed * this.modifier2);
         if (this.cursors?.down.isDown)
-            if (this.paddle2.body && this.paddle4.body)
-                if (this.paddle2.body.y + this.paddle2.body.height + this.paddle2.body.height * 0.1 < this.paddle4.body.y)
-        	        this.paddle2.setVelocityY(this.paddlespeed * this.modifier1);
+            if (this.paddle2.body)
+                if (this.paddle2.body.y + this.paddle2.body.height + this.paddle2.body.height * 0.1 < this.physics.world.bounds.height / 2)
+                    this.paddle2.setVelocityY(this.paddlespeed * this.modifier2);
+
+        if (this.keys.e.isDown)
+            if (this.paddle4.body)
+                if (this.paddle4.body.y - this.paddle4.body.height * 0.1 > this.physics.world.bounds.height / 2)
+                    this.paddle4.setVelocityY(-this.paddlespeed * this.modifier2);
+        if (this.keys.d.isDown)
+        this.paddle4.setVelocityY(this.paddlespeed * this.modifier2);
         
-		if (this.keys.a.isDown)
-			this.paddle3.setVelocityX(-this.paddlespeed * this.modifier1)
-		if (this.keys.d.isDown)
-			this.paddle3.setVelocityX(this.paddlespeed * this.modifier1)
-
-		if (this.cursors?.right.isDown)
-        	this.paddle4.setVelocityX(this.paddlespeed * this.modifier2);
-        if (this.cursors?.left.isDown)
-        	this.paddle4.setVelocityX(-this.paddlespeed * this.modifier2);
-
-        this.ball.angle += this.rotation;
+        if (this.paddlespeed < 625)
+            this.paddlespeed += 0.5;
         if (this.ball.body){
             if (this.newOldVelocityX !== 0)
                 if (this.ball.body.velocity.x !== this.newOldVelocityX){
@@ -498,27 +632,7 @@ export default class oneVSthree extends Phaser.Scene{
             if(this.ball.body.velocity.x >= 1000)
                 this.ball.setDrag(1);
         }
-        
-        if (this.paddlespeed < 700)
-            this.paddlespeed += 0.5;
-		this.paddleScale -= this.rate;
-        if (this.reduce === true){
-		    this.paddle4.setScale(this.paddleScale, 0.15)
-		    if (this.paddleScale <= 0.35){
-                this.reduce = false;
-		    	this.smash.setVisible(false);
-                this.bigBall.setVisible(false);
-                this.bigPaddle.setVisible(false);
-                this.inverse.setVisible(false);
-                this.multiBall.setVisible(false);
-                this.points2++;
-                this.score.setText(`${this.points2}          ${this.points1}`);
-                if (this.points2 === this.win)
-                    this.end(2);
-                else
-                    this.new_point(1);
-		    }
-        }
+        this.ball.angle += this.rotation;
     }
 
     power_up() { 
@@ -542,47 +656,49 @@ export default class oneVSthree extends Phaser.Scene{
                     this.time.delayedCall(1000, () => {
                         this.bigPaddle.setVisible(false)
                     }, [], this);
-					switch (Phaser.Math.RND.between(1, 3)){
-						case 1:
-							this.paddle1.setScale(0.5, 0.90);
-                        	this.time.delayedCall(7500, () => {
-                            	this.paddle1.setScale(0.15, 0.25);
-                        	}, [], this);
-							break;
-						case 2:
-							this.paddle2.setScale(0.5, 0.90);
-                        	this.time.delayedCall(7500, () => {
-                            	this.paddle2.setScale(0.15, 0.25);
-                        	}, [], this);
-							break;
-						case 3:
-							this.paddle3.setScale(0.9, 0.5);
-                        	this.time.delayedCall(7500, () => {
-                            	this.paddle3.setScale(0.25, 0.15);
-                        	}, [], this);
-							break;
-					}
-					break;
+                    if (this.ball.body.velocity.x > 0){
+						if (Phaser.Math.RND.frac() === 1)
+                        	this.paddle1.setScale(0.5, 0.90);
+						else
+                        	this.paddle3.setScale(0.5, 0.90);
+                        this.time.delayedCall(7500, () => {
+                            this.paddle1.setScale(0.15, 0.25);
+                            this.paddle3.setScale(0.15, 0.25);
+                        }, [], this);
+                    } else{
+						if (Phaser.Math.RND.frac() === 1)
+                        	this.paddle2.setScale(0.5, 0.90);
+						else
+                        	this.paddle4.setScale(0.5, 0.90);
+                        this.time.delayedCall(7500, () => {
+                            this.paddle2.setScale(0.15, 0.25);
+                            this.paddle4.setScale(0.15, 0.25);
+                        }, [], this);
+                    }
+                    break;
                 case 3:
                     this.inverse.setVisible(true);
                     this.time.delayedCall(1000, () => {
                         this.inverse.setVisible(false)
                     }, [], this);
-					if (Phaser.Math.RND.frac() === 1)
-                    	this.modifier1 = -1;
-					else
-						this.modifier2 = -1;
-                    this.time.delayedCall(5000, () => {
-                            this.modifier1 = 1;
+                    if (this.ball.body.velocity.x > 0){
+                        this.modifier2 = -1;
+                        this.time.delayedCall(5000, () => {
                             this.modifier2 = 1;
-                    }, [], this);
+                        }, [], this);
+                    } else{
+                        this.modifier1 = -1;
+                        this.time.delayedCall(5000, () => {
+                            this.modifier1 = 1;
+                        }, [], this);
+                    }
                     break;
                 case 4:
                     this.bigBall.setVisible(true);
                     this.time.delayedCall(1000, () => {
                         this.bigBall.setVisible(false)
                     }, [], this);
-                    this.ball.setTexture("bigball")
+                    this.ball.setTexture("bigBall")
                     this.ball.setScale(1, 1);
                     this.time.delayedCall(5000, () => {
                         this.ball.setTexture("ball")
@@ -624,6 +740,22 @@ export default class oneVSthree extends Phaser.Scene{
                         this.physics.add.collider(this.multiball, this.paddle2);
                         this.physics.add.collider(this.multiball, this.paddle3);
                         this.physics.add.collider(this.multiball, this.paddle4);
+                
+                        if (this.wall === true || this.random === true){
+                            this.physics.add.collider(this.multiball, this.wall1);
+                            this.physics.add.collider(this.multiball, this.wall2);
+                            this.physics.add.collider(this.multiball, this.wall3);
+                            if (this.wall === false){
+                                this.physics.add.overlap(this.ball, [this.wall1, this.wall2, this.wall3], () => {
+                                    this.wall1.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                                    this.wall2.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                                    this.wall3.setPosition(Phaser.Math.RND.between(this.ball.width, this.physics.world.bounds.width - this.ball.width), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2));     
+                                    this.wall1.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                                    this.wall2.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                                    this.wall3.setScale(Phaser.Math.RND.realInRange(0.2, 0.4), Phaser.Math.RND.realInRange(0.2, 0.4));
+                                }, undefined, this);
+                            }
+                        }
                         this.physics.add.overlap(this.multiball, this.power, this.power_up, undefined, this);
                         this.multi = true;
                     }
