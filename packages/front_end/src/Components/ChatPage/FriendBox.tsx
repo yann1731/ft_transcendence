@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -13,7 +12,6 @@ import { ListItemButton } from '@mui/material';
 		  <Box>
 			<TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth className={"focusedTextField .MuiOutlinedInput-root.Mui-focused fieldset"} />
 		  </Box>
-		  <Divider />
 		  <List>
 			<ListItemButton key="RemySharp">
 			  <ListItemIcon>

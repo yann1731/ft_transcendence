@@ -17,7 +17,7 @@ function LoginToolBar() {
                     alignItems: 'center',
                     height: 64,
                 }}>
-          <PokeBallIcon sx={{ position: 'fixed', left: 15, color: 'cyan' }} />
+          <PokeBallIcon sx={{ position: 'fixed', left: 15, color: 'white' }} />
           <Typography
             variant="h5"
             component="a"

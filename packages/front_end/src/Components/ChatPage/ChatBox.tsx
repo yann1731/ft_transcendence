@@ -65,8 +65,8 @@ const Chat = () => {
       <List>
         {messages.map((message, index) => (
           <ListItem key={index}>
-            <Box>
-              <Box>
+            <Box sx={{ marginLeft: 'auto' }}>
+              <Box sx={{ textAlign: 'right' }}>
                 <ContactMenu></ContactMenu>
                 <ListItemText primary={message.text}></ListItemText>
               </Box>

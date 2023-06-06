@@ -6,7 +6,6 @@ import ChatContainer from './ChatStyles';
 
 function Chat() {
 	return (
-	  
 	  	<BackgroundContainer>
 		  <div>
 			<ResponsiveAppBar />
