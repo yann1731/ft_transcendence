@@ -413,7 +413,7 @@ export default class option extends Phaser.Scene{
 			  this.mode.setVisible(false);
 			  this.wallText.setVisible(false);
 			  
-			if (Phaser.Math.RND.between(50, 51) === 50)
+			if (Phaser.Math.RND.between(1, 69) === 69)
 				this.faces = true;
 			
 
