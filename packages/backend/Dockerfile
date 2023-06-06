@@ -7,11 +7,6 @@ RUN mkdir -p /serv/backend
 WORKDIR /serv/backend
 RUN npm i -g @nestjs/cli --silent
 
-COPY package.json .
-COPY package-lock.json .
-
-RUN npm install
-
 COPY . .
 
 ENTRYPOINT [ "/bin/sh", "./script/dbstartup.sh"]
