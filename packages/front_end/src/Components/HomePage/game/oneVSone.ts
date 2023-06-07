@@ -1,4 +1,5 @@
 
+import io from 'socket.io-client';
 import Phaser from "phaser";
 import '../../../App.css';
 
@@ -32,6 +33,8 @@ export default class oneVSone extends Phaser.Scene{
 
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     keys: any = {};
+
+    socket!: any;
 
     points1: number = 0;
     points2: number = 0;
@@ -381,6 +384,9 @@ export default class oneVSone extends Phaser.Scene{
         this.text_init();
         this.ball_init();
         this.paddle_init();
+        this.socket = io("http://localhost:8081");
+        this.socket.connect();
+
 
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        

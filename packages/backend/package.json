@@ -29,6 +29,7 @@
     "@prisma/client": "^4.15.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
+    "socket.io": "^4.6.2",
     "swagger-ui-express": "^4.6.3",
     "websockets": "^0.2.0"
   },
