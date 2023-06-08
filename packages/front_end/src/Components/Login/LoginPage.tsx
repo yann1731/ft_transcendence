@@ -8,13 +8,14 @@ import Container from "@mui/material/Container";
 import { useEffect, useState } from "react";
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../../Theme';
-import { makeStyles } from "@mui/styles";
+
+interface SubmittedData {
+  email: string | null;
+  password: string | null;
+}
 
 export default function SignIn() {
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  
   useEffect(() => {
     const handleResize = () => {
       const root = document.documentElement;
@@ -26,32 +27,38 @@ export default function SignIn() {
         root.style.minHeight = `${container.offsetHeight}px`;
       }
     };
-
+    
     window.addEventListener("resize", handleResize);
-
+    
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submittedData, setSubmittedData] = useState<SubmittedData[]>([]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     if (email !== "" && password !== "") {
-      alert({
-        email: data.get("email"),
-        password: data.get("password"),
-      });
+      const newSubmittedData: SubmittedData = {
+        email: data.get("email") as string,
+        password: data.get("password") as string,
+      };
   
+      setSubmittedData((prevState) => [...prevState, newSubmittedData]);
+      
       setEmail("");
       setPassword("");
+      alert(`Email: ${newSubmittedData.email}\nPassword: ${newSubmittedData.password}`);
     }
   };
   
 
   return (
-    
     <Container component="main" maxWidth="xs" id="container" className="loginBox">
         <br></br>
         <Typography component="h1" variant="h5" className="signInStyle">
@@ -59,7 +66,6 @@ export default function SignIn() {
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
-            className={classes.focusedTextField}
             margin="normal"
             className="loginTextField"
             required
@@ -82,7 +88,6 @@ export default function SignIn() {
             }}
           />
           <TextField
-            className={classes.focusedTextField}
             margin="normal"
             className="loginTextField"
             required
