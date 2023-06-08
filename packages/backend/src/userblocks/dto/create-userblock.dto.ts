@@ -1,1 +1,4 @@
-export class CreateUserblockDto {}
+export class CreateUserblockDto {
+    blockerId: string;
+    blockedUserId: string;
+}

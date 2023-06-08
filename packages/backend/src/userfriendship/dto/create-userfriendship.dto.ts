@@ -1,1 +1,4 @@
-export class CreateUserfriendshipDto {}
+export class CreateUserfriendshipDto {
+    userAId: string;
+    userBId: string;
+}
