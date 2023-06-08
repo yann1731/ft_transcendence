@@ -4,6 +4,13 @@
   src: url("../public/pong.ttf");
 }
 
+.backgroundContainer {
+  min-height: 100vh;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
 .chatSection {
     background-image: none;
     background-color: var(--secondary-color);
@@ -63,12 +70,33 @@
     border-radius: 10px;
   }
   
+  .homeGameNChat {
+    margin-top: 114px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 25px;
+    width: 50vw;
+  }
+
   .mainContainerStyle {
     display: flex;
     position: fixed;
     top: 9vh;
     left: 0;
     right: 0;
+  }
+
+  .homeDashboard {
+    position: fixed;
+    display: flex;
+    top: 0;
+    left: 0;
+  }
+
+  .homeDashboardBoxes {
+    margin-left: 20px;
+    margin-right: 20px;
+    width: min(30vw, 310px);
   }
   
   .friendsAndChannelStyle {

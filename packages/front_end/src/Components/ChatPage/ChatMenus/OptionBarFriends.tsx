@@ -9,7 +9,7 @@ import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import '../../../App.css';
 
-export default function OptionBarContacts() {
+export default function OptionBarFriends() {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
   
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);

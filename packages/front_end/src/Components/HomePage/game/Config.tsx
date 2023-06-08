@@ -40,7 +40,7 @@ export default function GameContainer() {
   return (
     <React.Fragment>
       <CssBaseline />
-        <div id="PONG" style={{ height: '65vh', width: '50vw'}}>
+        <div id="PONG">
           <Box className={"gameBoxBar"}>GAME</Box>
         </div>
     </React.Fragment>

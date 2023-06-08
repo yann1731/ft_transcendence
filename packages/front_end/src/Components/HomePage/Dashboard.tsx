@@ -35,7 +35,7 @@ export default function DashboardContainer() {
             </Box>
         </Box>
         <Box className={"homeScoreBox"}>
-            <Box sx={{height: '34%', textAlign: 'center',}}>
+            <Box sx={{ textAlign: 'center',}}>
               <Box sx={{mt: 1, color: 'white', fontSize: '20px'}}>Opponent's Stats</Box>
                 <Divider style={{ marginBottom: '10px' }} />
                 <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Nb games played:</Box>
