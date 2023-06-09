@@ -12,7 +12,7 @@ services:
     networks:
       - tr-net
     volumes:
-        - ./packages/backend:/serv/backend
+        - backend:/serv/backend
         # - ./packages:/serv
         # - bk:/srv/app
     tty: true
@@ -28,8 +28,8 @@ services:
     ports:
       - 5432:5432
     tty: true
-    # volumes:
-    #   - ./packages/backend/db:/var/lib/postgresql
+    volumes:
+      - database:/var/lib/postgresql
     env_file:
       - .env
     networks:
@@ -44,7 +44,7 @@ services:
     networks:
       - tr-net
     volumes:
-      - "./packages/front_end/src:/app/src"
+      - "frontend:/app/src"
     ports:
       - 3000:3000
 
@@ -57,6 +57,10 @@ networks:
       #   config:
       #    - subnet: 172.16.0.0/28
 
+volumes:
+  backend:
+  frontend:
+  database:
 # volumes:
 #   bk:
 #     driver: local
