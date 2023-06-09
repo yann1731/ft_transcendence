@@ -22,19 +22,19 @@ export class UserService {
     return user;
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll() {
     return await this.prisma.user.findMany();
   }
 
-  findOne(id: string) {
-    return this.prisma.user.findUnique({where: { id }} );
+  async findOne(id: string) {
+    return await this.prisma.user.findUnique({where: { id }} );
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     return ;
   }
 
-  remove(id: string) {
+  async remove(id: string) {
     return ;
   }
 }
