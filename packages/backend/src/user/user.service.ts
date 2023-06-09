@@ -31,10 +31,24 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    return ;
+    return this.prisma.user.update({
+      where: {
+        id
+      },
+      data: {
+        avatar: updateUserDto.avatar,
+        username: updateUserDto.username,
+        email: updateUserDto.email,
+        win: updateUserDto.win,
+        loss: updateUserDto.loss,
+        gamesPlayed: updateUserDto.gamesPlayed,
+        userStatus: updateUserDto.userStatus,
+        twoFaEnabled: updateUserDto.twoFaEnabled
+      }
+    });
   }
 
   async remove(id: string) {
-    return ;
+    return this.prisma.user.delete({where: {id}});
   }
 }
