@@ -29,7 +29,7 @@ services:
       - 5432:5432
     tty: true
     volumes:
-      - database:/var/lib/postgresql
+      - database:/var/lib/postgresql/data
     env_file:
       - .env
     networks:
@@ -44,7 +44,7 @@ services:
     networks:
       - tr-net
     volumes:
-      - "frontend:/app/src"
+      - frontend:/app/src
     ports:
       - 3000:3000
 

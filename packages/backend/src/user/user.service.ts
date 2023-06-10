@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -19,7 +20,10 @@ export class UserService {
         username: createUserDto.username
       }
     });
-    return user;
+    if (!user)
+      throw new ForbiddenException;
+    else
+      return user;
   }
 
   async findAll() {
@@ -31,7 +35,7 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    return this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: {
         id
       },
@@ -46,6 +50,10 @@ export class UserService {
         twoFaEnabled: updateUserDto.twoFaEnabled
       }
     });
+    if (!user)
+      throw new ForbiddenException;
+    else
+      return user;
   }
 
   async remove(id: string) {
