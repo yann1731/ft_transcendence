@@ -11,7 +11,7 @@ export class ChatroomService {
   async create(createChatroomDto: CreateChatroomDto) {
     const chatroom = this.prisma.chatroom.create({
       data: {
-        chatroomOwner: createChatroomDto.chatroomOwner,
+        chatroomOwner: {connect: { id: createChatroomDto.userId}},
         
       }
     });
