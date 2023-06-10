@@ -55,9 +55,9 @@ model Chatroom {
   messages      ChatroomMessage[]
   state         chatRoomState     @default(public)
   chatroomOwner User              @relation(fields: [userId], references: [id])
+  userId        String
   password      String?
   users         ChatroomUser[]
-  userId        String
   @@map("Chatrooms")
 }
 
