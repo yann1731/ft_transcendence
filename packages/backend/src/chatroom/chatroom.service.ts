@@ -1,26 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
+import { Chatroom } from './entities/chatroom.entity';
 
 @Injectable()
 export class ChatroomService {
-  create(createChatroomDto: CreateChatroomDto) {
-    return 'This action adds a new chatroom';
+  async create(createChatroomDto: CreateChatroomDto) {
+    const chatroom = this.prisma
+    return await ;
   }
 
-  findAll() {
-    return `This action returns all chatroom`;
+  async findAll() {
+    return await `This action returns all chatroom`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chatroom`;
+  async findOne(id: number) {
+    return await `This action returns a #${id} chatroom`;
   }
 
-  update(id: number, updateChatroomDto: UpdateChatroomDto) {
-    return `This action updates a #${id} chatroom`;
+  async update(id: number, updateChatroomDto: UpdateChatroomDto) {
+    return await `This action updates a #${id} chatroom`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} chatroom`;
+  async remove(id: number) {
+    return await `This action removes a #${id} chatroom`;
   }
 }
