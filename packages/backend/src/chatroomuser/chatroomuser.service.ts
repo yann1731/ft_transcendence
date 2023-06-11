@@ -1,26 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateChatroomuserDto } from './dto/create-chatroomuser.dto';
 import { UpdateChatroomuserDto } from './dto/update-chatroomuser.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ChatroomuserService {
-  create(createChatroomuserDto: CreateChatroomuserDto) {
-    return 'This action adds a new chatroomuser';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createChatroomuserDto: CreateChatroomuserDto) {
+    const chatroomuser = await this.prisma.chatroomUser.create({data: {
+      userId: createChatroomuserDto.userId,
+      chatroomId: createChatroomuserDto.chatroomId,
+      permission: createChatroomuserDto.permission
+    }});
+
+    if (!chatroomuser)
+      throw new ForbiddenException;
+    else
+      return chatroomuser;
   }
 
-  findAll() {
+  async findAll() {
     return `This action returns all chatroomuser`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chatroomuser`;
+  async findOne(userId: string, chatroomId: string) {
+    
   }
 
-  update(id: number, updateChatroomuserDto: UpdateChatroomuserDto) {
-    return `This action updates a #${id} chatroomuser`;
+  async update(userId: string, chatroomId: string, updateChatroomuserDto: UpdateChatroomuserDto) {
+  
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} chatroomuser`;
+  async remove(userId: string, chatroomId: string) {
+
   }
 }
