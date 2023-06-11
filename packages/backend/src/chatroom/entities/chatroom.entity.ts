@@ -8,7 +8,7 @@ export class Chatroom {
 	messages?: ChatroomMessage[] ;
 	state: chatRoomState ;
 	chatroomOwner?: User ;
+	userId: string ;
 	password: string  | null;
 	users?: ChatroomUser[] ;
-	userId: string ;
 }
