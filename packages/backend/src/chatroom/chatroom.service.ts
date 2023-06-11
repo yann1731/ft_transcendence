@@ -32,17 +32,26 @@ export class ChatroomService {
   }
 
   async update(id: string, updateChatroomDto: UpdateChatroomDto) {
-    const chatroom = this.prisma.chatroom.update({where: {
+    const chatroom = await this.prisma.chatroom.update({where: {
       id
     },
     data: {
-      messages: updateChatroomDto.messages,
-      users: updateChatroomDto.users
+      messages: {
+        create: [updateChatroomDto.messages]
+      },
+      users: {
+        create: [updateChatroomDto.users]
+      }
     }});
-    return await `This action updates a #${id} chatroom`;
+    if (!chatroom)
+      throw new ForbiddenException;
+    else
+      return chatroom;
   }
 
   async remove(id: string) {
-    return await `This action removes a #${id} chatroom`;
+    const chatroom = await this.prisma.chatroom.delete({where: { id }});
+
+    return chatroom;
   }
 }
