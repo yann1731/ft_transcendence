@@ -6,6 +6,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../../Theme';
 
@@ -38,7 +39,7 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submittedData, setSubmittedData] = useState<SubmittedData[]>([]);
-
+  const navigate = useNavigate();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -54,6 +55,7 @@ export default function SignIn() {
       setEmail("");
       setPassword("");
       alert(`Email: ${newSubmittedData.email}\nPassword: ${newSubmittedData.password}`);
+      navigate('/Home');
     }
   };
   
