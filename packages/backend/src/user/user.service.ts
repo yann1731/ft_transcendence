@@ -31,7 +31,11 @@ export class UserService {
   }
 
   async findOne(id: string) {
-    return await this.prisma.user.findUnique({where: { id }} );
+    const user = await this.prisma.user.findUnique({where: { id }} );
+    if (!user)
+      throw new ForbiddenException;
+    else
+      return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
