@@ -30,6 +30,7 @@ enum onlineStatus {
 
 model User {
   id                   String            @id @default(uuid())
+  
   avatar               String            @default("default.png")
   username             String            @unique
   password             String
@@ -62,6 +63,8 @@ model Chatroom {
 }
 
 model ChatroomUser {
+  id String @id @default(uuid())
+
   userId     String
   user       User     @relation(fields: [userId], references: [id])
   chatroomId String
@@ -72,7 +75,6 @@ model ChatroomUser {
   banUntil   DateTime?
   muteStatus Boolean @default(false)
 
-  @@id([userId, chatroomId])
   @@map("ChatroomUsers")
 }
 
@@ -102,6 +104,7 @@ model ChatroomMessage {
 
 model UserFriendship {
   id      String @id @default(uuid())
+
   userAId String
   userA   User   @relation("userA", fields: [userAId], references: [id], onDelete: Cascade)
   userBId String
