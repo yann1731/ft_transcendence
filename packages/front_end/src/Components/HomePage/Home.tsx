@@ -3,10 +3,11 @@ import BackgroundContainer from '../../Background';
 import DashboardContainer from './Dashboard';
 import { CssBaseline } from '@mui/material';
 import React from 'react';
-import GameNChat from './GameNChat';
-import GameNChatBar from './GameNChatBar';
-import ChatContainer from './Chat';
+import GameNChat from './Game';
+import HomeGameBar from './HomeGameBar';
+import InGameChatContainer from './InGameChat';
 import Box from '@mui/material/Box';
+import InGameChatBar from './InGameChatBar';
 
 export default function Home() {
 	return (
@@ -19,12 +20,13 @@ export default function Home() {
 						<DashboardContainer />
 					</div>
 					<div className="homeGameNChat">
-						<Box sx={{ display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 550px)' }}>
-							<GameNChatBar />
+						<Box>
+							<HomeGameBar />
 							<GameNChat />
 						</Box>
-						<Box sx={{ position: 'fixed', top: '816px', width: '50vw', maxWidth: '850px' }}>
-							<ChatContainer />
+						<Box>
+							<InGameChatBar />
+							<InGameChatContainer />
 						</Box>
 					</div>
 				</div>

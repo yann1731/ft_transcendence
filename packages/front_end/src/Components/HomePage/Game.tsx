@@ -37,6 +37,6 @@ export default function GameNChat() {
     }, []);
 
     return (
-        <Box id="PONG" sx={{ maxWidth: '835px' }}></Box>
+        <Box id="PONG" sx={{ maxWidth: '880px' }}></Box>
     );
 }
