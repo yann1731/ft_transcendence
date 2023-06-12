@@ -11,7 +11,7 @@ import Button from '@mui/material/Button';
 import '../../../App.css';
 import { theme } from 'Theme';
 
-export default function OptionBarContacts() {
+export default function OptionBarFriends() {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
   
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);

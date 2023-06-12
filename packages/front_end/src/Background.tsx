@@ -2,6 +2,7 @@ import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import { useTheme } from '@mui/material/styles';
+import './App.css';
 
 export default function BackgroundContainer({ children }: { children: React.ReactNode }) {
     const theme = useTheme();
@@ -9,18 +10,7 @@ export default function BackgroundContainer({ children }: { children: React.Reac
     return (
         <React.Fragment>
             <CssBaseline />
-                <Container sx={{ 
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    minHeight: '100vh',
-                    minWidth: '100vw',
-                    backgroundColor: theme.palette.background.default, 
-                    display:'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
+            <Container className="backgroundContainer">
                 {children}
             </Container>
         </React.Fragment>
