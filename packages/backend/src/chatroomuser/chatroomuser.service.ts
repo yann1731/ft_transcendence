@@ -24,13 +24,9 @@ export class ChatroomuserService {
     return await this.prisma.chatroomUser.findMany();
   }
 
-  async findOne(userId: string, chatroomId: string) {
-    const chatroomuser = await this.prisma.chatroomUser.findUnique({where: {
-      userId_chatroomId: {
-        userId: userId,
-        chatroomId: chatroomId
-      }
-    }
+  async findOne(id: string) {
+    const chatroomuser = await this.prisma.chatroomUser.findUnique({where:
+      { id }
     });
     if (!chatroomuser)
       throw new ForbiddenException;
@@ -38,12 +34,9 @@ export class ChatroomuserService {
       return chatroomuser;
   }
 
-  async update(userId: string, chatroomId: string, updateChatroomuserDto: UpdateChatroomuserDto) {
-    const chatroomuser = await this.prisma.chatroomUser.update({where: {
-      userId_chatroomId: {
-        userId: userId,
-        chatroomId: chatroomId
-      }},
+  async update(id: string, updateChatroomuserDto: UpdateChatroomuserDto) {
+    const chatroomuser = await this.prisma.chatroomUser.update({where:
+      { id },
       data: {
         permission: updateChatroomuserDto.permission,
         banStatus: updateChatroomuserDto.banStatus,
@@ -57,12 +50,9 @@ export class ChatroomuserService {
       return chatroomuser;
   }
 
-  async remove(userId: string, chatroomId: string) {
-    const chatroomuser = await this.prisma.chatroomUser.delete({where: {
-      userId_chatroomId: {
-        userId: userId,
-        chatroomId: chatroomId
-      }}
+  async remove(id: string) {
+    const chatroomuser = await this.prisma.chatroomUser.delete({where:
+      { id }
     });
 
     if (!chatroomuser)

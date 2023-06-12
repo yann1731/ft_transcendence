@@ -17,18 +17,18 @@ export class ChatroomuserController {
     return this.chatroomuserService.findAll();
   }
 
-  @Get(':userId/:chatroomId')
-  findOne(@Param() params: {userId: string, chatroomId: string}) {
-    return this.chatroomuserService.findOne(params.userId, params.chatroomId);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.chatroomuserService.findOne(id);
   }
 
-  @Patch(':userId/:chatroomId')
-  update(@Param() params: {userId: string, chatroomId: string}, @Body() updateChatroomuserDto: UpdateChatroomuserDto) {
-    return this.chatroomuserService.update(params.userId, params.chatroomId, updateChatroomuserDto);
+  @Patch(':id')
+  update(@Param('id') id: string , @Body() updateChatroomuserDto: UpdateChatroomuserDto) {
+    return this.chatroomuserService.update(id, updateChatroomuserDto);
   }
 
-  @Delete(':userId/:chatroomId')
-  remove(@Param() params: {userId: string, chatroomId: string}) {
-    return this.chatroomuserService.remove(params.userId, params.chatroomId);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.chatroomuserService.remove(id);
   }
 }
