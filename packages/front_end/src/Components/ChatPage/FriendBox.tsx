@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MyFriends from './ChatComponents/Friends';
+import Divider from '@mui/material/Divider';
 
   export default function FriendBox() {
 	return (
