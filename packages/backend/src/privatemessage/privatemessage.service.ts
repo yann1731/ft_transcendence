@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePrivatemessageDto } from './dto/create-privatemessage.dto';
-import { UpdatePrivatemessageDto } from './dto/update-privatemessage.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class PrivatemessageService {
-  create(createPrivatemessageDto: CreatePrivatemessageDto) {
+  constructor(private prisma: PrismaService) {}
+
+  async create(createPrivatemessageDto: CreatePrivatemessageDto) {
     return 'This action adds a new privatemessage';
   }
 
-  findAll() {
+  async findAll() {
     return `This action returns all privatemessage`;
   }
 
-  findOne(id: number) {
+  async findOne(id: string) {
     return `This action returns a #${id} privatemessage`;
   }
 
-  update(id: number, updatePrivatemessageDto: UpdatePrivatemessageDto) {
-    return `This action updates a #${id} privatemessage`;
-  }
-
-  remove(id: number) {
+  async remove(id: string) {
     return `This action removes a #${id} privatemessage`;
   }
 }
