@@ -1,26 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserfriendshipDto } from './dto/create-userfriendship.dto';
-import { UpdateUserfriendshipDto } from './dto/update-userfriendship.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ForbiddenException } from '@nestjs/common';
 
 @Injectable()
 export class UserfriendshipService {
-  create(createUserfriendshipDto: CreateUserfriendshipDto) {
-    return 'This action adds a new userfriendship';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createUserfriendshipDto: CreateUserfriendshipDto) {
+    const userfriendship = await this.prisma.userFriendship.create({
+      data: {
+        userA: {
+          connect: {
+            id: createUserfriendshipDto.userAId
+          }
+        },
+        userB: {
+          connect: {
+            id: createUserfriendshipDto.userBId
+          }
+        }
+      }
+    });
+    return userfriendship;
   }
 
-  findAll() {
-    return `This action returns all userfriendship`;
+  async findAll() {
+    return await this.prisma.userFriendship.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} userfriendship`;
+  async findOne(id: string) {
+    const userfriendship = await this.prisma.userFriendship
   }
 
-  update(id: number, updateUserfriendshipDto: UpdateUserfriendshipDto) {
-    return `This action updates a #${id} userfriendship`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} userfriendship`;
+  async remove(userAId: string, userBId: string) {
+    
   }
 }
