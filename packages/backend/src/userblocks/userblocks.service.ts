@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserblockDto } from './dto/create-userblock.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ForbiddenException } from '@nestjs/common';
 
 @Injectable()
 export class UserblocksService {
@@ -20,18 +21,40 @@ export class UserblocksService {
       }
     }});
     if (!userblocks)
-      
+      throw new ForbiddenException;
+    else
+      return userblocks;
   }
 
   async findAll() {
-    return `This action returns all userblocks`;
+    return await this.prisma.userBlocks.findMany();
   }
 
   async findOne(blockerId: string, blockedUserId: string) {
-    return `This action returns a #${id} userblock`;
+    const userblocks = await this.prisma.userBlocks.findUnique({where: {
+      blockerId_blockedUserId: {
+        blockerId: blockerId,
+        blockedUserId: blockedUserId
+      }
+    }
+    });
+    if (!userblocks)
+      throw new ForbiddenException;
+    else
+      return userblocks;
   }
 
-  async remove(userId: string, blockedUserId: string) {
-    return `This action removes a #${id} userblock`;
+  async remove(blockerId: string, blockedUserId: string) {
+    const userblocks = await this.prisma.userBlocks.delete({where: {
+      blockerId_blockedUserId: {
+        blockerId: blockedUserId,
+        blockedUserId: blockedUserId
+      }
+    }
+    });
+    if (!userblocks)
+      throw new ForbiddenException;
+    else
+      return userblocks;
   }
 }
