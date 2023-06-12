@@ -47,11 +47,11 @@ function ResponsiveAppBar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Tooltip title="Gotta catch em all!">
-            <PokeBallIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15, color: 'cyan' }} />
+            <PokeBallIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15, color: 'white' }} />
           </Tooltip>
           <Tooltip title="Light / Dark Mode" sx={{ position: 'fixed', right: '80px', top: '25px' }}>
             <IconButton>
-              <ThemeModeIcon sx={{ position: 'fixed', right: '80px', top: '22px', color: 'cyan' }} />
+              <ThemeModeIcon sx={{ position: 'fixed', right: '80px', top: '22px', color: 'white' }} />
             </IconButton>
           </Tooltip>
           <Typography
@@ -102,9 +102,11 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page.label} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page.label}</Typography>
-                </MenuItem>
+                  <Link style={{textDecoration: 'none'}} to={page.link}>
+                    <MenuItem key={page.label} onClick={handleCloseNavMenu} sx={{ color: 'white', fontWeight: 'bold', ":hover": { bgcolor: "cyan", color: "#001828"} }}>
+                      <Typography textAlign="center">{page.label}</Typography>
+                    </MenuItem>
+                </Link>
               ))}
             </Menu>
           </Box>
@@ -132,7 +134,7 @@ function ResponsiveAppBar() {
                 <Button variant="outlined"
                   key={page.label}
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'cyan', display: 'block', bgcolor: theme.palette.primary.main, border:'1px solid cyan', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "cyan", color: "#001828"} }}
+                  sx={{ my: 2, color: 'white', display: 'block', bgcolor: theme.palette.primary.main, border:'1px solid white', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "white", color: "#001828"} }}
                   >
                   {page.label}
                 </Button>
