@@ -22,18 +22,29 @@ export class UserfriendshipService {
         }
       }
     });
-    return userfriendship;
+    if (!userfriendship)
+      throw new ForbiddenException;
+    else
+      return userfriendship;
   }
 
   async findAll() {
-    return await this.prisma.userFriendship.findMany();
+    const userfriendship = await this.prisma.userFriendship.findMany();
+    if (!userfriendship)
+      throw new ForbiddenException;
+    else
+      return userfriendship;
   }
 
   async findOne(id: string) {
-    const userfriendship = await this.prisma.userFriendship
+    const userfriendship = await this.prisma.userFriendship.findUnique({where: { id }});
+    if (!userfriendship)
+      throw new ForbiddenException;
+    else
+      return userfriendship;
   }
 
-  async remove(userAId: string, userBId: string) {
-    
+  async remove(id: string) {
+    return await this.prisma.userFriendship.delete({where: { id }});
   }
 }

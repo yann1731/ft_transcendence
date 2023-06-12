@@ -16,13 +16,13 @@ export class UserblocksController {
     return this.userblocksService.findAll();
   }
 
-  @Get(':blockerId/:blockedUserId')
-  findOne(@Param() params: {blockerId: string, blockedUserId: string}) {
-    return this.userblocksService.findOne(params.blockerId, params.blockedUserId);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.userblocksService.findOne(id);
   }
 
-  @Delete(':blockerId/:blockedUserId')
-  remove(@Param() params: {blockerId: string, blockedUserId: string}) {
-    return this.userblocksService.remove(params.blockerId, params.blockedUserId);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.userblocksService.remove(id);
   }
 }

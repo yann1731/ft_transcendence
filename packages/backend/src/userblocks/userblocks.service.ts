@@ -30,13 +30,9 @@ export class UserblocksService {
     return await this.prisma.userBlocks.findMany();
   }
 
-  async findOne(blockerId: string, blockedUserId: string) {
-    const userblocks = await this.prisma.userBlocks.findUnique({where: {
-      blockerId_blockedUserId: {
-        blockerId: blockerId,
-        blockedUserId: blockedUserId
-      }
-    }
+  async findOne(id: string) {
+    const userblocks = await this.prisma.userBlocks.findUnique({where:
+      { id }
     });
     if (!userblocks)
       throw new ForbiddenException;
@@ -44,13 +40,9 @@ export class UserblocksService {
       return userblocks;
   }
 
-  async remove(blockerId: string, blockedUserId: string) {
-    const userblocks = await this.prisma.userBlocks.delete({where: {
-      blockerId_blockedUserId: {
-        blockerId: blockedUserId,
-        blockedUserId: blockedUserId
-      }
-    }
+  async remove(id: string) {
+    const userblocks = await this.prisma.userBlocks.delete({where:
+      { id }
     });
     if (!userblocks)
       throw new ForbiddenException;

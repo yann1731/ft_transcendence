@@ -16,13 +16,13 @@ export class UserfriendshipController {
     return this.userfriendshipService.findAll();
   }
 
-  @Get(':userAId/:userBId')
-  findOne(@Param() params: { userAId: string, userBId: string}) {
-    return this.userfriendshipService.findOne(params.userAId, params.userBId);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.userfriendshipService.findOne(id);
   }
 
-  @Delete(':userAId/:userBId')
-  remove(@Param() params: { userAId: string, userBId: string}) {
-    return this.userfriendshipService.remove(params.userAId, params.userBId);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.userfriendshipService.remove(id);
   }
 }
