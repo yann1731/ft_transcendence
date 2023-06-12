@@ -21,18 +21,53 @@ export class ChatroomuserService {
   }
 
   async findAll() {
-    return `This action returns all chatroomuser`;
+    return await this.prisma.chatroomUser.findMany();
   }
 
   async findOne(userId: string, chatroomId: string) {
-    
+    const chatroomuser = await this.prisma.chatroomUser.findUnique({where: {
+      userId_chatroomId: {
+        userId: userId,
+        chatroomId: chatroomId
+      }
+    }
+    });
+    if (!chatroomuser)
+      throw new ForbiddenException;
+    else
+      return chatroomuser;
   }
 
   async update(userId: string, chatroomId: string, updateChatroomuserDto: UpdateChatroomuserDto) {
-  
+    const chatroomuser = await this.prisma.chatroomUser.update({where: {
+      userId_chatroomId: {
+        userId: userId,
+        chatroomId: chatroomId
+      }},
+      data: {
+        permission: updateChatroomuserDto.permission,
+        banStatus: updateChatroomuserDto.banStatus,
+        banUntil: updateChatroomuserDto.banUntil,
+        muteStatus: updateChatroomuserDto.muteStatus
+      }
+    });
+    if (!chatroomuser)
+      throw new ForbiddenException;
+    else
+      return chatroomuser;
   }
 
   async remove(userId: string, chatroomId: string) {
+    const chatroomuser = await this.prisma.chatroomUser.delete({where: {
+      userId_chatroomId: {
+        userId: userId,
+        chatroomId: chatroomId
+      }}
+    });
 
+    if (!chatroomuser)
+      throw new ForbiddenException;
+    else
+      return chatroomuser;
   }
 }

@@ -1,26 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserblockDto } from './dto/create-userblock.dto';
-import { UpdateUserblockDto } from './dto/update-userblock.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserblocksService {
-  create(createUserblockDto: CreateUserblockDto) {
-    return 'This action adds a new userblock';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createUserblockDto: CreateUserblockDto) {
+    const userblocks = await this.prisma.userBlocks.create({data: {
+      blocker: {
+        connect: {
+          id: createUserblockDto.blockerId
+        }
+      },
+      blockedUser: {
+        connect: {
+          id: createUserblockDto.blockedUserId
+        }
+      }
+    }});
+    if (!userblocks)
+      
   }
 
-  findAll() {
+  async findAll() {
     return `This action returns all userblocks`;
   }
 
-  findOne(id: number) {
+  async findOne(blockerId: string, blockedUserId: string) {
     return `This action returns a #${id} userblock`;
   }
 
-  update(id: number, updateUserblockDto: UpdateUserblockDto) {
-    return `This action updates a #${id} userblock`;
-  }
-
-  remove(id: number) {
+  async remove(userId: string, blockedUserId: string) {
     return `This action removes a #${id} userblock`;
   }
 }
