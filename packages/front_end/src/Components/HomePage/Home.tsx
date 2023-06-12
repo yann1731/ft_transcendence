@@ -1,21 +1,36 @@
 import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
-import ScoresContainer from './Scores';
-import GameContainer from './game/Config';
-import ChatContainer from './Chat';
+import DashboardContainer from './Dashboard';
+import { CssBaseline } from '@mui/material';
+import React from 'react';
+import GameNChat from './Game';
+import HomeGameBar from './HomeGameBar';
+import InGameChatContainer from './InGameChat';
+import Box from '@mui/material/Box';
+import InGameChatBar from './InGameChatBar';
 
-function Home() {
+export default function Home() {
 	return (
-	<div>
-		<BackgroundContainer>
-			<ResponsiveAppBar />
-			<br></br>
-			<ScoresContainer />
-			<GameContainer />
-			<ChatContainer />
+		<React.Fragment>
+			<CssBaseline />
+			<BackgroundContainer>
+				<div className="homeDashboard">
+					<div className="homeDashboardBoxes">
+						<ResponsiveAppBar />
+						<DashboardContainer />
+					</div>
+					<div className="homeGameNChat">
+						<Box>
+							<HomeGameBar />
+							<GameNChat />
+						</Box>
+						<Box>
+							<InGameChatBar />
+							<InGameChatContainer />
+						</Box>
+					</div>
+				</div>
 		</BackgroundContainer>
-	</div>
+		</React.Fragment>
 	)
 }
-
-export default Home;
