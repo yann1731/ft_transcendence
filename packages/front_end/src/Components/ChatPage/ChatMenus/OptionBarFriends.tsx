@@ -7,7 +7,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
+import Button from '@mui/material/Button';
 import '../../../App.css';
+import { theme } from 'Theme';
 
 export default function OptionBarFriends() {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
@@ -20,6 +22,40 @@ export default function OptionBarFriends() {
   
     const handleCloseUserMenu = () => {
       setAnchorElUser(null);
+    };
+
+    const handleAdd = () => {
+      return (alert(":D"))
+    };
+    const handleBlock = () => {
+      return (alert(":O"))
+    };
+    const handleInvite = () => {
+      return (alert(":/"))
+    };
+    const handleProfile = () => {
+      return (alert(":("))
+    };
+
+    const Alert = (option: string) => {
+      switch(option)
+      {
+        case 'Add Friend':
+          handleAdd();
+          break;
+        case 'Block':
+          handleBlock();
+          break;
+        case 'Invite to Play':
+            handleInvite();
+            break;
+        case 'View Profile':
+            handleProfile();
+            break;
+        default:
+          alert(":'(")
+
+      }
     };
   return (
       <AppBar position="relative" sx={{ boxShadow: '0' }}>
@@ -48,7 +84,9 @@ export default function OptionBarFriends() {
               >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                  <Button onClick={() => Alert(setting)}>
+                    <Typography color="white" textAlign="left">{setting}</Typography>
+                  </Button>
                 </MenuItem>
               ))}
             </Menu>

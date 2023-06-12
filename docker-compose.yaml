@@ -7,16 +7,18 @@ services:
       context: ./packages/backend
       dockerfile: Dockerfile
     restart: always
+    env_file:
+      - .env
     networks:
       - tr-net
     volumes:
-        - ./packages/backend:/serv/backend
+        - ./packages/backend/db:/var/lib/postgresql
         # - ./packages:/serv
         # - bk:/srv/app
     tty: true
     ports:
       - 4242:4242
-      - 5000:5000
+      - 5001:5000
     depends_on:
       - database
   
@@ -26,13 +28,12 @@ services:
     ports:
       - 5432:5432
     tty: true
-    volumes:
-      - ./packages/backend/db:/var/lib/postgresql
+    # volumes:
+    #   - ./packages/backend/db:/var/lib/postgresql
     env_file:
       - .env
     networks:
       - tr-net
-
   frontend:
     container_name: frontend
     build:
