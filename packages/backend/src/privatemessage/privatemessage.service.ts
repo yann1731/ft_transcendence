@@ -1,24 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePrivatemessageDto } from './dto/create-privatemessage.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class PrivatemessageService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createPrivatemessageDto: CreatePrivatemessageDto) {
-    return 'This action adds a new privatemessage';
-  }
-
-  async findAll() {
-    return `This action returns all privatemessage`;
-  }
-
-  async findOne(id: string) {
-    return `This action returns a #${id} privatemessage`;
-  }
-
-  async remove(id: string) {
-    return `This action removes a #${id} privatemessage`;
+  async findAll(senderId: string, recipientId: string) {
+    const messages = await this.prisma.privateMessage.findMany({ 
+      where: {
+          OR: [
+            { senderId: senderId, recipientId: recipientId},
+            { senderId: recipientId, recipientId: senderId}
+          ],
+      },
+      orderBy: {
+        createdAt: 'asc'
+      }
+    });
+    if (!messages)
+      throw new BadRequestException;
+    else
+      return messages;
   }
 }
