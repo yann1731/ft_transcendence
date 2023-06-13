@@ -1,22 +1,43 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Chatroom } from './entities/chatroom.entity';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
+import * as argon2 from 'argon2'
+import { CreatePasswordChatroomDto } from './dto/create-passwordChatroom.dto';
+import { emitKeypressEvents } from 'readline';
 
 @Injectable()
 export class ChatroomService {
   constructor(private prisma: PrismaService) { }
+
+  async createWithPass(createPasswordChatroomDto: CreatePasswordChatroomDto) {
+    const hashedPass = await argon2.hash(createPasswordChatroomDto.password);
+    const chatroom = await this.prisma.chatroom.create({
+      data: {
+        chatroomOwner: {connect: { id: createPasswordChatroomDto.userId}},
+        state: createPasswordChatroomDto.state,
+        password: hashedPass
+      }
+    });
+    if (!chatroom)
+      throw new BadRequestException;
+    else
+      return chatroom;
+  }
+
   async create(createChatroomDto: CreateChatroomDto) {
     const chatroom = await this.prisma.chatroom.create({
       data: {
         chatroomOwner: {connect: { id: createChatroomDto.userId}},
-        state: createChatroomDto.state,
-        password: createChatroomDto.password
+        state: createChatroomDto.state
       }
     });
-    return chatroom ;
+    if (!chatroom)
+      throw new BadRequestException;
+    else
+      return chatroom ;
   }
 
   async findAll() {
@@ -26,7 +47,7 @@ export class ChatroomService {
   async findOne(id: string) {
     const chatroom = await this.prisma.chatroom.findUnique({where: { id }});
     if (!chatroom)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return chatroom;
   }
@@ -44,7 +65,7 @@ export class ChatroomService {
       }
     }});
     if (!chatroom)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return chatroom;
   }

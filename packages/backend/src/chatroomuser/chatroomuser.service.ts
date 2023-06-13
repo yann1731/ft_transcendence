@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateChatroomuserDto } from './dto/create-chatroomuser.dto';
 import { UpdateChatroomuserDto } from './dto/update-chatroomuser.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -15,7 +15,7 @@ export class ChatroomuserService {
     }});
 
     if (!chatroomuser)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return chatroomuser;
   }
@@ -29,7 +29,7 @@ export class ChatroomuserService {
       { id }
     });
     if (!chatroomuser)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return chatroomuser;
   }
@@ -45,7 +45,7 @@ export class ChatroomuserService {
       }
     });
     if (!chatroomuser)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return chatroomuser;
   }
@@ -56,7 +56,7 @@ export class ChatroomuserService {
     });
 
     if (!chatroomuser)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return chatroomuser;
   }

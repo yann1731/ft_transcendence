@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserblockDto } from './dto/create-userblock.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ForbiddenException } from '@nestjs/common';
@@ -21,7 +21,7 @@ export class UserblocksService {
       }
     }});
     if (!userblocks)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return userblocks;
   }
@@ -35,7 +35,7 @@ export class UserblocksService {
       { id }
     });
     if (!userblocks)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return userblocks;
   }
@@ -45,7 +45,7 @@ export class UserblocksService {
       { id }
     });
     if (!userblocks)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return userblocks;
   }

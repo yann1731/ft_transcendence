@@ -5,6 +5,6 @@ import { ChatroomUser } from '../../chatroomuser/entities/chatroomuser.entity'
 import { ChatroomMessage } from 'src/chatroommessage/entities/chatroommessage.entity';
 
 export class UpdateChatroomDto extends PartialType(CreateChatroomDto) {
-    messages: ChatroomMessage;
-    users: ChatroomUser;
+    messages?: ChatroomMessage;
+    users?: ChatroomUser;
 }

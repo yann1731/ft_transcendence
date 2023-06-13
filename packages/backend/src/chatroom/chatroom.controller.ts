@@ -1,14 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
+import { CreatePasswordChatroomDto } from './dto/create-passwordChatroom.dto';
 
 @Controller('chatroom')
 export class ChatroomController {
   constructor(private readonly chatroomService: ChatroomService) {}
 
+  @Post("/password")
+  createWithPass(@Body(new ValidationPipe({transform: true})) createPasswordChatroomDto: CreatePasswordChatroomDto) {
+    return this.chatroomService.createWithPass(createPasswordChatroomDto);
+  }
+
   @Post()
-  create(@Body() createChatroomDto: CreateChatroomDto) {
+  create(@Body(new ValidationPipe({transform: true})) createChatroomDto: CreateChatroomDto) {
     return this.chatroomService.create(createChatroomDto);
   }
 

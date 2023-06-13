@@ -3,14 +3,14 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { promises } from 'dns';
-import { User } from '@prisma/client';
+import { ValidationPipe } from '@nestjs/common';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body(new ValidationPipe({ transform: true })) createUserDto: CreateUserDto) {
     return await this.userService.create(createUserDto);
   }
 
@@ -25,7 +25,7 @@ export class UserController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param('id') id: string, @Body(new ValidationPipe({ transform: true })) updateUserDto: UpdateUserDto) {
     return await this.userService.update(id, updateUserDto);
   }
 

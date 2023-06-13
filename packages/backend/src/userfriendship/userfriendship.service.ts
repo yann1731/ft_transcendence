@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserfriendshipDto } from './dto/create-userfriendship.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ForbiddenException } from '@nestjs/common';
@@ -23,7 +23,7 @@ export class UserfriendshipService {
       }
     });
     if (!userfriendship)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return userfriendship;
   }
@@ -31,7 +31,7 @@ export class UserfriendshipService {
   async findAll() {
     const userfriendship = await this.prisma.userFriendship.findMany();
     if (!userfriendship)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return userfriendship;
   }
@@ -39,7 +39,7 @@ export class UserfriendshipService {
   async findOne(id: string) {
     const userfriendship = await this.prisma.userFriendship.findUnique({where: { id }});
     if (!userfriendship)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return userfriendship;
   }
