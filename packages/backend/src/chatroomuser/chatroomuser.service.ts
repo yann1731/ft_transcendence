@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateChatroomuserDto } from './dto/create-chatroomuser.dto';
 import { UpdateChatroomuserDto } from './dto/update-chatroomuser.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
