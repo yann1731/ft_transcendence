@@ -154,6 +154,23 @@
   left: 0;
   right: 0;
 }
+
+.pokeball {
+  position: fixed;
+  left: 15px;
+  color: white;
+  animation: rotation 6s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .signInStyle {
   margin-top: 1;
   text-align: center;
