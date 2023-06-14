@@ -44,7 +44,7 @@ services:
     networks:
       - tr-net
     volumes:
-      - ./packages/front_end:/app/src
+      - ./packages/front_end/src:/app/src/
     ports:
       - 3000:3000
 
