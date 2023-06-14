@@ -9,10 +9,18 @@ export class ChatroomuserService {
 
   async create(createChatroomuserDto: CreateChatroomuserDto) {
     const chatroomuser = await this.prisma.chatroomUser.create({data: {
-      userId: createChatroomuserDto.userId,
-      chatroomId: createChatroomuserDto.chatroomId,
-      permission: createChatroomuserDto.permission
-    }});
+      user: {
+        connect: { 
+          id: createChatroomuserDto.userId
+        }
+      },
+      chatroom: {
+        connect: {
+          id: createChatroomuserDto.chatroomId
+        }
+      }
+    }
+    });
 
     if (!chatroomuser)
       throw new BadRequestException;
