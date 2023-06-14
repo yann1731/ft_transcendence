@@ -51,7 +51,7 @@ function ResponsiveAppBar() {
           </Tooltip>
           <Tooltip title="Light / Dark Mode" sx={{ position: 'fixed', right: '80px', top: '25px' }}>
             <IconButton>
-              <ThemeModeIcon sx={{ position: 'fixed', right: '80px', top: '22px', color: 'white' }} />
+              <ThemeModeIcon sx={{ position: 'fixed', right: '80px', top: '22px', color: 'white', animation: "rotation 0.2s infinite linear" }} />
             </IconButton>
           </Tooltip>
           <Typography
@@ -68,7 +68,7 @@ function ResponsiveAppBar() {
               textDecoration: 'none',
             }}
           >
-            <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/632d52a6376a2b001d128f18.jpg" alt="fat cat" width={65} style={{ position: 'fixed', top: 1, left: 55}}>
+            <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/632d52a6376a2b001d128f18.jpg" alt="fat cat" width={65} className="fatCat">
 			      </img>
           </Typography>
 
@@ -134,7 +134,7 @@ function ResponsiveAppBar() {
                 <Button variant="outlined"
                   key={page.label}
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block', bgcolor: theme.palette.primary.main, border:'1px solid white', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "white", color: "#001828"} }}
+                  sx={{ my: 2, color: 'white', display: 'block', bgcolor: theme.palette.primary.main, border:'1px solid white', marginRight: '15px', animation: "rotation 8s infinite linear", fontWeight: 'bold', ":hover": { bgcolor: "white", color: "#001828"} }}
                   >
                   {page.label}
                 </Button>
@@ -144,7 +144,7 @@ function ResponsiveAppBar() {
 
           <Box sx={{ flexGrow: 0}}>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ position: 'fixed', right: 15, top: '5px' }}>
+              <IconButton onClick={handleOpenUserMenu} sx={{ position: 'fixed', right: 15, top: '5px', animation: "rotation 1s infinite linear" }}>
                 <Avatar alt="Criss de gros chat" src="https://pbs.twimg.com/profile_images/1633238286045962243/JfgDezi9_400x400.jpg" />
               </IconButton>
             </Tooltip>
