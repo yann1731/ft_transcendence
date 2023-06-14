@@ -62,21 +62,21 @@ model Chatroom {
   @@map("Chatrooms")
 }
 
-model ChatroomUser {
-  id String @id @default(uuid())
+  model ChatroomUser {
+    id String @id @default(uuid())
 
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  chatroomId String
-  chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
+    userId     String
+    user       User     @relation(fields: [userId], references: [id])
+    chatroomId String
+    chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
 
-  permission userPermission @default(regular)
-  banStatus  Boolean @default(false)
-  banUntil   DateTime?
-  muteStatus Boolean @default(false)
+    permission userPermission @default(regular)
+    banStatus  Boolean @default(false)
+    banUntil   DateTime?
+    muteStatus Boolean @default(false)
 
-  @@map("ChatroomUsers")
-}
+    @@map("ChatroomUsers")
+  }
 
 model PrivateMessage {
   id String @id @default(uuid())
