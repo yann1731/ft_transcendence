@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { UserblocksService } from './userblocks.service';
 import { CreateUserblockDto } from './dto/create-userblock.dto';
-import { UpdateUserblockDto } from './dto/update-userblock.dto';
 
 @Controller('userblocks')
 export class UserblocksController {
@@ -19,16 +18,11 @@ export class UserblocksController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.userblocksService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserblockDto: UpdateUserblockDto) {
-    return this.userblocksService.update(+id, updateUserblockDto);
+    return this.userblocksService.findOne(id);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userblocksService.remove(+id);
+    return this.userblocksService.remove(id);
   }
 }

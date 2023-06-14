@@ -1,26 +1,63 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateChatroomuserDto } from './dto/create-chatroomuser.dto';
 import { UpdateChatroomuserDto } from './dto/update-chatroomuser.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ChatroomuserService {
-  create(createChatroomuserDto: CreateChatroomuserDto) {
-    return 'This action adds a new chatroomuser';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createChatroomuserDto: CreateChatroomuserDto) {
+    const chatroomuser = await this.prisma.chatroomUser.create({data: {
+      userId: createChatroomuserDto.userId,
+      chatroomId: createChatroomuserDto.chatroomId,
+      permission: createChatroomuserDto.permission
+    }});
+
+    if (!chatroomuser)
+      throw new BadRequestException;
+    else
+      return chatroomuser;
   }
 
-  findAll() {
-    return `This action returns all chatroomuser`;
+  async findAll() {
+    return await this.prisma.chatroomUser.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chatroomuser`;
+  async findOne(id: string) {
+    const chatroomuser = await this.prisma.chatroomUser.findUnique({where:
+      { id }
+    });
+    if (!chatroomuser)
+      throw new BadRequestException;
+    else
+      return chatroomuser;
   }
 
-  update(id: number, updateChatroomuserDto: UpdateChatroomuserDto) {
-    return `This action updates a #${id} chatroomuser`;
+  async update(id: string, updateChatroomuserDto: UpdateChatroomuserDto) {
+    const chatroomuser = await this.prisma.chatroomUser.update({where:
+      { id },
+      data: {
+        permission: updateChatroomuserDto.permission,
+        banStatus: updateChatroomuserDto.banStatus,
+        banUntil: updateChatroomuserDto.banUntil,
+        muteStatus: updateChatroomuserDto.muteStatus
+      }
+    });
+    if (!chatroomuser)
+      throw new BadRequestException;
+    else
+      return chatroomuser;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} chatroomuser`;
+  async remove(id: string) {
+    const chatroomuser = await this.prisma.chatroomUser.delete({where:
+      { id }
+    });
+
+    if (!chatroomuser)
+      throw new BadRequestException;
+    else
+      return chatroomuser;
   }
 }

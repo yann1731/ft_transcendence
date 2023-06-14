@@ -1,58 +1,84 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { User } from './entities/user.entity';
+import * as argon2 from 'argon2'
+import { validate } from 'class-validator';
 
 @Injectable()
 export class UserService {
-  getUsers(): User[] {
-    // Ici, vous pouvez implémenter la logique pour récupérer les données de tous les utilisateurs à partir de votre source de données (par exemple, base de données)
-    // Retournez les données des utilisateurs
-    // Vous pouvez utiliser des bibliothèques ORM ou des requêtes SQL pour interagir avec votre base de données
+  constructor(private prisma: PrismaService) { }
 
-    // Exemple de données statiques pour illustrer le concept
-    const users: User[] = [
-      { id: 1, username: 'john.doe', email: 'john.doe@example.com' },
-      { id: 2, username: 'jane.smith', email: 'jane.smith@example.com' },
-      // Autres utilisateurs...
-    ];
+  async create(createUserDto: CreateUserDto) {
+    console.log(createUserDto);
+    const errors = await validate(createUserDto);
+    console.log(errors);
+      if (errors.length > 0) {
+        throw new BadRequestException(errors);
+      }
 
-    return users;
+    const hashedPass = await argon2.hash(createUserDto.password);
+
+    const user = await this.prisma.user.create({
+      data: {
+        email: createUserDto.email,
+        password: hashedPass,
+        username: createUserDto.username
+      }
+    });
+    if (!user)
+      throw new ForbiddenException;
+    else
+      return user;
   }
 
-  getUserById(userId: number): User | null {
-    // Ici, vous pouvez implémenter la logique pour récupérer les données de l'utilisateur à partir de votre source de données (par exemple, base de données)
-    // Retournez les données de l'utilisateur ou null si l'utilisateur n'est pas trouvé
-    // Vous pouvez utiliser des bibliothèques ORM ou des requêtes SQL pour interagir avec votre base de données
-
-    // Exemple de données statiques pour illustrer le concept
-    const users: User[] = [
-      { id: 1, username: 'john.doe', email: 'john.doe@example.com' },
-      { id: 2, username: 'jane.smith', email: 'jane.smith@example.com' },
-      // Autres utilisateurs...
-    ];
-
-    const user = users.find(user => user.id === userId);
-    return user || null;
+  async findAll() {
+    return await this.prisma.user.findMany();
   }
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async findOne(id: string) {
+    const user = await this.prisma.user.findUnique({where: { id }} );
+    if (!user)
+      throw new ForbiddenException;
+    else
+      return user;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+
+    const errors = await validate(updateUserDto);
+    console.log(errors);
+      if (errors.length > 0) {
+        throw new BadRequestException(errors);
+      }
+
+    const hashedPass = await argon2.hash(updateUserDto.password);
+
+    const user = await this.prisma.user.update({
+      where: {
+        id
+      },
+      data: {
+        avatar: updateUserDto.avatar,
+        username: updateUserDto.username,
+        password: hashedPass,
+        email: updateUserDto.email,
+        win: updateUserDto.win,
+        loss: updateUserDto.loss,
+        gamesPlayed: updateUserDto.gamesPlayed,
+        userStatus: updateUserDto.userStatus,
+        twoFaEnabled: updateUserDto.twoFaEnabled
+      }
+    });
+    if (!user)
+      throw new ForbiddenException;
+    else
+      return user;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    return await this.prisma.user.delete({where: {id}});
   }
 }

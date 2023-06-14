@@ -1,26 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserblockDto } from './dto/create-userblock.dto';
-import { UpdateUserblockDto } from './dto/update-userblock.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserblocksService {
-  create(createUserblockDto: CreateUserblockDto) {
-    return 'This action adds a new userblock';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createUserblockDto: CreateUserblockDto) {
+    const userblocks = await this.prisma.userBlocks.create({data: {
+      blocker: {
+        connect: {
+          id: createUserblockDto.blockerId
+        }
+      },
+      blockedUser: {
+        connect: {
+          id: createUserblockDto.blockedUserId
+        }
+      }
+    }});
+    if (!userblocks)
+      throw new BadRequestException;
+    else
+      return userblocks;
   }
 
-  findAll() {
-    return `This action returns all userblocks`;
+  async findAll() {
+    return await this.prisma.userBlocks.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} userblock`;
+  async findOne(id: string) {
+    const userblocks = await this.prisma.userBlocks.findUnique({where:
+      { id }
+    });
+    if (!userblocks)
+      throw new BadRequestException;
+    else
+      return userblocks;
   }
 
-  update(id: number, updateUserblockDto: UpdateUserblockDto) {
-    return `This action updates a #${id} userblock`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} userblock`;
+  async remove(id: string) {
+    const userblocks = await this.prisma.userBlocks.delete({where:
+      { id }
+    });
+    if (!userblocks)
+      throw new BadRequestException;
+    else
+      return userblocks;
   }
 }

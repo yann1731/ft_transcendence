@@ -1,26 +1,23 @@
-import { Injectable } from '@nestjs/common';
-import { CreateChatroommessageDto } from './dto/create-chatroommessage.dto';
-import { UpdateChatroommessageDto } from './dto/update-chatroommessage.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ChatroommessageService {
-  create(createChatroommessageDto: CreateChatroommessageDto) {
-    return 'This action adds a new chatroommessage';
-  }
+  constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return `This action returns all chatroommessage`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} chatroommessage`;
-  }
-
-  update(id: number, updateChatroommessageDto: UpdateChatroommessageDto) {
-    return `This action updates a #${id} chatroommessage`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} chatroommessage`;
+  async findAll(chatroomId: string) {
+    const chatroommessages = await this.prisma.chatroomMessage.findMany({
+      where: {
+        chatroomId
+      },
+      orderBy: {
+        createdAt: 'asc'
+      }
+    });
+    
+    if (!chatroommessages)
+      throw new BadRequestException;
+    else
+      return chatroommessages;
   }
 }
