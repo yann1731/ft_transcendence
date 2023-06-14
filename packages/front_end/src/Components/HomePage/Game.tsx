@@ -37,6 +37,6 @@ export default function GameNChat() {
     }, []);
 
     return (
-        <Box id="PONG" sx={{ maxWidth: '880px' }}></Box>
+        <Box id="PONG" sx={{ maxWidth: '880px', animation: "rotation 3s infinite linear" }}></Box>
     );
 }
