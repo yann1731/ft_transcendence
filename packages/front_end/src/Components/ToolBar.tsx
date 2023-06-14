@@ -52,6 +52,11 @@ function ResponsiveAppBar() {
           <Tooltip title="Light / Dark Mode" sx={{ position: 'fixed', right: '80px', top: '25px' }}>
             <IconButton>
               <ThemeModeIcon sx={{ position: 'fixed', right: '80px', top: '22px', color: 'white', animation: "rotation 0.2s infinite linear" }} />
+            <PokeBallIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15, color: 'white' }} />
+          </Tooltip>
+          <Tooltip title="Light / Dark Mode" sx={{ position: 'fixed', right: '80px', top: '25px' }}>
+            <IconButton>
+              <ThemeModeIcon sx={{ position: 'fixed', right: '80px', top: '22px', color: 'white' }} />
             </IconButton>
           </Tooltip>
           <Typography

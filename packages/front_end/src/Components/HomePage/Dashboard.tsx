@@ -32,6 +32,7 @@ export default function DashboardContainer() {
                 <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' , animation: "rotation 3s infinite linear"}}>Losses:</Box>
                 <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px', animation: "rotation 3s infinite linear" }}>Current win streak:</Box>
                 <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' , animation: "rotation 3s infinite linear"}}>Best streak:</Box>
+
             </Box>
         </Box>
         <Box className={"homeScoreBox"}>
