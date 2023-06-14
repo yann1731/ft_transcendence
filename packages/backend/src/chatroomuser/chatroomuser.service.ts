@@ -7,7 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class ChatroomuserService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createChatroomuserDto: CreateChatroomuserDto) {
+  async create(createChatroomuserDto: CreateChatroomuserDto) { //creates a new chatroomuser. Associated to a chatroom by the id of the user
     const chatroomuser = await this.prisma.chatroomUser.create({data: {
       user: {
         connect: { 
@@ -28,11 +28,11 @@ export class ChatroomuserService {
       return chatroomuser;
   }
 
-  async findAll() {
+  async findAll() { //returns all users regardless of chatroom they belong to
     return await this.prisma.chatroomUser.findMany();
   }
 
-  async findOne(id: string) {
+  async findOne(id: string) { //returns a specific chatroonuser by id
     const chatroomuser = await this.prisma.chatroomUser.findUnique({where:
       { id }
     });
@@ -42,7 +42,7 @@ export class ChatroomuserService {
       return chatroomuser;
   }
 
-  async update(id: string, updateChatroomuserDto: UpdateChatroomuserDto) {
+  async update(id: string, updateChatroomuserDto: UpdateChatroomuserDto) { //updates a chatroomuser to change permission, ban, length of ban and mute. all those are optional
     const chatroomuser = await this.prisma.chatroomUser.update({where:
       { id },
       data: {
@@ -58,7 +58,7 @@ export class ChatroomuserService {
       return chatroomuser;
   }
 
-  async remove(id: string) {
+  async remove(id: string) { //removes a particular chatroomuser by id
     const chatroomuser = await this.prisma.chatroomUser.delete({where:
       { id }
     });

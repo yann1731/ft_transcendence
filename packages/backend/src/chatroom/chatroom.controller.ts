@@ -28,6 +28,11 @@ export class ChatroomController {
     return this.chatroomService.findOne(id);
   }
 
+  @Get('/user/:id')
+  findAllUsers(@Param('id') id: string) {
+    return this.chatroomService.findAllUsers(id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateChatroomDto: UpdateChatroomDto) {
     return this.chatroomService.update(id, updateChatroomDto);
