@@ -9,7 +9,7 @@ const UserNameHandler = () => {
     const [username, setUserame] = useState('')
     const HandleChangeUsername = async () => {
      		try {
-            const response = await fetch('http://localhost:4242/api/user/1');
+            const response = await fetch('http://localhost:4242/api/user');
             const user: UserName = await response.json();
             alert(user.username);
             setUserame(user.username);

@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { NotFoundException } from '@nestjs/common';
 
 @Controller('user')
 export class UserController {
@@ -13,13 +14,20 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  getUsers(): User[] {
+    return this.userService.getUsers();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  getUserById(@Param('id') id: string): User {
+    const userId = parseInt(id);
+    const user = this.userService.getUserById(userId);
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    return user;
   }
 
   @Patch(':id')

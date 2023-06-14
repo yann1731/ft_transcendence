@@ -54,14 +54,13 @@
 .dashboardTitle {
   background-color: var(--primary-color);
   text-align: center;
-  animation: rotation 3s infinite linear;
 }
 
 .fatCat {
   position: fixed;
   left: 55px;
   top: 1px;
-  animation: rotation 2s infinite linear;
+}
 
 .conversationStyle {
   flex-grow: 1;
@@ -186,7 +185,6 @@
   position: fixed;
   left: 15px;
   color: white;
-  animation: rotation 6s infinite linear;
 }
 
 .homeDashboardBoxes {
