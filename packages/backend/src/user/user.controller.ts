@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserPassDto } from './dto/update-userPass.dto';
 import { promises } from 'dns';
 import { ValidationPipe } from '@nestjs/common';
 
@@ -10,27 +11,32 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async create(@Body(new ValidationPipe({ transform: true })) createUserDto: CreateUserDto) {
-    return await this.userService.create(createUserDto);
+  create(@Body(new ValidationPipe({ transform: true })) createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
   }
 
   @Get()
-  async findAll() {
-    return await this.userService.findAll();
+  findAll() {
+    return this.userService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return await this.userService.findOne(id);
+  findOne(@Param('id') id: string) {
+    return this.userService.findOne(id);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body(new ValidationPipe({ transform: true })) updateUserDto: UpdateUserDto) {
-    return await this.userService.update(id, updateUserDto);
+  update(@Param('id') id: string, @Body(new ValidationPipe({ transform: true })) updateUserDto: UpdateUserDto) {
+    return this.userService.update(id, updateUserDto);
+  }
+
+  @Patch('/password/:id')
+  updatePass(@Param('id') id: string, @Body(new ValidationPipe({transform: true})) updateUserPassDto: UpdateUserPassDto) {
+    return this.userService.updatePass(id, updateUserPassDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.userService.remove(id);
+  remove(@Param('id') id: string) {
+    return this.userService.remove(id);
   }
 }

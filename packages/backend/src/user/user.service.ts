@@ -2,8 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ForbiddenException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserPassDto } from './dto/update-userPass.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User } from './entities/user.entity';
 import * as argon2 from 'argon2'
 import { validate } from 'class-validator';
 
@@ -35,7 +35,11 @@ export class UserService {
   }
 
   async findAll() {
-    return await this.prisma.user.findMany();
+    const user = await this.prisma.user.findMany();
+    if (!user)
+      throw new BadRequestException;
+    else
+      return user;
   }
 
   async findOne(id: string) {
@@ -49,12 +53,9 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto) {
 
     const errors = await validate(updateUserDto);
-    console.log(errors);
       if (errors.length > 0) {
         throw new BadRequestException(errors);
       }
-
-    const hashedPass = await argon2.hash(updateUserDto.password);
 
     const user = await this.prisma.user.update({
       where: {
@@ -63,7 +64,6 @@ export class UserService {
       data: {
         avatar: updateUserDto.avatar,
         username: updateUserDto.username,
-        password: hashedPass,
         email: updateUserDto.email,
         win: updateUserDto.win,
         loss: updateUserDto.loss,
@@ -74,6 +74,26 @@ export class UserService {
     });
     if (!user)
       throw new ForbiddenException;
+    else
+      return user;
+  }
+
+  async updatePass(id: string, updateUserPassDto: UpdateUserPassDto) {
+
+    const errors = await validate(updateUserPassDto);
+    if (errors.length > 0) {
+      throw new BadRequestException(errors);
+    }
+
+    const hashedPass = await argon2.hash(updateUserPassDto.password);
+    const user = await this.prisma.user.update({where: 
+    { id },
+    data: {
+        password: hashedPass
+    }
+    });
+    if (!user)
+      throw new BadRequestException;
     else
       return user;
   }
