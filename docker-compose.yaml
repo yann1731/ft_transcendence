@@ -12,7 +12,7 @@ services:
     networks:
       - tr-net
     volumes:
-        - backend:/serv/backend
+        - ./packages/backend:/serv/backend
         # - ./packages:/serv
         # - bk:/srv/app
     tty: true
@@ -34,16 +34,17 @@ services:
       - .env
     networks:
       - tr-net
+
   frontend:
     container_name: frontend
     build:
       context: ./packages/front_end
       dockerfile: Dockerfile
-    restart: always
+    # restart: always to be re-enabled later
     networks:
       - tr-net
     volumes:
-      - frontend:/app/src
+      - ./packages/front_end:/app/src
     ports:
       - 3000:3000
 
