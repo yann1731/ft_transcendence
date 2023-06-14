@@ -384,9 +384,7 @@ export default class oneVSone extends Phaser.Scene{
         this.text_init();
         this.ball_init();
         this.paddle_init();
-        this.socket = io("http://localhost:8081");
-        this.socket.connect();
-
+        this.socket = io("http://localhost:4242");
 
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        

@@ -1,41 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Server } from 'socket.io';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as cors from "cors"
 
 async function bootstrap() {
-
-
-/*   var express = require('express');
-  var test = express();
-  var server = require('http').Server(test);
-  test.use(express.static(__dirname + '/public'));
-  test.get('/', function (req, res) {
-    res.sendFile(__dirname + '/index.html');
-  });
-  server.listen(8081, function () {
-    console.log(`Listening on ${server.address().port}`);
-  }); */
-
-/*   var io = require('socket.io')(server); */
-
-const io = new Server({
-  cors: {
-    origin: "http://localhost:3000"
-  }
-});
-
-io.listen(4000);
-
-  io.on('connection', function (socket){
-    console.log("new user");
-    socket.on("disconnect", function () {
-      console.log("disconnet");
-    })
-  })
-
-
   const app = await NestFactory.create(AppModule);
+  
+  app.use(cors())
+  app.enableCors({
+    origin: '*',
+    methods: '*',
+  });
 
   const config = new DocumentBuilder()
   .setTitle("Median")
@@ -49,5 +24,3 @@ io.listen(4000);
   await app.listen(4242);
 }
 bootstrap();
-
-
