@@ -54,14 +54,12 @@
 .dashboardTitle {
   background-color: var(--primary-color);
   text-align: center;
-  animation: rotation 3s infinite linear;
 }
 
 .fatCat {
   position: fixed;
   left: 55px;
   top: 1px;
-  animation: rotation 2s infinite linear;
 }
   
 .focusedTextField .MuiInputLabel-root.Mui-focused {
@@ -176,7 +174,7 @@
   position: fixed;
   left: 15px;
   color: white;
-  animation: rotation 6s infinite linear;
+  animation: rotation 20s infinite linear;
 }
 
 .signInStyle {
