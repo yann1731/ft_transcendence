@@ -17,6 +17,7 @@ import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../store/reducers/themeSlice";
+import { RootState } from '../store/store';
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -45,6 +46,7 @@ function ResponsiveAppBar() {
   };
 
   const dispatch = useDispatch();
+  const lightMode = useSelector((state: RootState) => state.theme.lightMode);
 
   return (
     <AppBar position="fixed" style={{ backgroundImage: "none" }} sx={{ bgcolor: theme.palette.secondary.main }}>
@@ -55,7 +57,7 @@ function ResponsiveAppBar() {
             </Tooltip>
           <div id="anim" className="themeButtonStyle">
             <Tooltip title="Light / Dark Mode">
-              <IconButton className="buttonBackground">
+              <IconButton className="buttonBackground" onClick={() => dispatch(toggleTheme())}>
                 <ThemeModeIcon className="iconThemeBackground"></ThemeModeIcon>
               </IconButton>
             </Tooltip>

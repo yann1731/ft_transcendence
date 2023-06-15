@@ -10,7 +10,7 @@ export const syncToggleTheme = () => (dispatch) => {
     dispatch(toggleTheme());
 };
 
-export const themeSlice = createSlice({
+ const themeSlice = createSlice({
     name: "theme",
     initialState,
     reducers: {
@@ -21,5 +21,4 @@ export const themeSlice = createSlice({
 });
 
 export const { toggleTheme } = themeSlice.actions;
-
 export default themeSlice.reducer;
