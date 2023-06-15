@@ -1,15 +1,12 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Chatroom } from './entities/chatroom.entity';
-import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import * as argon2 from 'argon2'
 import { CreatePasswordChatroomDto } from './dto/create-passwordChatroom.dto';
-import { emitKeypressEvents } from 'readline';
 
 @Injectable()
-export class ChatroomService {
+export class ChatroomService { //specifically to create a password protected chatroom
   constructor(private prisma: PrismaService) { }
 
   async createWithPass(createPasswordChatroomDto: CreatePasswordChatroomDto) {
@@ -27,7 +24,7 @@ export class ChatroomService {
       return chatroom;
   }
 
-  async create(createChatroomDto: CreateChatroomDto) {
+  async create(createChatroomDto: CreateChatroomDto) { //creates either a public or private chatroom. Associates ownerId to the user who created it
     const chatroom = await this.prisma.chatroom.create({
       data: {
         chatroomOwner: {connect: { id: createChatroomDto.userId}},
@@ -40,11 +37,11 @@ export class ChatroomService {
       return chatroom ;
   }
 
-  async findAll() {
+  async findAll() { //returns all currently created chatrooms
     return await this.prisma.chatroom.findMany();
   }
 
-  async findOne(id: string) {
+  async findOne(id: string) { //returns a single chatroom using id
     const chatroom = await this.prisma.chatroom.findUnique({where: { id }});
     if (!chatroom)
       throw new BadRequestException;
@@ -52,14 +49,20 @@ export class ChatroomService {
       return chatroom;
   }
 
-  async update(id: string, updateChatroomDto: UpdateChatroomDto) {
+  async findAllUsers(id: string) { //returns all chatroomusers associated to a chatroom by id
+    const users = await this.prisma.chatroomUser.findMany({where: { chatroomId: id }});
+
+    if (!users)
+      throw new BadRequestException;
+    else
+      return users;
+  }
+
+  async update(id: string, updateChatroomDto: UpdateChatroomDto) { //probably will remove.
     const chatroom = await this.prisma.chatroom.update({where: {
       id
     },
     data: {
-      messages: {
-        create: [updateChatroomDto.messages]
-      },
       users: {
         create: [updateChatroomDto.users]
       }
@@ -70,9 +73,11 @@ export class ChatroomService {
       return chatroom;
   }
 
-  async remove(id: string) {
+  async remove(id: string) { //deletes a chatroom. Will also need to delete all users associated with this chatroom
     const chatroom = await this.prisma.chatroom.delete({where: { id }});
-
-    return chatroom;
+    if (!chatroom)
+      throw new BadRequestException;
+    else
+      return chatroom;
   }
 }

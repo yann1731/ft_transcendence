@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class UserblocksService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createUserblockDto: CreateUserblockDto) {
+  async create(createUserblockDto: CreateUserblockDto) { //creates a single block relationship between 2 users
     const userblocks = await this.prisma.userBlocks.create({data: {
       blocker: {
         connect: {
@@ -25,11 +25,11 @@ export class UserblocksService {
       return userblocks;
   }
 
-  async findAll() {
+  async findAll() { //returns all userblocks pairs
     return await this.prisma.userBlocks.findMany();
   }
 
-  async findOne(id: string) {
+  async findOne(id: string) { //returns a block relationship by id
     const userblocks = await this.prisma.userBlocks.findUnique({where:
       { id }
     });
@@ -39,7 +39,7 @@ export class UserblocksService {
       return userblocks;
   }
 
-  async remove(id: string) {
+  async remove(id: string) { //deletes a blocks relationship between 2 users
     const userblocks = await this.prisma.userBlocks.delete({where:
       { id }
     });
