@@ -1,6 +1,7 @@
 @font-face {
   font-family: 'pong';
-  src: url("../public/pong.ttf");
+  src: local("pong"),
+    url("./fonts/pong.ttf") format("truetype");
 }
 
 @keyframes rotation {
@@ -104,6 +105,11 @@
   border-width: 1px;
   border-color: white;
 }
+
+.font-face-gm { 
+  font-family: "pong";
+}
+
 .friendsAndChannelBoxes {
   background-color: var(--secondary-color);
   overflow-y: auto;
