@@ -35,7 +35,9 @@ export default class option extends Phaser.Scene{
         super('menu');
     }
 
-	preload() {}
+	preload() {
+		this.load.bitmapFont('pong', '../../fonts/pong.ttf');
+	}
 
 	all() {
 		this.title = this.add.text(this.physics.world.bounds.width / 2, 100, 'PONG', {
@@ -617,6 +619,7 @@ export default class option extends Phaser.Scene{
 	}
 
 	create() {
+		this.load.on('complete', this.all, this);
 		this.all();
 		this.onevsthree();
 		this.onevsone();	

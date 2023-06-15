@@ -3,7 +3,7 @@ import BackgroundContainer from '../../Background';
 import DashboardContainer from './Dashboard';
 import { CssBaseline } from '@mui/material';
 import React from 'react';
-import GameNChat from './Game';
+import PongGame from './Game';
 import HomeGameBar from './HomeGameBar';
 import InGameChatContainer from './InGameChat';
 import Box from '@mui/material/Box';
@@ -22,7 +22,9 @@ export default function Home() {
 					<div className="homeGameNChat">
 						<Box>
 							<HomeGameBar />
-							<GameNChat />
+							<div className="font-face-gm">
+								<PongGame />
+							</div>
 						</Box>
 						<Box>
 							<InGameChatBar />
