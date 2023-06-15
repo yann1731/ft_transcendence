@@ -106,7 +106,7 @@ export default class option extends Phaser.Scene{
 			  }, [], this);
 			  this.time.delayedCall(3000, () => {
 					if (this.single === true)
-				  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
+				  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket});
 					else if (this.multiple === true)
 						this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
 					else

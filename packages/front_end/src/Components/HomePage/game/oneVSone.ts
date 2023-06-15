@@ -61,6 +61,8 @@ export default class oneVSone extends Phaser.Scene{
     frame: number = 1;
     power!: PowerUp;
     
+    oldPosition!: number;
+
     face: boolean = false;
     wall: boolean = false;
     random: boolean = false;
@@ -240,7 +242,7 @@ export default class oneVSone extends Phaser.Scene{
                 "paddle"
             )
         }
-            
+        this.oldPosition = this.physics.world.bounds.height / 2;
 
         this.paddle1.setImmovable(true);
         this.paddle1.setOrigin(0.5);
@@ -386,6 +388,15 @@ export default class oneVSone extends Phaser.Scene{
         this.paddle_init();
         this.socket = io("http://localhost:4242");
 
+        this.socket.on("movement", (newPos: number) => {
+            this.paddle2.setY(newPos + this.paddle2.height * 0.25 / 2);
+        })
+        this.socket.on("point", () => {
+            this.points2++;
+            if (this.points2 === this.win)
+                    this.end(2);
+        })
+
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        
         
@@ -486,7 +497,7 @@ export default class oneVSone extends Phaser.Scene{
     }
 
     update() {
-        if (this.ball.body)
+       /*  if (this.ball.body)
             if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
                 this.ball.body.x = this.physics.world.bounds.width - 1 - this.ball.body.width;
                 this.smash.setVisible(false);
@@ -556,20 +567,21 @@ export default class oneVSone extends Phaser.Scene{
                         this.end(1);
                     else
                         this.new_point(2);
-                }
+                } */
         
         this.paddle1.setVelocityY(0);
-        this.paddle2.setVelocityY(0);
-        
-        if (this.cursors?.up.isDown)
-        this.paddle2.setVelocityY(-this.paddlespeed * this.modifier2);
-        if (this.cursors?.down.isDown)
-        this.paddle2.setVelocityY(this.paddlespeed * this.modifier2);
         
         if (this.keys.w.isDown)
-        this.paddle1.setVelocityY(-this.paddlespeed * this.modifier1);
+            this.paddle1.setVelocityY(-this.paddlespeed * this.modifier1);
         if (this.keys.s.isDown)
-        this.paddle1.setVelocityY(this.paddlespeed * this.modifier1);
+            this.paddle1.setVelocityY(this.paddlespeed * this.modifier1);
+            
+        if (this.paddle1.body){
+            if (this.paddle1.body.y !== this.oldPosition)
+                this.socket.emit("movement", this.paddle1.body.y)
+            this.oldPosition = this.paddle1.body.y
+        }
+        
         
         if (this.paddlespeed < 625)
             this.paddlespeed += 0.5;

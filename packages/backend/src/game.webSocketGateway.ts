@@ -1,22 +1,31 @@
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 
 @WebSocketGateway({ cors: true })
 export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	@WebSocketServer()
 	server: Server;
+	numberOfGame: number = 0;
 
 
-	handleConnection() {
+	handleConnection(client: Socket) {
 		console.log('New client connected');
-	  }
+		client.join(String(this.numberOfGame))
+	}
 	
-	  handleDisconnect() {
+	handleDisconnect() {
 		console.log('Client disconnected');
-	  }
+	}
 
-	@SubscribeMessage("allo")
-	handleallo(){
-		console.log("test")
+	@SubscribeMessage("movement")
+	handleMovement(client: Socket, newpos: number) {
+		const room = Array.from(client.rooms).filter(room => room !== client.id)
+		client.broadcast.to(String(room[0])).emit("movement", newpos);
+	}
+
+	@SubscribeMessage("point")
+	handlePoint(client: Socket){
+		const room = Array.from(client.rooms).filter(room => room !== client.id)
+		client.broadcast.to(String(room[0])).emit("point");
 	}
 }
