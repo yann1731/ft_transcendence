@@ -58,6 +58,7 @@ function ResponsiveAppBar() {
           <div id="anim" className="themeButtonStyle">
             <Tooltip title="Light / Dark Mode">
               <IconButton className="buttonBackground" onClick={() => dispatch(toggleTheme())}>
+                <h4>{lightMode ? "LIGHT" : "DARK"} THEME</h4> {/* Test for the display of the toggle */}
                 <ThemeModeIcon className="iconThemeBackground"></ThemeModeIcon>
               </IconButton>
             </Tooltip>
