@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { ChatroomModule } from './chatroom/chatroom.module';
@@ -12,8 +10,6 @@ import { UserblocksModule } from './userblocks/userblocks.module';
 import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, ChatroomModule, ChatroomuserModule, PrivatemessageModule, ChatroommessageModule, UserfriendshipModule, UserblocksModule, ChatModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [PrismaModule, UserModule, ChatroomModule, ChatroomuserModule, PrivatemessageModule, ChatroommessageModule, UserfriendshipModule, UserblocksModule, ChatModule]
 })
 export class AppModule {}
