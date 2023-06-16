@@ -1,20 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ForbiddenException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserPassDto } from './dto/update-userPass.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2'
 import { validate } from 'class-validator';
+import { ApiGoneResponse } from '@nestjs/swagger';
 
 @Injectable()
 export class UserService { //creates a new user
   constructor(private prisma: PrismaService) { }
 
   async create(createUserDto: CreateUserDto) {
-    console.log(createUserDto);
     const errors = await validate(createUserDto);
-    console.log(errors);
       if (errors.length > 0) {
         throw new BadRequestException(errors);
       }
@@ -29,7 +27,7 @@ export class UserService { //creates a new user
       }
     });
     if (!user)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return user;
   }
@@ -45,7 +43,7 @@ export class UserService { //creates a new user
   async findOne(id: string) { //returns one user by id
     const user = await this.prisma.user.findUnique({where: { id }} );
     if (!user)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return user;
   }
@@ -73,7 +71,7 @@ export class UserService { //creates a new user
       }
     });
     if (!user)
-      throw new ForbiddenException;
+      throw new BadRequestException;
     else
       return user;
   }
@@ -86,6 +84,7 @@ export class UserService { //creates a new user
     }
 
     const hashedPass = await argon2.hash(updateUserPassDto.password);
+    console.log(hashedPass);
     const user = await this.prisma.user.update({where: 
     { id },
     data: {
