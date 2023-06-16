@@ -53,6 +53,7 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 				':root': {
 					'--secondary-color': mode === 'dark' ? '#001828' : '#ABBEF5',
 					'--primary-color': mode === 'dark' ? '#152647' : '#FFFFFF',
+					'--button-color' : mode === 'dark' ? '#001828' : '#2067A1',
 				},
 			},
 		},

@@ -141,7 +141,8 @@ function ResponsiveAppBar() {
                 <Button variant="outlined"
                   key={page.label}
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block', bgcolor: theme.palette.secondary.main, border:'1px solid white', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "white", color: "#001828"} }}
+                  className="toolbarButtons"
+                  sx={{ color: 'white', border:'1px solid white', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "white"} }}
                   >
                   {page.label}
                 </Button>

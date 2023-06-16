@@ -257,13 +257,14 @@
   margin-top: 2px;
   display: block;
   font-weight: bold;
-  color: white;
+  border: 1px solid white;
+  background-color: white;
 }
 
 
 .toolbarButtons:hover {
   background-color: white;
-  color: #001828;
+  color: var(--button-color);
 }
 
 .toolbar .MuiAppBar-root {
