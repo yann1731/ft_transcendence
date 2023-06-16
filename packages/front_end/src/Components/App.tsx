@@ -10,7 +10,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { RootState } from 'store/store';
 import { PaletteMode } from '@mui/material';
 
-const getDesignTokens = (mode: PaletteMode) => ({
+export const getDesignTokens = (mode: PaletteMode) => ({
 	palette: {
 	  mode,
 	  ...(mode === "dark"
@@ -46,6 +46,16 @@ const getDesignTokens = (mode: PaletteMode) => ({
 		  secondary: '#FFFFFF',
 		},
 	  }),
+	},
+	components: {
+		MuiCssBaseline: {
+			styleOverrides: {
+				':root': {
+					'--secondary-color': '#001828',
+					'--primary-color': '#152647',
+				},
+			},
+		},
 	},
   });
 
