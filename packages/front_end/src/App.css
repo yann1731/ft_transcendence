@@ -1,8 +1,41 @@
-
 @font-face {
   font-family: 'pong';
-  src: url("../public/pong.ttf");
+  src: local("pong"),
+    url("./fonts/pong.ttf") format("truetype");
 }
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shake {
+  0% { 
+  transform: rotate(8deg);
+  }
+  50% {
+  transform: rotate(-8deg);
+  }
+  70% {
+  transform: rotate(8deg);
+  }
+  100% {
+  transform: rotate(0deg);
+  }
+ }
+ #anim:hover {
+   animation: shake 500ms ease-in-out forwards;
+ }
+
+ :root {
+  --button-color: white;
+  --icon-color: white;
+  --icon-hover-color: #001828;
+ }
 
 .backgroundContainer {
   min-height: 100vh;
@@ -46,6 +79,24 @@
   background-color: var(--primary-color);
   text-align: center;
 }
+
+.fatCat {
+  position: fixed;
+  left: 55px;
+  top: 1px;
+  animation: rotation 2s infinite linear;
+}
+
+.conversationStyle {
+  flex-grow: 1;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.dashboardTitle {
+  background-color: var(--primary-color);
+  text-align: center;
+}
   
 .focusedTextField .MuiInputLabel-root.Mui-focused {
   color: white;
@@ -54,6 +105,11 @@
   border-width: 1px;
   border-color: white;
 }
+
+.font-face-gm { 
+  font-family: "pong";
+}
+
 .friendsAndChannelBoxes {
   background-color: var(--secondary-color);
   overflow-y: auto;
@@ -93,6 +149,7 @@
   font-size: 25px;
   max-width: 50vw;
 }
+
 .homeScoreBar {
   background-color: var(--primary-color);
   box-shadow: 4;
@@ -102,6 +159,7 @@
   font-size: 25px;
   position: relative;
 }
+
 .homeScoreBox {
   background-color: var(--secondary-color);
   height: 27vh;
@@ -154,11 +212,57 @@
   left: 0;
   right: 0;
 }
+
+.pokeball {
+  position: fixed;
+  left: 15px;
+  color: white;
+  animation: rotation 20s infinite linear;
+}
+
+.buttonBackground {
+  color: var(--button-color);
+}
+
+.buttonBackground:hover {
+  background-color: #FFFFFF !important;
+  --buttoncolor: white;
+  --icon-color: #001828;
+}
+
+.iconThemeBackground {
+  color: var(--icon-color);
+}
+
+.iconThemeBackground:hover {
+  color: var(--icon-hover-color);
+}
+
+.profileButtonStyle {
+  position: fixed;
+  right: 15px;
+  top: 5px;
+}
+
 .signInStyle {
   margin-top: 1;
   text-align: center;
   color: var(--secondary-color);
 }
+
+.themeButtonContextOption {
+  position: fixed;
+  right: 80px;
+  top: 25px;
+}
+
+.themeButtonStyle {
+  position: fixed;
+  right: 80px;
+  top: 14px;
+}
+
+
 
 
 

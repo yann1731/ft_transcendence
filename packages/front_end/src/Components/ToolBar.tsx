@@ -15,6 +15,8 @@ import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import ThemeModeIcon from '@mui/icons-material/DarkMode'
 import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from "react-redux";
+import { toggleTheme } from "../store/reducers/themeSlice";
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -42,18 +44,22 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  const dispatch = useDispatch();
+
   return (
     <AppBar position="fixed" style={{ backgroundImage: "none" }} sx={{ bgcolor: theme.palette.secondary.main }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Tooltip title="Gotta catch em all!">
-            <PokeBallIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15, color: 'white' }} />
-          </Tooltip>
-          <Tooltip title="Light / Dark Mode" sx={{ position: 'fixed', right: '80px', top: '25px' }}>
-            <IconButton>
-              <ThemeModeIcon sx={{ position: 'fixed', right: '80px', top: '22px', color: 'white' }} />
-            </IconButton>
-          </Tooltip>
+            <Tooltip title="Gotta catch em all!">
+              <PokeBallIcon className="pokeball" />
+            </Tooltip>
+          <div id="anim" className="themeButtonStyle">
+            <Tooltip title="Light / Dark Mode">
+              <IconButton className="buttonBackground">
+                <ThemeModeIcon className="iconThemeBackground"></ThemeModeIcon>
+              </IconButton>
+            </Tooltip>
+          </div>
           <Typography
             variant="h6"
             noWrap
@@ -103,7 +109,7 @@ function ResponsiveAppBar() {
             >
               {pages.map((page) => (
                   <Link style={{textDecoration: 'none'}} to={page.link}>
-                    <MenuItem key={page.label} onClick={handleCloseNavMenu} sx={{ color: 'white', fontWeight: 'bold', ":hover": { bgcolor: "cyan", color: "#001828"} }}>
+                    <MenuItem key={page.label} onClick={handleCloseNavMenu} sx={{ color: 'white', fontWeight: 'bold' }}>
                       <Typography textAlign="center">{page.label}</Typography>
                     </MenuItem>
                 </Link>
@@ -134,7 +140,7 @@ function ResponsiveAppBar() {
                 <Button variant="outlined"
                   key={page.label}
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block', bgcolor: theme.palette.primary.main, border:'1px solid white', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "white", color: "#001828"} }}
+                  sx={{ my: 2, color: 'white', display: 'block', bgcolor: theme.palette.secondary.main, border:'1px solid white', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "white", color: "#001828"} }}
                   >
                   {page.label}
                 </Button>
@@ -144,9 +150,11 @@ function ResponsiveAppBar() {
 
           <Box sx={{ flexGrow: 0}}>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ position: 'fixed', right: 15, top: '5px' }}>
-                <Avatar alt="Criss de gros chat" src="https://pbs.twimg.com/profile_images/1633238286045962243/JfgDezi9_400x400.jpg" />
-              </IconButton>
+              <div id="anim" className="profileButtonStyle">
+                <IconButton onClick={handleOpenUserMenu}>
+                  <Avatar alt="Criss de gros chat" src="https://pbs.twimg.com/profile_images/1633238286045962243/JfgDezi9_400x400.jpg" />
+                </IconButton>
+              </div>
             </Tooltip>
             <Menu
               sx={{ mt: '45px' }}

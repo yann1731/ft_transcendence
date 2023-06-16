@@ -1,12 +1,12 @@
 import * as React from 'react';
+import '../../App.css';
 import option from './game/Option';
 import oneVSone from './game/oneVSone';
 import threeVSone from './game/threeVSone';
 import twoVStwo from './game/twoVStwo';
-import { CssBaseline } from '@mui/material';
 import Box from '@mui/material/Box';
 
-export default function GameNChat() {
+export default function PongGame() {
     React.useEffect(() => {
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
