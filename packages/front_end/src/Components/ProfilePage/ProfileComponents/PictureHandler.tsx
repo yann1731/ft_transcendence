@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
 import { User } from "Components/Interfaces";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 
-const UsernameHandler = ({ userStatistics }: { userStatistics: User | null }) => {
+const PictureHandler = ({ userStatistics }: { userStatistics: User | null }) => {
   const [open, setOpen] = useState(false);
-  const [newUsername, setNewUsername] = useState('');
+  const [newPicture, setNewPicture] = useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -16,55 +19,53 @@ const UsernameHandler = ({ userStatistics }: { userStatistics: User | null }) =>
     return;
   };
 
-  const handleChangeUsername = async () => {
+  const handleChangePicture = async () => {
     try {
       const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...userStatistics, username: newUsername }), // Mettez à jour le champ 'username' avec la nouvelle valeur
+        body: JSON.stringify({ ...userStatistics, avatar: newPicture }), // Mettez à jour le champ 'username' avec la nouvelle valeur
       });
   
       if (response.ok) {
-        const updatedData = await response.json();
-        setNewUsername(updatedData);
+        const updatedPicture = await response.json();
+        setNewPicture(updatedPicture);
       } else {
         console.error('Could not update user statistics');
       }
   
-      handleClose();
+      handleClose(); 
     } catch (error) {
       console.error('Error occurred while updating username:', error);
     }
-    setNewUsername("");
+    setNewPicture("");
   };
 
   return (
-    <div>
-      <Button variant="contained" onClick={handleClickOpen} sx={{ width: '99%', bgcolor: 'white', color: 'grey' }}>
-        Change Username
-      </Button>
+    <MenuItem onClick={handleClickOpen}>
+      <Typography textAlign="center">Upload Picture</Typography>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Change Username</DialogTitle>
+        <DialogTitle>Change Profile Picture</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
-            label="New Username"
-            type="username"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
+            label="New Picture"
+            type="picture"
+            value={newPicture}
+            onChange={(e) => setNewPicture(e.target.value)}
             fullWidth
-          />
+            />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleChangeUsername}>Save</Button>
+          <Button onClick={handleChangePicture}>Save</Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </MenuItem>
   );
 };
 
-export default UsernameHandler;
+export default PictureHandler;

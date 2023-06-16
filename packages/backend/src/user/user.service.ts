@@ -25,7 +25,7 @@ export class UserService { //creates a new user
       data: {
         email: createUserDto.email,
         password: hashedPass,
-        username: createUserDto.username
+        username: createUserDto.username,
       }
     });
     if (!user)

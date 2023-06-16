@@ -16,8 +16,8 @@ export default function DashboardContainer() {
             <Box sx={{ textAlign: 'center' }}>
               <Box sx={{color: 'white', fontSize: '20px' }}>Hall of Fame</Box>
               <Divider style={{ marginBottom: '10px' }} />
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Nb games played:</Box>
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Wins:</Box>
+              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Nb games played: </Box>
+              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Wins: </Box>
               <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Losses:</Box>
               <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Current win streak:</Box>
               <Box sx={{ color: '#2067a1', fontSize: '15px' }}>Best streak:</Box>

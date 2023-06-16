@@ -8,6 +8,7 @@ import { theme } from '../../../Theme';
 import { useEffect, useState } from "react";
 import UserNameHandler from "./UsernameHandler";
 import PassWordHandler from "./PasswordHandler";
+import { User } from "Components/Interfaces";
 //import axios from 'axios'
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -18,39 +19,9 @@ const Item = styled(Paper)(({ theme }) => ({
 	color: theme.palette.text.secondary,
   }));
 
-  
-  interface Stats {
-    gamesPlayed: number;
-    wins: number;
-    losses: number;
-    winRatio: number;
-  }
+  const MyStats = ({ userStatistics }: { userStatistics: User | null }) => {
 
-  const MyStats = () => {
-    const [userStatistics, setUserStatistics] = useState<Stats | null>(null);
-        
-        useEffect(() => {
-        const fetchUserStatistics = async () => {
-            try {
-                const response = await fetch('http://localhost:4242/api/users');
-                //const response = await axios.get<Stats>('http://localhost:4242/api/users');
-                if(response.ok)
-                {
-                    const data = await response.json();
-                    setUserStatistics(data);
-                }
-                else
-                {
-                    console.error('fuck\n');
-                }
-            }
-            catch (err) {
-                console.error(err);
-            }
-        };
-    
-        fetchUserStatistics();
-    }, []);
+    const winRatio = userStatistics && userStatistics.gamesPlayed > 0 ? (userStatistics.win / userStatistics.gamesPlayed) * 100 : 0;
 
     return (
         <Box sx={{ width: '95%', mt: 3, boxShadow: 10, bgcolor: theme.palette.secondary.main,}}>
@@ -59,22 +30,22 @@ const Item = styled(Paper)(({ theme }) => ({
                 <Item sx={{bgcolor: 'white', color: 'grey'}}>Nb Games Played: {userStatistics?.gamesPlayed} </Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item sx={{bgcolor: 'white', color: 'grey'}}>Wins: {userStatistics?.wins}</Item>
+                <Item sx={{bgcolor: 'white', color: 'grey'}}>Wins: {userStatistics?.win}</Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item sx={{bgcolor: 'white', color: 'grey'}}>Losses: {userStatistics?.losses}</Item>
+                <Item sx={{bgcolor: 'white', color: 'grey'}}>Losses: {userStatistics?.loss}</Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item sx={{bgcolor: 'white', color: 'grey'}}>Win Ratio: {userStatistics?.winRatio}</Item>
+                <Item sx={{bgcolor: 'white', color: 'grey'}}>Win Ratio: {winRatio.toFixed(2)}%</Item>
             </Grid>
             <Grid item xs={13}>
-            <Handler2FA></Handler2FA>
+            <Handler2FA userStatistics={userStatistics}></Handler2FA>
             </Grid>
             <Grid item xs={13}>
-                <UserNameHandler></UserNameHandler>
+                <UserNameHandler userStatistics={userStatistics} ></UserNameHandler>
             </Grid>
             <Grid item xs={13}>
-                <PassWordHandler></PassWordHandler>
+                <PassWordHandler userStatistics={userStatistics}></PassWordHandler>
             </Grid>
         </Grid>
     </Box>
