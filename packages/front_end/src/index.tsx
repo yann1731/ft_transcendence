@@ -1,7 +1,4 @@
-import React from "react";
 import ReactDOM from 'react-dom/client';
-import { ThemeProvider } from '@mui/system';
-import { theme } from './Theme';
 import { BrowserRouter } from 'react-router-dom';
 import App from './Components/App';
 import { store } from "./store/store";

@@ -76,7 +76,6 @@
 }
 
 .dashboardTitle {
-  background-color: var(--primary-color);
   text-align: center;
 }
 
@@ -91,11 +90,6 @@
   flex-grow: 1;
   margin-left: 20px;
   margin-right: 20px;
-}
-
-.dashboardTitle {
-  background-color: var(--primary-color);
-  text-align: center;
 }
   
 .focusedTextField .MuiInputLabel-root.Mui-focused {
@@ -155,7 +149,6 @@
   box-shadow: 4;
   text-align: center;
   font-weight: bold;
-  color: white;
   font-size: 25px;
   position: relative;
 }
@@ -167,12 +160,10 @@
   border-radius: 10px;
 }
 .ingameChatBar {
-  background-color: var(--primary-color);
   text-align: center;
   font-weight: bold;
   font-size: 25px;
   width: 50vw;
-  color: white;
 }
 .ingameChatBox {
   background-color: var(--secondary-color);
@@ -260,6 +251,24 @@
   position: fixed;
   right: 80px;
   top: 14px;
+}
+
+.toolbarButtons {
+  margin-top: 2px;
+  display: block;
+  font-weight: bold;
+  color: white;
+}
+
+
+.toolbarButtons:hover {
+  background-color: white;
+  color: #001828;
+}
+
+.toolbar .MuiAppBar-root {
+  background-image: none;
+  background-color: var(--secondary-color);
 }
 
 

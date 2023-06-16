@@ -3,12 +3,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import DashboardBar from './DashboardBar';
 import Divider from '@mui/material/Divider';
-import { getDesignTokens } from '../App';
 
 
 
 export default function DashboardContainer() {
-  const designTokens = getDesignTokens("dark");
   return (
     <React.Fragment>
       <CssBaseline />

@@ -15,9 +15,8 @@ import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import ThemeModeIcon from '@mui/icons-material/DarkMode'
 import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { toggleTheme } from "../store/reducers/themeSlice";
-import { RootState } from '../store/store';
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -46,10 +45,10 @@ function ResponsiveAppBar() {
   };
 
   const dispatch = useDispatch();
-  const lightMode = useSelector((state: RootState) => state.theme.lightMode);
 
   return (
-    <AppBar position="fixed" style={{ backgroundImage: "none" }} sx={{ bgcolor: theme.palette.secondary.main }}>
+    <div className="toolbar">
+    <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
             <Tooltip title="Gotta catch em all!">
@@ -184,6 +183,7 @@ function ResponsiveAppBar() {
         </Toolbar>
       </Container>
     </AppBar>
+    </div>
   );
 }
 export default ResponsiveAppBar;

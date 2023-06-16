@@ -42,7 +42,7 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 		  paper: "#FFFFFF",
 		},
 		text: {
-		  primary: '#001828',
+		  primary: '#2067A1',
 		  secondary: '#FFFFFF',
 		},
 	  }),
@@ -51,8 +51,8 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 		MuiCssBaseline: {
 			styleOverrides: {
 				':root': {
-					'--secondary-color': '#001828',
-					'--primary-color': '#152647',
+					'--secondary-color': mode === 'dark' ? '#001828' : '#ABBEF5',
+					'--primary-color': mode === 'dark' ? '#152647' : '#FFFFFF',
 				},
 			},
 		},
