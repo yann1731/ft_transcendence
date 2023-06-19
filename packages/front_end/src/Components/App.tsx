@@ -50,11 +50,11 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 	components: {
 		MuiPaper: {
 			styleOverrides: {
-				root: {
-					backgroundImage: mode === 'dark' ? 'none' : '',
-					backgroundColor: mode === 'dark' ? '#001828' : '',
-					color: mode === 'dark' ? 'white' : '',
-				},
+				root: mode === 'dark' ? {
+					backgroundImage: 'none',
+					backgroundColor: '#001828',
+					color: 'white',
+				} : '',
 			},
 		},
 		MuiCssBaseline: {
