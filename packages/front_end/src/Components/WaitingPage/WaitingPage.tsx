@@ -15,16 +15,16 @@ export default function GetToken() {
     let urlParams: URLSearchParams = new URLSearchParams(window.location.search);
     let authorizationCode: string | null = urlParams.get('code');
 
-    axios.post('http://localhost:4242/oauth', {code: authorizationCode}).then((response: AxiosResponse) => {
+    const response = axios.post('http://localhost:4242/oauth', {code: authorizationCode}).then((response: AxiosResponse) => {
         console.log('here\'s the access token');
         console.log(response);
+        const newUser = axios.post('http://localhost:4242/user', {code: response.data.access_token, refresh_token: response.data.refresh_token});
+        console.log(newUser);
     }).catch (error => {
         console.log('hit error');
         console.error(error);
     });
 
-    
-    
     return (
         <Container maxWidth={false} sx={{ backgroundColor: 'black', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', width: "100%" }}>
             <PokeBallIcon sx={{ fontSize: 200, position: 'relative', color: 'white', animation: `${spin} 2s linear infinite` }} />
