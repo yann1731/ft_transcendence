@@ -13,10 +13,12 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import ThemeModeIcon from '@mui/icons-material/DarkMode'
-import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
 import { useDispatch } from "react-redux";
-import { toggleTheme } from "../store/reducers/themeSlice";
+import { asyncToggleTheme } from "../store/reducers/themeSlice";
+import { RootState } from '../store/store';
+import { useSelector } from 'react-redux';
+import { makeStyles } from '@mui/material';
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -24,6 +26,8 @@ const pages = [
   { label: 'Profile', link: '/Profile'},
 ];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+
+
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -56,7 +60,7 @@ function ResponsiveAppBar() {
             </Tooltip>
           <div id="anim" className="themeButtonStyle">
             <Tooltip title="Light / Dark Mode">
-              <IconButton className="buttonBackground" onClick={() => dispatch(toggleTheme())}>
+              <IconButton className="buttonBackground" onClick={() => dispatch(asyncToggleTheme() as any)}>
                 <ThemeModeIcon className="iconThemeBackground"></ThemeModeIcon>
               </IconButton>
             </Tooltip>
@@ -105,7 +109,8 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: 'block', md: 'none' }
+                display: { xs: 'block', md: 'none' },
+                "&.MuiPaper-root":{ backgroundColor: "red" }
               }}
             >
               {pages.map((page) => (

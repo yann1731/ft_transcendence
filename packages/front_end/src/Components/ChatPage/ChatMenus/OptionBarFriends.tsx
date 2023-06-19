@@ -9,7 +9,6 @@ import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import Button from '@mui/material/Button';
 import '../../../App.css';
-import { theme } from 'Theme';
 
 export default function OptionBarFriends() {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
@@ -84,9 +83,7 @@ export default function OptionBarFriends() {
               >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Button onClick={() => Alert(setting)}>
-                    <Typography color="white" textAlign="left">{setting}</Typography>
-                  </Button>
+                    <Typography textAlign="left">{setting}</Typography>
                 </MenuItem>
               ))}
             </Menu>

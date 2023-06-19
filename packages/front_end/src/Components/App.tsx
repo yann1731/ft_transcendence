@@ -23,11 +23,11 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 		  },
 		  background: {
 			default: '#152647',
-			paper: "#FFFFFF",
+			paper: '#001828',
 		  },
 		  text: {
 			primary: "#FFFFFF",
-			secondary: "#001828",
+			secondary: "#FFFFFF",
 		  },
 		}
 	  : {
@@ -48,6 +48,15 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 	  }),
 	},
 	components: {
+		MuiPaper: {
+			styleOverrides: {
+			  root: {
+				backgroundImage: 'none',
+				backgroundColor: '#001828',
+				color: 'white',
+			  },
+			},
+		  },
 		MuiCssBaseline: {
 			styleOverrides: {
 				':root': {

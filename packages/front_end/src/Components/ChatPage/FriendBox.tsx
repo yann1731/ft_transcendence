@@ -9,7 +9,6 @@ import Divider from '@mui/material/Divider';
 			<Box>
 				<TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth className={"focusedTextField .MuiOutlinedInput-root.Mui-focused fieldset"} />
 			</Box>
-		  	<Divider />
 			<MyFriends></MyFriends>
 		</Box>
 	  );
