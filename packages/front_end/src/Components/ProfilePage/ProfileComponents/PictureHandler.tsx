@@ -3,7 +3,6 @@ import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } 
 import { User } from "Components/Interfaces";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 
 const PictureHandler = ({ userStatistics }: { userStatistics: User | null }) => {
   const [open, setOpen] = useState(false);
