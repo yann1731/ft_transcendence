@@ -228,10 +228,34 @@
   color: var(--icon-hover-color);
 }
 
+.profileButtonBox {
+  background-color: var(--primary-color);
+}
+
 .profileButtonStyle {
   position: fixed;
   right: 15px;
   top: 5px;
+}
+
+.profileMainBox {
+  background-color: var(--primary-color);
+}
+
+.profilePageButtons:hover {
+  background-color: white !important;
+  color: var(--button-color);
+}
+
+.profilePageButtons .MuiButton-outlined {
+  background-color: var(--secondary-color);
+  color: white;
+  border: 1px solid white;
+  width: 99%;
+}
+
+.profileSection { 
+  background-color: var(--primary-color);
 }
 
 .signInStyle {

@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Button } from "@mui/material";
+import { theme } from '../../../Theme';
 
 const UserNameHandler = () => {
     const HandleChangeUsername = async () => {
@@ -13,8 +14,11 @@ const UserNameHandler = () => {
             };*/
     };
     return (
-        <Button variant="contained" /*onClick={handleChangeUsername}*/ sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>Change Username</Button>
+        <Button variant="outlined" className="profilePageButtons" /*onClick={handleChangeUsername}*/>Change Username</Button>
     );
 };
 
 export default UserNameHandler;
+
+
+

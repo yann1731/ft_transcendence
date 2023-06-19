@@ -11,11 +11,11 @@ import PassWordHandler from "./PasswordHandler";
 //import axios from 'axios'
 
 const Item = styled(Paper)(({ theme }) => ({
-	backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+	backgroundColor: theme.palette.mode === 'dark' ? '#152647' : '#fff',
 	...theme.typography.body2,
 	padding: theme.spacing(1),
 	textAlign: 'center',
-	color: theme.palette.text.secondary,
+	
   }));
 
   
@@ -53,19 +53,19 @@ const Item = styled(Paper)(({ theme }) => ({
     }, []);
 
     return (
-        <Box sx={{ width: '95%', mt: 3, boxShadow: 10, bgcolor: theme.palette.secondary.main,}}>
+        <Box sx={{ width: '95%', mt: 3 }} className="profileButtonBox">
             <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item sx={{width: '99%'}}>
-                <Item sx={{bgcolor: 'white', color: 'grey'}}>Nb Games Played: {userStatistics?.gamesPlayed} </Item>
+                <Item className="profilePageButtons">Nb Games Played: {userStatistics?.gamesPlayed} </Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item sx={{bgcolor: 'white', color: 'grey'}}>Wins: {userStatistics?.wins}</Item>
+                <Item className="profilePageButtons">Wins: {userStatistics?.wins}</Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item sx={{bgcolor: 'white', color: 'grey'}}>Losses: {userStatistics?.losses}</Item>
+                <Item className="profilePageButtons">Losses: {userStatistics?.losses}</Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item sx={{bgcolor: 'white', color: 'grey'}}>Win Ratio: {userStatistics?.winRatio}</Item>
+                <Item className="profilePageButtons">Win Ratio: {userStatistics?.winRatio}</Item>
             </Grid>
             <Grid item xs={13}>
             <Handler2FA></Handler2FA>

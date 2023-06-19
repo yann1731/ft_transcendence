@@ -57,6 +57,23 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 				} : '',
 			},
 		},
+		MuiButton: {
+			styleOverrides: {
+				root: {
+					width: '99%',
+					border: '1px solid white',
+					...(mode === 'dark' ? {
+					backgroundColor: '#001828',
+					color: 'white',
+				} : {
+					backgroundColor: '#ABBEF5',
+					}),
+					'&:hover': {
+						borderColor: mode === 'dark' ? 'white' : '#2067A1',
+					},
+				}
+			},
+		},
 		MuiCssBaseline: {
 			styleOverrides: {
 				':root': {

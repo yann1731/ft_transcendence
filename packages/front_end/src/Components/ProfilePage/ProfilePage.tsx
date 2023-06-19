@@ -61,7 +61,7 @@ function ProfileContainer() {
 	}
 
 	return (
-		<Box sx={{bgcolor: theme.palette.primary.main}}>
+		<Box className="profileMainBox">
 				<Avatar alt="Profile Picture" src={profilePicture} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
 				<div style={{ textAlign: 'center' }}>
 					<Tooltip title="Open profile settings">
@@ -99,14 +99,11 @@ function ProfileContainer() {
 				</div>
 				<Box sx={{textAlign: 'center', mt: 1}}>Username: </Box>
 				<Box sx={{textAlign: 'center'}}>Level: </Box>
-				<Box sx={{
-					bgcolor: theme.palette.secondary.main,
-					border: 1.5,
+				<Box className="profileSection" sx={{
 					width: 400,
 					height: 450,
 					margin: 'auto',
 					borderRadius: 2.5,
-					boxShadow: 10,
 					mt: 3,
 					display: 'flex',
 					flexDirection: "column",

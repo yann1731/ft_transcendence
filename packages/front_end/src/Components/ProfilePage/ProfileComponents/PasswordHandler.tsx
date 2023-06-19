@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Button } from "@mui/material";
+import { theme } from '../../../Theme';
 
 const PassWordHandler = () => {
     const HandleChangePassword = async () => {
@@ -13,7 +14,7 @@ const PassWordHandler = () => {
             };*/
     };
     return (
-        <Button variant="contained" /*onClick={}*/ sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>Change Password</Button>
+        <Button variant="outlined" /*onClick={}*/ className="profilePageButtons">Change Password</Button>
     );
 };
 
