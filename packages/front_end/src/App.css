@@ -1,7 +1,7 @@
-
 @font-face {
   font-family: 'pong';
-  src: url("../public/pong.ttf");
+  src: local("pong"),
+    url("./fonts/pong.ttf") format("truetype");
 }
 
 @keyframes rotation {
@@ -12,6 +12,30 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes shake {
+  0% { 
+  transform: rotate(8deg);
+  }
+  50% {
+  transform: rotate(-8deg);
+  }
+  70% {
+  transform: rotate(8deg);
+  }
+  100% {
+  transform: rotate(0deg);
+  }
+ }
+ #anim:hover {
+   animation: shake 500ms ease-in-out forwards;
+ }
+
+ :root {
+  --button-color: white;
+  --icon-color: white;
+  --icon-hover-color: #001828;
+ }
 
 .backgroundContainer {
   min-height: 100vh;
@@ -81,6 +105,11 @@
   border-width: 1px;
   border-color: white;
 }
+
+.font-face-gm { 
+  font-family: "pong";
+}
+
 .friendsAndChannelBoxes {
   background-color: var(--secondary-color);
   overflow-y: auto;
@@ -191,152 +220,28 @@
   animation: rotation 20s infinite linear;
 }
 
-.homeDashboardBoxes {
-  margin-left: 20px;
-  margin-right: 20px; /* for space between boxes and game div */
-  width: min(30vw, 310px);
-}
-.homeGameNChat {
-  margin-top: 114px;
-  text-align: center;
-  font-weight: bold;
-  font-size: 25px;
-  max-width: 50vw;
-}
-.homeScoreBar {
-  background-color: var(--primary-color);
-  box-shadow: 4;
-  text-align: center;
-  font-weight: bold;
-  color: white;
-  font-size: 25px;
-  position: relative;
-}
-.homeScoreBox {
-  background-color: var(--secondary-color);
-  height: 27vh;
-  box-shadow: 4;
-  border-radius: 10px;
-}
-.ingameChatBar {
-  background-color: var(--primary-color);
-  text-align: center;
-  font-weight: bold;
-  font-size: 25px;
-  width: 50vw;
-  color: white;
-}
-.ingameChatBox {
-  background-color: var(--secondary-color);
-  height: 25vh;
-  max-height: 292px;
-  border-radius: 10px;
-}
-.loginBox {
-  background-color: white;
-  border-radius: 10px;
+.buttonBackground {
+  color: var(--button-color);
 }
 
-.loginTextFieldText input {
-  color:black;
+.buttonBackground:hover {
+  background-color: #FFFFFF !important;
+  --buttoncolor: white;
+  --icon-color: #001828;
 }
-.loginTextField .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
-  border-color: var(--secondary-color);
-  border-width: 1px;
+
+.iconThemeBackground {
+  color: var(--icon-color);
 }
-.loginTextField .MuiInputLabel-root {
-  color: grey;
-  border-width: 1px;
-  display: flex;
-  align-items: center;
+
+.iconThemeBackground:hover {
+  color: var(--icon-hover-color);
 }
-.loginTextField .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: var(--secondary-color);
-  border-width: 2px;
-}
-.loginTextField .MuiTypography-root {
-  color: grey;
-}
-.mainContainerStyle {
-  display: flex;
+
+.profileButtonStyle {
   position: fixed;
-  top: 9vh;
-  left: 0;
-  right: 0;
-}
-
-.homeDashboardBoxes {
-  margin-left: 20px;
-  margin-right: 20px; /* for space between boxes and game div */
-  width: min(30vw, 310px);
-}
-.homeGameNChat {
-  margin-top: 114px;
-  text-align: center;
-  font-weight: bold;
-  font-size: 25px;
-  max-width: 50vw;
-}
-.homeScoreBar {
-  background-color: var(--primary-color);
-  box-shadow: 4;
-  text-align: center;
-  font-weight: bold;
-  color: white;
-  font-size: 25px;
-  position: relative;
-}
-.homeScoreBox {
-  background-color: var(--secondary-color);
-  height: 27vh;
-  box-shadow: 4;
-  border-radius: 10px;
-}
-.ingameChatBar {
-  background-color: var(--primary-color);
-  text-align: center;
-  font-weight: bold;
-  font-size: 25px;
-  width: 50vw;
-  color: white;
-}
-.ingameChatBox {
-  background-color: var(--secondary-color);
-  height: 25vh;
-  max-height: 292px;
-  border-radius: 10px;
-}
-.loginBox {
-  background-color: white;
-  border-radius: 10px;
-}
-
-.loginTextFieldText input {
-  color:black;
-}
-.loginTextField .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
-  border-color: var(--secondary-color);
-  border-width: 1px;
-}
-.loginTextField .MuiInputLabel-root {
-  color: grey;
-  border-width: 1px;
-  display: flex;
-  align-items: center;
-}
-.loginTextField .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: var(--secondary-color);
-  border-width: 2px;
-}
-.loginTextField .MuiTypography-root {
-  color: grey;
-}
-.mainContainerStyle {
-  display: flex;
-  position: fixed;
-  top: 9vh;
-  left: 0;
-  right: 0;
+  right: 15px;
+  top: 5px;
 }
 
 .signInStyle {
@@ -344,6 +249,20 @@
   text-align: center;
   color: var(--secondary-color);
 }
+
+.themeButtonContextOption {
+  position: fixed;
+  right: 80px;
+  top: 25px;
+}
+
+.themeButtonStyle {
+  position: fixed;
+  right: 80px;
+  top: 14px;
+}
+
+
 
 
 
