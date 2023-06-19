@@ -1,13 +1,14 @@
-import { Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { responseEncoding } from 'axios';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('signup')
-  signup() {
-    return this.authService.signup();
+  @Post('oauth/callback')
+  async oauthCallback(@Body('code') code: string) {
+    return await this.oauthCallback(code);
   }
 
   @Post('signin')
