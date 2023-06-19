@@ -1,6 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { Axios } from "axios";
+import axios, { Axios, AxiosResponse } from "axios";
+import { response } from "express";
+import { ENHANCER_TOKEN_TO_SUBTYPE_MAP } from "@nestjs/core/constants";
 
 //application flow:
 //the resource owner (a 42 user) is first redirected by the application to the OAuth authorization server at the API provider ->
@@ -23,15 +25,31 @@ import { Axios } from "axios";
 
 // This flow ensures that you're not making unnecessary requests to the third-party API for users that you can't actually create (because their chosen username is already taken), and it provides clear feedback to the client about the status of their signup request.
 
+
+//POST request to the https://api.intra.42.fr/oauth/token
 @Injectable({})
 export class AuthService {
 
-    async oauthCallback(code: string) {
-        console.log('yeah boi authenticatin');
-        console.log(code);
+    async oauthCallback(code: string): Promise<string> {
         const uid: string =  'u-s4t2ud-47600cc08a77769cea8bec6cacdd6ef77df4be8fbb4984a8b9435f3cdddee480';
         const secret: string = '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';
-        return await code;
+
+        console.log('Hit oauthCallback service');
+        try {
+            const response = await axios.post('https://api.intra.42.fr/oauth/token', {
+            grant_type: 'authorization_code',
+            client_id: 'u-s4t2ud-47600cc08a77769cea8bec6cacdd6ef77df4be8fbb4984a8b9435f3cdddee480',
+            client_secret: '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',
+            redirect_uri: 'http://localhost:3000/wait',
+            code: code
+            });
+            const token: string = response.data.access_token;
+            console.log(token);
+
+            return token;
+        } catch (error) {
+            throw new BadRequestException(error);
+        }
     }
 
 

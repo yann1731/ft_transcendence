@@ -8,7 +8,6 @@ export class AuthController {
 
   @Post('oauth')
   oauthCallback(@Body('code') code: string) {
-    console.log('hello from controller');
     return this.authService.oauthCallback(code);
   }
 
