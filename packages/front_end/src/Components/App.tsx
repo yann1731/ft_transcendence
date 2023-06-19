@@ -4,6 +4,7 @@ import Chat from './ChatPage/Chat';
 import Profile from './ProfilePage/Profile';
 import FatCat from './FatCat';
 import Login from './Login/Login';
+import Wait from './WaitingPage/Wait';
 
 function App() {
 	return (
@@ -13,6 +14,7 @@ function App() {
 		<Route path='/Profile' element={ <Profile /> } />
 		<Route path='/Chat' element={ <Chat /> } />
 		<Route path='/FatCat' element={ <FatCat /> } />
+		<Route path='/wait' element={<Wait /> } />
 	</Routes>
 	);
 }

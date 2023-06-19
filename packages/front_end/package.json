@@ -20,6 +20,8 @@
     "babel-loader": "^9.1.2",
     "encrypt-storage": "^2.12.16",
     "file-loader": "^6.2.0",
+    "passport": "^0.6.0",
+    "passport-oauth2": "^1.7.0",
     "phaser": "^3.60.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
