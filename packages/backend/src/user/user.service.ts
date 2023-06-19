@@ -1,35 +1,43 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UpdateUserPassDto } from './dto/update-userPass.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import * as argon2 from 'argon2'
 import { validate } from 'class-validator';
 import { ApiGoneResponse } from '@nestjs/swagger';
+import axios from 'axios';
+import { availableParallelism } from 'os';
 
 @Injectable()
 export class UserService { //creates a new user
   constructor(private prisma: PrismaService) { }
 
-  async create(createUserDto: CreateUserDto) {
-    const errors = await validate(createUserDto);
-      if (errors.length > 0) {
-        throw new BadRequestException(errors);
-      }
-
-    const hashedPass = await argon2.hash(createUserDto.password);
-
-    const user = await this.prisma.user.create({
-      data: {
-        email: createUserDto.email,
-        password: hashedPass,
-        username: createUserDto.username
+  async create(code: string, refresh_token: string) {
+    const response = await axios.get('https://api.intra.42.fr/v2/me', {
+      headers: {
+        Authorization: `Bearer ${code}`
       }
     });
-    if (!user)
-      throw new BadRequestException;
+
+    const check = await this.prisma.user.findUnique({where: {
+      username: response.data.login
+    }});
+
+    if (!check) {
+      const user = await this.prisma.user.create({
+        data: {
+          email: response.data.email, 
+          refresh_token: refresh_token,
+          username: response.data.login,
+          avatar: response.data.url
+        }
+      });
+      if (!user)
+        throw new BadRequestException;
+      else
+        return user.id;
+    }
     else
-      return user;
+      return check.id;
   }
 
   async findAll() { //returns a list of all users
@@ -67,29 +75,9 @@ export class UserService { //creates a new user
         loss: updateUserDto.loss,
         gamesPlayed: updateUserDto.gamesPlayed,
         userStatus: updateUserDto.userStatus,
-        twoFaEnabled: updateUserDto.twoFaEnabled
+        twoFaEnabled: updateUserDto.twoFaEnabled,
+        refresh_token: updateUserDto.refresh_token
       }
-    });
-    if (!user)
-      throw new BadRequestException;
-    else
-      return user;
-  }
-
-  async updatePass(id: string, updateUserPassDto: UpdateUserPassDto) { //specifically updates the password of a user identified by id
-
-    const errors = await validate(updateUserPassDto);
-    if (errors.length > 0) {
-      throw new BadRequestException(errors);
-    }
-
-    const hashedPass = await argon2.hash(updateUserPassDto.password);
-    console.log(hashedPass);
-    const user = await this.prisma.user.update({where: 
-    { id },
-    data: {
-        password: hashedPass
-    }
     });
     if (!user)
       throw new BadRequestException;

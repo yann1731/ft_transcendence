@@ -3,6 +3,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import axios, { Axios, AxiosResponse } from "axios";
 import { response } from "express";
 import { ENHANCER_TOKEN_TO_SUBTYPE_MAP } from "@nestjs/core/constants";
+import { Prisma } from "@prisma/client";
 
 //application flow:
 //the resource owner (a 42 user) is first redirected by the application to the OAuth authorization server at the API provider ->
@@ -29,8 +30,9 @@ import { ENHANCER_TOKEN_TO_SUBTYPE_MAP } from "@nestjs/core/constants";
 //POST request to the https://api.intra.42.fr/oauth/token
 @Injectable({})
 export class AuthService {
+    constructor(private prisma: PrismaService) {}
 
-    async oauthCallback(code: string): Promise<string> {
+    async oauthCallback(code: string): Promise<AxiosResponse["data"]> {
         const uid: string =  'u-s4t2ud-47600cc08a77769cea8bec6cacdd6ef77df4be8fbb4984a8b9435f3cdddee480';
         const secret: string = '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';
 
@@ -38,17 +40,15 @@ export class AuthService {
         try {
             const response = await axios.post('https://api.intra.42.fr/oauth/token', {
             grant_type: 'authorization_code',
-            client_id: 'u-s4t2ud-47600cc08a77769cea8bec6cacdd6ef77df4be8fbb4984a8b9435f3cdddee480',
-            client_secret: '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',
+            client_id: uid,
+            client_secret: secret,
             redirect_uri: 'http://localhost:3000/wait',
             code: code
             });
-            const token: string = response.data.access_token;
-            console.log(token);
-
-            return token;
+            return response.data;
         } catch (error) {
-            throw new BadRequestException(error);
+            console.error('Failed getting token');
+            throw new BadRequestException('Failed getting token', error);
         }
     }
 
