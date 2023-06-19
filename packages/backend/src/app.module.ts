@@ -8,8 +8,9 @@ import { ChatroommessageModule } from './chatroommessage/chatroommessage.module'
 import { UserfriendshipModule } from './userfriendship/userfriendship.module';
 import { UserblocksModule } from './userblocks/userblocks.module';
 import { ChatModule } from './chat/chat.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, ChatroomModule, ChatroomuserModule, PrivatemessageModule, ChatroommessageModule, UserfriendshipModule, UserblocksModule, ChatModule]
+  imports: [PrismaModule, UserModule, ChatroomModule, ChatroomuserModule, PrivatemessageModule, ChatroommessageModule, UserfriendshipModule, UserblocksModule, ChatModule, AuthModule]
 })
 export class AppModule {}
