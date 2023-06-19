@@ -2,23 +2,25 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import { css, keyframes } from "@emotion/react";
-import * as axios from 'axios';
-import { Axios, AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { error } from "console";
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 `;
 
-export default function Wait() {
+export default function GetToken() {
 
     let urlParams: URLSearchParams = new URLSearchParams(window.location.search);
     let authorizationCode: string | null = urlParams.get('code');
+
+    console.log(authorizationCode);
     
-    axios.post('http://localhost:4242/oauthCallback', authorizationCode).then((response: AxiosResponse) => {
+    axios.post('http://localhost:4242/oauth', {code: authorizationCode}).then((response: AxiosResponse) => {
        console.log('code: ${authorizationCode}');
     }).catch (error => {
-        console.error('Something is fucked up son');
+        console.error(error);
     });
 
     
