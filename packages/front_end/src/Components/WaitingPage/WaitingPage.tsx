@@ -15,11 +15,11 @@ export default function GetToken() {
     let urlParams: URLSearchParams = new URLSearchParams(window.location.search);
     let authorizationCode: string | null = urlParams.get('code');
 
-    console.log(authorizationCode);
-    
     axios.post('http://localhost:4242/oauth', {code: authorizationCode}).then((response: AxiosResponse) => {
-       console.log('code: ${authorizationCode}');
+        console.log('here\'s the access token');
+        console.log(response);
     }).catch (error => {
+        console.log('hit error');
         console.error(error);
     });
 
