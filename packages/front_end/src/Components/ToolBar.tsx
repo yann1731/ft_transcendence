@@ -17,6 +17,8 @@ import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { User } from './Interfaces';
+import { useSelector, useDispatch } from "react-redux";
+import { toggleTheme } from "../store/reducers/themeSlice";
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -67,24 +69,22 @@ function ResponsiveAppBar() {
 		fetchUserStatistics();
 	}, [userStatistics]);
   
+  const dispatch = useDispatch();
+
   return (
     <AppBar position="fixed" style={{ backgroundImage: "none" }} sx={{ bgcolor: theme.palette.secondary.main }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Tooltip title="Gotta catch em all!">
-            <PokeBallIcon className='pokeball' />
-          </Tooltip>
-          <Tooltip title="Light / Dark Mode" sx={{ position: 'fixed', right: '80px', top: '25px' }}>
-            <IconButton>
-              <ThemeModeIcon sx={{ position: 'fixed', right: '80px', top: '22px', color: 'white' }} />
-              <PokeBallIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 3, position: 'fixed', left: 15, color: 'white' }} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Light / Dark Mode" sx={{ position: 'fixed', right: '80px', top: '25px' }}>
-            <IconButton>
-              <ThemeModeIcon sx={{ position: 'fixed', right: '80px', top: '22px', color: 'white' }} />
-            </IconButton>
-          </Tooltip>
+            <Tooltip title="Gotta catch em all!">
+              <PokeBallIcon className="pokeball" />
+            </Tooltip>
+          <div id="anim" className="themeButtonStyle">
+            <Tooltip title="Light / Dark Mode">
+              <IconButton className="buttonBackground">
+                <ThemeModeIcon className="iconThemeBackground"></ThemeModeIcon>
+              </IconButton>
+            </Tooltip>
+          </div>
           <Typography
             variant="h6"
             noWrap
@@ -99,7 +99,7 @@ function ResponsiveAppBar() {
               textDecoration: 'none',
             }}
           >
-            <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/632d52a6376a2b001d128f18.jpg" alt="fat cat" width={65} className="fatCat">
+            <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/632d52a6376a2b001d128f18.jpg" alt="fat cat" width={65} style={{ position: 'fixed', top: 1, left: 55}}>
 			      </img>
           </Typography>
 
@@ -134,7 +134,7 @@ function ResponsiveAppBar() {
             >
               {pages.map((page) => (
                   <Link style={{textDecoration: 'none'}} to={page.link}>
-                    <MenuItem key={page.label} onClick={handleCloseNavMenu} sx={{ color: 'white', fontWeight: 'bold', ":hover": { bgcolor: "cyan", color: "#001828"} }}>
+                    <MenuItem key={page.label} onClick={handleCloseNavMenu} sx={{ color: 'white', fontWeight: 'bold' }}>
                       <Typography textAlign="center">{page.label}</Typography>
                     </MenuItem>
                 </Link>
@@ -165,7 +165,7 @@ function ResponsiveAppBar() {
                 <Button variant="outlined"
                   key={page.label}
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block', bgcolor: theme.palette.primary.main, border:'1px solid white', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "white", color: "#001828"} }}
+                  sx={{ my: 2, color: 'white', display: 'block', bgcolor: theme.palette.secondary.main, border:'1px solid white', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "white", color: "#001828"} }}
                   >
                   {page.label}
                 </Button>
@@ -175,9 +175,11 @@ function ResponsiveAppBar() {
 
           <Box sx={{ flexGrow: 0}}>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ position: 'fixed', right: 15, top: '5px' }}>
-                <Avatar alt={userStatistics?.username} src={userStatistics?.avatar} />
-              </IconButton>
+              <div id="anim" className="profileButtonStyle">
+                <IconButton onClick={handleOpenUserMenu}>
+                  <Avatar alt={userStatistics?.username} src={userStatistics?.avatar} />
+                </IconButton>
+              </div>
             </Tooltip>
             <Menu
               sx={{ mt: '45px' }}
