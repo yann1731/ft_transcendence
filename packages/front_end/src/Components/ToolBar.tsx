@@ -14,10 +14,10 @@ import MenuItem from '@mui/material/MenuItem';
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import ThemeModeIcon from '@mui/icons-material/DarkMode'
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { User } from './Interfaces';
 import { useDispatch } from "react-redux";
-import { asyncToggleTheme } from '../store/reducers/themeSlice';
+import { asyncToggleTheme } from "../store/reducers/themeSlice";
+import { useState, useEffect } from 'react';
+import { User } from '../Contexts/userContext';
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -25,8 +25,6 @@ const pages = [
   { label: 'Profile', link: '/Profile'},
 ];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-
-
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -74,9 +72,8 @@ function ResponsiveAppBar() {
 
   return (
     <div className="toolbar">
-    <AppBar position="fixed">
+    <AppBar sx={{ height: '64px' }}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
             <Tooltip title="Gotta catch em all!">
               <PokeBallIcon className="pokeball" />
             </Tooltip>
@@ -113,8 +110,9 @@ function ResponsiveAppBar() {
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
               color="inherit"
+              sx={{ "&:hover": { backgroundColor: "transparent", } }}
             >
-              <MenuIcon />
+              <MenuIcon className="toolbarBurgerMenu" />
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -137,7 +135,7 @@ function ResponsiveAppBar() {
             >
               {pages.map((page) => (
                   <Link style={{textDecoration: 'none'}} to={page.link}>
-                    <MenuItem key={page.label} onClick={handleCloseNavMenu} sx={{ color: 'white', fontWeight: 'bold' }}>
+                    <MenuItem key={page.label} onClick={handleCloseNavMenu}>
                       <Typography textAlign="center">{page.label}</Typography>
                     </MenuItem>
                 </Link>
@@ -158,6 +156,9 @@ function ResponsiveAppBar() {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
+              position: 'center',
+              marginLeft: '120px',
+              marginTop: '-9px',
             }}
           >
             TRANSCENDENCE
@@ -169,7 +170,7 @@ function ResponsiveAppBar() {
                   key={page.label}
                   onClick={handleCloseNavMenu}
                   className="toolbarButtons"
-                  sx={{ marginRight: '15px', width: 'auto', fontWeight: 'bold', ":hover": { bgcolor: "white"} }}
+                  sx={{ marginRight: '15px', marginTop: '14px', width: 'auto', fontWeight: 'bold', ":hover": { bgcolor: "white"} }}
                   >
                   {page.label}
                 </Button>
@@ -208,7 +209,6 @@ function ResponsiveAppBar() {
               ))}
             </Menu>
           </Box>
-        </Toolbar>
       </Container>
     </AppBar>
     </div>

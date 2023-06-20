@@ -84,6 +84,20 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 				},
 			},
 		},
+		MuiAppBar: {
+			styleOverrides: {
+				colorPrimary: {
+					color: mode === 'dark' ? '#FFFFFF' : '#2067A1',
+				},
+			},
+		},
+		MuiMenuItem: {
+			styleOverrides: {
+				root: {
+					color: mode === 'dark' ? '#FFFFFF' : '#2067A1'
+				}
+			}
+		}
 	},
   });
 
@@ -101,14 +115,16 @@ function App() {
 
 	const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 	return (
-		<Routes>
-			<Route path='/' element={ <Login />} />
-			<Route path='/Home' element={ <Home /> } />
-			<Route path='/Profile' element={ <Profile /> } />
-			<Route path='/Chat' element={ <Chat /> } />
-			<Route path='/FatCat' element={ <FatCat /> } />
-			<Route path='/wait' element={<Wait /> } />
-		</Routes>
+		<ThemeProvider theme={theme}>
+			<Routes>
+				<Route path='/' element={ <Login />} />
+				<Route path='/Home' element={ <Home /> } />
+				<Route path='/Profile' element={ <Profile /> } />
+				<Route path='/Chat' element={ <Chat /> } />
+				<Route path='/FatCat' element={ <FatCat /> } />
+				<Route path='/wait' element={<Wait /> } />
+			</Routes>
+		</ThemeProvider>
 	);
 }
 export default App;

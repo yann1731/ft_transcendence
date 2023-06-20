@@ -6,9 +6,9 @@ import Divider from '@mui/material/Divider';
 import { User } from 'Contexts/userContext';
 
 
-//TODO Change styles to CSS in App.css
-export default function DashboardContainer({ user }: { user: User | null }) {
 
+
+export default function DashboardContainer({ user }: { user: User | null }) {
   return (
     <React.Fragment>
       <CssBaseline />
