@@ -2,13 +2,10 @@ import { Grid } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { experimentalStyled as styled } from '@mui/material/styles';
 import Handler2FA from "./2FAActivation";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { theme } from '../../../Theme';
-import { useEffect, useState } from "react";
 import UserNameHandler from "./UsernameHandler";
 import { useContext } from "react";
-import { UserContext, User } from "Contexts/userContext";
+import { UserContext } from "Contexts/userContext";
 //import axios from 'axios'
 
 const Item = styled(Paper)(({ theme }) => ({
