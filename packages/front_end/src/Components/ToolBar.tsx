@@ -16,6 +16,8 @@ import ThemeModeIcon from '@mui/icons-material/DarkMode'
 import { Link } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { asyncToggleTheme } from "../store/reducers/themeSlice";
+import { useState, useEffect } from 'react';
+import { User } from '../Contexts/userContext';
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -72,7 +74,6 @@ function ResponsiveAppBar() {
     <div className="toolbar">
     <AppBar sx={{ height: '64px' }}>
       <Container maxWidth="xl">
-       
             <Tooltip title="Gotta catch em all!">
               <PokeBallIcon className="pokeball" />
             </Tooltip>
@@ -208,7 +209,6 @@ function ResponsiveAppBar() {
               ))}
             </Menu>
           </Box>
-        
       </Container>
     </AppBar>
     </div>

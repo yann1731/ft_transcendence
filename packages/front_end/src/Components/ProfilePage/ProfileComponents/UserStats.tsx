@@ -27,16 +27,16 @@ const Item = styled(Paper)(({ theme }) => ({
         <Box sx={{ width: '95%', mt: 3 }} className="profileButtonBox">
             <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item sx={{width: '99%'}}>
-                <Item className="profilePageButtons">Nb Games Played: {userStatistics?.gamesPlayed} </Item>
+                <Item className="profilePageButtons">Nb Games Played: {user?.gamesPlayed} </Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item className="profilePageButtons">Wins: {userStatistics?.wins}</Item>
+                <Item className="profilePageButtons">Wins: {user?.win}</Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item className="profilePageButtons">Losses: {userStatistics?.losses}</Item>
+                <Item className="profilePageButtons">Losses: {user?.loss}</Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item className="profilePageButtons">Win Ratio: {userStatistics?.winRatio}</Item>
+                <Item className="profilePageButtons">Win Ratio: {winRatio.toFixed(2)}</Item>
             </Grid>
             <Grid item xs={13}>
             <Handler2FA></Handler2FA>

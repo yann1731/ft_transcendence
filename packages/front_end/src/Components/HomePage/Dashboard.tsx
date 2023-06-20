@@ -8,7 +8,7 @@ import { User } from 'Contexts/userContext';
 
 
 
-export default function DashboardContainer() {
+export default function DashboardContainer({ user }: { user: User | null }) {
   return (
     <React.Fragment>
       <CssBaseline />

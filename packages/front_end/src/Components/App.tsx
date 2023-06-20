@@ -9,6 +9,7 @@ import { useState, useMemo } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { RootState } from 'store/store';
 import { PaletteMode } from '@mui/material';
+import Wait from './WaitingPage/Wait';
 
 export const getDesignTokens = (mode: PaletteMode) => ({
 	palette: {
@@ -99,7 +100,6 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 		}
 	},
   });
-import Wait from './WaitingPage/Wait';
 
 function App() {
 	const [mode, setMode] = useState<PaletteMode>("dark");
@@ -115,14 +115,16 @@ function App() {
 
 	const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 	return (
-		<Routes>
-			<Route path='/' element={ <Login />} />
-			<Route path='/Home' element={ <Home /> } />
-			<Route path='/Profile' element={ <Profile /> } />
-			<Route path='/Chat' element={ <Chat /> } />
-			<Route path='/FatCat' element={ <FatCat /> } />
-			<Route path='/wait' element={<Wait /> } />
-		</Routes>
+		<ThemeProvider theme={theme}>
+			<Routes>
+				<Route path='/' element={ <Login />} />
+				<Route path='/Home' element={ <Home /> } />
+				<Route path='/Profile' element={ <Profile /> } />
+				<Route path='/Chat' element={ <Chat /> } />
+				<Route path='/FatCat' element={ <FatCat /> } />
+				<Route path='/wait' element={<Wait /> } />
+			</Routes>
+		</ThemeProvider>
 	);
 }
 export default App;
