@@ -20,7 +20,7 @@ function ProfileContainer() {
 	const [selectedPicture, setSelectedPicture] = useState('');
 	const {user, setUser} = useContext(UserContext);
 
-	useEffect(() => {
+	/*useEffect(() => {
 		const fetchUser = async () => {
 			try {
 				const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3');
@@ -40,7 +40,7 @@ function ProfileContainer() {
 		};
 
 		fetchUser();
-	}, [user]);
+	}, [user]);*/
 
 	const handleOpen = (picture: string | undefined) => { 
 		if (picture !== undefined)
@@ -62,8 +62,8 @@ function ProfileContainer() {
 		setAnchorElUser(null);
 	};
 	return (
-		<Box sx={{bgcolor: theme.palette.primary.main}}>
-				<Avatar alt={user?.username} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
+		<Box className="profileMainBox">
+				<Avatar alt={user?.avatar} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
 				<div style={{ textAlign: 'center' }}>
 					<Tooltip title="Open profile settings">
 					<IconButton onClick={handleOpenUserMenu}>
@@ -99,14 +99,11 @@ function ProfileContainer() {
 				</div>
 				<Box sx={{textAlign: 'center', mt: 1}}>Username: {user?.username}</Box>
 				<Box sx={{textAlign: 'center'}}>Level: </Box>
-				<Box sx={{
-					bgcolor: theme.palette.secondary.main,
-					border: 1.5,
+				<Box className="profileSection" sx={{
 					width: 400,
 					height: 450,
 					margin: 'auto',
 					borderRadius: 2.5,
-					boxShadow: 10,
 					mt: 3,
 					display: 'flex',
 					flexDirection: "column",

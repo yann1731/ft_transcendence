@@ -55,7 +55,6 @@
 }
 
 .chatSection {
-    background-image: none;
     background-color: var(--secondary-color);
     border-radius: 10px;
     height: 81.3vh;
@@ -76,7 +75,6 @@
 }
 
 .dashboardTitle {
-  background-color: var(--primary-color);
   text-align: center;
 }
 
@@ -91,11 +89,6 @@
   flex-grow: 1;
   margin-left: 20px;
   margin-right: 20px;
-}
-
-.dashboardTitle {
-  background-color: var(--primary-color);
-  text-align: center;
 }
   
 .focusedTextField .MuiInputLabel-root.Mui-focused {
@@ -155,7 +148,6 @@
   box-shadow: 4;
   text-align: center;
   font-weight: bold;
-  color: white;
   font-size: 25px;
   position: relative;
 }
@@ -167,12 +159,10 @@
   border-radius: 10px;
 }
 .ingameChatBar {
-  background-color: var(--primary-color);
   text-align: center;
   font-weight: bold;
   font-size: 25px;
   width: 50vw;
-  color: white;
 }
 .ingameChatBox {
   background-color: var(--secondary-color);
@@ -216,6 +206,7 @@
 .pokeball {
   position: fixed;
   left: 15px;
+  top: 20px;
   color: white;
   animation: rotation 20s infinite linear;
 }
@@ -238,10 +229,34 @@
   color: var(--icon-hover-color);
 }
 
+.profileButtonBox {
+  background-color: var(--primary-color);
+}
+
 .profileButtonStyle {
   position: fixed;
   right: 15px;
   top: 5px;
+}
+
+.profileMainBox {
+  background-color: var(--primary-color);
+}
+
+.profilePageButtons:hover {
+  background-color: white !important;
+  color: var(--button-color);
+}
+
+.profilePageButtons .MuiButton-outlined {
+  background-color: var(--secondary-color);
+  color: white;
+  border: 1px solid white;
+  width: 99%;
+}
+
+.profileSection { 
+  background-color: var(--primary-color);
 }
 
 .signInStyle {
@@ -262,7 +277,30 @@
   top: 14px;
 }
 
+.toolbarBurgerMenu {
+  position: fixed;
+  top: 20px;
+  left: 50px;
+}
+
+.toolbarButtons {
+  display: block;
+  border: 1px solid white;
+  background-color: white;
+}
+
+.toolbarButtonsSpace {
+  position: fixed;
+  top: 20px;
+}
 
 
+.toolbarButtons:hover {
+  background-color: white;
+  color: var(--button-color);
+}
 
-
+.toolbar .MuiAppBar-root {
+  background-image: none;
+  background-color: var(--secondary-color);
+}

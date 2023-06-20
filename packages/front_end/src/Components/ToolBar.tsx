@@ -13,12 +13,11 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import ThemeModeIcon from '@mui/icons-material/DarkMode'
-import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
+import { useDispatch } from "react-redux";
+import { asyncToggleTheme } from "../store/reducers/themeSlice";
 import { useState, useEffect } from 'react';
-import { User } from './Interfaces';
-import { useSelector, useDispatch } from "react-redux";
-import { toggleTheme } from "../store/reducers/themeSlice";
+import { User } from '../Contexts/userContext';
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -72,15 +71,15 @@ function ResponsiveAppBar() {
   const dispatch = useDispatch();
 
   return (
-    <AppBar position="fixed" style={{ backgroundImage: "none" }} sx={{ bgcolor: theme.palette.secondary.main }}>
+    <div className="toolbar">
+    <AppBar sx={{ height: '64px' }}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
             <Tooltip title="Gotta catch em all!">
               <PokeBallIcon className="pokeball" />
             </Tooltip>
           <div id="anim" className="themeButtonStyle">
             <Tooltip title="Light / Dark Mode">
-              <IconButton className="buttonBackground">
+              <IconButton className="buttonBackground" onClick={() => dispatch(asyncToggleTheme() as any)}>
                 <ThemeModeIcon className="iconThemeBackground"></ThemeModeIcon>
               </IconButton>
             </Tooltip>
@@ -111,8 +110,9 @@ function ResponsiveAppBar() {
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
               color="inherit"
+              sx={{ "&:hover": { backgroundColor: "transparent", } }}
             >
-              <MenuIcon />
+              <MenuIcon className="toolbarBurgerMenu" />
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -129,12 +129,13 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: 'block', md: 'none' }
+                display: { xs: 'block', md: 'none' },
+                "&.MuiPaper-root":{ backgroundColor: "red" }
               }}
             >
               {pages.map((page) => (
                   <Link style={{textDecoration: 'none'}} to={page.link}>
-                    <MenuItem key={page.label} onClick={handleCloseNavMenu} sx={{ color: 'white', fontWeight: 'bold' }}>
+                    <MenuItem key={page.label} onClick={handleCloseNavMenu}>
                       <Typography textAlign="center">{page.label}</Typography>
                     </MenuItem>
                 </Link>
@@ -155,6 +156,9 @@ function ResponsiveAppBar() {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
+              position: 'center',
+              marginLeft: '120px',
+              marginTop: '-9px',
             }}
           >
             TRANSCENDENCE
@@ -165,7 +169,8 @@ function ResponsiveAppBar() {
                 <Button variant="outlined"
                   key={page.label}
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block', bgcolor: theme.palette.secondary.main, border:'1px solid white', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "white", color: "#001828"} }}
+                  className="toolbarButtons"
+                  sx={{ marginRight: '15px', marginTop: '14px', width: 'auto', fontWeight: 'bold', ":hover": { bgcolor: "white"} }}
                   >
                   {page.label}
                 </Button>
@@ -204,9 +209,9 @@ function ResponsiveAppBar() {
               ))}
             </Menu>
           </Box>
-        </Toolbar>
       </Container>
     </AppBar>
+    </div>
   );
 }
 
