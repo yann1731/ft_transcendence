@@ -1,4 +1,5 @@
 
+import io from 'socket.io-client';
 import Phaser from "phaser";
 import '../../../App.css';
 
@@ -11,6 +12,7 @@ export default class option extends Phaser.Scene{
 	single: boolean = true;
 	two: boolean = false;
 	multiple: boolean = false;
+	socket!: any; 
 
 	rateSpeed: number = 0.0006;
 
@@ -30,6 +32,8 @@ export default class option extends Phaser.Scene{
 	medium!: Phaser.GameObjects.Text;
 	slow!: Phaser.GameObjects.Text;
 	mode!: Phaser.GameObjects.Text;
+
+	
 
 	constructor() {
         super('menu');
@@ -74,18 +78,17 @@ export default class option extends Phaser.Scene{
 				this.start.setStyle({ backgroundColor: '#000000' });
 			});
 			this.start.on('pointerdown', () => {
-			  const game = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
-				  fontFamily: 'pong',
-				  fontSize: '50px',
-				  color: '#ffffff',
-				  backgroundColor: '#000000',
-				  padding: {
-					x: 10,
-					y: 6
-				  }
-				});
-				game.setOrigin(0.5);
-  
+				const waiting = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, "waiting for player", {
+					fontFamily: 'pong',
+					fontSize: '50px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				})
+				waiting.setOrigin(0.5);
 				this.title.setVisible(false);
 				this.start.setVisible(false);
 				this.powerButton.setVisible(false);
@@ -99,22 +102,45 @@ export default class option extends Phaser.Scene{
 				this.fast.setVisible(false);
 				this.medium.setVisible(false);
 				this.slow.setVisible(false);
-				
-			  this.time.delayedCall(1000, () => {
-				  game.setText('game starting in 2');
-			  }, [], this);
-			  this.time.delayedCall(2000, () => {
-				  game.setText('game starting in 1');
-			  }, [], this);
-			  this.time.delayedCall(3000, () => {
-					if (this.single === true)
-				  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket});
-					else if (this.multiple === true)
-						this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
-					else
-				  		this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
-				}, [], this);
-			});
+				this.powerButton.setInteractive(false);
+				this.settingOneButton.setInteractive(false);
+				this.settingThreeButton.setInteractive(false);
+				this.wallButton.setInteractive(false);
+				this.randomButton.setInteractive(false);
+				this.fast.setInteractive(false);
+				this.medium.setInteractive(false);
+				this.slow.setInteractive(false);
+				this.socket.emit("1v1");
+			this.socket.on("starting", () =>{
+				waiting.setVisible(false);
+				const game = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
+					fontFamily: 'pong',
+					fontSize: '50px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				  });
+				  game.setOrigin(0.5);
+	
+			  	this.time.delayedCall(1000, () => {
+					  game.setText('game starting in 2');
+			  	}, [], this);
+			  	this.time.delayedCall(2000, () => {
+					  game.setText('game starting in 1');
+			  	}, [], this);
+			  	this.time.delayedCall(3000, () => {
+						if (this.single === true)
+					  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket});
+						else if (this.multiple === true)
+							this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
+						else
+					  		this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
+					}, [], this);
+				});
+			})
   
   
 		this.mode = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.4, 'mode:', {
@@ -620,9 +646,10 @@ export default class option extends Phaser.Scene{
 
 	create() {
 		this.load.on('complete', this.all, this);
+		this.socket = io("http://localhost:4242/game")
 		this.all();
 		this.onevsthree();
-		this.onevsone();	
+		this.onevsone();
 	}
 
 	update() {}

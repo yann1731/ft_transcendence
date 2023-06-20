@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button, ButtonProps } from '@mui/material';
+import { theme } from '../../../Theme';
 
 type ToggleActive = () => void;
 
@@ -18,9 +19,7 @@ const Handler2FA = () => {
   const buttonText = isActive ? "Activate 2FA" : "Deactivate 2FA";
 
   return (
-    <div>
-      <Button variant="contained" onClick={toggleActive} sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>{buttonText}</Button>
-    </div>
+      <Button variant="outlined" className="profilePageButtons" onClick={toggleActive}>{buttonText}</Button>
   );
 };
 

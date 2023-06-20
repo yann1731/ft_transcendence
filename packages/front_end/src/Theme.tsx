@@ -1,4 +1,3 @@
-
 import { createTheme, ThemeOptions } from '@mui/material/styles';
 import "@fontsource/roboto"
 
@@ -6,7 +5,7 @@ const themeOptions: ThemeOptions = {
   palette: {
     mode: 'dark',
     background: {
-      default: '#152647',
+      default: 'red',
     },
     primary: {
       main: '#152647',

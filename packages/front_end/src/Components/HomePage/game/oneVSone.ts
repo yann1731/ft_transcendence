@@ -17,6 +17,7 @@ interface gameData {
     random: boolean;
     power: boolean;
     face: boolean;
+    socket: any;
 }
 
 export default class oneVSone extends Phaser.Scene{
@@ -85,6 +86,7 @@ export default class oneVSone extends Phaser.Scene{
         this.random = data.random;
         this.powerup = data.power;
         this.face = data.face; 
+        this.socket = data.socket
     }
 
 	preload() {
@@ -386,7 +388,6 @@ export default class oneVSone extends Phaser.Scene{
         this.text_init();
         this.ball_init();
         this.paddle_init();
-        this.socket = io("http://localhost:4242");
 
         this.socket.on("movement", (newPos: number) => {
             this.paddle2.setY(newPos + this.paddle2.height * 0.25 / 2);

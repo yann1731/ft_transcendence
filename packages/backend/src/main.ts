@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cors from "cors"
+import { RedisIoAdapter } from './websocketAdapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,10 @@ async function bootstrap() {
     origin: '*',
     methods: '*',
   });
+
+  const adapter = new RedisIoAdapter
+  await adapter.connectToRedis();
+  app.useWebSocketAdapter(adapter)
 
   const config = new DocumentBuilder()
   .setTitle("Median")

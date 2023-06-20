@@ -4,7 +4,8 @@ import Box from '@mui/material/Box';
 import DashboardBar from './DashboardBar';
 import Divider from '@mui/material/Divider';
 
-//TODO Change styles to CSS in App.css
+
+
 export default function DashboardContainer() {
   return (
     <React.Fragment>

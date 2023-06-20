@@ -2,8 +2,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import { css, keyframes } from "@emotion/react";
-import * as axios from 'axios';
-import { Axios, AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
@@ -17,7 +16,7 @@ export default function Wait() {
     
     axios.post('http://localhost:4242/oauthCallback', authorizationCode).then((response: AxiosResponse) => {
        console.log('code: ${authorizationCode}');
-    }).catch (error => {
+    }).catch ((error: any) => {
         console.error('Something is fucked up son');
     });
 
