@@ -3,6 +3,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import DashboardBar from './DashboardBar';
 import Divider from '@mui/material/Divider';
+import { User } from 'Contexts/userContext';
+
 
 
 
@@ -17,9 +19,9 @@ export default function DashboardContainer() {
             <Box sx={{ textAlign: 'center' }}>
               <Box sx={{color: 'white', fontSize: '20px' }}>Hall of Fame</Box>
               <Divider style={{ marginBottom: '10px' }} />
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Nb games played:</Box>
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Wins:</Box>
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Losses:</Box>
+              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Nb games played: </Box>
+              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Wins: </Box>
+              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Losses: </Box>
               <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Current win streak:</Box>
               <Box sx={{ color: '#2067a1', fontSize: '15px' }}>Best streak:</Box>
             </Box>
@@ -28,10 +30,10 @@ export default function DashboardContainer() {
             <Box sx={{ textAlign: 'center'}}>
               <Box sx={{mt: 1, color: 'white', fontSize: '20px'}}>Personal Stats</Box>
                 <Divider style={{ marginBottom: '10px' }} />
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Nb games played:</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Wins:</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Losses:</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Current win streak:</Box>
+                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Nb games played: {user?.gamesPlayed}</Box>
+                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Wins: {user?.win}</Box>
+                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Losses: {user?.loss}</Box>
+                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Current win streak: </Box>
                 <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Best streak:</Box>
             </Box>
         </Box>

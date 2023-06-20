@@ -7,7 +7,8 @@ import Box from "@mui/material/Box";
 import { theme } from '../../../Theme';
 import { useEffect, useState } from "react";
 import UserNameHandler from "./UsernameHandler";
-import PassWordHandler from "./PasswordHandler";
+import { useContext } from "react";
+import { UserContext, User } from "Contexts/userContext";
 //import axios from 'axios'
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -18,39 +19,9 @@ const Item = styled(Paper)(({ theme }) => ({
 	
   }));
 
-  
-  interface Stats {
-    gamesPlayed: number;
-    wins: number;
-    losses: number;
-    winRatio: number;
-  }
-
   const MyStats = () => {
-    const [userStatistics, setUserStatistics] = useState<Stats | null>(null);
-        
-        useEffect(() => {
-        const fetchUserStatistics = async () => {
-            try {
-                const response = await fetch('http://localhost:4242/api/users');
-                //const response = await axios.get<Stats>('http://localhost:4242/api/users');
-                if(response.ok)
-                {
-                    const data = await response.json();
-                    setUserStatistics(data);
-                }
-                else
-                {
-                    console.error('fuck\n');
-                }
-            }
-            catch (err) {
-                console.error(err);
-            }
-        };
-    
-        fetchUserStatistics();
-    }, []);
+    const { user } = useContext(UserContext);
+    const winRatio = user && user.gamesPlayed > 0 ? (user.win / user.gamesPlayed) * 100 : 0;
 
     return (
         <Box sx={{ width: '95%', mt: 3 }} className="profileButtonBox">
@@ -72,9 +43,6 @@ const Item = styled(Paper)(({ theme }) => ({
             </Grid>
             <Grid item xs={13}>
                 <UserNameHandler></UserNameHandler>
-            </Grid>
-            <Grid item xs={13}>
-                <PassWordHandler></PassWordHandler>
             </Grid>
         </Grid>
     </Box>

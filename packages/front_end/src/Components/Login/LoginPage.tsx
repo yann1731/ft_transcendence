@@ -6,6 +6,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../../Theme';
 
@@ -15,6 +16,8 @@ interface SubmittedData {
 }
 
 export default function SignIn() {
+
+  window.location.assign('https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-47600cc08a77769cea8bec6cacdd6ef77df4be8fbb4984a8b9435f3cdddee480&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fwait&response_type=code')
 
   useEffect(() => {
     const handleResize = () => {
@@ -38,7 +41,7 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submittedData, setSubmittedData] = useState<SubmittedData[]>([]);
-
+  const navigate = useNavigate();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -54,6 +57,7 @@ export default function SignIn() {
       setEmail("");
       setPassword("");
       alert(`Email: ${newSubmittedData.email}\nPassword: ${newSubmittedData.password}`);
+      navigate('/Home');
     }
   };
   
