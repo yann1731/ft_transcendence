@@ -5,7 +5,7 @@ import SendIcon from '@mui/icons-material/Send';
 import ContactMenu from './ChatMenus/ContactMenu';
 import Box from '@mui/material/Box';
 import '../../App.css';
-
+import { User } from 'Contexts/userContext';
 
 interface Message {
   text: string;
@@ -14,7 +14,7 @@ interface Message {
   UserAvatar: string;
 }
 
-const Chat = () => {
+const Chat = ( { user }: { user: User | null }) => {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);

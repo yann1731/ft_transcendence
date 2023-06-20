@@ -15,6 +15,8 @@ import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import ThemeModeIcon from '@mui/icons-material/DarkMode'
 import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { User } from './Interfaces';
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../store/reducers/themeSlice";
 
@@ -28,6 +30,7 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [userStatistics, setUserStatistics] = useState<User | null>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -44,6 +47,28 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  useEffect(() => {
+		const fetchUserStatistics = async () => {
+			try {
+				const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3');
+				if(response.ok)
+				{
+					const data = await response.json();
+					setUserStatistics(data);
+				}
+				else
+				{
+					console.error('Could not fetch user');
+				}
+			}
+			catch (err) {
+				console.error(err);
+			}
+		};
+
+		fetchUserStatistics();
+	}, [userStatistics]);
+  
   const dispatch = useDispatch();
 
   return (
@@ -152,7 +177,7 @@ function ResponsiveAppBar() {
             <Tooltip title="Open settings">
               <div id="anim" className="profileButtonStyle">
                 <IconButton onClick={handleOpenUserMenu}>
-                  <Avatar alt="Criss de gros chat" src="https://pbs.twimg.com/profile_images/1633238286045962243/JfgDezi9_400x400.jpg" />
+                  <Avatar alt={userStatistics?.username} src={userStatistics?.avatar} />
                 </IconButton>
               </div>
             </Tooltip>
@@ -184,4 +209,5 @@ function ResponsiveAppBar() {
     </AppBar>
   );
 }
+
 export default ResponsiveAppBar;

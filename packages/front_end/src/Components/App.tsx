@@ -8,14 +8,14 @@ import Wait from './WaitingPage/Wait';
 
 function App() {
 	return (
-	<Routes>
-		<Route path='/' element={ <Login />} />
-		<Route path='/Home' element={ <Home /> } />
-		<Route path='/Profile' element={ <Profile /> } />
-		<Route path='/Chat' element={ <Chat /> } />
-		<Route path='/FatCat' element={ <FatCat /> } />
-		<Route path='/wait' element={<Wait /> } />
-	</Routes>
+		<Routes>
+			<Route path='/' element={ <Login />} />
+			<Route path='/Home' element={ <Home /> } />
+			<Route path='/Profile' element={ <Profile /> } />
+			<Route path='/Chat' element={ <Chat /> } />
+			<Route path='/FatCat' element={ <FatCat /> } />
+			<Route path='/wait' element={<Wait /> } />
+		</Routes>
 	);
 }
 export default App;
