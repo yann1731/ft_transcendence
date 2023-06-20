@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { Button, ButtonProps } from '@mui/material';
 import { User } from 'Components/Interfaces';
+import { UserContext } from "Contexts/userContext";
+import { useContext } from "react";
 
 type ToggleActive = () => void;
 
-
-
-const Handler2FA = ({userStatistics}: { userStatistics: User | null}) => {
+const Handler2FA = () => {
+  const {user} = useContext(UserContext);
+  
   const Handle2FA = (): [boolean, ToggleActive] => {
     const storedValue = localStorage.getItem('twoFaEnabled');
-    const initialValue = storedValue !== null ? JSON.parse(storedValue) : userStatistics?.twoFaEnabled || false;
+    const initialValue = storedValue !== null ? JSON.parse(storedValue) : user?.twoFaEnabled || false;
     const [active, setActive] = useState(initialValue);
-  
+    
     const toggleActive: ToggleActive = () => {
       setActive((prevActive: boolean) => {
         const updatedValue = !prevActive;
@@ -27,11 +29,11 @@ const Handler2FA = ({userStatistics}: { userStatistics: User | null}) => {
   const handleToggleActive = async () => {
     const updatedTwoFaEnabled = !isActive; // Inverse la valeur directement
 
-    if (userStatistics) {
-      const updatedUserStatistics = { ...userStatistics, twoFaEnabled: updatedTwoFaEnabled };
+    if (user) {
+      const updatedUser = { ...user, twoFaEnabled: updatedTwoFaEnabled };
 
       try {
-        await updateUserStatistics(updatedUserStatistics); // Call the async function
+        await updateUser2FA(updatedUser); // Call the async function
         toggleActive(); // Met à jour la valeur après la mise à jour réussie
       } catch (err) {
         console.error(err);
@@ -39,13 +41,13 @@ const Handler2FA = ({userStatistics}: { userStatistics: User | null}) => {
     }
   };
 
-  const updateUserStatistics = async (updatedUserStatistics: User) => {
+  const updateUser2FA = async (updatedUser: User) => {
     const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(updatedUserStatistics),
+      body: JSON.stringify(updatedUser),
     });
 
     if (!response.ok) {

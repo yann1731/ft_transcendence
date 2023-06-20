@@ -7,8 +7,8 @@ import Box from "@mui/material/Box";
 import { theme } from '../../../Theme';
 import { useEffect, useState } from "react";
 import UserNameHandler from "./UsernameHandler";
-import PassWordHandler from "./PasswordHandler";
-import { User } from "Components/Interfaces";
+import { useContext } from "react";
+import { UserContext, User } from "Contexts/userContext";
 //import axios from 'axios'
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -19,33 +19,30 @@ const Item = styled(Paper)(({ theme }) => ({
 	color: theme.palette.text.secondary,
   }));
 
-  const MyStats = ({ userStatistics }: { userStatistics: User | null }) => {
-
-    const winRatio = userStatistics && userStatistics.gamesPlayed > 0 ? (userStatistics.win / userStatistics.gamesPlayed) * 100 : 0;
+  const MyStats = () => {
+    const { user } = useContext(UserContext);
+    const winRatio = user && user.gamesPlayed > 0 ? (user.win / user.gamesPlayed) * 100 : 0;
 
     return (
         <Box sx={{ width: '95%', mt: 3, boxShadow: 10, bgcolor: theme.palette.secondary.main,}}>
             <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item sx={{width: '99%'}}>
-                <Item sx={{bgcolor: 'white', color: 'grey'}}>Nb Games Played: {userStatistics?.gamesPlayed} </Item>
+                <Item sx={{bgcolor: 'white', color: 'grey'}}>Nb Games Played: {user?.gamesPlayed} </Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item sx={{bgcolor: 'white', color: 'grey'}}>Wins: {userStatistics?.win}</Item>
+                <Item sx={{bgcolor: 'white', color: 'grey'}}>Wins: {user?.win}</Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item sx={{bgcolor: 'white', color: 'grey'}}>Losses: {userStatistics?.loss}</Item>
+                <Item sx={{bgcolor: 'white', color: 'grey'}}>Losses: {user?.loss}</Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
                 <Item sx={{bgcolor: 'white', color: 'grey'}}>Win Ratio: {winRatio.toFixed(2)}%</Item>
             </Grid>
             <Grid item xs={13}>
-            <Handler2FA userStatistics={userStatistics}></Handler2FA>
+            <Handler2FA></Handler2FA>
             </Grid>
             <Grid item xs={13}>
-                <UserNameHandler userStatistics={userStatistics} ></UserNameHandler>
-            </Grid>
-            <Grid item xs={13}>
-                <PassWordHandler userStatistics={userStatistics}></PassWordHandler>
+                <UserNameHandler></UserNameHandler>
             </Grid>
         </Grid>
     </Box>

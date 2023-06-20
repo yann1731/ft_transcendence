@@ -5,7 +5,7 @@ import * as cors from "cors";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  const bodyParser = require('body-parser');
   const config = new DocumentBuilder()
     .setTitle("Median")
     .setDescription("The Median API")
@@ -21,7 +21,8 @@ async function bootstrap() {
     });
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  
+  app.use(bodyParser.json({ limit: '10mb' }));
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
   await app.listen(4242);
 }
 bootstrap();

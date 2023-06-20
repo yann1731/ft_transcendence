@@ -8,25 +8,26 @@ import MenuItem from '@mui/material/MenuItem';
 import { theme } from '../../Theme';
 import { useState, useEffect } from 'react';
 import MyStats from './ProfileComponents/UserStats';
-import { User } from 'Components/Interfaces';
 import PictureHandler from './ProfileComponents/PictureHandler';
+import { UserContext, User } from 'Contexts/userContext';
+import { useContext } from 'react';
 
 const settings = ['See profile picture', 'Upload profile picture'];
 
 function ProfileContainer() {
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 	const [open, setOpen] = useState(false);
-	const [userStatistics, setUserStatistics] = useState<User | null>(null);
 	const [selectedPicture, setSelectedPicture] = useState('');
+	const {user, setUser} = useContext(UserContext);
 
 	useEffect(() => {
-		const fetchUserStatistics = async () => {
+		const fetchUser = async () => {
 			try {
 				const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3');
 				if(response.ok)
 				{
 					const data = await response.json();
-					setUserStatistics(data);
+					setUser(data);
 				}
 				else
 				{
@@ -38,8 +39,8 @@ function ProfileContainer() {
 			}
 		};
 
-		fetchUserStatistics();
-	}, [userStatistics]);
+		fetchUser();
+	}, [user]);
 
 	const handleOpen = (picture: string | undefined) => { 
 		if (picture !== undefined)
@@ -60,10 +61,9 @@ function ProfileContainer() {
 	const handleCloseUserMenu = () => {
 		setAnchorElUser(null);
 	};
-
 	return (
 		<Box sx={{bgcolor: theme.palette.primary.main}}>
-				<Avatar alt={userStatistics?.username} src={userStatistics?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
+				<Avatar alt={user?.username} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
 				<div style={{ textAlign: 'center' }}>
 					<Tooltip title="Open profile settings">
 					<IconButton onClick={handleOpenUserMenu}>
@@ -86,18 +86,18 @@ function ProfileContainer() {
 					open={Boolean(anchorElUser)}
 					onClose={handleCloseUserMenu}
 				>
-					<MenuItem onClick={() => handleOpen(userStatistics?.avatar)}>
+					<MenuItem onClick={() => handleOpen(user?.avatar)}>
 						<Typography textAlign="center">See profile picture</Typography>
 					</MenuItem>
-					<PictureHandler userStatistics={userStatistics}></PictureHandler>
+					<PictureHandler></PictureHandler>
 				</Menu>
 				<Modal open={open} onClose={handleClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
 					<div>
-						<img src={userStatistics?.avatar} alt={userStatistics?.username} style={{color: 'white'}} />
+						<img src={user?.avatar} alt={user?.username} style={{color: 'white'}} />
 					</div>
 				</Modal>
 				</div>
-				<Box sx={{textAlign: 'center', mt: 1}}>Username: {userStatistics?.username}</Box>
+				<Box sx={{textAlign: 'center', mt: 1}}>Username: {user?.username}</Box>
 				<Box sx={{textAlign: 'center'}}>Level: </Box>
 				<Box sx={{
 					bgcolor: theme.palette.secondary.main,
@@ -112,7 +112,7 @@ function ProfileContainer() {
 					flexDirection: "column",
 					alignItems: 'center',
 				}}>
-				<MyStats userStatistics={userStatistics}></MyStats>
+				<MyStats></MyStats>
 			</Box>
 		</Box>
 	)

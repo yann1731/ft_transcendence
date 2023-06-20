@@ -3,7 +3,6 @@ import React, { createContext, useState, PropsWithChildren } from 'react';
 export type User = {
   avatar: string;
   username: string;
-  password: string;
   email: string;
   win: number;
   loss: number;

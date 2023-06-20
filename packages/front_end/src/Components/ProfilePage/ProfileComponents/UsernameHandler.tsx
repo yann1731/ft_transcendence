@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
-import { User } from "Components/Interfaces";
+import { UserContext } from "Contexts/userContext";
+import { useContext } from "react";
 
-const UsernameHandler = ({ userStatistics }: { userStatistics: User | null }) => {
+const UsernameHandler = () => {
+  const { user, updateUser } = useContext(UserContext);
   const [open, setOpen] = useState(false);
   const [newUsername, setNewUsername] = useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
-    return;
   };
 
   const handleClose = () => {
     setOpen(false);
-    return;
   };
 
   const handleChangeUsername = async () => {
@@ -23,21 +23,21 @@ const UsernameHandler = ({ userStatistics }: { userStatistics: User | null }) =>
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...userStatistics, username: newUsername }), // Mettez à jour le champ 'username' avec la nouvelle valeur
+        body: JSON.stringify({ ...user, username: newUsername }),
       });
   
       if (response.ok) {
-        const updatedData = await response.json();
-        setNewUsername(updatedData);
+        const updatedUser = await response.json();
+        updateUser(updatedUser); // Update the user context with the updated user
       } else {
-        console.error('Could not update user statistics');
+        console.error('Could not update username');
       }
   
       handleClose();
     } catch (error) {
       console.error('Error occurred while updating username:', error);
     }
-    setNewUsername("");
+    setNewUsername('');
   };
 
   return (

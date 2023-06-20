@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
-import { User } from "Components/Interfaces";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import { useContext } from "react";
+import { UserContext, User } from "Contexts/userContext";
 
-const PictureHandler = ({ userStatistics }: { userStatistics: User | null }) => {
+// Faire quelque chose qui permet de click and drag une image pour la selectionner ou ouvrir un fenetre pour selectionner l'image sur l'ordinateur
+
+const PictureHandler: React.FC = () => {
+  const {user} = useContext(UserContext);
   const [open, setOpen] = useState(false);
-  const [newPicture, setNewPicture] = useState('');
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -18,52 +22,71 @@ const PictureHandler = ({ userStatistics }: { userStatistics: User | null }) => 
     return;
   };
 
-  const handleChangePicture = async () => {
-    try {
-      const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...userStatistics, avatar: newPicture }), // Mettez à jour le champ 'username' avec la nouvelle valeur
-      });
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
   
-      if (response.ok) {
-        const updatedPicture = await response.json();
-        setNewPicture(updatedPicture);
-      } else {
-        console.error('Could not update user statistics');
-      }
-  
-      handleClose(); 
-    } catch (error) {
-      console.error('Error occurred while updating username:', error);
+    if (file) {
+      setSelectedImage(file);
     }
-    setNewPicture("");
+  };
+
+  const uploadImage = async () => {
+    if (selectedImage) {
+      try {
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const imageDataUrl = reader.result as string;
+
+          const updatedUser = { ...user, avatar: imageDataUrl };
+
+          try {
+            const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3', {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(updatedUser),
+            });
+
+            if (response.ok) {
+              console.log('Image uploaded successfully!');
+              // Handle successful upload
+            } else {
+              console.error('Image upload failed.');
+              // Handle upload failure
+            }
+          } catch (error) {
+            console.error('Error occurred while uploading the image:', error);
+            // Handle request error
+          }
+        };
+        reader.readAsDataURL(selectedImage);
+      } catch (error) {
+        console.error('Error occurred while reading the image:', error);
+        // Handle image reading error
+      }
+    }
+
+    handleClose();
   };
 
   return (
-    <MenuItem onClick={handleClickOpen}>
-      <Typography textAlign="center">Upload Picture</Typography>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Change Profile Picture</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="New Picture"
-            type="picture"
-            value={newPicture}
-            onChange={(e) => setNewPicture(e.target.value)}
-            fullWidth
-            />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleChangePicture}>Save</Button>
-        </DialogActions>
-      </Dialog>
-    </MenuItem>
+    <>
+    <MenuItem onClick={handleClickOpen}>Upload profile picture</MenuItem>
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Select new image</DialogTitle>
+      <DialogContent>
+        <input type="file" accept="image/*" onChange={handleImageChange} />
+        {selectedImage && (
+          <img src={URL.createObjectURL(selectedImage)} alt="Selected" />
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={uploadImage}>Upload</Button>
+        <Button onClick={handleClose}>Cancel</Button>
+      </DialogActions>
+    </Dialog>
+  </>
   );
 };
 
