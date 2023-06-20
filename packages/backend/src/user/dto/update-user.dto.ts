@@ -36,4 +36,8 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     @IsOptional()
     @IsBoolean()
     twoFaEnabled?: boolean;
+
+    @IsOptional()
+    @IsString()
+    refresh_token?: string;
 }

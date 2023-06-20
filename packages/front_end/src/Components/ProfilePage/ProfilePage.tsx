@@ -62,13 +62,8 @@ function ProfileContainer() {
 		setAnchorElUser(null);
 	};
 	return (
-<<<<<<< HEAD
-		<Box className="profileMainBox">
-				<Avatar alt="Profile Picture" src={profilePicture} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
-=======
 		<Box sx={{bgcolor: theme.palette.primary.main}}>
 				<Avatar alt={user?.username} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
->>>>>>> 4dee00d09f2e237838db2506511696b67a2251f7
 				<div style={{ textAlign: 'center' }}>
 					<Tooltip title="Open profile settings">
 					<IconButton onClick={handleOpenUserMenu}>

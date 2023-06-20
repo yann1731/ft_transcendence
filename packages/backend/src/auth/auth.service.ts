@@ -1,6 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { Axios } from "axios";
+import axios, { Axios, AxiosResponse } from "axios";
+import { response } from "express";
+import { ENHANCER_TOKEN_TO_SUBTYPE_MAP } from "@nestjs/core/constants";
+import { Prisma } from "@prisma/client";
 
 //application flow:
 //the resource owner (a 42 user) is first redirected by the application to the OAuth authorization server at the API provider ->
@@ -23,12 +26,30 @@ import { Axios } from "axios";
 
 // This flow ensures that you're not making unnecessary requests to the third-party API for users that you can't actually create (because their chosen username is already taken), and it provides clear feedback to the client about the status of their signup request.
 
+
+//POST request to the https://api.intra.42.fr/oauth/token
 @Injectable({})
 export class AuthService {
+    constructor(private prisma: PrismaService) {}
 
-    oauthCallback() {
+    async oauthCallback(code: string): Promise<AxiosResponse["data"]> {
         const uid: string =  'u-s4t2ud-47600cc08a77769cea8bec6cacdd6ef77df4be8fbb4984a8b9435f3cdddee480';
         const secret: string = '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';
+
+        console.log('Hit oauthCallback service');
+        try {
+            const response = await axios.post('https://api.intra.42.fr/oauth/token', {
+            grant_type: 'authorization_code',
+            client_id: uid,
+            client_secret: secret,
+            redirect_uri: 'http://localhost:3000/wait',
+            code: code
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Failed getting token');
+            throw new BadRequestException('Failed getting token', error);
+        }
     }
 
 

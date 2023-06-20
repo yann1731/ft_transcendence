@@ -16,8 +16,8 @@ import ThemeModeIcon from '@mui/icons-material/DarkMode'
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { User } from './Interfaces';
-import { useSelector, useDispatch } from "react-redux";
-import { toggleTheme } from "../store/reducers/themeSlice";
+import { useDispatch } from "react-redux";
+import { asyncToggleTheme } from '../store/reducers/themeSlice';
 
 const pages = [
   { label: 'Home', link: '/Home' },

@@ -16,7 +16,8 @@ async function bootstrap() {
   const adapter = new RedisIoAdapter
   await adapter.connectToRedis();
   app.useWebSocketAdapter(adapter)
-
+  
+  const bodyParser = require('body-parser');
   const config = new DocumentBuilder()
   .setTitle("Median")
   .setDescription("The Median API")
