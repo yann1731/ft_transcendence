@@ -6,25 +6,50 @@ import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { theme } from '../../Theme';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MyStats from './ProfileComponents/UserStats';
-//import axios from 'axios';
+import PictureHandler from './ProfileComponents/PictureHandler';
+import { UserContext, User } from 'Contexts/userContext';
+import { useContext } from 'react';
 
-const profilePicture = 'https://pbs.twimg.com/profile_images/1633238286045962243/JfgDezi9_400x400.jpg';
 const settings = ['See profile picture', 'Upload profile picture'];
 
 function ProfileContainer() {
-
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-
 	const [open, setOpen] = useState(false);
 	const [selectedPicture, setSelectedPicture] = useState('');
+	const {user, setUser} = useContext(UserContext);
 
-	const handleOpen = (picture: string) => { 
-		setSelectedPicture(picture);
-		setOpen(true);
+	useEffect(() => {
+		const fetchUser = async () => {
+			try {
+				const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3');
+				if(response.ok)
+				{
+					const data = await response.json();
+					setUser(data);
+				}
+				else
+				{
+					console.error('Could not fetch user');
+				}
+			}
+			catch (err) {
+				console.error(err);
+			}
+		};
+
+		fetchUser();
+	}, [user]);
+
+	const handleOpen = (picture: string | undefined) => { 
+		if (picture !== undefined)
+		{
+			setSelectedPicture(picture);
+			setOpen(true);
+		}
 	};
-
+	
 	const handleClose = () => {
 		setOpen(false);
 	};
@@ -36,33 +61,9 @@ function ProfileContainer() {
 	const handleCloseUserMenu = () => {
 		setAnchorElUser(null);
 	};
-
-	const handleMenuItemClick = (setting: string) => {
-		if (setting === 'See profile picture') {
-			handleOpen(profilePicture);
-		}
-		else if (setting === 'Upload profile picture') {
-			handleChangePicture();
-		}
-		else
-			handleClose();
-	}
-	
-	const [Picture, setPicture] = useState('')
-	const handleChangePicture = async () => {
-		return (alert("NOOOOOOOO!!!"))
-/* 		try {
-			const response = axios.put('http://localhost:3000/user')
-			setPicture(response.data.Picture);
-			}
-			catch(err) {
-				console.error(err)
-			}; */
-	}
-
 	return (
 		<Box sx={{bgcolor: theme.palette.primary.main}}>
-				<Avatar alt="Profile Picture" src={profilePicture} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
+				<Avatar alt={user?.username} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
 				<div style={{ textAlign: 'center' }}>
 					<Tooltip title="Open profile settings">
 					<IconButton onClick={handleOpenUserMenu}>
@@ -85,19 +86,18 @@ function ProfileContainer() {
 					open={Boolean(anchorElUser)}
 					onClose={handleCloseUserMenu}
 				>
-					{settings.map((setting) => (
-						<MenuItem key={setting} onClick={() => handleMenuItemClick(setting)}>
-							<Typography textAlign="center">{setting}</Typography>
-						</MenuItem>
-					))}
+					<MenuItem onClick={() => handleOpen(user?.avatar)}>
+						<Typography textAlign="center">See profile picture</Typography>
+					</MenuItem>
+					<PictureHandler></PictureHandler>
 				</Menu>
 				<Modal open={open} onClose={handleClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
 					<div>
-						<img src={selectedPicture} alt="Profile" />
+						<img src={user?.avatar} alt={user?.username} style={{color: 'white'}} />
 					</div>
 				</Modal>
 				</div>
-				<Box sx={{textAlign: 'center', mt: 1}}>Username: </Box>
+				<Box sx={{textAlign: 'center', mt: 1}}>Username: {user?.username}</Box>
 				<Box sx={{textAlign: 'center'}}>Level: </Box>
 				<Box sx={{
 					bgcolor: theme.palette.secondary.main,
