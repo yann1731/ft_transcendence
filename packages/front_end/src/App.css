@@ -206,6 +206,7 @@
 .pokeball {
   position: fixed;
   left: 15px;
+  top: 20px;
   color: white;
   animation: rotation 20s infinite linear;
 }
@@ -276,12 +277,21 @@
   top: 14px;
 }
 
+.toolbarBurgerMenu {
+  position: fixed;
+  top: 20px;
+  left: 50px;
+}
+
 .toolbarButtons {
-  margin-top: 2px;
   display: block;
-  font-weight: bold;
   border: 1px solid white;
   background-color: white;
+}
+
+.toolbarButtonsSpace {
+  position: fixed;
+  top: 20px;
 }
 
 

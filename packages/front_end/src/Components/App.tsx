@@ -83,6 +83,20 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 				},
 			},
 		},
+		MuiAppBar: {
+			styleOverrides: {
+				colorPrimary: {
+					color: mode === 'dark' ? '#FFFFFF' : '#2067A1',
+				},
+			},
+		},
+		MuiMenuItem: {
+			styleOverrides: {
+				root: {
+					color: mode === 'dark' ? '#FFFFFF' : '#2067A1'
+				}
+			}
+		}
 	},
   });
 
