@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
 import { useContext } from "react";
 import { UserContext, User } from "Contexts/userContext";
 

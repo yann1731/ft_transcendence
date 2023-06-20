@@ -1,7 +1,6 @@
 import BackgroundContainer from '../../Background'
 import ProfileContainer from './ProfilePage';
 import ResponsiveAppBar from '../ToolBar';
-import { UserContext } from 'Contexts/userContext';
 import { useState, useEffect } from 'react';
 import { UserProvider } from 'Contexts/userContext';
 

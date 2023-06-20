@@ -1,5 +1,4 @@
 
-import io from 'socket.io-client';
 import Phaser from "phaser";
 import '../../../App.css';
 

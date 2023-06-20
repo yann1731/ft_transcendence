@@ -9,7 +9,7 @@ import { theme } from '../../Theme';
 import { useState, useEffect } from 'react';
 import MyStats from './ProfileComponents/UserStats';
 import PictureHandler from './ProfileComponents/PictureHandler';
-import { UserContext, User } from 'Contexts/userContext';
+import { UserContext } from 'Contexts/userContext';
 import { useContext } from 'react';
 
 const settings = ['See profile picture', 'Upload profile picture'];
