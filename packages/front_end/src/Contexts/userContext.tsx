@@ -1,5 +1,5 @@
 import React, { createContext, useState, PropsWithChildren } from 'react';
-
+//REGLER USER CONTEXT!!!!
 export type User = {
   avatar: string;
   username: string;
@@ -10,7 +10,7 @@ export type User = {
   userStatus: boolean;
   twoFaEnabled: boolean;
   id: string;
-}
+};
 
 interface UserContextProps {
   user: User | null;
@@ -18,7 +18,7 @@ interface UserContextProps {
   updateUser: (updatedUser: Partial<User>) => void;
 }
 
-export const UserContext = createContext<UserContextProps>({
+const UserContext = createContext<UserContextProps>({
   user: null,
   setUser: () => {},
   updateUser: () => {},
@@ -26,12 +26,12 @@ export const UserContext = createContext<UserContextProps>({
 
 export const UserProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  
+
   const updateUser = (updatedUser: Partial<User>) => {
-  if (user) {
-    setUser({ ...user, ...updatedUser });
-  }
-};
+    if (user) {
+      setUser({ ...user, ...updatedUser });
+    }
+  };
 
   return (
     <UserContext.Provider value={{ user, setUser, updateUser }}>
@@ -39,3 +39,5 @@ export const UserProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     </UserContext.Provider>
   );
 };
+
+export default UserProvider;

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button, ButtonProps } from '@mui/material';
-import { User } from 'Components/Interfaces';
-import { UserContext } from "Contexts/userContext";
+import { UserContext, User } from "Contexts/userContext";
 import { useContext } from "react";
 
 type ToggleActive = () => void;
@@ -28,10 +27,11 @@ const Handler2FA = () => {
 
   const handleToggleActive = async () => {
     const updatedTwoFaEnabled = !isActive; // Inverse la valeur directement
-
+    
     if (user) {
+      alert("fuck");
       const updatedUser = { ...user, twoFaEnabled: updatedTwoFaEnabled };
-
+      
       try {
         await updateUser2FA(updatedUser); // Call the async function
         toggleActive(); // Met à jour la valeur après la mise à jour réussie
@@ -40,16 +40,16 @@ const Handler2FA = () => {
       }
     }
   };
-
+  
   const updateUser2FA = async (updatedUser: User) => {
-    const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3', {
+    const response = await fetch('http://localhost:4242/user/ec074b12-5f7a-4a08-b58c-c5795c58a655', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(updatedUser),
     });
-
+    
     if (!response.ok) {
       throw new Error('Erreur lors de la mise à jour de twoFaEnabled');
     }

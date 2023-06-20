@@ -5,9 +5,11 @@ import Profile from './ProfilePage/Profile';
 import FatCat from './FatCat';
 import Login from './Login/Login';
 import Wait from './WaitingPage/Wait';
-
+import { UserProvider } from 'Contexts/userContext';
 function App() {
+
 	return (
+		<UserProvider>
 		<Routes>
 			<Route path='/' element={ <Login />} />
 			<Route path='/Home' element={ <Home /> } />
@@ -16,6 +18,7 @@ function App() {
 			<Route path='/FatCat' element={ <FatCat /> } />
 			<Route path='/wait' element={<Wait /> } />
 		</Routes>
+		</UserProvider>
 	);
 }
 export default App;

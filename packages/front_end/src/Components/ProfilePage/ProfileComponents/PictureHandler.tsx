@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
 import { useContext } from "react";
 import { UserContext, User } from "Contexts/userContext";
 
@@ -40,7 +39,7 @@ const PictureHandler: React.FC = () => {
           const updatedUser = { ...user, avatar: imageDataUrl };
 
           try {
-            const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3', {
+            const response = await fetch('http://localhost:4242/user/ec074b12-5f7a-4a08-b58c-c5795c58a655', {
               method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json',

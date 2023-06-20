@@ -17,13 +17,13 @@ const settings = ['See profile picture', 'Upload profile picture'];
 function ProfileContainer() {
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 	const [open, setOpen] = useState(false);
-	const [selectedPicture, setSelectedPicture] = useState('');
-	const {user, setUser} = useContext(UserContext);
+	const [picture, setSelectedPicture] = useState('');
+ 	const {user, setUser} = useContext(UserContext);
 
-	useEffect(() => {
+/* 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
-				const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3');
+				const response = await fetch('http://localhost:4242/user/ec074b12-5f7a-4a08-b58c-c5795c58a655');
 				if(response.ok)
 				{
 					const data = await response.json();
@@ -40,8 +40,8 @@ function ProfileContainer() {
 		};
 
 		fetchUser();
-	}, [user]);
-
+	}, [user]); */
+	
 	const handleOpen = (picture: string | undefined) => { 
 		if (picture !== undefined)
 		{
