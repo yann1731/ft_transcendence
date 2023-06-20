@@ -7,7 +7,8 @@ import Box from "@mui/material/Box";
 import { theme } from '../../../Theme';
 import { useEffect, useState } from "react";
 import UserNameHandler from "./UsernameHandler";
-import PassWordHandler from "./PasswordHandler";
+import { useContext } from "react";
+import { UserContext, User } from "Contexts/userContext";
 //import axios from 'axios'
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -18,63 +19,30 @@ const Item = styled(Paper)(({ theme }) => ({
 	
   }));
 
-  
-  interface Stats {
-    gamesPlayed: number;
-    wins: number;
-    losses: number;
-    winRatio: number;
-  }
-
   const MyStats = () => {
-    const [userStatistics, setUserStatistics] = useState<Stats | null>(null);
-        
-        useEffect(() => {
-        const fetchUserStatistics = async () => {
-            try {
-                const response = await fetch('http://localhost:4242/api/users');
-                //const response = await axios.get<Stats>('http://localhost:4242/api/users');
-                if(response.ok)
-                {
-                    const data = await response.json();
-                    setUserStatistics(data);
-                }
-                else
-                {
-                    console.error('fuck\n');
-                }
-            }
-            catch (err) {
-                console.error(err);
-            }
-        };
-    
-        fetchUserStatistics();
-    }, []);
+    const { user } = useContext(UserContext);
+    const winRatio = user && user.gamesPlayed > 0 ? (user.win / user.gamesPlayed) * 100 : 0;
 
     return (
         <Box sx={{ width: '95%', mt: 3 }} className="profileButtonBox">
             <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item sx={{width: '99%'}}>
-                <Item className="profilePageButtons">Nb Games Played: {userStatistics?.gamesPlayed} </Item>
+                <Item sx={{bgcolor: 'white', color: 'grey'}}>Nb Games Played: {user?.gamesPlayed} </Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item className="profilePageButtons">Wins: {userStatistics?.wins}</Item>
+                <Item sx={{bgcolor: 'white', color: 'grey'}}>Wins: {user?.win}</Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item className="profilePageButtons">Losses: {userStatistics?.losses}</Item>
+                <Item sx={{bgcolor: 'white', color: 'grey'}}>Losses: {user?.loss}</Item>
             </Grid>
             <Grid item sx={{width: '99%'}}>
-                <Item className="profilePageButtons">Win Ratio: {userStatistics?.winRatio}</Item>
+                <Item sx={{bgcolor: 'white', color: 'grey'}}>Win Ratio: {winRatio.toFixed(2)}%</Item>
             </Grid>
             <Grid item xs={13}>
             <Handler2FA></Handler2FA>
             </Grid>
             <Grid item xs={13}>
                 <UserNameHandler></UserNameHandler>
-            </Grid>
-            <Grid item xs={13}>
-                <PassWordHandler></PassWordHandler>
             </Grid>
         </Grid>
     </Box>

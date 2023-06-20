@@ -100,15 +100,14 @@ function App() {
 
 	const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 	return (
-	<ThemeProvider theme={theme}>
 		<Routes>
 			<Route path='/' element={ <Login />} />
 			<Route path='/Home' element={ <Home /> } />
 			<Route path='/Profile' element={ <Profile /> } />
 			<Route path='/Chat' element={ <Chat /> } />
 			<Route path='/FatCat' element={ <FatCat /> } />
+			<Route path='/wait' element={<Wait /> } />
 		</Routes>
-	</ThemeProvider>
 	);
 }
 export default App;
