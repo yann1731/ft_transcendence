@@ -5,6 +5,9 @@ import * as cors from "cors";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.enableCors();
+
   const bodyParser = require('body-parser');
   const config = new DocumentBuilder()
     .setTitle("Median")

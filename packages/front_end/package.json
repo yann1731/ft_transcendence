@@ -17,6 +17,7 @@
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "axios": "^1.4.0",
     "babel-loader": "^9.1.2",
     "encrypt-storage": "^2.12.16",
     "file-loader": "^6.2.0",
