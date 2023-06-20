@@ -259,6 +259,11 @@
   background-color: var(--primary-color);
 }
 
+.profileStats {
+  text-align: left;
+  background-color: teal;
+}
+
 .signInStyle {
   margin-top: 1;
   text-align: center;
