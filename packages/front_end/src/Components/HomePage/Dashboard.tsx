@@ -19,33 +19,33 @@ export default function DashboardContainer({ user }: { user: User | null }) {
             <Box sx={{ textAlign: 'center' }}>
               <Box sx={{color: 'white', fontSize: '20px' }}>Hall of Fame</Box>
               <Divider style={{ marginBottom: '10px' }} />
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Nb games played: </Box>
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Wins: </Box>
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Losses: </Box>
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Current win streak:</Box>
-              <Box sx={{ color: '#2067a1', fontSize: '15px' }}>Best streak:</Box>
+              <Box className="dashboardContents">Nb games played: </Box>
+              <Box className="dashboardContents">Wins: </Box>
+              <Box className="dashboardContents">Losses: </Box>
+              <Box className="dashboardContents">Current win streak:</Box>
+              <Box className="dashboardContents">Best streak:</Box>
             </Box>
         </Box>
         <Box className={"homeScoreBox"}>
             <Box sx={{ textAlign: 'center'}}>
               <Box sx={{mt: 1, color: 'white', fontSize: '20px'}}>Personal Stats</Box>
                 <Divider style={{ marginBottom: '10px' }} />
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Nb games played: {user?.gamesPlayed}</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Wins: {user?.win}</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Losses: {user?.loss}</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Current win streak: </Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Best streak:</Box>
+                <Box className="dashboardContents">Nb games played: {user?.gamesPlayed}</Box>
+                <Box className="dashboardContents">Wins: {user?.win}</Box>
+                <Box className="dashboardContents">Losses: {user?.loss}</Box>
+                <Box className="dashboardContents">Current win streak: </Box>
+                <Box className="dashboardContents">Best streak:</Box>
             </Box>
         </Box>
         <Box className={"homeScoreBox"}>
             <Box sx={{ textAlign: 'center',}}>
               <Box sx={{mt: 1, color: 'white', fontSize: '20px'}}>Opponent's Stats</Box>
                 <Divider style={{ marginBottom: '10px' }} />
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Nb games played:</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Wins:</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Losses:</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Current win streak:</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>Best streak:</Box>
+                <Box className="dashboardContents">Nb games played:</Box>
+                <Box className="dashboardContents">Wins:</Box>
+                <Box className="dashboardContents">Losses:</Box>
+                <Box className="dashboardContents">Current win streak:</Box>
+                <Box className="dashboardContents">Best streak:</Box>
             </Box>
         </Box>
         </Box>

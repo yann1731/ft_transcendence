@@ -1,4 +1,3 @@
-
 import BackgroundContainer from '../../Background';
 import SignIn from './LoginPage';
 import LoginToolBar from './LoginToolBar';

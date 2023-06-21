@@ -5,7 +5,6 @@ import Modal from '@mui/material/Modal';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import { theme } from '../../Theme';
 import { useState, useEffect } from 'react';
 import MyStats from './ProfileComponents/UserStats';
 import PictureHandler from './ProfileComponents/PictureHandler';
