@@ -8,7 +8,8 @@ import Container from "@mui/material/Container";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ThemeProvider } from '@mui/material/styles';
-import { theme } from '../../Theme';
+import { getDesignTokens } from '../../Theme';
+import { useTheme } from '@mui/material/styles';
 
 interface SubmittedData {
   email: string | null;
@@ -42,6 +43,7 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [submittedData, setSubmittedData] = useState<SubmittedData[]>([]);
   const navigate = useNavigate();
+  const theme = useTheme();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -114,7 +116,7 @@ export default function SignIn() {
               className:'loginTextFieldText',
             }}
           />
-          <ThemeProvider theme={ theme }>  
+          <ThemeProvider theme={ getDesignTokens('dark') }>  
           <FormControlLabel
             control={<Checkbox value="remember" style={{ color: theme.palette.secondary.main }} />}
             label={

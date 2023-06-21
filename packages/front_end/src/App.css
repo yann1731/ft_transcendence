@@ -44,6 +44,16 @@
   align-items: center;
 }
 
+.buttonBackground {
+  color: var(--button-color);
+}
+
+.buttonBackground:hover {
+  background-color: #FFFFFF !important;
+  --buttoncolor: white;
+  --icon-color: #001828;
+}
+
 .chatBar {
   position: relative;
   box-shadow: none;
@@ -74,6 +84,11 @@
   margin-right: 20px;
 }
 
+.dashboardContents {
+  color: #2067a1;
+  font-size: 15px;
+  margin-bottom: 25px;
+}
 .dashboardTitle {
   text-align: center;
 }
@@ -158,18 +173,29 @@
   box-shadow: 4;
   border-radius: 10px;
 }
+
+.iconThemeBackground {
+  color: var(--icon-color);
+}
+
+.iconThemeBackground:hover {
+  color: var(--icon-hover-color);
+}
+
 .ingameChatBar {
   text-align: center;
   font-weight: bold;
   font-size: 25px;
   width: 50vw;
 }
+
 .ingameChatBox {
   background-color: var(--secondary-color);
   height: 25vh;
   max-height: 292px;
   border-radius: 10px;
 }
+
 .loginBox {
   background-color: white;
   border-radius: 10px;
@@ -209,24 +235,6 @@
   top: 20px;
   color: white;
   animation: rotation 20s infinite linear;
-}
-
-.buttonBackground {
-  color: var(--button-color);
-}
-
-.buttonBackground:hover {
-  background-color: #FFFFFF !important;
-  --buttoncolor: white;
-  --icon-color: #001828;
-}
-
-.iconThemeBackground {
-  color: var(--icon-color);
-}
-
-.iconThemeBackground:hover {
-  color: var(--icon-hover-color);
 }
 
 .profileButtonBox {

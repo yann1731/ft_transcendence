@@ -4,20 +4,18 @@ import { experimentalStyled as styled } from '@mui/material/styles';
 import Handler2FA from "./2FAActivation";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { theme } from '../../../Theme';
 import { useEffect, useState } from "react";
 import UserNameHandler from "./UsernameHandler";
 import { useContext } from "react";
 import { UserContext, User } from "Contexts/userContext";
 import { makeStyles } from '@mui/styles';
-import { getDesignTokens } from "../../App";
-//import axios from 'axios'
+import { getDesignTokens } from '../../../Theme';
 
 const Item = styled(Paper)(({ theme }) => ({
 	...theme.typography.body2,
 	padding: theme.spacing(1),
 	textAlign: 'center',
-    backgroundColor: '#2B375E',
+    backgroundColor: theme.palette.mode === 'dark' ? '#2B375E' : '#D4DEFF',
   }));
     
 const MyStats = () => {
