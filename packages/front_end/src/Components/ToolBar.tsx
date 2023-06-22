@@ -54,6 +54,7 @@ function ResponsiveAppBar() {
       console.log('Clicked on Profile settings');
     }
     else if (setting === 'Logout') {
+      navigate('/');
       console.log('Clicked on Logout');
     }
     handleCloseUserMenu();
