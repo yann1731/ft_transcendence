@@ -19,6 +19,7 @@ export default function GetToken() {
         console.log(response);
         const newUser = axios.post('http://localhost:4242/user', {code: response.data.access_token, refresh_token: response.data.refresh_token});
         console.log(newUser);
+        window.location.assign('http://localhost:3000/home');
     }).catch (error => {
         console.log('hit error');
         console.error(error);
