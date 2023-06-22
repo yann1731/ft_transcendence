@@ -3,30 +3,61 @@ import Container from "@mui/material/Container";
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import { css, keyframes } from "@emotion/react";
 import axios, { AxiosResponse } from 'axios';
+import { useState, useEffect } from "react";
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 `;
 
-export default async function GetToken() {
+export default function GetToken() {
 
-    let urlParams: URLSearchParams = new URLSearchParams(window.location.search);
-    let authorizationCode: string | null = urlParams.get('code');
+    const [user, setUser] = useState(null);
 
-    try {
-        const response = await axios.post('http://localhost:4242/oauth', {code: authorizationCode});
-        console.log('here\'s the access token');
+  useEffect(() => {
+    let urlParams = new URLSearchParams(window.location.search);
+    let authorizationCode = urlParams.get("code");
+
+    const fetchTokenAndUser = async () => {
+      try {
+        const response = await axios.post("http://localhost:4242/oauth", {
+          code: authorizationCode,
+        });
+        console.log("here's the access token");
         console.log(response);
-        const newUser = await axios.post('http://localhost:4242/user', {code: response.data.access_token, refresh_token: response.data.refresh_token});
-        console.log(newUser);
-        window.location.assign('http://localhost:3000/home');
-    }
-    catch(error) {
-        console.log('hit error');
-        console.error(error);
 
-    }
+        const newUser = await axios.post("http://localhost:4242/user", {
+          code: response.data.access_token,
+          refresh_token: response.data.refresh_token,
+        });
+        console.log(newUser);
+
+        setUser(newUser.data);
+        window.location.assign("http://localhost:3000/home");
+      } catch (error) {
+        console.log("hit error");
+        console.error(error);
+      }
+    };
+
+    fetchTokenAndUser(); // Call the async function.
+  }, []);
+    // let urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+    // let authorizationCode: string | null = urlParams.get('code');
+
+    // try {
+    //     const response = await axios.post('http://localhost:4242/oauth', {code: authorizationCode});
+    //     console.log('here\'s the access token');
+    //     console.log(response);
+    //     const newUser = await axios.post('http://localhost:4242/user', {code: response.data.access_token, refresh_token: response.data.refresh_token});
+    //     console.log(newUser);
+    //     window.location.assign('http://localhost:3000/home');
+    // }
+    // catch(error) {
+    //     console.log('hit error');
+    //     console.error(error);
+
+    // }
 
     return (
         <Container maxWidth={false} sx={{ backgroundColor: 'black', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', width: "100%" }}>
