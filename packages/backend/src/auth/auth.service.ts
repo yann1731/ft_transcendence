@@ -36,7 +36,6 @@ export class AuthService {
         const uid: string =  'u-s4t2ud-47600cc08a77769cea8bec6cacdd6ef77df4be8fbb4984a8b9435f3cdddee480';
         const secret: string = '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';
 
-        console.log('Hit oauthCallback service');
         try {
             const response = await axios.post('https://api.intra.42.fr/oauth/token', {
             grant_type: 'authorization_code',
@@ -45,6 +44,7 @@ export class AuthService {
             redirect_uri: 'http://localhost:3000/wait',
             code: code
             });
+            console.log('Success');
             return response.data;
         } catch (error) {
             console.error('Failed getting token');

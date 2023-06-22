@@ -31,13 +31,15 @@ export class UserService { //creates a new user
           avatar: response.data.url
         }
       });
-      if (!user)
+      if (!user) {
+        console.log('Error creating user');
         throw new BadRequestException;
+      }
       else
-        return user.id;
+        return user;
     }
     else
-      return check.id;
+      return check;
   }
 
   async findAll() { //returns a list of all users
