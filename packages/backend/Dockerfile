@@ -6,6 +6,7 @@ RUN mkdir -p /serv/backend
 # RUN mkdir -p /serv
 WORKDIR /serv/backend
 RUN npm i -g @nestjs/cli --silent
+RUN npm install redis
 
 COPY . .
 
