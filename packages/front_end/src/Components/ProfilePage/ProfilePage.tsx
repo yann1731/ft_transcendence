@@ -5,7 +5,6 @@ import Modal from '@mui/material/Modal';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import { theme } from '../../Theme';
 import { useState, useEffect } from 'react';
 import MyStats from './ProfileComponents/UserStats';
 import PictureHandler from './ProfileComponents/PictureHandler';
@@ -20,7 +19,7 @@ function ProfileContainer() {
 	const [picture, setSelectedPicture] = useState('');
  	const {user, setUser} = useContext(UserContext);
 
-/* 	useEffect(() => {
+	/*useEffect(() => {
 		const fetchUser = async () => {
 			try {
 				const response = await fetch('http://localhost:4242/user/ec074b12-5f7a-4a08-b58c-c5795c58a655');
@@ -62,8 +61,8 @@ function ProfileContainer() {
 		setAnchorElUser(null);
 	};
 	return (
-		<Box sx={{bgcolor: theme.palette.primary.main}}>
-				<Avatar alt={user?.username} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
+		<Box className="profileMainBox">
+				<Avatar alt={user?.avatar} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
 				<div style={{ textAlign: 'center' }}>
 					<Tooltip title="Open profile settings">
 					<IconButton onClick={handleOpenUserMenu}>
@@ -99,14 +98,11 @@ function ProfileContainer() {
 				</div>
 				<Box sx={{textAlign: 'center', mt: 1}}>Username: {user?.username}</Box>
 				<Box sx={{textAlign: 'center'}}>Level: </Box>
-				<Box sx={{
-					bgcolor: theme.palette.secondary.main,
-					border: 1.5,
+				<Box className="profileSection" sx={{
 					width: 400,
 					height: 450,
 					margin: 'auto',
 					borderRadius: 2.5,
-					boxShadow: 10,
 					mt: 3,
 					display: 'flex',
 					flexDirection: "column",

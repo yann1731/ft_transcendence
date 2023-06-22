@@ -55,9 +55,7 @@ const Handler2FA = () => {
     }
   };
   return (
-    <div>
-      <Button variant="contained" onClick={handleToggleActive} sx={{width: '99%', bgcolor: 'white', color: 'grey'}}>{buttonText}</Button>
-    </div>
+      <Button variant="outlined" className="profilePageButtons" onClick={toggleActive}>{buttonText}</Button>
   );
 };
 

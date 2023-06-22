@@ -84,6 +84,7 @@ const DashboardContainer: React.FC = () => {
     };
     fetchHallOfFame();
   }, []);
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -94,29 +95,30 @@ const DashboardContainer: React.FC = () => {
             <Box sx={{ textAlign: 'center' }}>
               <Box sx={{color: 'white', fontSize: '20px' }}>Hall of Fame</Box>
               <Divider style={{ marginBottom: '10px' }} />
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>[GAMES PLAYED]<br></br>{highestGamesPlayed}<br></br>{usernameGamesPlayed}</Box>
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>[WINS]<br></br>{highestScore}<br></br>{usernameHighScore}</Box>
-              <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>[LOSSES]<br></br>{lowestScore}<br></br>{usernameLowScore}</Box>
+              <Box className="dashboardContents">[GAMES PLAYED]<br></br>{highestGamesPlayed}<br></br>{usernameGamesPlayed}</Box>
+              <Box className="dashboardContents">[WINS]<br></br>{highestScore}<br></br>{usernameHighScore}</Box>
+              <Box className="dashboardContents">[LOSSES]<br></br>{lowestScore}<br></br>{usernameLowScore}</Box>
+
             </Box>
         </Box>
         <Box className={"homeScoreBox"}>
             <Box sx={{ textAlign: 'center'}}>
               <Box sx={{mt: 1, color: 'white', fontSize: '20px'}}>Personal Stats</Box>
                 <Divider style={{ marginBottom: '10px' }} />
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>[GAMES PLAYED]<br></br>{user?.gamesPlayed}</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>[WINS]<br></br>{user?.win}</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>[LOSSES]<br></br>{user?.loss}</Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>[WIN RATIO]<br></br>{user?.win}</Box>
+                <Box className="dashboardContents">[GAMES PLAYED]<br></br>{user?.gamesPlayed}</Box>
+                <Box className="dashboardContents">[WINS]<br></br>{user?.win}</Box>
+                <Box className="dashboardContents">[LOSSES]<br></br>{user?.loss}</Box>
+                <Box className="dashboardContents">[WIN RATIO]<br></br>{user?.win}</Box>
             </Box>
         </Box>
         <Box className={"homeScoreBox"}>
             <Box sx={{ textAlign: 'center',}}>
               <Box sx={{mt: 1, color: 'white', fontSize: '20px'}}>Opponent's Stats</Box>
                 <Divider style={{ marginBottom: '10px' }} />
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>[GAMES PLAYED]<br></br></Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>[WINS]<br></br></Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>[LOSSES]<br></br></Box>
-                <Box sx={{ color: '#2067a1', fontSize: '15px', marginBottom: '25px' }}>[WIN RATIO]<br></br></Box>
+                <Box className="dashboardContents">[GAMES PLAYED]<br></br></Box>
+                <Box className="dashboardContents">[WINS]<br></br></Box>
+                <Box className="dashboardContents">[LOSSES]<br></br></Box>
+                <Box className="dashboardContents">[WIN RATIO]<br></br></Box>
             </Box>
         </Box>
         </Box>

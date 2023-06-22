@@ -42,7 +42,7 @@ const UsernameHandler = () => {
 
   return (
     <div>
-      <Button variant="contained" onClick={handleClickOpen} sx={{ width: '99%', bgcolor: 'white', color: 'grey' }}>
+      <Button variant="outlined" onClick={handleClickOpen} className="profilePageButtons">
         Change Username
       </Button>
       <Dialog open={open} onClose={handleClose}>
