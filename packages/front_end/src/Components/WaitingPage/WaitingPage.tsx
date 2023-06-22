@@ -9,21 +9,24 @@ const spin = keyframes`
   100% { transform: rotate(360deg); }
 `;
 
-export default function GetToken() {
+export default async function GetToken() {
 
     let urlParams: URLSearchParams = new URLSearchParams(window.location.search);
     let authorizationCode: string | null = urlParams.get('code');
 
-    const response = axios.post('http://localhost:4242/oauth', {code: authorizationCode}).then((response: AxiosResponse) => {
+    try {
+        const response = await axios.post('http://localhost:4242/oauth', {code: authorizationCode});
         console.log('here\'s the access token');
         console.log(response);
-        const newUser = axios.post('http://localhost:4242/user', {code: response.data.access_token, refresh_token: response.data.refresh_token});
+        const newUser = await axios.post('http://localhost:4242/user', {code: response.data.access_token, refresh_token: response.data.refresh_token});
         console.log(newUser);
         window.location.assign('http://localhost:3000/home');
-    }).catch (error => {
+    }
+    catch(error) {
         console.log('hit error');
         console.error(error);
-    });
+
+    }
 
     return (
         <Container maxWidth={false} sx={{ backgroundColor: 'black', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', width: "100%" }}>
