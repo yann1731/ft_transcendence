@@ -18,15 +18,17 @@ import { useDispatch } from "react-redux";
 import { asyncToggleTheme } from "../store/reducers/themeSlice";
 import { useState, useEffect } from 'react';
 import { User } from '../Contexts/userContext';
+import { useNavigate } from 'react-router-dom';
 
 const pages = [
   { label: 'Home', link: '/Home' },
   { label: 'Chat', link: '/Chat'},
   { label: 'Profile', link: '/Profile'},
 ];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Profile settings', 'Logout'];
 
 function ResponsiveAppBar() {
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const [userStatistics, setUserStatistics] = useState<User | null>(null);
@@ -44,6 +46,17 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleSettingClick = (setting: string) => {
+    if (setting === 'Profile settings') {
+      navigate('/profile');
+      console.log('Clicked on Profile settings');
+    }
+    else if (setting === 'Logout') {
+      console.log('Clicked on Logout');
+    }
+    handleCloseUserMenu();
   };
 
   useEffect(() => {
@@ -203,7 +216,7 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={() => handleSettingClick(setting)}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
