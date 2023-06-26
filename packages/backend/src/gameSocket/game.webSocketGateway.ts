@@ -5,6 +5,7 @@ import { Server, Socket } from "socket.io";
 export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	@WebSocketServer()
 	server: Server;
+
 	numberOfGame: number = 1;
 
 
@@ -31,6 +32,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	@SubscribeMessage("1v1")
 	handle1v1(client: Socket){
 		client.join(String(this.numberOfGame));
+
 		const room = Array.from(client.rooms).filter(room => room !== client.id)
 		console.log(room[0]);
 		if (this.server.sockets.adapter){
