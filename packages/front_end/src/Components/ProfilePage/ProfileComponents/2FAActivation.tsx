@@ -29,7 +29,6 @@ const Handler2FA = () => {
     const updatedTwoFaEnabled = !isActive; // Inverse la valeur directement
     
     if (user) {
-      alert("fuck");
       const updatedUser = { ...user, twoFaEnabled: updatedTwoFaEnabled };
       
       try {
@@ -42,7 +41,8 @@ const Handler2FA = () => {
   };
   
   const updateUser2FA = async (updatedUser: User) => {
-    const response = await fetch('http://localhost:4242/user/ec074b12-5f7a-4a08-b58c-c5795c58a655', {
+    alert(user?.username)
+    const response = await fetch('http://localhost:4242/user/' + user?.id, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

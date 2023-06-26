@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import DashboardBar from './DashboardBar';
 import Divider from '@mui/material/Divider';
-import { UserContext } from 'Contexts/userContext';
+import { UserContext, UserContextType } from 'Contexts/userContext';
 import { HallOfFame } from 'Components/Interfaces';
 import { useEffect, useState, useContext } from 'react';
 
@@ -16,7 +16,7 @@ const DashboardContainer: React.FC = () => {
   const [usernameHighScore, setUsernameHighScore] = useState<string>('');
   const [usernameLowScore, setUsernameLowScore] = useState<string>('');
   const [usernameGamesPlayed, setUsernameGamesPlayed] = useState<string>('');
-  const { user } = useContext(UserContext);
+  const { user } = useContext<UserContextType>(UserContext);
   
   useEffect(() => {
     const fetchHallOfFame = async () => {

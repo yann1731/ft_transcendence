@@ -18,7 +18,9 @@ const UsernameHandler = () => {
 
   const handleChangeUsername = async () => {
     try {
-      const response = await fetch('http://localhost:4242/user/ec074b12-5f7a-4a08-b58c-c5795c58a655', {
+      alert(user?.username)
+      alert(user?.id)
+      const response = await fetch('http://localhost:4242/user/' + user?.id, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -28,7 +30,7 @@ const UsernameHandler = () => {
   
       if (response.ok) {
         const updatedUser = await response.json();
-        updateUser(updatedUser); // Update the user context with the updated user
+        updateUser(updatedUser);
       } else {
         console.error('Could not update username');
       }

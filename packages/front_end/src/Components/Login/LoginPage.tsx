@@ -11,11 +11,11 @@ import { ThemeProvider } from '@mui/material/styles';
 import { getDesignTokens } from '../../Theme';
 import { useTheme } from '@mui/material/styles';
 
-interface SubmittedData {
+/* interface SubmittedData {
   email: string | null;
   password: string | null;
 }
-
+ */
 export default function SignIn() {
 
   useEffect(() => {
@@ -40,8 +40,7 @@ export default function SignIn() {
     event.preventDefault();
     window.location.assign('https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-47600cc08a77769cea8bec6cacdd6ef77df4be8fbb4984a8b9435f3cdddee480&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fwait&response_type=code');
   };
-  
-
+  const theme = useTheme();
   return (
     <Container component="main" maxWidth="xs" id="container" className="loginBox">
         <br></br>

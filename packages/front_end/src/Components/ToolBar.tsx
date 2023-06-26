@@ -19,7 +19,7 @@ import { toggleTheme } from "../store/reducers/themeSlice";
 import { useDispatch } from "react-redux";
 import { asyncToggleTheme } from "../store/reducers/themeSlice";
 import { useState, useEffect } from 'react';
-import { User } from '../Contexts/userContext';
+import { UserContext } from '../Contexts/userContext';
 
 const pages = [
   { label: 'Home', link: '/Home' },
