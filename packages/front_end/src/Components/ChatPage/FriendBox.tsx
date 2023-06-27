@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MyFriends from './ChatComponents/Friends';
-import Divider from '@mui/material/Divider';
 
   export default function FriendBox() {
 	return (
@@ -9,7 +8,6 @@ import Divider from '@mui/material/Divider';
 			<Box>
 				<TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth className={"focusedTextField .MuiOutlinedInput-root.Mui-focused fieldset"} />
 			</Box>
-		  	<Divider />
 			<MyFriends></MyFriends>
 		</Box>
 	  );

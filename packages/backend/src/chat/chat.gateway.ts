@@ -3,7 +3,7 @@ import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 
-@WebSocketGateway()
+@WebSocketGateway({ cors: true, namespace: 'chat'})
 export class ChatGateway {
   constructor(private readonly chatService: ChatService) {}
 

@@ -13,24 +13,28 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import ThemeModeIcon from '@mui/icons-material/DarkMode'
-import { theme } from '../Theme'
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { User } from './Interfaces';
-import { useSelector, useDispatch } from "react-redux";
+import { useContext } from 'react';
 import { toggleTheme } from "../store/reducers/themeSlice";
+import { useDispatch } from "react-redux";
+import { asyncToggleTheme } from "../store/reducers/themeSlice";
+import { useState, useEffect } from 'react';
+import { UserContext } from '../Contexts/userContext';
+import { User } from '../Contexts/userContext';
+import { useNavigate } from 'react-router-dom';
 
 const pages = [
   { label: 'Home', link: '/Home' },
   { label: 'Chat', link: '/Chat'},
   { label: 'Profile', link: '/Profile'},
 ];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Profile settings', 'Logout'];
 
 function ResponsiveAppBar() {
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const [userStatistics, setUserStatistics] = useState<User | null>(null);
+  const {user} = useContext(UserContext);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -47,7 +51,19 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
-  useEffect(() => {
+  const handleSettingClick = (setting: string) => {
+    if (setting === 'Profile settings') {
+      navigate('/profile');
+      console.log('Clicked on Profile settings');
+    }
+    else if (setting === 'Logout') {
+      navigate('/');
+      console.log('Clicked on Logout');
+    }
+    handleCloseUserMenu();
+  };
+
+/*   useEffect(() => {
 		const fetchUserStatistics = async () => {
 			try {
 				const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3');
@@ -67,20 +83,20 @@ function ResponsiveAppBar() {
 		};
 
 		fetchUserStatistics();
-	}, [userStatistics]);
+	}, [userStatistics]); */
   
   const dispatch = useDispatch();
 
   return (
-    <AppBar position="fixed" style={{ backgroundImage: "none" }} sx={{ bgcolor: theme.palette.secondary.main }}>
+    <div className="toolbar">
+    <AppBar sx={{ height: '64px' }}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
             <Tooltip title="Gotta catch em all!">
               <PokeBallIcon className="pokeball" />
             </Tooltip>
           <div id="anim" className="themeButtonStyle">
             <Tooltip title="Light / Dark Mode">
-              <IconButton className="buttonBackground">
+              <IconButton className="buttonBackground" onClick={() => dispatch(asyncToggleTheme() as any)}>
                 <ThemeModeIcon className="iconThemeBackground"></ThemeModeIcon>
               </IconButton>
             </Tooltip>
@@ -111,8 +127,9 @@ function ResponsiveAppBar() {
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
               color="inherit"
+              sx={{ "&:hover": { backgroundColor: "transparent", } }}
             >
-              <MenuIcon />
+              <MenuIcon className="toolbarBurgerMenu" />
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -129,12 +146,13 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: 'block', md: 'none' }
+                display: { xs: 'block', md: 'none' },
+                "&.MuiPaper-root":{ backgroundColor: "red" }
               }}
             >
               {pages.map((page) => (
                   <Link style={{textDecoration: 'none'}} to={page.link}>
-                    <MenuItem key={page.label} onClick={handleCloseNavMenu} sx={{ color: 'white', fontWeight: 'bold' }}>
+                    <MenuItem key={page.label} onClick={handleCloseNavMenu}>
                       <Typography textAlign="center">{page.label}</Typography>
                     </MenuItem>
                 </Link>
@@ -155,6 +173,9 @@ function ResponsiveAppBar() {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
+              position: 'center',
+              marginLeft: '120px',
+              marginTop: '-9px',
             }}
           >
             TRANSCENDENCE
@@ -165,7 +186,8 @@ function ResponsiveAppBar() {
                 <Button variant="outlined"
                   key={page.label}
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block', bgcolor: theme.palette.secondary.main, border:'1px solid white', marginRight: '15px', fontWeight: 'bold', ":hover": { bgcolor: "white", color: "#001828"} }}
+                  className="toolbarButtons"
+                  sx={{ marginRight: '15px', marginTop: '14px', width: 'auto', fontWeight: 'bold', ":hover": { bgcolor: "white"} }}
                   >
                   {page.label}
                 </Button>
@@ -177,7 +199,7 @@ function ResponsiveAppBar() {
             <Tooltip title="Open settings">
               <div id="anim" className="profileButtonStyle">
                 <IconButton onClick={handleOpenUserMenu}>
-                  <Avatar alt={userStatistics?.username} src={userStatistics?.avatar} />
+                  <Avatar alt={user?.username} src={user?.avatar} />
                 </IconButton>
               </div>
             </Tooltip>
@@ -198,15 +220,15 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={() => handleSettingClick(setting)}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-        </Toolbar>
       </Container>
     </AppBar>
+    </div>
   );
 }
 

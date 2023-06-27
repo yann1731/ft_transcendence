@@ -3,10 +3,10 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
-import { theme } from '../../Theme'
-
+import { useTheme } from '@mui/material/styles'
 
 function LoginToolBar() {
+  const theme = useTheme();
   return (
     <AppBar position="fixed" style={{ backgroundImage: "none" }} sx={{ bgcolor: theme.palette.secondary.main }}>
       <Container>
@@ -17,7 +17,7 @@ function LoginToolBar() {
                     alignItems: 'center',
                     height: 64,
                 }}>
-          <PokeBallIcon sx={{ position: 'fixed', left: 15, color: 'white' }} />
+          <PokeBallIcon className="pokeball" />
           <Typography
             variant="h5"
             component="a"

@@ -28,7 +28,8 @@ export class UserService { //creates a new user
           email: response.data.email, 
           refresh_token: refresh_token,
           username: response.data.login,
-          avatar: response.data.url,
+          nickname: response.data.login,
+          avatar: response.data.image.link,
           token: code,
           token_expires_at: expires_in,
           token_created_at: created_at

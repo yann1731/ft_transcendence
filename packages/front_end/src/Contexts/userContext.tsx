@@ -1,6 +1,6 @@
-import React, { createContext, useState, PropsWithChildren } from 'react';
-
-export type User = {
+import React, { createContext, useState, Dispatch, SetStateAction, ReactNode, useCallback, useEffect } from 'react';
+import { Chatroom, ChatroomMessage, ChatroomUser, PrivateMessage, UserBlocks, UserFriendship } from 'Components/Interfaces';
+export interface User {
   avatar: string;
   username: string;
   email: string;
@@ -10,32 +10,81 @@ export type User = {
   userStatus: boolean;
   twoFaEnabled: boolean;
   id: string;
+	friendListA?: UserFriendship[] ;
+	friendListB?: UserFriendship[] ;
+	blockedUsers?: UserBlocks[] ;
+	blockedBy?: UserBlocks[] ;
+	chatrooms?: ChatroomUser[] ;
+	sentMessages?: PrivateMessage[] ;
+	receivedMessages?: PrivateMessage[] ;
+	sentChatroomMessages?: ChatroomMessage[] ;
+	Chatroom?: Chatroom[] ;
+	refresh_token?: string;
 }
-
-interface UserContextProps {
+  
+export interface UserContextType {
   user: User | null;
-  setUser: (user: User | null) => void;
-  updateUser: (updatedUser: Partial<User>) => void;
+  setUser: Dispatch<SetStateAction<User | null>>;
+  updateUser: (newUserData: Partial<User>) => void;
 }
 
-export const UserContext = createContext<UserContextProps>({
+export const UserContext = createContext<UserContextType>({
   user: null,
   setUser: () => {},
-  updateUser: () => {},
+  updateUser: () => {}
 });
-
-export const UserProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
   
-  const updateUser = (updatedUser: Partial<User>) => {
-  if (user) {
-    setUser({ ...user, ...updatedUser });
-  }
+const defaultState = {
+  user: {
+    avatar: '',
+    username: '',
+    email: '',
+    win: 0,
+    loss: 0,
+    gamesPlayed: 0,
+    userStatus: true,
+    twoFaEnabled: false,
+    id: ''
+  },
+  setUser: (user: User | null) => {},
+  updateUser: (newUserData: Partial<User>) => {}
+} as UserContextType;
+  
+type UserProviderProps = {
+  children: ReactNode;
 };
+  
+export default function UserProvider({ children }: UserProviderProps) {
+  const [user, setUser] = useState<User | null>(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  
+  const updateUser = useCallback((newUserData: Partial<User>) => {
+    setUser((prevUser) => {
+      if (prevUser === null) {
+        return null;
+      }
+      return {
+        ...prevUser,
+        ...newUserData
+      };
+    });
+  }, []);
+  
+  useEffect(() => {
+    localStorage.setItem('user', JSON.stringify(user));
+  }, [user]);
+
+  const userContextValue: UserContextType = {
+    user,
+    setUser,
+    updateUser
+  };
 
   return (
-    <UserContext.Provider value={{ user, setUser, updateUser }}>
+    <UserContext.Provider value={userContextValue}>
       {children}
     </UserContext.Provider>
   );
-};
+}
