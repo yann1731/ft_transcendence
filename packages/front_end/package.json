@@ -31,7 +31,7 @@
     "react-scripts": "^5.0.1",
     "roboto": "^0.8.2",
     "socket.io": "^4.6.2",
-    "socket.io-client": "^4.6.2",
+    "socket.io-client": "^4.7.0",
     "styled-components": "^6.0.0-rc.1",
     "typescript": "^4.4.2",
     "url-loader": "^4.1.1",
