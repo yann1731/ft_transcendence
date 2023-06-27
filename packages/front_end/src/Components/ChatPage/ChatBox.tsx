@@ -1,21 +1,15 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { List, ListItem, ListItemText, Divider, TextField, Fab } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import ContactMenu from './ChatMenus/ContactMenu';
 import Box from '@mui/material/Box';
 import '../../App.css';
-import { User } from 'Contexts/userContext';
+import { UserContext } from 'Contexts/userContext';
+import { Message } from 'Components/Interfaces';
 
-interface Message {
-  text: string;
-  timestamp: string;
-  nickname: string;
-  UserAvatar: string;
-}
-
-const Chat = ( { user }: { user: User | null }) => {
-
+const Chat = () => {
+  const {user} = useContext(UserContext);
   const [messages, setMessages] = useState<Message[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -31,8 +25,8 @@ const Chat = ( { user }: { user: User | null }) => {
     const newMessage: Message = {
       text: messageText,
       timestamp: new Date().toLocaleTimeString(),
-      nickname: 'patate',
-      UserAvatar: "https://assets1.cbsnewsstatic.com/hub/i/2016/09/29/d1a671d9-556e-468d-8639-159e2842f15b/logan-new-hamshire-cat-2016-09-29.jpg"
+      nickname: user?.username,
+      UserAvatar: user?.avatar,
     };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
@@ -67,7 +61,7 @@ const Chat = ( { user }: { user: User | null }) => {
           <ListItem key={index}>
             <Box sx={{ marginLeft: 'auto' }}>
               <Box sx={{ textAlign: 'right' }}>
-                <ContactMenu></ContactMenu>
+                <ContactMenu {...{Useravatar: message.UserAvatar}}></ContactMenu>
                 <ListItemText primary={message.text}></ListItemText>
               </Box>
               <Box sx={{ textAlign: 'right' }}>

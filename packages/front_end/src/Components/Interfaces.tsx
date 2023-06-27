@@ -1,7 +1,7 @@
 // Interfaces.tsx
 export{};
 // User
-export interface User {
+interface User {
     avatar: string,
     username: string,
     email: string,
@@ -71,6 +71,13 @@ export interface PrivateMessage {
 	recipientId: string ;
 	receiver?: chatUser ;
 }
+
+export interface Message {
+    text: string;
+    timestamp: string;
+    nickname: string | undefined;
+    UserAvatar: string | undefined;
+  }
 
 // Variables user utiles pour chatRoom
 export interface ChatroomUser {
