@@ -43,10 +43,6 @@ export default function SignIn() {
   const theme = useTheme();
   return (
     <Container component="main" maxWidth="xs" id="container" className="loginBox">
-        <br></br>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <ThemeProvider theme={ theme }>  
-          </ThemeProvider>
           <Button
             type="submit"
             fullWidth
@@ -55,7 +51,6 @@ export default function SignIn() {
           >
             Sign In
           </Button>
-        </Box>
         <br />
     </Container>
     );

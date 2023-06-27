@@ -20,15 +20,18 @@ import { useDispatch } from "react-redux";
 import { asyncToggleTheme } from "../store/reducers/themeSlice";
 import { useState, useEffect } from 'react';
 import { UserContext } from '../Contexts/userContext';
+import { User } from '../Contexts/userContext';
+import { useNavigate } from 'react-router-dom';
 
 const pages = [
   { label: 'Home', link: '/Home' },
   { label: 'Chat', link: '/Chat'},
   { label: 'Profile', link: '/Profile'},
 ];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Profile settings', 'Logout'];
 
 function ResponsiveAppBar() {
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const {user} = useContext(UserContext);
@@ -48,6 +51,40 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  const handleSettingClick = (setting: string) => {
+    if (setting === 'Profile settings') {
+      navigate('/profile');
+      console.log('Clicked on Profile settings');
+    }
+    else if (setting === 'Logout') {
+      navigate('/');
+      console.log('Clicked on Logout');
+    }
+    handleCloseUserMenu();
+  };
+
+/*   useEffect(() => {
+		const fetchUserStatistics = async () => {
+			try {
+				const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3');
+				if(response.ok)
+				{
+					const data = await response.json();
+					setUserStatistics(data);
+				}
+				else
+				{
+					console.error('Could not fetch user');
+				}
+			}
+			catch (err) {
+				console.error(err);
+			}
+		};
+
+		fetchUserStatistics();
+	}, [userStatistics]); */
+  
   const dispatch = useDispatch();
 
   return (
@@ -183,7 +220,7 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={() => handleSettingClick(setting)}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
