@@ -8,7 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useState, useEffect } from 'react';
 import MyStats from './ProfileComponents/UserStats';
 import PictureHandler from './ProfileComponents/PictureHandler';
-import UserProvider, { UserContext, User } from 'Contexts/userContext';
+import { UserContext } from 'Contexts/userContext';
 import { useContext } from 'react';
 
 const settings = ['See profile picture', 'Upload profile picture'];
@@ -16,14 +16,11 @@ const settings = ['See profile picture', 'Upload profile picture'];
 function ProfileContainer() {
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 	const [open, setOpen] = useState(false);
-	const [picture, setSelectedPicture] = useState('');
  	const {user} = useContext(UserContext);
+	
 	const handleOpen = (picture: string | undefined) => { 
 		if (picture !== undefined)
-		{
-			setSelectedPicture(picture);
 			setOpen(true);
-		}
 	};
 	
 	const handleClose = () => {

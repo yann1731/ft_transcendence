@@ -6,6 +6,7 @@ import Divider from '@mui/material/Divider';
 import { UserContext, UserContextType } from 'Contexts/userContext';
 import { HallOfFame } from 'Components/Interfaces';
 import { useEffect, useState, useContext } from 'react';
+import axios, { AxiosResponse } from 'axios';
 
 const DashboardContainer: React.FC = () => {
   const [highestScore, setHighestScore] = useState<number>(-1);
@@ -16,13 +17,13 @@ const DashboardContainer: React.FC = () => {
   const [usernameHighScore, setUsernameHighScore] = useState<string>('');
   const [usernameLowScore, setUsernameLowScore] = useState<string>('');
   const [usernameGamesPlayed, setUsernameGamesPlayed] = useState<string>('');
-  const { user } = useContext<UserContextType>(UserContext);
+  const { user } = useContext(UserContext);
   
   useEffect(() => {
     const fetchHallOfFame = async () => {
       try {
-        const response = await fetch('http://localhost:4242/user');
-        const data: HallOfFame[] = await response.json();
+        const response: AxiosResponse = await axios.get('http://localhost:4242/user');
+        const data: HallOfFame[] = response.data;
         
         data.forEach(score => {
           if (score.win >= highestScore) {
@@ -98,7 +99,6 @@ const DashboardContainer: React.FC = () => {
               <Box className="dashboardContents">[GAMES PLAYED]<br></br>{highestGamesPlayed}<br></br>{usernameGamesPlayed}</Box>
               <Box className="dashboardContents">[WINS]<br></br>{highestScore}<br></br>{usernameHighScore}</Box>
               <Box className="dashboardContents">[LOSSES]<br></br>{lowestScore}<br></br>{usernameLowScore}</Box>
-
             </Box>
         </Box>
         <Box className={"homeScoreBox"}>

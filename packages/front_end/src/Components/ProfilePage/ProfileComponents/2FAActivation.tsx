@@ -6,11 +6,11 @@ import { useContext } from "react";
 type ToggleActive = () => void;
 
 const Handler2FA = () => {
-  const {user} = useContext(UserContext);
+  const {user, updateUser} = useContext(UserContext);
   
   const Handle2FA = (): [boolean, ToggleActive] => {
     const storedValue = localStorage.getItem('twoFaEnabled');
-    const initialValue = storedValue !== null ? JSON.parse(storedValue) : user?.twoFaEnabled || false;
+    const initialValue = storedValue !== null ? JSON.parse(storedValue) : user?.twoFaEnabled;
     const [active, setActive] = useState(initialValue);
     
     const toggleActive: ToggleActive = () => {
@@ -22,26 +22,26 @@ const Handler2FA = () => {
     };
     return [active, toggleActive];
   };
+  
   const [isActive, toggleActive] = Handle2FA();
-  const buttonText = isActive ? "Deactivate 2FA" : "Activate 2FA";
-
+  const buttonText = isActive ? "Activate 2FA" : "Deactivate 2FA";
+  
   const handleToggleActive = async () => {
-    const updatedTwoFaEnabled = !isActive; // Inverse la valeur directement
+    const updatedTwoFaEnabled = !isActive;
     
     if (user) {
-      const updatedUser = { ...user, twoFaEnabled: updatedTwoFaEnabled };
-      
+      const updatedUser = { ...user, twoFaEnabled: isActive };
+      updateUser(updatedUser);
       try {
-        await updateUser2FA(updatedUser); // Call the async function
-        toggleActive(); // Met à jour la valeur après la mise à jour réussie
+        await updateUser2FA(updatedUser);
+        toggleActive();
       } catch (err) {
         console.error(err);
       }
     }
   };
-  
+
   const updateUser2FA = async (updatedUser: User) => {
-    alert(user?.username)
     const response = await fetch('http://localhost:4242/user/' + user?.id, {
       method: 'PATCH',
       headers: {
@@ -55,7 +55,7 @@ const Handler2FA = () => {
     }
   };
   return (
-      <Button variant="outlined" className="profilePageButtons" onClick={toggleActive}>{buttonText}</Button>
+      <Button variant="outlined" className="profilePageButtons" onClick={handleToggleActive}>{buttonText}</Button>
   );
 };
 
