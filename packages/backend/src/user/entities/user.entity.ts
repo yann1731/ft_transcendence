@@ -26,4 +26,5 @@ export class User {
 	sentChatroomMessages?: ChatroomMessage[] ;
 	Chatroom?: Chatroom[] ;
 	id: string ;
+	refresh_token?: string;
 }

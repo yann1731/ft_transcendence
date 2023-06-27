@@ -123,3 +123,10 @@ export interface UserBlocks {
 	blockedUser?: User ;
 	id: string ;
 }
+
+export interface HallOfFame {
+    username: string;
+    win: number;
+    loss: number;
+    gamesPlayed: number;
+}

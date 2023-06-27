@@ -1,5 +1,6 @@
 
 import Phaser from "phaser";
+import themeSlice from "store/reducers/themeSlice";
 import '../../../App.css';
 
 class PowerUp extends Phaser.Physics.Arcade.Sprite {
@@ -17,6 +18,8 @@ interface gameData {
     power: boolean;
     face: boolean;
     socket: any;
+    ballX: number;
+    ballY: number;
 }
 
 export default class oneVSone extends Phaser.Scene{
@@ -68,6 +71,8 @@ export default class oneVSone extends Phaser.Scene{
     random: boolean = false;
     powerup: boolean = false;
     multi: boolean = false;
+    ballX!: number;
+    ballY!: number;
 
     bigPaddle!: Phaser.GameObjects.Text;
     bigBall!: Phaser.GameObjects.Text;
@@ -86,6 +91,8 @@ export default class oneVSone extends Phaser.Scene{
         this.powerup = data.power;
         this.face = data.face; 
         this.socket = data.socket
+        this.ballX = data.ballX;
+        this.ballY = data.ballY;
     }
 
 	preload() {
@@ -180,20 +187,8 @@ export default class oneVSone extends Phaser.Scene{
 		    "ball"
         )
 
-        if (Math.floor(Math.random() * 2) === 0){
-            this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
-            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
-            if (Math.floor(Math.random() * 2) === 0)
-                y *= -1;            
-            this.ball.setVelocityY(y);
-        } else{
-            this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2);
-            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
-            if (Math.floor(Math.random() * 2) === 0)
-                y *= -1;
-            this.ball.setVelocityY(y);
-        }
-        
+        this.ball.setVelocityX(this.ballX);
+        this.ball.setVelocityY(this.ballY);
         this.ball.setDamping(true);
         this.ball.setScale(0.2);
         this.ball.setCollideWorldBounds(true);
@@ -249,14 +244,16 @@ export default class oneVSone extends Phaser.Scene{
         this.paddle1.setOrigin(0.5);
         this.paddle1.setScale(0.15, 0.25);
         this.paddle1.setCollideWorldBounds(true);
-        this.physics.add.collider(this.ball, this.paddle1);
+        //this.physics.add.collider(this.ball, this.paddle1, this.collision);
         
         this.paddle2.setImmovable(true);
         this.paddle2.setOrigin(0.5);
         this.paddle2.setScale(0.15, 0.25);
         this.paddle2.setCollideWorldBounds(true)
-        this.physics.add.collider(this.ball, this.paddle2);
+        /* this.physics.add.collider(this.ball, this.paddle2); */
     }
+
+    
 
     text_init() {
         this.player1VictoryText = this.add.text(
@@ -396,7 +393,15 @@ export default class oneVSone extends Phaser.Scene{
             if (this.points2 === this.win)
                     this.end(2);
         })
+        this.socket.on("collision", (data: any) => {
+            this.ball.setVelocityX(data.ballX);
+            this.ball.setVelocityY(data.ballY);
+/*             this.ball.setX(this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1);
+            this.ball.setY(data.y); */
+        })
 
+        this.physics.add.collider(this.ball, this.paddle1, this.collision);
+        this.physics.add.collider(this.ball, this.paddle2, this.collision);
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        
         
@@ -408,6 +413,11 @@ export default class oneVSone extends Phaser.Scene{
                     this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
                 }, undefined, this);
         }
+    }
+
+    collision = () => {
+        if (this.ball.body)
+            this.socket.emit("collision", {ballX: this.ball.body.velocity.x * -1, ballY: this.ball.body.velocity.y, x: this.ball.x, y: this.ball.y})
     }
 
     new_point(player: number) {

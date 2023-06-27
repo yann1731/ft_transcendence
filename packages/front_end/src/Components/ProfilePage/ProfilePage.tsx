@@ -16,37 +16,11 @@ const settings = ['See profile picture', 'Upload profile picture'];
 function ProfileContainer() {
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 	const [open, setOpen] = useState(false);
-	const [selectedPicture, setSelectedPicture] = useState('');
-	const {user, setUser} = useContext(UserContext);
-
-	/*useEffect(() => {
-		const fetchUser = async () => {
-			try {
-				const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3');
-				if(response.ok)
-				{
-					const data = await response.json();
-					setUser(data);
-				}
-				else
-				{
-					console.error('Could not fetch user');
-				}
-			}
-			catch (err) {
-				console.error(err);
-			}
-		};
-
-		fetchUser();
-	}, [user]);*/
-
+ 	const {user} = useContext(UserContext);
+	
 	const handleOpen = (picture: string | undefined) => { 
 		if (picture !== undefined)
-		{
-			setSelectedPicture(picture);
 			setOpen(true);
-		}
 	};
 	
 	const handleClose = () => {
@@ -60,6 +34,7 @@ function ProfileContainer() {
 	const handleCloseUserMenu = () => {
 		setAnchorElUser(null);
 	};
+
 	return (
 		<Box className="profileMainBox">
 				<Avatar alt={user?.avatar} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
@@ -84,7 +59,7 @@ function ProfileContainer() {
 					}}
 					open={Boolean(anchorElUser)}
 					onClose={handleCloseUserMenu}
-				>
+					>
 					<MenuItem onClick={() => handleOpen(user?.avatar)}>
 						<Typography textAlign="center">See profile picture</Typography>
 					</MenuItem>

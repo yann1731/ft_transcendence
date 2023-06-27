@@ -21,7 +21,6 @@ services:
       - 5001:5000
     depends_on:
       - database
-      - redis
   
   database:
     container_name: database
@@ -46,15 +45,6 @@ services:
       - ./packages/front_end/src:/app/src/
     ports:
       - 3000:3000
-
-  redis:
-    container_name: redis
-    image: redis:latest
-    networks:
-      - tr-net
-    ports:
-      - 6969:6969
-    command: redis-server --port 6969 --bind 0.0.0.0
 
 networks:
     tr-net:

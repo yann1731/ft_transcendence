@@ -7,7 +7,22 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	server: Server;
 
 	numberOfGame: number = 1;
+	x: number;
+	y: number;
 
+	oneHost!: [string, boolean, boolean, boolean, boolean][]
+	oneWaiting!: [];
+	twoHost!: [string, boolean, boolean, boolean, boolean][]
+	twoWaiting!: [];
+	threeHost!: [string, boolean, boolean, boolean, boolean][]
+	threeWaiting!: [];
+
+	XVelocityMin1: number = 350;
+    XVelocityMax1: number = 400;
+    XVelocityMin2: number = -350;
+    XVelocityMax2: number = -400;
+    YvelocityMin: number = 125;
+    YvelocityMax: number = 225;
 
 	handleConnection() {
 		console.log('New client connected');
@@ -29,28 +44,36 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 		client.broadcast.to(String(room[0])).emit("point");
 	}
 
-	@SubscribeMessage("1v1")
-	handle1v1(client: Socket){
-		client.join(String(this.numberOfGame));
-
+	@SubscribeMessage("collision")
+	handleCollision(client: Socket, data: any){
 		const room = Array.from(client.rooms).filter(room => room !== client.id)
-		console.log(room[0]);
-		if (this.server.sockets.adapter){
-			if (this.server.sockets.adapter.rooms){
-			if (this.server.sockets.adapter.rooms.has(room[0])){
-    			const numberOfUser = this.server.sockets.adapter.rooms[room[0]].length;
-				console.log(numberOfUser)
-			}
-			else{
-				console.log("fuck3");
-			}
-		}
-		else{
-			console.log("fuck2");
-		}
+		client.broadcast.to(String(room[0])).emit("collision", {ballX: data.ballX, ballY: data.ballY, x: data.x, y: data.y});
 	}
+
+	@SubscribeMessage("1v1")
+	async handle1v1(client: Socket, data: any){
+		if (data.start){
+			client.join(data.name);
+			const room = Array.from(client.rooms).filter(room => room !== client.id)
+			const sockets = await this.server.in(room[0]).fetchSockets();
+			console.log(sockets.length)
+			if (sockets.length === 2){
+					if (Math.floor(Math.random() * 2) === 0){
+						this.x = Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1;
+						this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+						if (Math.floor(Math.random() * 2) === 0)
+							this.y *= -1;            
+					} else{
+						this.x = Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2;
+						this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+						if (Math.floor(Math.random() * 2) === 0)
+							this.y *= -1;
+					}
+					this.server.in(room[0]).emit("start", {ballX: this.x, ballY: this.y});
+			}
+		}
 		else{
-			console.log("fuck");
+			client.join("lol");
 		}
 	}
 }
