@@ -44,7 +44,7 @@ export class AuthService {
             redirect_uri: 'http://localhost:3000/wait',
             code: code
             });
-            console.log('Success');
+            console.log('Successfully got token');
             return response.data;
         } catch (error) {
             console.error('Failed getting token');

@@ -3,15 +3,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { validate } from 'class-validator';
-import { ApiGoneResponse } from '@nestjs/swagger';
 import axios from 'axios';
-import { availableParallelism } from 'os';
 
 @Injectable()
 export class UserService { //creates a new user
   constructor(private prisma: PrismaService) { }
 
-  async create(code: string, refresh_token: string) {
+  async create(code: string, refresh_token: string, expires_in: number, created_at: number) {
+    console.log(expires_in);
+    console.log(created_at);
     const response = await axios.get('https://api.intra.42.fr/v2/me', {
       headers: {
         Authorization: `Bearer ${code}`
@@ -28,7 +28,11 @@ export class UserService { //creates a new user
           email: response.data.email, 
           refresh_token: refresh_token,
           username: response.data.login,
-          avatar: response.data.url
+          nickname: response.data.login,
+          avatar: response.data.image.link,
+          token: code,
+          token_expires_at: expires_in,
+          token_created_at: created_at
         }
       });
       if (!user) {
