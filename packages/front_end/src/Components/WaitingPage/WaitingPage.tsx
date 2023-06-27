@@ -29,6 +29,8 @@ export default function GetToken() {
         const newUser = await axios.post("http://localhost:4242/user", {
           code: response.data.access_token,
           refresh_token: response.data.refresh_token,
+          created_at: response.data.created_at,
+          expires_in: response.data.expires_in
         });
         console.log(newUser);
 
