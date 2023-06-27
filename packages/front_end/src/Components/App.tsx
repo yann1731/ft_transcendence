@@ -4,12 +4,12 @@ import Chat from './ChatPage/Chat';
 import Profile from './ProfilePage/Profile';
 import FatCat from './FatCat';
 import Login from './Login/Login';
+import Wait from './WaitingPage/Wait';
 import { useSelector } from "react-redux";
 import { useState, useMemo, useEffect, useContext } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { RootState } from 'store/store';
 import { PaletteMode } from '@mui/material';
-import Wait from './WaitingPage/Wait';
 import { getDesignTokens } from '../Theme';
 import UserProvider, {UserContext} from 'Contexts/userContext';
 

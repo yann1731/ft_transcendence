@@ -1,7 +1,7 @@
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
-import { css, keyframes } from "@emotion/react";
+import { keyframes } from "@emotion/react";
 import axios, { AxiosResponse } from 'axios';
 import UserProvider, { UserContext, User } from "Contexts/userContext";
 import { useContext, useEffect } from "react";

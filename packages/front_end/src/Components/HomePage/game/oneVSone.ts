@@ -1,5 +1,6 @@
 
 import Phaser from "phaser";
+import themeSlice from "store/reducers/themeSlice";
 import '../../../App.css';
 
 class PowerUp extends Phaser.Physics.Arcade.Sprite {
@@ -16,6 +17,9 @@ interface gameData {
     random: boolean;
     power: boolean;
     face: boolean;
+    socket: any;
+    ballX: number;
+    ballY: number;
 }
 
 export default class oneVSone extends Phaser.Scene{
@@ -32,6 +36,8 @@ export default class oneVSone extends Phaser.Scene{
 
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     keys: any = {};
+
+    socket!: any;
 
     points1: number = 0;
     points2: number = 0;
@@ -58,11 +64,15 @@ export default class oneVSone extends Phaser.Scene{
     frame: number = 1;
     power!: PowerUp;
     
+    oldPosition!: number;
+
     face: boolean = false;
     wall: boolean = false;
     random: boolean = false;
     powerup: boolean = false;
     multi: boolean = false;
+    ballX!: number;
+    ballY!: number;
 
     bigPaddle!: Phaser.GameObjects.Text;
     bigBall!: Phaser.GameObjects.Text;
@@ -80,6 +90,9 @@ export default class oneVSone extends Phaser.Scene{
         this.random = data.random;
         this.powerup = data.power;
         this.face = data.face; 
+        this.socket = data.socket
+        this.ballX = data.ballX;
+        this.ballY = data.ballY;
     }
 
 	preload() {
@@ -174,20 +187,8 @@ export default class oneVSone extends Phaser.Scene{
 		    "ball"
         )
 
-        if (Math.floor(Math.random() * 2) === 0){
-            this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
-            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
-            if (Math.floor(Math.random() * 2) === 0)
-                y *= -1;            
-            this.ball.setVelocityY(y);
-        } else{
-            this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2);
-            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
-            if (Math.floor(Math.random() * 2) === 0)
-                y *= -1;
-            this.ball.setVelocityY(y);
-        }
-        
+        this.ball.setVelocityX(this.ballX);
+        this.ball.setVelocityY(this.ballY);
         this.ball.setDamping(true);
         this.ball.setScale(0.2);
         this.ball.setCollideWorldBounds(true);
@@ -237,20 +238,22 @@ export default class oneVSone extends Phaser.Scene{
                 "paddle"
             )
         }
-            
+        this.oldPosition = this.physics.world.bounds.height / 2;
 
         this.paddle1.setImmovable(true);
         this.paddle1.setOrigin(0.5);
         this.paddle1.setScale(0.15, 0.25);
         this.paddle1.setCollideWorldBounds(true);
-        this.physics.add.collider(this.ball, this.paddle1);
+        //this.physics.add.collider(this.ball, this.paddle1, this.collision);
         
         this.paddle2.setImmovable(true);
         this.paddle2.setOrigin(0.5);
         this.paddle2.setScale(0.15, 0.25);
         this.paddle2.setCollideWorldBounds(true)
-        this.physics.add.collider(this.ball, this.paddle2);
+        /* this.physics.add.collider(this.ball, this.paddle2); */
     }
+
+    
 
     text_init() {
         this.player1VictoryText = this.add.text(
@@ -382,6 +385,23 @@ export default class oneVSone extends Phaser.Scene{
         this.ball_init();
         this.paddle_init();
 
+        this.socket.on("movement", (newPos: number) => {
+            this.paddle2.setY(newPos + this.paddle2.height * 0.25 / 2);
+        })
+        this.socket.on("point", () => {
+            this.points2++;
+            if (this.points2 === this.win)
+                    this.end(2);
+        })
+        this.socket.on("collision", (data: any) => {
+            this.ball.setVelocityX(data.ballX);
+            this.ball.setVelocityY(data.ballY);
+/*             this.ball.setX(this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1);
+            this.ball.setY(data.y); */
+        })
+
+        this.physics.add.collider(this.ball, this.paddle1, this.collision);
+        this.physics.add.collider(this.ball, this.paddle2, this.collision);
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        
         
@@ -395,7 +415,17 @@ export default class oneVSone extends Phaser.Scene{
         }
     }
 
+    collision = () => {
+        if (this.ball.body)
+            this.socket.emit("collision", {ballX: this.ball.body.velocity.x * -1, ballY: this.ball.body.velocity.y, x: this.ball.x, y: this.ball.y})
+    }
+
     new_point(player: number) {
+        if (this.random === true || this.wall === true){
+            this.wall1.setVisible(false);
+            this.wall2.setVisible(false);
+            this.wall3.setVisible(false);
+        }
         this.paddle1.disableBody();
         this.paddle2.disableBody();
         this.ball.disableBody();
@@ -435,6 +465,11 @@ export default class oneVSone extends Phaser.Scene{
             this.paddle2.setScale(0.15, 0.25);
             this.ball.setTexture("ball")
             this.ball.setScale(0.2);
+            if (this.random === true || this.wall === true){
+                this.wall1.setVisible(true);
+                this.wall2.setVisible(true);
+                this.wall3.setVisible(true);
+            }
             if (this.powerup === true){
                 this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
                 this.power.enableBody(true, this.power.x, this.power.y, true, true);
@@ -451,6 +486,11 @@ export default class oneVSone extends Phaser.Scene{
     }
 
     end(player: number) {
+        if (this.random === true || this.wall === true){
+            this.wall1.setVisible(false);
+            this.wall2.setVisible(false);
+            this.wall3.setVisible(false);
+        }
         if (player === 1)
             this.player2VictoryText.setVisible(true);
         else
@@ -467,9 +507,9 @@ export default class oneVSone extends Phaser.Scene{
     }
 
     update() {
-        if (this.ball.body)
+       /*  if (this.ball.body)
             if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
-                this.ball.body.x = this.physics.world.bounds.width - 1;
+                this.ball.body.x = this.physics.world.bounds.width - 1 - this.ball.body.width;
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
@@ -488,7 +528,7 @@ export default class oneVSone extends Phaser.Scene{
         if (this.multi)
             if (this.multiball.body)
                 if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width) {
-                    this.multiball.body.x = this.physics.world.bounds.width - 1;
+                    this.multiball.body.x = this.physics.world.bounds.width - 1 - this.multiball.body.width;;
                     this.smash.setVisible(false);
                     this.bigBall.setVisible(false);
                     this.bigPaddle.setVisible(false);
@@ -537,20 +577,21 @@ export default class oneVSone extends Phaser.Scene{
                         this.end(1);
                     else
                         this.new_point(2);
-                }
+                } */
         
         this.paddle1.setVelocityY(0);
-        this.paddle2.setVelocityY(0);
-        
-        if (this.cursors?.up.isDown)
-        this.paddle2.setVelocityY(-this.paddlespeed * this.modifier2);
-        if (this.cursors?.down.isDown)
-        this.paddle2.setVelocityY(this.paddlespeed * this.modifier2);
         
         if (this.keys.w.isDown)
-        this.paddle1.setVelocityY(-this.paddlespeed * this.modifier1);
+            this.paddle1.setVelocityY(-this.paddlespeed * this.modifier1);
         if (this.keys.s.isDown)
-        this.paddle1.setVelocityY(this.paddlespeed * this.modifier1);
+            this.paddle1.setVelocityY(this.paddlespeed * this.modifier1);
+            
+        if (this.paddle1.body){
+            if (this.paddle1.body.y !== this.oldPosition)
+                this.socket.emit("movement", this.paddle1.body.y)
+            this.oldPosition = this.paddle1.body.y
+        }
+        
         
         if (this.paddlespeed < 625)
             this.paddlespeed += 0.5;

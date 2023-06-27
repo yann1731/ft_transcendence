@@ -7,6 +7,7 @@ RUN mkdir -p /serv/backend
 WORKDIR /serv/backend
 RUN npm i -g @nestjs/cli --silent
 
+
 COPY . .
 
 ENTRYPOINT [ "/bin/sh", "./script/dbstartup.sh"]

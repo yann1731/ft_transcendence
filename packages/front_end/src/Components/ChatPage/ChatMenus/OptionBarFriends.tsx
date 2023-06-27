@@ -7,7 +7,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import Button from '@mui/material/Button';
 import '../../../App.css';
 
 export default function OptionBarFriends() {

@@ -46,7 +46,6 @@ services:
     ports:
       - 3000:3000
 
-
 networks:
     tr-net:
       name: tr-net

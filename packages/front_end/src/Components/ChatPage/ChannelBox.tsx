@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MyChannels from './ChatComponents/Channels';
-import Divider from '@mui/material/Divider';
   
   export default function ChannelBox() {
 	return(

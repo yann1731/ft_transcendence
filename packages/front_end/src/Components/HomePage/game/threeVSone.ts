@@ -373,7 +373,7 @@ export default class oneVSthree extends Phaser.Scene{
            if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width || this.ball.body.x === 0 ||
 			this.ball.body.y === 0) {
 				if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width)
-                	this.ball.body.x = this.physics.world.bounds.width - 1;
+                	this.ball.body.x = this.physics.world.bounds.width - 1 - this.ball.body.width;
 				else if (this.ball.body.x === 0)
 					this.ball.body.x = 1;
 				else
@@ -398,7 +398,7 @@ export default class oneVSthree extends Phaser.Scene{
 				if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width || this.multiball.body.x === 0 ||
 					this.multiball.body.y === 0) {
 					if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width)
-                    	this.multiball.body.x = this.physics.world.bounds.width - 1;
+                    	this.multiball.body.x = this.physics.world.bounds.width - 1 - this.multiball.body.width;
 					else if (this.multiball.body.x === 0)
 						this.multiball.body.x = 1;
 					else
@@ -419,7 +419,7 @@ export default class oneVSthree extends Phaser.Scene{
 
         if (this.ball.body)
             if (this.ball.body?.y + this.ball.body.height === this.physics.world.bounds.height) {
-                this.ball.body.y = this.physics.world.bounds.height - 1;
+                this.ball.body.y = this.physics.world.bounds.height - 1 - this.ball.body.y;
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
@@ -438,7 +438,7 @@ export default class oneVSthree extends Phaser.Scene{
         if (this.multi)
             if (this.multiball.body)
 				if (this.multiball.body?.y + this.multiball.body.height === this.physics.world.bounds.height) {
-                	this.multiball.body.y = this.physics.world.bounds.height - 1;
+                	this.multiball.body.y = this.physics.world.bounds.height - 1 - this.multiball.body.y;
                     this.smash.setVisible(false);
                     this.bigBall.setVisible(false);
                     this.bigPaddle.setVisible(false);

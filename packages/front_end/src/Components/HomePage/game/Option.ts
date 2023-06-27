@@ -1,4 +1,5 @@
 
+import io from 'socket.io-client';
 import Phaser from "phaser";
 import '../../../App.css';
 
@@ -11,10 +12,12 @@ export default class option extends Phaser.Scene{
 	single: boolean = true;
 	two: boolean = false;
 	multiple: boolean = false;
+	socket!: any; 
 
 	rateSpeed: number = 0.0006;
 
 	start!: Phaser.GameObjects.Text;
+	join!: Phaser.GameObjects.Text;
 	powerButton!: Phaser.GameObjects.Text;
 	wallText!: Phaser.GameObjects.Text;
 	wallButton!: Phaser.GameObjects.Text;
@@ -30,6 +33,8 @@ export default class option extends Phaser.Scene{
 	medium!: Phaser.GameObjects.Text;
 	slow!: Phaser.GameObjects.Text;
 	mode!: Phaser.GameObjects.Text;
+
+	
 
 	constructor() {
         super('menu');
@@ -53,7 +58,96 @@ export default class option extends Phaser.Scene{
 		  this.title.setOrigin(0.5);
 		  
   
-		  this.start = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.3, 'Start', {
+		  this.join = this.add.text(this.physics.world.bounds.width * 0.4, this.physics.world.bounds.height * 0.3, 'Join', {
+			  fontFamily: 'pong',
+			  fontSize: '24px',
+			  color: '#ffffff',
+			  backgroundColor: '#000000',
+			  padding: {
+				  x: 10,
+				  y: 6
+				}
+			});
+			this.join.setOrigin(0.5);
+			this.join.setInteractive();
+			this.join.on('pointerover', () => {
+				this.join.setColor('#000000');
+				this.join.setStyle({ backgroundColor: '#ffffff' });
+			});
+			this.join.on('pointerout', () => {
+				this.join.setColor('#ffffff');
+				this.join.setStyle({ backgroundColor: '#000000' });
+			});
+			this.join.on('pointerdown', () => {
+				const waiting = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, "waiting for player", {
+					fontFamily: 'pong',
+					fontSize: '50px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				})
+				waiting.setOrigin(0.5);
+				this.title.setVisible(false);
+				this.start.setVisible(false);
+				this.join.setVisible(false);
+				this.powerButton.setVisible(false);
+				this.settingOneButton.setVisible(false);
+				this.settingThreeButton.setVisible(false);
+				this.wallButton.setVisible(false);
+				this.randomButton.setVisible(false);
+				this.mode.setVisible(false);
+				this.wallText.setVisible(false);
+				this.rate.setVisible(false);
+				this.fast.setVisible(false);
+				this.medium.setVisible(false);
+				this.slow.setVisible(false);
+				this.start.setInteractive(false);
+				this.powerButton.setInteractive(false);
+				this.settingOneButton.setInteractive(false);
+				this.settingThreeButton.setInteractive(false);
+				this.wallButton.setInteractive(false);
+				this.randomButton.setInteractive(false);
+				this.fast.setInteractive(false);
+				this.medium.setInteractive(false);
+				this.slow.setInteractive(false);
+				this.join.setInteractive(false);
+				this.socket.emit("1v1");
+			this.socket.on("start", (data: any) =>{
+				waiting.setVisible(false);
+				const game = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
+					fontFamily: 'pong',
+					fontSize: '50px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				  });
+				  game.setOrigin(0.5);
+	
+			  	this.time.delayedCall(1000, () => {
+					  game.setText('game starting in 2');
+			  	}, [], this);
+			  	this.time.delayedCall(2000, () => {
+					  game.setText('game starting in 1');
+			  	}, [], this);
+			  	this.time.delayedCall(3000, () => {
+						if (this.single === true)
+					  		this.scene.start('oneVSone', {wall: data.wall, random: data.random, power: data.powerUp, faces: data.faces, socket: data.socket, ballX: data.ballX * -1, ballY: data.ballY});
+						else if (this.multiple === true)
+							this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
+						else
+					  		this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
+					}, [], this);
+				});
+			})
+
+
+		  this.start = this.add.text(this.physics.world.bounds.width * 0.6, this.physics.world.bounds.height * 0.3, 'Start', {
 			  fontFamily: 'pong',
 			  fontSize: '24px',
 			  color: '#ffffff',
@@ -74,19 +168,19 @@ export default class option extends Phaser.Scene{
 				this.start.setStyle({ backgroundColor: '#000000' });
 			});
 			this.start.on('pointerdown', () => {
-			  const game = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
-				  fontFamily: 'pong',
-				  fontSize: '50px',
-				  color: '#ffffff',
-				  backgroundColor: '#000000',
-				  padding: {
-					x: 10,
-					y: 6
-				  }
-				});
-				game.setOrigin(0.5);
-  
+				const waiting = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, "waiting for player", {
+					fontFamily: 'pong',
+					fontSize: '50px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				})
+				waiting.setOrigin(0.5);
 				this.title.setVisible(false);
+				this.join.setVisible(false);
 				this.start.setVisible(false);
 				this.powerButton.setVisible(false);
 				this.settingOneButton.setVisible(false);
@@ -99,22 +193,47 @@ export default class option extends Phaser.Scene{
 				this.fast.setVisible(false);
 				this.medium.setVisible(false);
 				this.slow.setVisible(false);
-				
-			  this.time.delayedCall(1000, () => {
-				  game.setText('game starting in 2');
-			  }, [], this);
-			  this.time.delayedCall(2000, () => {
-				  game.setText('game starting in 1');
-			  }, [], this);
-			  this.time.delayedCall(3000, () => {
-					if (this.single === true)
-				  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
-					else if (this.multiple === true)
-						this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
-					else
-				  		this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
-				}, [], this);
-			});
+				this.join.setInteractive(false);
+				this.start.setInteractive(false);
+				this.powerButton.setInteractive(false);
+				this.settingOneButton.setInteractive(false);
+				this.settingThreeButton.setInteractive(false);
+				this.wallButton.setInteractive(false);
+				this.randomButton.setInteractive(false);
+				this.fast.setInteractive(false);
+				this.medium.setInteractive(false);
+				this.slow.setInteractive(false);
+				this.socket.emit("1v1", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, start: true, name: "lol"}); // changer le name ici quand on va avoir le context ici
+			this.socket.on("start", (data: any) =>{
+				waiting.setVisible(false);
+				const game = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
+					fontFamily: 'pong',
+					fontSize: '50px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				  });
+				  game.setOrigin(0.5);
+	
+			  	this.time.delayedCall(1000, () => {
+					  game.setText('game starting in 2');
+			  	}, [], this);
+			  	this.time.delayedCall(2000, () => {
+					  game.setText('game starting in 1');
+			  	}, [], this);
+			  	this.time.delayedCall(3000, () => {
+						if (this.single === true)
+					  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY});
+						else if (this.multiple === true)
+							this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
+						else
+					  		this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
+					}, [], this);
+				});
+			})
   
   
 		this.mode = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.4, 'mode:', {
@@ -415,7 +534,7 @@ export default class option extends Phaser.Scene{
 			  this.mode.setVisible(false);
 			  this.wallText.setVisible(false);
 			  
-			if (Phaser.Math.RND.between(50, 51) === 50)
+			if (Phaser.Math.RND.between(1, 69) === 69)
 				this.faces = true;
 			
 
@@ -620,9 +739,10 @@ export default class option extends Phaser.Scene{
 
 	create() {
 		this.load.on('complete', this.all, this);
+		this.socket = io("http://localhost:4242/game")
 		this.all();
 		this.onevsthree();
-		this.onevsone();	
+		this.onevsone();
 	}
 
 	update() {}
