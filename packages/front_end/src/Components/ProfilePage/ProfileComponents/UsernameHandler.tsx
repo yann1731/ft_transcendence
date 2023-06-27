@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
 import { UserContext } from "Contexts/userContext";
 import { useContext } from "react";
+import axios, { AxiosResponse } from "axios";
+
 
 const UsernameHandler = () => {
   const { user, updateUser } = useContext(UserContext);
@@ -18,17 +20,12 @@ const UsernameHandler = () => {
 
   const handleChangeUsername = async () => {
     try {
-      const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...user, username: newUsername }),
-      });
-  
-      if (response.ok) {
-        const updatedUser = await response.json();
-        updateUser(updatedUser); // Update the user context with the updated user
+      const response: AxiosResponse = await axios.patch(`http://localhost:4242/user/${user?.id}`,
+        { ...user, username: newUsername });
+
+      if (response.status === 200) {
+        const updatedUser = response.data;
+        updateUser(updatedUser);
       } else {
         console.error('Could not update username');
       }

@@ -14,9 +14,12 @@ import MenuItem from '@mui/material/MenuItem';
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import ThemeModeIcon from '@mui/icons-material/DarkMode'
 import { Link } from 'react-router-dom';
+import { useContext } from 'react';
+import { toggleTheme } from "../store/reducers/themeSlice";
 import { useDispatch } from "react-redux";
 import { asyncToggleTheme } from "../store/reducers/themeSlice";
 import { useState, useEffect } from 'react';
+import { UserContext } from '../Contexts/userContext';
 import { User } from '../Contexts/userContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,7 +34,7 @@ function ResponsiveAppBar() {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const [userStatistics, setUserStatistics] = useState<User | null>(null);
+  const {user} = useContext(UserContext);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -60,7 +63,7 @@ function ResponsiveAppBar() {
     handleCloseUserMenu();
   };
 
-  useEffect(() => {
+/*   useEffect(() => {
 		const fetchUserStatistics = async () => {
 			try {
 				const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3');
@@ -80,7 +83,7 @@ function ResponsiveAppBar() {
 		};
 
 		fetchUserStatistics();
-	}, [userStatistics]);
+	}, [userStatistics]); */
   
   const dispatch = useDispatch();
 
@@ -196,7 +199,7 @@ function ResponsiveAppBar() {
             <Tooltip title="Open settings">
               <div id="anim" className="profileButtonStyle">
                 <IconButton onClick={handleOpenUserMenu}>
-                  <Avatar alt={userStatistics?.username} src={userStatistics?.avatar} />
+                  <Avatar alt={user?.username} src={user?.avatar} />
                 </IconButton>
               </div>
             </Tooltip>
