@@ -33,6 +33,10 @@ model User {
   
   avatar               String            @default("default.png")
   username             String            @unique
+  nickname             String            @unique
+  token                String            @unique
+  token_created_at     Int
+  token_expires_at     Int
   refresh_token        String            @unique
   email                String            @unique
   win                  Int               @default(0)
