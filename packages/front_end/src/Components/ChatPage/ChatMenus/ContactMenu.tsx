@@ -6,7 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import { Avatar, Typography } from '@mui/material';
 
-export default function ContactMenu() {
+export default function ContactMenu({Useravatar}: { Useravatar: string | undefined }) {
 
     const chatSettings = ['Add', 'Ban', 'Invite to Play', 'Kick', 'Make Admin', 'Mute', 'View Profile'];
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -27,7 +27,7 @@ export default function ContactMenu() {
               aria-haspopup="true"
               aria-expanded={open ? 'true' : undefined}
             >
-              <Avatar sx={{ width: 32, height: 32 }}></Avatar>
+              <Avatar src={Useravatar} sx={{ width: 32, height: 32 }}></Avatar>
             </IconButton>
           </Tooltip>
         </Box>

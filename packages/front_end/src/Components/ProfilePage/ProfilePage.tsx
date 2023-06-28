@@ -34,10 +34,9 @@ function ProfileContainer() {
 	const handleCloseUserMenu = () => {
 		setAnchorElUser(null);
 	};
-
 	return (
 		<Box className="profileMainBox">
-				<Avatar alt={user?.avatar} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
+				<Avatar alt={user?.nickname} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
 				<div style={{ textAlign: 'center' }}>
 					<Tooltip title="Open profile settings">
 					<IconButton onClick={handleOpenUserMenu}>
@@ -67,12 +66,11 @@ function ProfileContainer() {
 				</Menu>
 				<Modal open={open} onClose={handleClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
 					<div>
-						<img src={user?.avatar} alt={user?.username} style={{color: 'white'}} />
+						<img src={user?.avatar} alt={user?.nickname} style={{color: 'white'}} />
 					</div>
 				</Modal>
 				</div>
-				<Box sx={{textAlign: 'center', mt: 1}}>Username: {user?.username}</Box>
-				<Box sx={{textAlign: 'center'}}>Level: </Box>
+				<Box sx={{textAlign: 'center', mt: 1}}>Nickname: {user?.nickname}</Box>
 				<Box className="profileSection" sx={{
 					width: 400,
 					height: 450,

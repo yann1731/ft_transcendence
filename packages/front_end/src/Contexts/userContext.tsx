@@ -3,6 +3,7 @@ import { Chatroom, ChatroomMessage, ChatroomUser, PrivateMessage, UserBlocks, Us
 export interface User {
   avatar: string;
   username: string;
+  nickname: string;
   email: string;
   win: number;
   loss: number;
@@ -37,6 +38,7 @@ export const UserContext = createContext<UserContextType>({
 const defaultState = {
   user: {
     avatar: '',
+    nickname: '',
     username: '',
     email: '',
     win: 0,

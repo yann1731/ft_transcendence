@@ -14,9 +14,9 @@ const DashboardContainer: React.FC = () => {
   const [highestGamesPlayed, setHighestGamesPlayed] = useState<number>(-1);
   const [lowestScore, setLowestScore] = useState<number>(-1);
   const [gamesPlayedLowestScore, setGamesPlayedLowestScore] = useState<number>(1000000000);
-  const [usernameHighScore, setUsernameHighScore] = useState<string>('');
-  const [usernameLowScore, setUsernameLowScore] = useState<string>('');
-  const [usernameGamesPlayed, setUsernameGamesPlayed] = useState<string>('');
+  const [nicknameHighScore, setNicknameHighScore] = useState<string>('');
+  const [nicknameLowScore, setNicknameLowScore] = useState<string>('');
+  const [nicknameGamesPlayed, setNicknameGamesPlayed] = useState<string>('');
   const { user } = useContext(UserContext);
   
   useEffect(() => {
@@ -30,15 +30,15 @@ const DashboardContainer: React.FC = () => {
             if (score.win > highestScore)
             {
               setHighestScore(score.win);
-              setUsernameHighScore(score.username);
+              setNicknameHighScore(score?.nickname);
               setGamesPlayedHighestScore(score.gamesPlayed);
             }
-            else if (score.win == highestScore)
+            else if (score.win === highestScore)
             {
               if ((score.win / score.gamesPlayed) * 100 > (highestScore / gamesPlayedHighestScore) * 100)
-              setUsernameHighScore(score.username);
+              setNicknameHighScore(score?.nickname);
               else
-              setUsernameHighScore("Tied");
+              setNicknameHighScore("Tied");
               setHighestScore(score.win);
               setGamesPlayedHighestScore(score.gamesPlayed);
             }
@@ -48,15 +48,15 @@ const DashboardContainer: React.FC = () => {
             if (score.loss > lowestScore)
             {
               setLowestScore(score.loss);
-              setUsernameLowScore(score.username);
+              setNicknameLowScore(score?.nickname);
               setGamesPlayedLowestScore(score.gamesPlayed);
             }
-            else if (score.loss == lowestScore)
+            else if (score.loss === lowestScore)
             {
               if ((score.loss / score.gamesPlayed) * 100 > (lowestScore / gamesPlayedLowestScore) * 100)
-              setUsernameLowScore(score.username);
+              setNicknameLowScore(score?.nickname);
               else
-              setUsernameLowScore("Tied");
+              setNicknameLowScore("Tied");
               setHighestScore(score.win);
               setGamesPlayedLowestScore(score.gamesPlayed);
             }
@@ -66,18 +66,18 @@ const DashboardContainer: React.FC = () => {
             if (score.gamesPlayed > highestGamesPlayed)
             {
               setHighestGamesPlayed(score.gamesPlayed);
-              setUsernameGamesPlayed(score.username);
+              setNicknameGamesPlayed(score?.nickname);
             }
-            else if (score.loss == lowestScore)
+            else if (score.loss === lowestScore)
             {
               setHighestScore(score.gamesPlayed);
-              setUsernameGamesPlayed("Tied");
+              setNicknameGamesPlayed("Tied");
             }
           }
         });
-        console.log('Username with the highest score:' + usernameHighScore);
-        console.log('Username with the lowest score:' + usernameLowScore);
-        console.log('Username with the highest number of games played:'+ usernameGamesPlayed);
+        console.log('nickname with the highest score:' + nicknameHighScore);
+        console.log('nickname with the lowest score:' + nicknameLowScore);
+        console.log('nickname with the highest number of games played:'+ nicknameGamesPlayed);
       }
       catch(error) {
         console.error('Error occurred while fetching scores:', error);
@@ -96,9 +96,9 @@ const DashboardContainer: React.FC = () => {
             <Box sx={{ textAlign: 'center' }}>
               <Box sx={{color: 'white', fontSize: '20px' }}>Hall of Fame</Box>
               <Divider style={{ marginBottom: '10px' }} />
-              <Box className="dashboardContents">[GAMES PLAYED]<br></br>{highestGamesPlayed}<br></br>{usernameGamesPlayed}</Box>
-              <Box className="dashboardContents">[WINS]<br></br>{highestScore}<br></br>{usernameHighScore}</Box>
-              <Box className="dashboardContents">[LOSSES]<br></br>{lowestScore}<br></br>{usernameLowScore}</Box>
+              <Box className="dashboardContents">[GAMES PLAYED]<br></br>{highestGamesPlayed}<br></br>{nicknameGamesPlayed}</Box>
+              <Box className="dashboardContents">[WINS]<br></br>{highestScore}<br></br>{nicknameHighScore}</Box>
+              <Box className="dashboardContents">[LOSSES]<br></br>{lowestScore}<br></br>{nicknameLowScore}</Box>
             </Box>
         </Box>
         <Box className={"homeScoreBox"}>

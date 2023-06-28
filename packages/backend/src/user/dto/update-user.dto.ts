@@ -15,6 +15,11 @@ export class UpdateUserDto {
 
     @IsOptional()
     @IsString()
+    @MinLength(1)
+    nickname?: string;
+
+    @IsOptional()
+    @IsString()
     @IsEmail()
     email?: string;
 

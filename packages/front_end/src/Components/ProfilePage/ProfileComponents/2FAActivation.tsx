@@ -24,13 +24,12 @@ const Handler2FA = () => {
   };
   
   const [isActive, toggleActive] = Handle2FA();
-  const buttonText = isActive ? "Activate 2FA" : "Deactivate 2FA";
+  const buttonText = isActive ? "Deactivate 2FA" : "Activate 2FA";
   
   const handleToggleActive = async () => {
-    const updatedTwoFaEnabled = !isActive;
     
     if (user) {
-      const updatedUser = { ...user, twoFaEnabled: isActive };
+      const updatedUser = { ...user, twoFaEnabled: !isActive };
       updateUser(updatedUser);
       try {
         await updateUser2FA(updatedUser);

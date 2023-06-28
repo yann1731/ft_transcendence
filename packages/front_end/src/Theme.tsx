@@ -1,5 +1,6 @@
 import "@fontsource/roboto"
 import { PaletteMode } from '@mui/material';
+import { createTheme, ThemeOptions } from "@mui/material";
 
 export const getDesignTokens = (mode: PaletteMode) => ({
 	palette: {
@@ -90,3 +91,33 @@ export const getDesignTokens = (mode: PaletteMode) => ({
 		}
 	},
   });
+
+  const themeOptions: ThemeOptions = {
+	palette: {
+	  mode: 'dark',
+	  background: {
+		default: '#152647',
+	  },
+	  primary: {
+		main: '#152647',
+	  },
+	  secondary: {
+		main: '#001828',
+	  },
+	},
+	typography: {
+	  fontFamily: 'Roboto',
+	},
+	components: {
+	  MuiCssBaseline: {
+		styleOverrides: {
+		  ':root': {
+			'--secondary-color': '#001828',
+			'--primary-color': '#152647',
+		  },
+		},
+	  },
+	},
+  };
+  
+  export const theme = createTheme(themeOptions);

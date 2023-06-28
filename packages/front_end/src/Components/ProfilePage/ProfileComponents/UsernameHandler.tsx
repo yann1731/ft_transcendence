@@ -8,7 +8,7 @@ import axios, { AxiosResponse } from "axios";
 const UsernameHandler = () => {
   const { user, updateUser } = useContext(UserContext);
   const [open, setOpen] = useState(false);
-  const [newUsername, setNewUsername] = useState('');
+  const [newNickname, setNewNickname] = useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -18,10 +18,16 @@ const UsernameHandler = () => {
     setOpen(false);
   };
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key=== 'Enter') {
+        handleChangeUsername()
+    }
+  };
+
   const handleChangeUsername = async () => {
     try {
       const response: AxiosResponse = await axios.patch(`http://localhost:4242/user/${user?.id}`,
-        { ...user, username: newUsername });
+        { ...user, nickname: newNickname });
 
       if (response.status === 200) {
         const updatedUser = response.data;
@@ -34,24 +40,25 @@ const UsernameHandler = () => {
     } catch (error) {
       console.error('Error occurred while updating username:', error);
     }
-    setNewUsername('');
+    setNewNickname('');
   };
 
   return (
     <div>
       <Button variant="outlined" onClick={handleClickOpen} className="profilePageButtons">
-        Change Username
+        Change Nickname
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Change Username</DialogTitle>
+        <DialogTitle>Change Nickname</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
             label="New Username"
-            type="username"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
+            type="nickname"
+            value={newNickname}
+            onKeyDown={handleKeyDown}
+            onChange={(e) => setNewNickname(e.target.value)}
             fullWidth
           />
         </DialogContent>
