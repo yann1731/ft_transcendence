@@ -15,12 +15,9 @@ import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import ThemeModeIcon from '@mui/icons-material/DarkMode'
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
-import { toggleTheme } from "../store/reducers/themeSlice";
 import { useDispatch } from "react-redux";
 import { asyncToggleTheme } from "../store/reducers/themeSlice";
-import { useState, useEffect } from 'react';
 import { UserContext } from '../Contexts/userContext';
-import { User } from '../Contexts/userContext';
 import { useNavigate } from 'react-router-dom';
 
 const pages = [

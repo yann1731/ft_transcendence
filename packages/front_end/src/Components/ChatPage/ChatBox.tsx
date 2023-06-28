@@ -25,14 +25,14 @@ const Chat = () => {
     const newMessage: Message = {
       text: messageText,
       timestamp: new Date().toLocaleTimeString(),
-      nickname: user?.username,
+      nickname: user?.nickname,
       UserAvatar: user?.avatar,
     };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.keyCode === 13) {
+    if (event.key === "Enter") {
       const messageInput = event.target as HTMLInputElement;
       const messageText = messageInput.value.trim();
       if (messageText !== '') {

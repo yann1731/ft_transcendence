@@ -132,7 +132,7 @@ export interface UserBlocks {
 }
 
 export interface HallOfFame {
-    username: string;
+    nickname: string;
     win: number;
     loss: number;
     gamesPlayed: number;

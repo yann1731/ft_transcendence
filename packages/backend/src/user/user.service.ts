@@ -76,6 +76,7 @@ export class UserService { //creates a new user
       data: {
         avatar: updateUserDto.avatar,
         username: updateUserDto.username,
+        nickname: updateUserDto.nickname,
         email: updateUserDto.email,
         win: updateUserDto.win,
         loss: updateUserDto.loss,

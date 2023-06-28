@@ -8,7 +8,6 @@ import HomeGameBar from './HomeGameBar';
 import InGameChatContainer from './InGameChat';
 import Box from '@mui/material/Box';
 import InGameChatBar from './InGameChatBar';
-import UserProvider from 'Contexts/userContext';
 
 export default function Home() {;
 	return (
