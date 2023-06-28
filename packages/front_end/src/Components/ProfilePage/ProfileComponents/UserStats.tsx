@@ -3,12 +3,9 @@ import Paper from "@mui/material/Paper";
 import { experimentalStyled as styled } from '@mui/material/styles';
 import Handler2FA from "./2FAActivation";
 import Box from "@mui/material/Box";
-import { useEffect, useState } from "react";
 import UserNameHandler from "./UsernameHandler";
 import { useContext } from "react";
-import { UserContext, User } from "Contexts/userContext";
-import { makeStyles } from '@mui/styles';
-import { getDesignTokens } from '../../../Theme';
+import { UserContext } from "Contexts/userContext";
 
 const Item = styled(Paper)(({ theme }) => ({
 	...theme.typography.body2,

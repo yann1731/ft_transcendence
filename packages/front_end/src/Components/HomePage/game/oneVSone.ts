@@ -1,6 +1,5 @@
 
 import Phaser from "phaser";
-import themeSlice from "store/reducers/themeSlice";
 import '../../../App.css';
 
 class PowerUp extends Phaser.Physics.Arcade.Sprite {

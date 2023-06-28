@@ -68,7 +68,7 @@ const Chat = ( { user }: { user: User | null }) => {
             <Box sx={{ marginLeft: 'auto' }}>
               <Box sx={{ textAlign: 'right' }}>
                 <ContactMenu></ContactMenu>
-                <ListItemText primary={message.text}></ListItemText>
+                <ListItemText className='grosPogo' primary={message.text}></ListItemText>
               </Box>
               <Box sx={{ textAlign: 'right' }}>
                 <ListItemText

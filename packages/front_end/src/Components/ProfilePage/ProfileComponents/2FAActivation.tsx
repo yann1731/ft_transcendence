@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, ButtonProps } from '@mui/material';
+import { Button } from '@mui/material';
 import { UserContext, User } from "Contexts/userContext";
 import { useContext } from "react";
 

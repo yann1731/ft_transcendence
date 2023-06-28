@@ -10,12 +10,12 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	x: number;
 	y: number;
 
-	oneHost!: [string, boolean, boolean, boolean, boolean][]
-	oneWaiting!: [];
-	twoHost!: [string, boolean, boolean, boolean, boolean][]
-	twoWaiting!: [];
-	threeHost!: [string, boolean, boolean, boolean, boolean][]
-	threeWaiting!: [];
+	oneHost!: [Socket, string, boolean, boolean, boolean, boolean][]
+	oneWaiting!: Socket[];
+	twoHost!: [Socket, string, boolean, boolean, boolean, boolean][]
+	twoWaiting!: Socket[];
+	threeHost!: [Socket, string, boolean, boolean, boolean, boolean][]
+	threeWaiting!: Socket[];
 
 	XVelocityMin1: number = 350;
     XVelocityMax1: number = 400;
@@ -55,25 +55,32 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 		if (data.start){
 			client.join(data.name);
 			const room = Array.from(client.rooms).filter(room => room !== client.id)
-			const sockets = await this.server.in(room[0]).fetchSockets();
-			console.log(sockets.length)
-			if (sockets.length === 2){
-					if (Math.floor(Math.random() * 2) === 0){
-						this.x = Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1;
-						this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
-						if (Math.floor(Math.random() * 2) === 0)
-							this.y *= -1;            
-					} else{
-						this.x = Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2;
-						this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
-						if (Math.floor(Math.random() * 2) === 0)
-							this.y *= -1;
-					}
-					this.server.in(room[0]).emit("start", {ballX: this.x, ballY: this.y});
+			if (this.oneWaiting.length >= 1){
+				let opponent : Socket = this.oneWaiting.shift()
+				opponent.join(data.name);
+				if (Math.floor(Math.random() * 2) === 0){
+					this.x = Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1;
+					this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+					if (Math.floor(Math.random() * 2) === 0)
+						this.y *= -1;            
+				} else{
+					this.x = Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2;
+					this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+					if (Math.floor(Math.random() * 2) === 0)
+						this.y *= -1;
+				}
+				this.server.in(room[0]).emit("start", {ballX: this.x, ballY: this.y});
+			}
+			else {
+				this.oneHost.push([client, data.name, data.wall, data.random, data.power, data.face])
 			}
 		}
 		else{
-			client.join("lol");
+			if (this.oneHost.length >= 1){
+				
+			}
+			else
+				this.oneWaiting.push(client);
 		}
 	}
 }

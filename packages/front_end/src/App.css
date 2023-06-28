@@ -317,3 +317,9 @@
   background-image: none;
   background-color: var(--secondary-color);
 }
+
+.grosPogo {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}

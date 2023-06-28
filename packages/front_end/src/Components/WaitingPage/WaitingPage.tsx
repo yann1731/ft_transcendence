@@ -2,9 +2,9 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import { keyframes } from "@emotion/react";
-import axios, { AxiosResponse } from 'axios';
-import UserProvider, { UserContext, User } from "Contexts/userContext";
-import { useContext, useEffect, useState } from "react";
+import axios from 'axios';
+import {  useContext, useEffect, useState } from "react";
+import { UserContext } from "Contexts/userContext";
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
@@ -13,7 +13,7 @@ const spin = keyframes`
 
 export default function GetToken() {
 
-    const [user, setUser] = useState(null);
+    const {user, setUser} = useContext(UserContext);
 
   useEffect(() => {
     let urlParams = new URLSearchParams(window.location.search);

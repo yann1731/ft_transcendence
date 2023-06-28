@@ -2,15 +2,14 @@ import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
 import DashboardContainer from './Dashboard';
 import { CssBaseline } from '@mui/material';
-import React, { useEffect } from 'react';
+import React from 'react';
 import PongGame from './Game';
 import HomeGameBar from './HomeGameBar';
 import InGameChatContainer from './InGameChat';
 import Box from '@mui/material/Box';
 import InGameChatBar from './InGameChatBar';
-import UserProvider from 'Contexts/userContext';
 
-export default function Home() {;
+export default function Home() {
 	return (
 		  <React.Fragment>
 				<CssBaseline />

@@ -33,7 +33,7 @@ const DashboardContainer: React.FC = () => {
               setUsernameHighScore(score.username);
               setGamesPlayedHighestScore(score.gamesPlayed);
             }
-            else if (score.win == highestScore)
+            else if (score.win === highestScore)
             {
               if ((score.win / score.gamesPlayed) * 100 > (highestScore / gamesPlayedHighestScore) * 100)
               setUsernameHighScore(score.username);
@@ -51,7 +51,7 @@ const DashboardContainer: React.FC = () => {
               setUsernameLowScore(score.username);
               setGamesPlayedLowestScore(score.gamesPlayed);
             }
-            else if (score.loss == lowestScore)
+            else if (score.loss === lowestScore)
             {
               if ((score.loss / score.gamesPlayed) * 100 > (lowestScore / gamesPlayedLowestScore) * 100)
               setUsernameLowScore(score.username);
@@ -68,7 +68,7 @@ const DashboardContainer: React.FC = () => {
               setHighestGamesPlayed(score.gamesPlayed);
               setUsernameGamesPlayed(score.username);
             }
-            else if (score.loss == lowestScore)
+            else if (score.loss === lowestScore)
             {
               setHighestScore(score.gamesPlayed);
               setUsernameGamesPlayed("Tied");
