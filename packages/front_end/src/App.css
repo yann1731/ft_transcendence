@@ -172,6 +172,8 @@
   height: 27vh;
   box-shadow: 4;
   border-radius: 10px;
+  margin-bottom: 10px;
+  overflow-y: auto; 
 }
 
 .iconThemeBackground {
