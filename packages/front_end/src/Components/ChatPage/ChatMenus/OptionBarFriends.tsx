@@ -52,8 +52,8 @@ export default function OptionBarFriends() {
             break;
         default:
           alert(":'(")
-
-      }
+        }
+        handleCloseUserMenu();
     };
   return (
       <AppBar position="relative" sx={{ boxShadow: '0' }}>
@@ -81,7 +81,7 @@ export default function OptionBarFriends() {
               onClose={handleCloseUserMenu}
               >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={() => Alert(setting)}>
                     <Typography textAlign="left">{setting}</Typography>
                 </MenuItem>
               ))}

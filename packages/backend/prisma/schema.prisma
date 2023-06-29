@@ -56,7 +56,9 @@ model User {
 }
 
 model Chatroom {
+  name          String            @unique
   id            String            @id @default(uuid())
+  picture       String            @default("../../assets/fatcat.jpeg")
   messages      ChatroomMessage[]
   state         chatRoomState     @default(public)
   chatroomOwner User              @relation(fields: [userId], references: [id])
