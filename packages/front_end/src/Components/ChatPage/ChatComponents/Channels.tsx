@@ -3,29 +3,36 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import { ListItemButton } from '@mui/material';
+import { channel } from 'diagnostics_channel';
+import FriendBox from '../FriendBox';
 
-const MyChannels = () => {
+interface MyChannelsProps {
+    searchText: string;
+}
+
+const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
+    const channelsList = [
+        { id: '1', name: 'chat normal', avatar: 'https://www.zooplus.fr/magazine/wp-content/uploads/2019/06/comprendre-le-langage-des-chats.jpg'},
+        { id: '2', name: 'un TCHat', avatar: 'https://i.pinimg.com/originals/f7/9c/c2/f79cc2f84d191f00b5198ca860075191.jpg' },
+        { id: '3', name: 'Ze Tchatte', avatar: 'https://lemagduchat.ouest-france.fr/images/dossiers/2023-06/mini/chat-cinema-061232-650-400.jpg' },
+        { id: '4', name: 'Chatterine Zeta-Jones', avatar: 'https://nationaltoday.com/wp-content/uploads/2022/10/456841256-min-1200x834.jpg' },
+        { id: '5', name: 'Chatck Norris', avatar: 'https://images02.military.com/sites/default/files/2021-04/chucknorris.jpeg' }
+    ];
+
+    const filteredChannels = channelsList.filter(( channel ) =>
+        channel.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+
     return (
     <List>
-        <ListItemButton key="#Chats">
-            <ListItemIcon>
-                <Avatar alt="Chat" src="https://images.saymedia-content.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:eco%2Cw_1200/MTk2NzY3MjA5ODc0MjY5ODI2/top-10-cutest-cat-photos-of-all-time.jpg" />
-            </ListItemIcon>
-            <ListItemText primary="#Chats">Chats</ListItemText>
-            <ListItemText secondary="online" sx={{ align:"right" }}></ListItemText>
-        </ListItemButton>
-        <ListItemButton key="#Plus de chats">
-            <ListItemIcon>
-                <Avatar alt="#Plus de chats" src="https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg?crop=1.00xw:0.753xh;0,0.153xh&resize=1200:*" />
-            </ListItemIcon>
-            <ListItemText primary="#Plus de chats">PDC</ListItemText>
-        </ListItemButton>
-        <ListItemButton key="Un gros chat">
-            <ListItemIcon>
-                <Avatar alt="Un gros chat" src="https://i.guim.co.uk/img/media/ae4637c5bdca3e3c7f0f86a741f43ecbe897852e/0_132_3545_2127/master/3545.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=fa7442eb6602af03e57f71f33207e0c4" />
-            </ListItemIcon>
-            <ListItemText primary="#Un gros chat">GC</ListItemText>
-        </ListItemButton>
+        {filteredChannels.map((channel) => (
+            <ListItemButton key={channel.id}>
+                <ListItemIcon>
+                    <Avatar alt={channel.name} src={channel.avatar} />
+                </ListItemIcon>
+                <ListItemText primary={channel.name} />
+            </ListItemButton>
+        ))}
     </List>
     );
 };
