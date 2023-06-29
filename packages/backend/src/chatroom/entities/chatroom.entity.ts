@@ -4,7 +4,9 @@ import { User } from '../../user/entities/user.entity'
 import { ChatroomUser } from '../../chatroomuser/entities/chatroomuser.entity'
 
 export class Chatroom {
+	name: string;
 	id: string ;
+	picture: string;
 	messages?: ChatroomMessage[] ;
 	state: chatRoomState ;
 	chatroomOwner?: User ;

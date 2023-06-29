@@ -23,9 +23,9 @@ export class ChatroomController {
     return this.chatroomService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.chatroomService.findOne(id);
+  @Get(':name')
+  findOne(@Param('name') name: string) {
+    return this.chatroomService.findOne(name);
   }
 
   @Get('/user/:id')

@@ -8,10 +8,8 @@ import OptionBarChans from './ChatMenus/OptionBarChans';
 import { CssBaseline } from '@mui/material';
 import Chat from './ChatBox';
 import OptionBarConversation from './ChatMenus/OptionBarConversation';
-import { UserContext } from 'Contexts/userContext';
 
 function ChatPage() {
-const {user} = useContext(UserContext);
 	return (
 	  	<React.Fragment>
 			<CssBaseline />
