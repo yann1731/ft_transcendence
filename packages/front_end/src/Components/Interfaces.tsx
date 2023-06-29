@@ -8,7 +8,7 @@ interface User {
     win: number,
     loss: number,
     gamesPlayed: number,
-    userStatus: boolean,
+    userStatus: string,
     twoFaEnabled: boolean,
     friendListA?: UserFriendship[],
     friendListB?: UserFriendship[],
@@ -94,11 +94,13 @@ export interface ChatroomUser {
 
 // Variables utiles ChatRoom
 export interface Chatroom {
+    name: string;
     id: string ;
+    picture?: string | null;
 	messages?: ChatroomMessage[] ;
 	state: string ;
-	chatroomOwner?: User ;
-	userId: string ;
+	chatroomOwner?: User | null;
+	userId: string | undefined;
 	password: string  | null;
 	users?: ChatroomUser[] ;
 }
