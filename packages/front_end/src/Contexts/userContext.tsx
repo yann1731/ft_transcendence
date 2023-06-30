@@ -1,8 +1,9 @@
-import React, { createContext, useState, Dispatch, SetStateAction, ReactNode, useCallback, useEffect } from 'react';
+import { createContext, useState, Dispatch, SetStateAction, ReactNode, useCallback, useEffect } from 'react';
 import { Chatroom, ChatroomMessage, ChatroomUser, PrivateMessage, UserBlocks, UserFriendship } from 'Components/Interfaces';
 export interface User {
   avatar: string;
   username: string;
+  nickname: string;
   email: string;
   win: number;
   loss: number;
@@ -37,6 +38,7 @@ export const UserContext = createContext<UserContextType>({
 const defaultState = {
   user: {
     avatar: '',
+    nickname: '',
     username: '',
     email: '',
     win: 0,

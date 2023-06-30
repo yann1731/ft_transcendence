@@ -3,6 +3,11 @@ import io from 'socket.io-client';
 import Phaser from "phaser";
 import '../../../App.css';
 
+
+interface gameData {
+	name: string;
+}
+
 export default class option extends Phaser.Scene{
 
 	wall: boolean = false;
@@ -13,6 +18,7 @@ export default class option extends Phaser.Scene{
 	two: boolean = false;
 	multiple: boolean = false;
 	socket!: any; 
+	name!: string;
 
 	rateSpeed: number = 0.0006;
 
@@ -40,9 +46,14 @@ export default class option extends Phaser.Scene{
         super('menu');
     }
 
+	init(data: gameData) {
+		this.name = data.name;
+	}
+
 	preload() {
 		this.load.bitmapFont('pong', '../../fonts/pong.ttf');
 	}
+
 
 	all() {
 		this.title = this.add.text(this.physics.world.bounds.width / 2, 100, 'PONG', {
@@ -114,7 +125,7 @@ export default class option extends Phaser.Scene{
 				this.medium.setInteractive(false);
 				this.slow.setInteractive(false);
 				this.join.setInteractive(false);
-				this.socket.emit("1v1");
+				this.socket.emit("1v1", {start: false});
 			this.socket.on("start", (data: any) =>{
 				waiting.setVisible(false);
 				const game = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
@@ -137,7 +148,7 @@ export default class option extends Phaser.Scene{
 			  	}, [], this);
 			  	this.time.delayedCall(3000, () => {
 						if (this.single === true)
-					  		this.scene.start('oneVSone', {wall: data.wall, random: data.random, power: data.powerUp, faces: data.faces, socket: data.socket, ballX: data.ballX * -1, ballY: data.ballY});
+					  		this.scene.start('oneVSoneOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket});
 						else if (this.multiple === true)
 							this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
 						else
@@ -203,7 +214,8 @@ export default class option extends Phaser.Scene{
 				this.fast.setInteractive(false);
 				this.medium.setInteractive(false);
 				this.slow.setInteractive(false);
-				this.socket.emit("1v1", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, start: true, name: "lol"}); // changer le name ici quand on va avoir le context ici
+				console.log(this.name)
+				this.socket.emit("1v1", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, start: true, name: this.name});
 			this.socket.on("start", (data: any) =>{
 				waiting.setVisible(false);
 				const game = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
@@ -226,7 +238,7 @@ export default class option extends Phaser.Scene{
 			  	}, [], this);
 			  	this.time.delayedCall(3000, () => {
 						if (this.single === true)
-					  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY});
+					  		this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, start: true, ballX: data.ballX, ballY: data.ballY});
 						else if (this.multiple === true)
 							this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
 						else

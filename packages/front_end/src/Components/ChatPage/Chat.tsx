@@ -27,7 +27,7 @@ const {user} = useContext(UserContext);
 					</div>
 					<div className="conversationStyle">
 						<OptionBarConversation />
-						<Chat user={user} />
+						<Chat />
 					</div>
 				</div>
 			  </div>
