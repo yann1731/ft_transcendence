@@ -45,7 +45,7 @@ const ChanPictureSetter: React.FC<ChanPictureSetterProps> = ({ onPictureSelected
 
   return (
     <>
-      <Button sx={{ marginBottom: 2 }} onClick={handleClickOpen}>Add Picture</Button>
+      <Button className="profilePageButtons" sx={{ marginBottom: 2 }} onClick={handleClickOpen}>Add Picture</Button>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Select an image</DialogTitle>
         <DialogContent>
