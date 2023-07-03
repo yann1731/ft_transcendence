@@ -19,7 +19,6 @@ interface gameData {
     socket: any;
     ballX: number;
     ballY: number;
-    start: boolean;
 }
 
 export default class oneVSoneHost extends Phaser.Scene{
@@ -60,7 +59,6 @@ export default class oneVSoneHost extends Phaser.Scene{
     oldVelocityX!: number;
     newOldVelocityX: number = 0;
     rotation: number = 1;
-    frame: number = 1;
     power!: PowerUp;
     
     oldPosition!: number;
@@ -69,7 +67,6 @@ export default class oneVSoneHost extends Phaser.Scene{
     wall: boolean = false;
     random: boolean = false;
     powerup: boolean = false;
-    start!: boolean;
     multi: boolean = false;
     ballX!: number;
     ballY!: number;
@@ -93,7 +90,6 @@ export default class oneVSoneHost extends Phaser.Scene{
         this.socket = data.socket
         this.ballX = data.ballX;
         this.ballY = data.ballY;
-        this.start = data.start;
     }
 
 	preload() {
@@ -174,7 +170,6 @@ export default class oneVSoneHost extends Phaser.Scene{
         this.wall1.setScale(scaleX, scaleY);
         this.socket.emit("random", {x: x, y: y, scaleX: scaleX, scaleY: scaleY, which: 1, generate: false})
         
-        
         x = Phaser.Math.RND.between(this.physics.world.bounds.width * 0.2, this.physics.world.bounds.width - this.physics.world.bounds.width * 0.2)
         y = Phaser.Math.RND.between(this.physics.world.bounds.height * 0.2, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.2)
         scaleX = Phaser.Math.RND.realInRange(0.2, 0.4)
@@ -209,40 +204,21 @@ export default class oneVSoneHost extends Phaser.Scene{
             this.wall3.setOrigin(0.5);
        }
        else if (this.wall === true){
-            if (this.start === true){
-                this.wall1 = this.physics.add.sprite(
-                    this.physics.world.bounds.width * 0.5,
-                    this.physics.world.bounds.height * 0.175,
-                    "wall"
-                )
-                this.wall2 = this.physics.add.sprite(
-                    this.physics.world.bounds.width * 0.3,
-                    this.physics.world.bounds.height * 0.8,
-                    "wall"
-                )
-                this.wall3 = this.physics.add.sprite(
-                    this.physics.world.bounds.width * 0.7,
-                    this.physics.world.bounds.height * 0.5,
-                    "wall"
-                )
-            }
-            else {
-                this.wall1 = this.physics.add.sprite(
-                    this.physics.world.bounds.width * 0.5,
-                    this.physics.world.bounds.height * 0.175,
-                    "wall"
-                )
-                this.wall2 = this.physics.add.sprite(
-                    this.physics.world.bounds.width * 0.6,
-                    this.physics.world.bounds.height * 0.8,
-                    "wall"
-                )
-                this.wall3 = this.physics.add.sprite(
-                    this.physics.world.bounds.width * 0.3,
-                    this.physics.world.bounds.height * 0.5,
-                    "wall"
-                )
-            }
+            this.wall1 = this.physics.add.sprite(
+                this.physics.world.bounds.width * 0.5,
+                this.physics.world.bounds.height * 0.175,
+                "wall"
+            )
+            this.wall2 = this.physics.add.sprite(
+                this.physics.world.bounds.width * 0.3,
+                this.physics.world.bounds.height * 0.8,
+                "wall"
+            )
+            this.wall3 = this.physics.add.sprite(
+                this.physics.world.bounds.width * 0.7,
+                this.physics.world.bounds.height * 0.5,
+                "wall"
+            )
             this.wall1.setScale(0.4, 0.05);
             this.wall2.setScale(0.05, 0.4);
             this.wall3.setScale(0.05, 0.6);
@@ -278,7 +254,6 @@ export default class oneVSoneHost extends Phaser.Scene{
                 this.physics.add.overlap(this.ball, [this.wall1, this.wall2, this.wall3], this.regenerateRandom, undefined, this)
             }
         }
-
     }
 
     paddle_init() {
@@ -305,8 +280,6 @@ export default class oneVSoneHost extends Phaser.Scene{
         this.paddle2.setScale(0.15, 0.25);
         this.physics.add.collider(this.ball, this.paddle2);
     }
-
-    
 
     text_init() {
         this.player1VictoryText = this.add.text(
@@ -439,12 +412,13 @@ export default class oneVSoneHost extends Phaser.Scene{
         this.paddle_init();
 
         this.socket.on("movement", (newPos: number) => {
-            this.paddle2.setY(newPos);
+            if (this.paddle2.body)
+                this.paddle2.setY(newPos + this.paddle2.body.height / 2);
         })
-
-        this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-        this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        
         
+        this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);   
+
         if (this.powerup){
             let x: number = Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10)
             let y: number = Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1);
@@ -457,7 +431,7 @@ export default class oneVSoneHost extends Phaser.Scene{
                     let y: number = Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1);
                     this.power.setPosition(x, y)
                     this.socket.emit("newPower", {x: x, y: y});
-                }, undefined, this);
+                }, undefined, this)
         }
     }
 
@@ -470,6 +444,8 @@ export default class oneVSoneHost extends Phaser.Scene{
         this.paddle1.disableBody();
         this.paddle2.disableBody();
         this.ball.disableBody();
+        if (this.power)
+            this.power.setVisible(false);
         if (player === 1)
             this.player1Score.setVisible(true);
         else
@@ -522,6 +498,8 @@ export default class oneVSoneHost extends Phaser.Scene{
     }
 
     end(player: number) {
+        if (this.power)
+            this.power.setVisible(false);
         if (this.random === true || this.wall === true){
             this.wall1.setVisible(false);
             this.wall2.setVisible(false);
@@ -541,6 +519,7 @@ export default class oneVSoneHost extends Phaser.Scene{
         if (this.ball.body)
             if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
                 this.ball.body.x = this.physics.world.bounds.width - 1 - this.ball.body.width;
+                this.socket.emit("point", 1);
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
@@ -560,6 +539,7 @@ export default class oneVSoneHost extends Phaser.Scene{
             if (this.multiball.body)
                 if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width) {
                     this.multiball.body.x = this.physics.world.bounds.width - 1 - this.multiball.body.width;;
+                    this.socket.emit("point", 1);
                     this.smash.setVisible(false);
                     this.bigBall.setVisible(false);
                     this.bigPaddle.setVisible(false);
@@ -577,25 +557,27 @@ export default class oneVSoneHost extends Phaser.Scene{
         if (this.ball.body)
             if (this.ball.body?.x === 0) {
                 this.ball.body.x = 1;
+                this.socket.emit("point", 0);
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
                 this.inverse.setVisible(false);
                 this.multiBall.setVisible(false);
                 if (this.multi === true)
-                    this.multiball.disableBody();
+                this.multiball.disableBody();
                 this.points1++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points1 === this.win)
-                    this.end(1);
+                this.end(1);
                 else
-                    this.new_point(2);
+                this.new_point(2);
             }
-
-        if (this.multi)
+            
+            if (this.multi)
             if (this.multiball.body)
-                if (this.multiball.body?.x === 0) {
-                    this.multiball.body.x = 1;
+            if (this.multiball.body?.x === 0) {
+                this.multiball.body.x = 1;
+                this.socket.emit("point", 0);
                     this.smash.setVisible(false);
                     this.bigBall.setVisible(false);
                     this.bigPaddle.setVisible(false);

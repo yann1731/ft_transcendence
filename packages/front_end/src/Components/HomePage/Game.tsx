@@ -2,11 +2,12 @@ import * as React from 'react';
 import '../../App.css';
 import option from './game/Option';
 import oneVSoneHost from './game/oneVSoneHost';
+import oneVSoneOther from './game/oneVSoneOther';
 import threeVSone from './game/threeVSone';
-import twoVStwo from './game/twoVStwo';
+import twoVStwoHost from './game/twoVStwoHost';
+import twoVStwoOther from './game/twoVStwoOther'
 import Box from '@mui/material/Box';
 import { UserContext } from 'Contexts/userContext';
-import oneVSoneOther from './game/oneVSoneOther';
 
 export default function PongGame() {
     const {user} = React.useContext(UserContext);
@@ -31,7 +32,8 @@ export default function PongGame() {
           oneVSoneHost,
           oneVSoneOther,
           threeVSone,
-          twoVStwo
+          twoVStwoHost,
+          twoVStwoOther
         ]
       };
       

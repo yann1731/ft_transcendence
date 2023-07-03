@@ -2,6 +2,7 @@
 import io from 'socket.io-client';
 import Phaser from "phaser";
 import '../../../App.css';
+import { NumberLiteralType } from 'typescript';
 
 
 interface gameData {
@@ -19,6 +20,7 @@ export default class option extends Phaser.Scene{
 	multiple: boolean = false;
 	socket!: any; 
 	name!: string;
+	player!: number;
 
 	rateSpeed: number = 0.0006;
 
@@ -125,7 +127,10 @@ export default class option extends Phaser.Scene{
 				this.medium.setInteractive(false);
 				this.slow.setInteractive(false);
 				this.join.setInteractive(false);
-				this.socket.emit("1v1", {start: false});
+				if (this.single === true)
+					this.socket.emit("1v1", {start: false});
+				else if (this.two === true)
+					this.socket.emit("2v2", {start: false});
 			this.socket.on("start", (data: any) =>{
 				waiting.setVisible(false);
 				const game = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
@@ -152,7 +157,7 @@ export default class option extends Phaser.Scene{
 						else if (this.multiple === true)
 							this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
 						else
-					  		this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
+					  		this.scene.start('twoVStwoOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket, player: this.player});
 					}, [], this);
 				});
 			})
@@ -215,7 +220,12 @@ export default class option extends Phaser.Scene{
 				this.medium.setInteractive(false);
 				this.slow.setInteractive(false);
 				console.log(this.name)
-				this.socket.emit("1v1", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, start: true, name: this.name});
+				if (this.single === true)
+					this.socket.emit("1v1", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, name: this.name, start: true});
+				if (this.multiple)
+					this.socket.emit("3v1", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, name: this.name, start: true});
+				else 
+					this.socket.emit("2v2", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, name: this.name, start: true});
 			this.socket.on("start", (data: any) =>{
 				waiting.setVisible(false);
 				const game = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
@@ -236,13 +246,13 @@ export default class option extends Phaser.Scene{
 			  	this.time.delayedCall(2000, () => {
 					  game.setText('game starting in 1');
 			  	}, [], this);
-			  	this.time.delayedCall(3000, () => {
+			  	this.time.delayedCall(3050, () => {
 						if (this.single === true)
-					  		this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, start: true, ballX: data.ballX, ballY: data.ballY});
+					  		this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY});
 						else if (this.multiple === true)
 							this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed})
 						else
-					  		this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces});
+					  		this.scene.start('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY});
 					}, [], this);
 				});
 			})
@@ -536,20 +546,47 @@ export default class option extends Phaser.Scene{
 				  }
 				});
 				game.setOrigin(0.5);
+
+				const waiting = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, "waiting for player", {
+					fontFamily: 'pong',
+					fontSize: '50px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				})
+				waiting.setOrigin(0.5);
   
-			  this.title.setVisible(false);
-			  this.start.setVisible(false);
-			  this.powerButton.setVisible(false);
-			  this.settingOneButton.setVisible(false);
-			  this.wallButton.setVisible(false);
-			  this.randomButton.setVisible(false);
-			  this.mode.setVisible(false);
-			  this.wallText.setVisible(false);
+				this.title.setVisible(false);
+				this.join.setVisible(false);
+				this.start.setVisible(false);
+				this.powerButton.setVisible(false);
+				this.settingOneButton.setVisible(false);
+				this.settingThreeButton.setVisible(false);
+				this.wallButton.setVisible(false);
+				this.randomButton.setVisible(false);
+				this.mode.setVisible(false);
+				this.wallText.setVisible(false);
+				this.rate.setVisible(false);
+				this.fast.setVisible(false);
+				this.medium.setVisible(false);
+				this.slow.setVisible(false);
+				this.join.setInteractive(false);
+				this.start.setInteractive(false);
+				this.powerButton.setInteractive(false);
+				this.settingOneButton.setInteractive(false);
+				this.settingThreeButton.setInteractive(false);
+				this.wallButton.setInteractive(false);
+				this.randomButton.setInteractive(false);
+				this.fast.setInteractive(false);
+				this.medium.setInteractive(false);
+				this.slow.setInteractive(false);
 			  
 			if (Phaser.Math.RND.between(1, 69) === 69)
 				this.faces = true;
-			
-
+		
 			this.powerUp = Phaser.Math.RND.frac() ? true : false;
 
 			switch(Phaser.Math.RND.between(1, 3)){
@@ -563,18 +600,39 @@ export default class option extends Phaser.Scene{
 					break;
 			}
 
-			  this.time.delayedCall(1000, () => {
-				  game.setText('game starting in 2');
-			  }, [], this);
-			  this.time.delayedCall(2000, () => {
-				  game.setText('game starting in 1');
-			  }, [], this);
-			  this.time.delayedCall(3000, () => {
-					if (this.single === true)
-				  		this.scene.start('oneVSone', {wall: this.wall, random: this.random, power: this.powerUp, face: this.faces});
-				  	else
-						this.scene.start('twoVStwo', {wall: this.wall, random: this.random, power: this.powerUp, face: this.faces});
-			  }, [], this);
+			if (this.single === true)
+				this.socket.emit("1v1", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, start: true, name: this.name});
+			else 
+				this.socket.emit("2v2", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, start: true, name: this.name});
+
+
+			this.socket.on("start", (data: any) =>{
+				waiting.setVisible(false);
+				const game = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
+					fontFamily: 'pong',
+					fontSize: '50px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				  });
+				  game.setOrigin(0.5);
+	
+				this.time.delayedCall(1000, () => {
+					  game.setText('game starting in 2');
+			  	}, [], this);
+			  	this.time.delayedCall(2000, () => {
+					  game.setText('game starting in 1');
+			  	}, [], this);
+					this.time.delayedCall(3050, () => {
+						  if (this.single === true)
+								this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY});
+							else
+								this.scene.start('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, face: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY});
+					}, [], this);
+				});
 			});
 	}
 
@@ -755,6 +813,8 @@ export default class option extends Phaser.Scene{
 		this.all();
 		this.onevsthree();
 		this.onevsone();
+
+		this.socket.on("player", (player: number) => {this.player = player;})
 	}
 
 	update() {}

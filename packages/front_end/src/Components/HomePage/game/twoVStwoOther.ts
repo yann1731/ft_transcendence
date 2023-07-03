@@ -8,6 +8,7 @@ interface gameData {
     wall: boolean;
     face: boolean;
     socket: any;
+	player: number;
 }
 
 export default class oneVSoneOther extends Phaser.Scene{
@@ -17,6 +18,8 @@ export default class oneVSoneOther extends Phaser.Scene{
     paddle!: Phaser.Physics.Arcade.Sprite;
     paddle1!: Phaser.Physics.Arcade.Sprite;
     paddle2!: Phaser.Physics.Arcade.Sprite;
+	paddle3!: Phaser.Physics.Arcade.Sprite;
+    paddle4!: Phaser.Physics.Arcade.Sprite;
 
     power!: Phaser.Physics.Arcade.Sprite;
     wall1!: Phaser.Physics.Arcade.Sprite;
@@ -37,6 +40,7 @@ export default class oneVSoneOther extends Phaser.Scene{
     player2VictoryText!: Phaser.GameObjects.Text;
     player2Score!: Phaser.GameObjects.Text;
     score!: Phaser.GameObjects.Text;
+
     bigPaddle!: Phaser.GameObjects.Text;
     bigBall!: Phaser.GameObjects.Text;
     smash!: Phaser.GameObjects.Text;
@@ -44,7 +48,9 @@ export default class oneVSoneOther extends Phaser.Scene{
     multiBall!: Phaser.GameObjects.Text;
     
     paddlespeed: number = 450;
-    modifier: number = 1;
+    modifier1: number = 1;
+    modifier2: number = 1;
+	player!: number;
     
     oldPosition!: number;
 
@@ -55,7 +61,7 @@ export default class oneVSoneOther extends Phaser.Scene{
     start: boolean = true;
 
     constructor() {
-        super('oneVSoneOther');
+        super('twoVStwoOther');
     }
 
     init (data: gameData) {
@@ -63,6 +69,7 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.wall = data.wall;
         this.face = data.face; 
         this.socket = data.socket
+		this.player = data.player;
     }
 
 	preload() {
@@ -139,32 +146,28 @@ export default class oneVSoneOther extends Phaser.Scene{
     }
 
     paddle_init() {
-        if (this.face === true){
-            this.paddle1 = this.physics.add.sprite(
-                (this.ball.width * 0.2) / 2 + 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-            this.paddle2 = this.physics.add.sprite(
-                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-        }
-        else{
-            this.paddle1 = this.physics.add.sprite(
-                (this.ball.width * 0.2) / 2 + 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-            this.paddle2 = this.physics.add.sprite(
-                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-        }
-        this.oldPosition = this.physics.world.bounds.height / 2;
+        this.paddle1 = this.physics.add.sprite(
+            (this.ball.width * 0.2) / 2 + 1,
+            this.physics.world.bounds.height / 4,
+            "paddle"
+        )
+        this.paddle2 = this.physics.add.sprite(
+            this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
+            this.physics.world.bounds.height / 4,
+            "paddle"
+        )
+        this.paddle3 = this.physics.add.sprite(
+            (this.ball.width * 0.2) / 2 + 1,
+            this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4,
+            "paddle"
+        )
+        this.paddle4 = this.physics.add.sprite(
+            this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
+            this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4,
+            "paddle"
+        )
 
+		
         this.paddle1.setImmovable(true);
         this.paddle1.setOrigin(0.5);
         this.paddle1.setScale(0.15, 0.25);
@@ -173,14 +176,26 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.paddle2.setOrigin(0.5);
         this.paddle2.setScale(0.15, 0.25);
         this.paddle2.setCollideWorldBounds(true)
-    }
+		
+		this.paddle3.setImmovable(true);
+		this.paddle3.setOrigin(0.5);
+		this.paddle3.setScale(0.15, 0.25);
+		this.paddle3.setCollideWorldBounds(true)
+		this.physics.add.collider(this.ball, this.paddle3);
+
+		this.paddle4.setImmovable(true);
+		this.paddle4.setOrigin(0.5);
+		this.paddle4.setScale(0.15, 0.25);
+		this.paddle4.setCollideWorldBounds(true)
+		this.physics.add.collider(this.ball, this.paddle4);
+}
 
     
     text_init() {
         this.player1VictoryText = this.add.text(
             this.physics.world.bounds.width / 2,
             this.physics.world.bounds.height / 2,
-            'player 1 wins!',
+            'team 1 wins!',
             {
                 fontFamily: 'pong',
                 fontSize: '50px',
@@ -192,7 +207,7 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.player1Score = this.add.text(
             this.physics.world.bounds.width / 2,
             this.physics.world.bounds.height / 2,
-            'player 1 scored!',
+            'team 1 scored!',
             {
                 fontFamily: 'pong',
                 fontSize: '50px',
@@ -204,7 +219,7 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.player2VictoryText = this.add.text(
             this.physics.world.bounds.width / 2,
             this.physics.world.bounds.height / 2,
-            'player 2 wins!',
+            'team 2 wins!',
             {
                 fontFamily: 'pong',
                 fontSize: '50px',
@@ -216,7 +231,7 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.player2Score = this.add.text(
             this.physics.world.bounds.width / 2,
             this.physics.world.bounds.height / 2,
-            'player 2 scored!',
+            'team 2 scored!',
             {
                 fontFamily: 'pong',
                 fontSize: '50px',
@@ -306,9 +321,19 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.ball_init();
         this.paddle_init();
 
-        this.socket.on("movement", (newPos: number) => {
-            if (this.paddle1.body)
-                this.paddle1.setY(newPos + this.paddle1.body.height / 2);
+        this.socket.on("movement", (data: any) => {
+			if (data.player === 1)
+            	if (this.paddle1.body)
+                	this.paddle1.setY(data.newPos + this.paddle1.body.height / 2);
+			if (data.player === 2)
+            	if (this.paddle2.body)
+                	this.paddle2.setY(data.newPos + this.paddle2.body.height / 2);
+			if (data.player === 3)
+            	if (this.paddle3.body)
+                	this.paddle3.setY(data.newPos + this.paddle3.body.height / 2);
+			if (data.player === 4)
+            	if (this.paddle4.body)
+                	this.paddle4.setY(data.newPos + this.paddle4.body.height / 2);
         })
 
         this.socket.on("update", (data: any) => {
@@ -382,10 +407,22 @@ export default class oneVSoneOther extends Phaser.Scene{
                             this.paddle1.setScale(0.15, 0.25);
                         }, [], this);
                     }
-                    else {
+                    else if (data.player === 2){
                         this.paddle2.setScale(0.5, 0.90);
                         this.time.delayedCall(7500, () => {
                             this.paddle2.setScale(0.15, 0.25);
+                        }, [], this);
+                    }
+                    else if (data.player === 3){
+                        this.paddle3.setScale(0.5, 0.90);
+                        this.time.delayedCall(7500, () => {
+                            this.paddle3.setScale(0.15, 0.25);
+                        }, [], this);
+                    }
+                    else {
+                        this.paddle4.setScale(0.5, 0.90);
+                        this.time.delayedCall(7500, () => {
+                            this.paddle4.setScale(0.15, 0.25);
                         }, [], this);
                     }
                     break;
@@ -394,10 +431,18 @@ export default class oneVSoneOther extends Phaser.Scene{
                     this.time.delayedCall(1000, () => {
                         this.inverse.setVisible(false)
                     }, [], this);
-                    this.modifier = -1;
-                    this.time.delayedCall(5000, () => {
-                        this.modifier = 1;
-                    }, [], this);
+					if (data.player === 2){
+                	    this.modifier2 = -1;
+                	    this.time.delayedCall(5000, () => {
+                	        this.modifier2 = 1;
+                	    }, [], this);
+					}
+					else {
+                	    this.modifier1 = -1;
+                	    this.time.delayedCall(5000, () => {
+                	        this.modifier1 = 1;
+                	    }, [], this);
+					}
                     break;
                 case 4:
                     this.bigBall.setVisible(true);
@@ -407,7 +452,6 @@ export default class oneVSoneOther extends Phaser.Scene{
                     this.ball.setTexture("bigBall")
                     this.ball.setScale(1, 1);
                     this.time.delayedCall(5000, () => {
-                        console.log("fuck")
                         this.ball.setTexture("ball")
                         this.ball.setScale(0.2);
                     }, [], this);
@@ -441,6 +485,8 @@ export default class oneVSoneOther extends Phaser.Scene{
                 this.wall3.setVisible(false);
             }
             this.paddle2.disableBody();
+            this.paddle3.disableBody();
+            this.paddle4.disableBody();
             if (which === 1)
                 this.points2++;
             else
@@ -466,6 +512,8 @@ export default class oneVSoneOther extends Phaser.Scene{
                 this.player1Score.setVisible(false);
                 this.player2Score.setVisible(false);
                 this.paddle2.enableBody();
+                this.paddle3.enableBody();
+                this.paddle4.enableBody();
                 this.ball.setX(this.physics.world.bounds.width / 2);
                 this.ball.setY(this.physics.world.bounds.height / 2);
                 this.paddle2.setY(this.physics.world.bounds.height / 2);
@@ -473,9 +521,12 @@ export default class oneVSoneOther extends Phaser.Scene{
                     this.multiball.destroy(true);
                 this.multi = false;
                 this.paddlespeed = 400;
-                this.modifier = 1;
+                this.modifier1 = 1;
+                this.modifier2 = 1;
                 this.paddle1.setScale(0.15, 0.25);
                 this.paddle2.setScale(0.15, 0.25);
+                this.paddle3.setScale(0.15, 0.25);
+                this.paddle4.setScale(0.15, 0.25);
                 this.ball.setTexture("ball")
                 this.ball.setScale(0.2);
                 if (this.random === true || this.wall === true){
@@ -494,19 +545,53 @@ export default class oneVSoneOther extends Phaser.Scene{
 
     update() { 
         this.ball.angle += this.rotation
-        this.paddle2.setVelocityY(0);
+        this.paddle3.setVelocityY(0);
+        this.paddle4.setVelocityY(0);
         
-        if (this.keys.w.isDown)
-            this.paddle2.setVelocityY(-this.paddlespeed * this.modifier);
-        if (this.keys.s.isDown)
-            this.paddle2.setVelocityY(this.paddlespeed * this.modifier);
-            
-        if (this.paddle2.body){
-            if (this.paddle2.body.y !== this.oldPosition)
-                this.socket.emit("movement", this.paddle2.body.y)
-            this.oldPosition = this.paddle2.body.y
-        }
-        
+		if (this.player === 2){
+       		this.paddle2.setVelocityY(0);
+
+       		if (this.keys.w.isDown)
+       		    this.paddle2.setVelocityY(-this.paddlespeed * this.modifier1);
+       		if (this.keys.s.isDown)
+       		    this.paddle2.setVelocityY(this.paddlespeed * this.modifier1);
+				
+       		if (this.paddle2.body){
+       		    if (this.paddle2.body.y !== this.oldPosition)
+       		        this.socket.emit("movement", this.paddle2.body.y)
+       		    this.oldPosition = this.paddle2.body.y
+       		}
+		}
+
+		if (this.player === 3){
+       		this.paddle3.setVelocityY(0);
+
+			if (this.keys.w.isDown)
+			this.paddle3.setVelocityY(-this.paddlespeed * this.modifier2);
+			if (this.keys.s.isDown)
+			this.paddle3.setVelocityY(this.paddlespeed * this.modifier2);
+			
+			if (this.paddle3.body){
+				if (this.paddle3.body.y !== this.oldPosition)
+				this.socket.emit("movement", this.paddle3.body.y)
+				this.oldPosition = this.paddle3.body.y
+			}
+		}
+		
+		if (this.player === 4){
+			this.paddle2.setVelocityY(0);
+			
+       		if (this.keys.w.isDown)
+       		    this.paddle4.setVelocityY(-this.paddlespeed * this.modifier2);
+       		if (this.keys.s.isDown)
+       		    this.paddle4.setVelocityY(this.paddlespeed * this.modifier2);
+
+       		if (this.paddle4.body){
+       		    if (this.paddle4.body.y !== this.oldPosition)
+       		        this.socket.emit("movement", this.paddle4.body.y)
+       		    this.oldPosition = this.paddle4.body.y
+       		}
+		}
         
         if (this.paddlespeed < 625)
             this.paddlespeed += 0.5;
