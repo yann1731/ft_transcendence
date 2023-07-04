@@ -10,9 +10,6 @@ import { Chatroom } from 'Components/Interfaces';
 import axios from 'axios';
 import { UserContext } from 'Contexts/userContext';
 import { ChatInUse } from 'Components/Interfaces';
-  interface MyChannelsProps {
-    searchText: string;
-  }
 
   interface MyChannelsProps {
     searchText: string;

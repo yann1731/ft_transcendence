@@ -74,6 +74,8 @@
 
 .chatTextField {
   display: flex;
+  flex-grow: 1;
+  margin-right: 20px;
   align-items: flex-end;
   width: 100%;
 }
@@ -105,12 +107,17 @@
   margin-left: 20px;
   margin-right: 20px;
 }
+
+.focusedTextField {
+  flex-grow: 1;
+}
   
 .focusedTextField .MuiInputLabel-root.Mui-focused {
   color: white;
 }
 .focusedTextField .MuiOutlinedInput-root.Mui-focused fieldset {
   border-width: 1px;
+  border-color: white;
 }
 
 .font-face-gm { 

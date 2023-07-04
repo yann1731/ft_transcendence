@@ -13,7 +13,7 @@ import { useTheme } from '@mui/material/styles';
 
 export default function OptionBarChans() {
 
-    const Chansettings = ['Create', 'Modify', 'Delete'];
+    const Chansettings = ['Create', 'Edit', 'Delete'];
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [isCreationWindowOpen, setWindowIsOpen] = React.useState(false);
     const [channelName, setChannelName] = React.useState('');
@@ -86,8 +86,8 @@ export default function OptionBarChans() {
         case 'Delete':
           handleMode('delete');
           break;
-        case 'Modify' :
-          handleMode('modify')
+        case 'Edit' :
+          handleMode('edit')
         }
         handleCloseUserMenu();
     };
@@ -136,13 +136,13 @@ export default function OptionBarChans() {
           }
         }
       }
-      else if (mode === 'modify')
+      else if (mode === 'edit')
       {
         try {
           const response = await axios.patch(`http://localhost:4242/chatroom/${channelName}`, newChannel);
           console.log('Chatroom modified:', response.data);
         } catch (error) {
-          console.error('Error modifying chatroom:', error);
+          console.error('Error editing chatroom:', error);
           alert('Error changing chatroom');
         }
       }
@@ -188,7 +188,7 @@ export default function OptionBarChans() {
         }}
       >
         <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
-          {mode === 'create' ? 'Create New Channel' : 'Modify Channel'}
+          {mode === 'create' ? 'Create New Channel' : 'Edit Channel'}
         </Typography>
         {mode === 'create' ?  
         <TextField
@@ -286,13 +286,29 @@ export default function OptionBarChans() {
           <ChanPictureSetter onPictureSelected={handlePictureSelection} />
           )}
         {mode !== 'delete' ? 
-          <Button onClick={handleChannel} className="profilePageButtons">
-            Create
-          </Button>
+          <Box>
+            {mode !== 'edit' ?
+              <Button onClick={handleChannel} className="profilePageButtons">
+                Create
+              </Button>
+            : 
+              <Button onClick={handleChannel} className="profilePageButtons">
+                Done Editing
+              </Button>
+            }
+            <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px'}}>
+              Cancel
+            </Button>
+          </Box>
           :            
+          <Box>
             <Button onClick={handleChannel} className="profilePageButtons">
               Delete
             </Button>
+            <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px' }}>
+              Cancel
+            </Button>
+          </Box>
         }
       </Box>
     );
