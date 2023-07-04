@@ -8,6 +8,8 @@ import axios from 'axios';
 import { useContext } from 'react';
 import { UserContext } from 'Contexts/userContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ChatInUse } from 'Components/Interfaces';
+import { useTheme } from '@mui/material/styles';
 
 export default function OptionBarChans() {
 
@@ -19,9 +21,11 @@ export default function OptionBarChans() {
     const [isProtected, setIsProtected] = React.useState('public');
     const [pwd, setPassword] = React.useState<string | null> ('');
     const [mode, setMode] = React.useState<string>('');
-    const {user} = useContext(UserContext)
     const [chatroom, setChatroom] = React.useState<Chatroom[]>([]);
-  
+    const {user, updateUser} = useContext(UserContext);
+    const theme = useTheme();
+    const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
+    
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
@@ -38,6 +42,13 @@ export default function OptionBarChans() {
   
       fetchChannels();
     }, [chatroom]);
+
+    const DeleteChatInUse = (Chat: string) => {
+      const chatInUse: ChatInUse = {
+        chatInUse: Chat,
+      };
+      updateUser(chatInUse);
+    }
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
@@ -132,7 +143,7 @@ export default function OptionBarChans() {
           console.log('Chatroom modified:', response.data);
         } catch (error) {
           console.error('Error modifying chatroom:', error);
-          alert('Channel you try to change does not exists');
+          alert('Error changing chatroom');
         }
       }
       else
@@ -140,9 +151,10 @@ export default function OptionBarChans() {
         try {
           const response = await axios.delete(`http://localhost:4242/chatroom/${channelName}`);
           console.log('Chatroom deleted:', response.data);
+          DeleteChatInUse('')
         } catch (error) {
           console.error('Error deleting chatroom:', error);
-          alert('Channel you try to delete does not exists');
+          alert('Error deleting chatroom');
         }
       }
       setChannelName('');
@@ -183,18 +195,34 @@ export default function OptionBarChans() {
             variant='outlined'
             label="Channel Name"
             fullWidth
-            sx={{ marginBottom: 2 }}
+            className="newChannelTextField"
+            sx={{ 
+              marginBottom: 2,
+              '& label': { color: createChannelcolors },
+              '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+            }}
             value={channelName}
             onChange={(e) => setChannelName(e.target.value)}
-          /> : <Autocomplete
-          disablePortal
-          id="Channels"
-          options={chatroom}
-          getOptionLabel={(option) => option.name}
-          fullWidth
-          sx={{ marginBottom: 2 }}
-          onChange={handleChannelSelection}
-          renderInput={(params) => <TextField {...params} label="Channels" />}
+          /> 
+          : <Autocomplete
+              disablePortal
+              id="Channels"
+              options={chatroom}
+              getOptionLabel={(option) => option.name}
+              fullWidth
+              sx={{ marginBottom: 2 }}
+              onChange={handleChannelSelection}
+              renderInput={(params) => 
+              <TextField
+                {...params}
+                className="newChannelTextField"
+                sx={{
+                  '& label': { color: createChannelcolors },
+                  '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+                }}
+                label="Channels" 
+              />
+        }
         />}
         {mode !== 'delete' && (
           <Accordion variant="outlined" sx={{ marginBottom: 2 }}>
@@ -206,21 +234,36 @@ export default function OptionBarChans() {
 
             <FormControlLabel
                 value="public"
-                control={<Checkbox checked={isProtected === 'public'} />}
+                control={
+                  <Checkbox 
+                    checked={isProtected === 'public'} 
+                    sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
+                  />
+                }
                 label="Public"
                 sx={{ marginBottom: 2 }}
                 onClick={(event) => handleIsProtected(event, 'public')}
                 />
               <FormControlLabel
                 value="private"
-                control={<Checkbox checked={isProtected === 'private'} />}
+                control={
+                  <Checkbox 
+                  checked={isProtected === 'private'} 
+                  sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }} 
+                  />
+                }
                 label="Private"
                 sx={{ marginBottom: 2 }}
                 onClick={(event) => handleIsProtected(event, 'private')}
                 />
               <FormControlLabel
                 value="protected"
-                control={<Checkbox checked={isProtected === 'pwProtected'} />}
+                control={
+                  <Checkbox 
+                    checked={isProtected === 'pwProtected'} 
+                    sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
+                  />
+                }
                 label="Password Protected"
                 sx={{ marginBottom: 2 }}
                 onClick={(event) => handleIsProtected(event, 'pwProtected')}
@@ -243,11 +286,11 @@ export default function OptionBarChans() {
           <ChanPictureSetter onPictureSelected={handlePictureSelection} />
           )}
         {mode !== 'delete' ? 
-          <Button variant="contained" onClick={handleChannel}>
+          <Button onClick={handleChannel} className="profilePageButtons">
             Create
           </Button>
           :            
-            <Button variant="contained" onClick={handleChannel}>
+            <Button onClick={handleChannel} className="profilePageButtons">
               Delete
             </Button>
         }

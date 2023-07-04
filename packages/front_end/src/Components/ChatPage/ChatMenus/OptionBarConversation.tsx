@@ -7,13 +7,14 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
+import { UserContext } from 'Contexts/userContext';
 
 export default function OptionBarConversation() {
     /* Settings vont être pris directement dans les objets Users, qui seront divisé en 3 categories, Owner, Admin et Standard*/
     const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'View Members'];
-  
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  
+    const {user} = React.useContext(UserContext);
+
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
     };
@@ -29,7 +30,7 @@ export default function OptionBarConversation() {
                 <DehazeIcon></DehazeIcon>
               </IconButton>
             </Tooltip>
-            Channel
+            {user?.chatInUse}
             <Menu
               sx={{ mt: '40px' }}
               id="menu-appbar"

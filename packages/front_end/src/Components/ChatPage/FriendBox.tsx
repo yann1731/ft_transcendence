@@ -17,7 +17,7 @@ import { useState, ChangeEvent } from 'react';
 				<TextField 
 					label="Search"
 					fullWidth 
-					className={"focusedTextField .MuiOutlinedInput-root.Mui-focused fieldset"} 
+					className={"focusedTextField"} 
 					value={searchText}
 					onChange={handleSearchTextChange}
 				/>
