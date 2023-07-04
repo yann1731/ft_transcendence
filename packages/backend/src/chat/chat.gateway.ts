@@ -1,5 +1,5 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, OnGatewayConnection, OnGatewayDisconnect, WebSocketServer } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -18,7 +18,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
   @SubscribeMessage("test")
-  handleTest() {
-    console.log("Routing Successful!");
+  handleTest(client: Socket, data: any) {
+    console.log("Sending from: " + client.id + " to: " + data.target);
   }
 }

@@ -39,7 +39,7 @@ import { ChatInUse } from 'Components/Interfaces';
         }
       };
       fetchChannels();
-    }, [channels]);
+    }, []);
     
     const filteredChannels = channels.filter((channel) =>
     channel.name.toLowerCase().includes(searchText.toLowerCase())

@@ -39,7 +39,7 @@ const Chat = () => {
       const messageInput = event.target as HTMLInputElement;
       const messageText = messageInput.value.trim();
       if (messageText !== '') {
-        socket.emit("test");
+        socket.emit("test", {target: user?.chatInUse});
         sendMessage(messageText);
         messageInput.value = '';
       }
