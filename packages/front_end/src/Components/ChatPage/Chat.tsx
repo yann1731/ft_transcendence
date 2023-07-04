@@ -8,6 +8,9 @@ import OptionBarChans from './ChatMenus/OptionBarChans';
 import { CssBaseline } from '@mui/material';
 import Chat from './ChatBox';
 import OptionBarConversation from './ChatMenus/OptionBarConversation';
+import { io } from "socket.io-client";
+
+export const socket = io("http://localhost:4242/chatsocket");
 
 function ChatPage() {
 	return (
