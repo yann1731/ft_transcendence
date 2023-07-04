@@ -139,3 +139,7 @@ export interface HallOfFame {
     loss: number;
     gamesPlayed: number;
 }
+
+export interface ChatInUse {
+    chatInUse: string;
+}
