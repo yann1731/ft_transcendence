@@ -3,12 +3,12 @@ import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/
 import MenuItem from '@mui/material/MenuItem';
 
 interface ChanPictureSetterProps {
-  onPictureSelected: (picture: string | null) => void;
+  onPictureSelected: (picture: string) => void;
 }
 
 const ChanPictureSetter: React.FC<ChanPictureSetterProps> = ({ onPictureSelected }) => {
   const [open, setOpen] = React.useState(false);
-  const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
+  const [selectedImage, setSelectedImage] = React.useState<File>();
 
   const handleClickOpen = () => {
     setOpen(true);

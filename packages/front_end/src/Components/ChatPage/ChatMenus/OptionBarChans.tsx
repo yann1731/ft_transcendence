@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useContext } from 'react';
 import { UserContext } from 'Contexts/userContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ChatInUse } from 'Components/Interfaces';
 
 export default function OptionBarChans() {
 
@@ -19,9 +20,9 @@ export default function OptionBarChans() {
     const [isProtected, setIsProtected] = React.useState('public');
     const [pwd, setPassword] = React.useState<string | null> ('');
     const [mode, setMode] = React.useState<string>('');
-    const {user} = useContext(UserContext)
     const [chatroom, setChatroom] = React.useState<Chatroom[]>([]);
-  
+    const {user, updateUser} = useContext(UserContext);
+    
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
@@ -38,6 +39,13 @@ export default function OptionBarChans() {
   
       fetchChannels();
     }, [chatroom]);
+
+    const DeleteChatInUse = (Chat: string) => {
+      const chatInUse: ChatInUse = {
+        chatInUse: Chat,
+      };
+      updateUser(chatInUse);
+    }
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
@@ -132,7 +140,7 @@ export default function OptionBarChans() {
           console.log('Chatroom modified:', response.data);
         } catch (error) {
           console.error('Error modifying chatroom:', error);
-          alert('Channel you try to change does not exists');
+          alert('Error changing chatroom');
         }
       }
       else
@@ -140,9 +148,10 @@ export default function OptionBarChans() {
         try {
           const response = await axios.delete(`http://localhost:4242/chatroom/${channelName}`);
           console.log('Chatroom deleted:', response.data);
+          DeleteChatInUse('')
         } catch (error) {
           console.error('Error deleting chatroom:', error);
-          alert('Channel you try to delete does not exists');
+          alert('Error deleting chatroom');
         }
       }
       setChannelName('');
