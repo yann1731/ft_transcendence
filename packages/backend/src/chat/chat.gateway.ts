@@ -16,4 +16,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect() {
 		console.log('Client disconnected from chatSocket');
 	}
+
+  @SubscribeMessage("test")
+  handleTest() {
+    console.log("Routing Successful!");
+  }
 }
