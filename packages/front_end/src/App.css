@@ -111,7 +111,6 @@
 }
 .focusedTextField .MuiOutlinedInput-root.Mui-focused fieldset {
   border-width: 1px;
-  border-color: white;
 }
 
 .font-face-gm { 
@@ -229,6 +228,15 @@
   top: 9vh;
   left: 0;
   right: 0;
+}
+
+.newChannelTextField .MuiOutlinedInput-root.Mui-focused fieldset {
+  border-color: var(--textfield-color);
+  border-width: 1px;
+}
+
+.newChannelTextField .Mui-InputLabel-root.Mui-focused fieldset {
+  color: var(--textfield-color);
 }
 
 .pokeball {
