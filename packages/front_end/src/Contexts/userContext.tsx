@@ -1,6 +1,9 @@
-import { createContext, useState, Dispatch, SetStateAction, ReactNode, useCallback, useEffect } from 'react';
-import { Chatroom, ChatroomMessage, ChatroomUser, PrivateMessage, UserBlocks, UserFriendship } from 'Components/Interfaces';
+
+import React, { createContext, useState, Dispatch, SetStateAction, ReactNode, useCallback, useEffect } from 'react';
+import { ChatInUse, Chatroom, ChatroomMessage, ChatroomUser, PrivateMessage, UserBlocks, UserFriendship } from 'Components/Interfaces';
+
 export interface User {
+  id: string ;
   avatar: string;
   username: string;
   nickname: string;
@@ -10,7 +13,9 @@ export interface User {
   gamesPlayed: number;
   userStatus: boolean;
   twoFaEnabled: boolean;
-  id: string;
+  token: string;
+  token_created_at: number;
+  token_expires_at: number;
 	friendListA?: UserFriendship[] ;
 	friendListB?: UserFriendship[] ;
 	blockedUsers?: UserBlocks[] ;
@@ -21,9 +26,9 @@ export interface User {
 	sentChatroomMessages?: ChatroomMessage[] ;
 	Chatroom?: Chatroom[] ;
 	refresh_token?: string;
-  chatInUse: string;
+  chatInUse?: ChatInUse;
 }
-  
+
 export interface UserContextType {
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
@@ -35,7 +40,7 @@ export const UserContext = createContext<UserContextType>({
   setUser: () => {},
   updateUser: () => {}
 });
-  
+
 const defaultState = {
   user: {
     avatar: '',
@@ -47,7 +52,7 @@ const defaultState = {
     gamesPlayed: 0,
     userStatus: true,
     twoFaEnabled: false,
-    id: ''
+    id: '',
   },
   setUser: (user: User | null) => {},
   updateUser: (newUserData: Partial<User>) => {}

@@ -62,11 +62,11 @@ export class ChatroomService { //specifically to create a password protected cha
       return users;
   }
 
-  async update(name: string, updateChatroomDto: UpdateChatroomDto) { //probably will remove.
-    const { state, picture, password } = updateChatroomDto; // Destructure the properties from the DTO
-    let updatedPicture = picture; // Initialize with the provided picture
-    if (!updatedPicture) {
-      updatedPicture = 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg'; // Replace 'default_picture_url' with the URL of your default picture
+  async update(name: string, updateChatroomDto: UpdateChatroomDto) { 
+    const { state, picture, password } = updateChatroomDto; 
+    let updatedPicture = picture; 
+    if (updatedPicture === "") {
+      updatedPicture = 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg'; 
   }
     if (password)
     {
@@ -83,9 +83,9 @@ export class ChatroomService { //specifically to create a password protected cha
         }
       }});
       if (!chatroom)
-      throw new BadRequestException;
+        throw new BadRequestException;
       else
-      return chatroom;
+        return chatroom;
     }
     else
     {
@@ -101,9 +101,9 @@ export class ChatroomService { //specifically to create a password protected cha
         }
       }});
       if (!chatroom)
-      throw new BadRequestException;
+        throw new BadRequestException;
       else
-      return chatroom;
+        return chatroom;
     }
   }
 

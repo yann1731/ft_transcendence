@@ -60,7 +60,8 @@
 }
 
 .chatOptionBars {
-  flex-grow: 0;
+  display: flex;
+  align-items: center;
   background-color: var(--primary-color);
 }
 
@@ -70,6 +71,7 @@
     height: 81.3vh;
     display: flex;
     flex-direction: column;
+    margin-top: 10px;
 }
 
 .chatTextField {
@@ -121,9 +123,11 @@
   background-color: var(--secondary-color);
   overflow-y: auto;
   overflow-x: auto;
-  height: 39vh;
+  height: 38vh;
   border-radius: 10px;
   padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 .friendsAndChannelStyle {
   width: min(35vw, 400px);

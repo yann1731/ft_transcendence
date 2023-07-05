@@ -3,18 +3,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import { ListItemButton } from '@mui/material';
-import { channel } from 'diagnostics_channel';
-import FriendBox from '../FriendBox';
 import { useState, useEffect, useContext } from 'react';
 import { Chatroom } from 'Components/Interfaces';
 import axios from 'axios';
-import { UserContext } from 'Contexts/userContext';
-import { ChatInUse } from 'Components/Interfaces';
-  interface MyChannelsProps {
-    searchText: string;
-  }
-
-  interface MyChannelsProps {
+import { UserContext, User } from 'Contexts/userContext';
+  
+interface MyChannelsProps {
     searchText: string;
   }
 
@@ -35,7 +29,6 @@ import { ChatInUse } from 'Components/Interfaces';
         } catch (error) {
           console.error('Error creating chatroom:', error);
           alert('Error: could not create channel: ');
-          console.log(error)
         }
       };
       fetchChannels();
@@ -45,17 +38,30 @@ import { ChatInUse } from 'Components/Interfaces';
     channel.name.toLowerCase().includes(searchText.toLowerCase())
     );
  
-    const SetChatInUse = (Chat: string) => {
-      const chatInUse: ChatInUse = {
-        chatInUse: Chat,
-      };
-      updateUser(chatInUse);
+    const SetChatInUse = (name: string, picture: string | undefined | null) => {
+      if (picture !== null) {
+        const chatInUse: Partial<User> = {
+          chatInUse: {
+          Name: name,
+          Picture: picture,
+          },
+        };
+        updateUser(chatInUse);
+      }
+      else {
+        const chatInUse: Partial<User> = {
+          chatInUse: {
+          Name: name,
+          },
+        };
+        updateUser(chatInUse);
+      }
     }
     
     return (
     <List>
         {filteredChannels.map((channel) => (
-            <ListItemButton key={channel.id} onClick={() => SetChatInUse(channel.name)}>
+            <ListItemButton key={channel.id} onClick={() => SetChatInUse(channel.name, channel.picture)}>
                 <ListItemIcon>
                     <Avatar alt={channel.name} src={channel.picture || undefined} />
                 </ListItemIcon>
