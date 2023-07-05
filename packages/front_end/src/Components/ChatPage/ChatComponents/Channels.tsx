@@ -15,7 +15,7 @@ interface MyChannelsProps {
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
     const [channels, setChannels] = useState<Chatroom[]>([]);
     const {updateUser} = useContext(UserContext);
-
+    
     
     useEffect(() => {
       const fetchChannels = async () => {
@@ -59,17 +59,20 @@ interface MyChannelsProps {
     }
     
     return (
-    <List>
-        {filteredChannels.map((channel) => (
-            <ListItemButton key={channel.id} onClick={() => SetChatInUse(channel.name, channel.picture)}>
-                <ListItemIcon>
-                    <Avatar alt={channel.name} src={channel.picture || undefined} />
-                </ListItemIcon>
-                <ListItemText primary={channel.name} />
+      <List>
+        {filteredChannels.map((channel) => {
+          const decodedName = decodeURIComponent(channel.name);
+          return (
+            <ListItemButton key={channel.id} onClick={() => SetChatInUse(decodedName, channel.picture)}>
+              <ListItemIcon>
+                <Avatar alt={decodedName} src={channel.picture || undefined} />
+              </ListItemIcon>
+              <ListItemText primary={decodedName} />
             </ListItemButton>
-        ))}
-    </List>
+          );
+        })}
+      </List>
     );
-};
+  };
 
 export default MyChannels;

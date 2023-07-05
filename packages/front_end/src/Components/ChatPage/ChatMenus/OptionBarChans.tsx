@@ -46,7 +46,7 @@ export default function OptionBarChans() {
       };
   
       fetchChannels();
-    }, []);
+    }, [chatroom]);
 
     const DeleteChatInUse = (Name: string, Picture: string) => {
       const chatInUse: Partial<User> = {
@@ -139,7 +139,7 @@ export default function OptionBarChans() {
           }
         }
       }
-      else if (mode === 'edit')
+      else if (mode === 'Edit')
       {
         try {
           const response = await axios.patch(`http://localhost:4242/chatroom/${channelName}`, newChannel);
@@ -208,11 +208,12 @@ export default function OptionBarChans() {
             value={channelName}
             onChange={(e) => setChannelName(e.target.value)}
           /> 
-          : <Autocomplete
+          : 
+          <Autocomplete
               disablePortal
               id="Channels"
               options={chatroom}
-              getOptionLabel={(option) => option.name}
+              getOptionLabel={(option) => decodeURIComponent(option.name)}
               fullWidth
               sx={{ marginBottom: 2 }}
               onChange={handleChannelSelection}
