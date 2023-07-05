@@ -1,6 +1,6 @@
 import * as React from 'react';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import {Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox} from '@mui/material';
+import {Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox, Dialog} from '@mui/material';
 import '../../../App.css';
 import { Chatroom } from 'Components/Interfaces';
 import ChanPictureSetter from '../ChatComponents/ChatPictureSetter';
@@ -10,6 +10,11 @@ import { UserContext } from 'Contexts/userContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ChatInUse } from 'Components/Interfaces';
 import { useTheme } from '@mui/material/styles';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
 
 export default function OptionBarChans() {
 
@@ -25,7 +30,8 @@ export default function OptionBarChans() {
     const {user, updateUser} = useContext(UserContext);
     const theme = useTheme();
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
-    
+    const [isDialogOpen, setDialog] = React.useState(false);
+
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
@@ -64,6 +70,7 @@ export default function OptionBarChans() {
     };
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
+      setDialog(false);
     };
     
     const handlePictureSelection = (picture: string | null) => {
@@ -76,6 +83,10 @@ export default function OptionBarChans() {
       if (newValue !== 'pwProtected')
         setPassword(null)
     };
+
+    const handleDialog = () => {
+      setDialog(true);
+    }
 
     const chanOption = (option: string) => {
       switch(option)
@@ -152,6 +163,7 @@ export default function OptionBarChans() {
           const response = await axios.delete(`http://localhost:4242/chatroom/${channelName}`);
           console.log('Chatroom deleted:', response.data);
           DeleteChatInUse('')
+          setDialog(false);
         } catch (error) {
           console.error('Error deleting chatroom:', error);
           alert('Error deleting chatroom');
@@ -300,11 +312,30 @@ export default function OptionBarChans() {
               Cancel
             </Button>
           </Box>
-          :            
+          :         
           <Box>
-            <Button onClick={handleChannel} className="profilePageButtons">
+            <Button onClick={handleDialog} className="profilePageButtons">
               Delete
             </Button>
+              <Dialog
+                open={isDialogOpen}
+                onClose={handleCloseWindow}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+                >
+                <DialogTitle id="alert-dialog-title">
+                  {"Do you really want to delete this channel?"}
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText color={"red"} id="alert-dialog-description">
+                    All messages from this channel will be permanently lost.
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button className="profilePageButtons" onClick={handleCloseWindow}>Cancel</Button>
+                  <Button className="profilePageButtons" onClick={handleChannel}>Agree</Button>
+                </DialogActions>
+              </Dialog>
             <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px' }}>
               Cancel
             </Button>
