@@ -1,14 +1,13 @@
 import * as React from 'react';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import {Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox, Dialog} from '@mui/material';
+import { Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox, Dialog} from '@mui/material';
 import '../../../App.css';
 import { Chatroom } from 'Components/Interfaces';
 import ChanPictureSetter from '../ChatComponents/ChatPictureSetter';
 import axios from 'axios';
 import { useContext } from 'react';
-import { UserContext } from 'Contexts/userContext';
+import { UserContext, User } from 'Contexts/userContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { ChatInUse } from 'Components/Interfaces';
 import { useTheme } from '@mui/material/styles';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -47,11 +46,14 @@ export default function OptionBarChans() {
       };
   
       fetchChannels();
-    }, [chatroom]);
+    }, []);
 
-    const DeleteChatInUse = (Chat: string) => {
-      const chatInUse: ChatInUse = {
-        chatInUse: Chat,
+    const DeleteChatInUse = (Name: string, Picture: string) => {
+      const chatInUse: Partial<User> = {
+        chatInUse: {
+        Name: Name,
+        Picture: Picture,
+        },
       };
       updateUser(chatInUse);
     }
@@ -89,17 +91,7 @@ export default function OptionBarChans() {
     }
 
     const chanOption = (option: string) => {
-      switch(option)
-      {
-        case 'Create':
-          handleMode('create');
-          break;
-        case 'Delete':
-          handleMode('delete');
-          break;
-        case 'Edit' :
-          handleMode('edit')
-        }
+        handleMode(option);
         handleCloseUserMenu();
     };
     
@@ -117,7 +109,7 @@ export default function OptionBarChans() {
       };
       console.log(newChannel);
       
-      if (mode === 'create')
+      if (mode === 'Create')
       {
         if (isProtected === 'pwProtected')
         {
@@ -162,7 +154,7 @@ export default function OptionBarChans() {
         try {
           const response = await axios.delete(`http://localhost:4242/chatroom/${channelName}`);
           console.log('Chatroom deleted:', response.data);
-          DeleteChatInUse('')
+          DeleteChatInUse('', '')
           setDialog(false);
         } catch (error) {
           console.error('Error deleting chatroom:', error);
@@ -200,9 +192,9 @@ export default function OptionBarChans() {
         }}
       >
         <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
-          {mode === 'create' ? 'Create New Channel' : 'Edit Channel'}
+          {mode}
         </Typography>
-        {mode === 'create' ?  
+        {mode === 'Create' ?  
         <TextField
             variant='outlined'
             label="Channel Name"
@@ -236,7 +228,7 @@ export default function OptionBarChans() {
               />
         }
         />}
-        {mode !== 'delete' && (
+        {mode !== 'Delete' && (
           <Accordion variant="outlined" sx={{ marginBottom: 2 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="body1">Channel Privacy</Typography>
@@ -294,9 +286,12 @@ export default function OptionBarChans() {
           </AccordionDetails>
         </Accordion>
           )}
-        {mode !== 'delete' && (
+        {mode !== 'Delete' && (
           <ChanPictureSetter onPictureSelected={handlePictureSelection} />
           )}
+          <Button onClick={handleChannel} className="profilePageButtons">
+            {mode}
+          </Button>
         {mode !== 'delete' ? 
           <Box>
             {mode !== 'edit' ?

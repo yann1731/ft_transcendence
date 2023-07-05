@@ -1,12 +1,17 @@
 import * as React from 'react';
 import '../../App.css';
 import option from './game/Option';
-import oneVSone from './game/oneVSone';
+import oneVSoneHost from './game/oneVSoneHost';
+import oneVSoneOther from './game/oneVSoneOther';
 import threeVSone from './game/threeVSone';
-import twoVStwo from './game/twoVStwo';
+import twoVStwoHost from './game/twoVStwoHost';
+import twoVStwoOther from './game/twoVStwoOther'
 import Box from '@mui/material/Box';
+import { UserContext } from 'Contexts/userContext';
 
 export default function PongGame() {
+    const {user} = React.useContext(UserContext);
+
     React.useEffect(() => {
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
@@ -24,17 +29,20 @@ export default function PongGame() {
         },
         scene: [
           option,
-          oneVSone,
+          oneVSoneHost,
+          oneVSoneOther,
           threeVSone,
-          twoVStwo
+          twoVStwoHost,
+          twoVStwoOther
         ]
       };
       
       const pong = new Phaser.Game(config);
+      pong.scene.start('menu', {name: user?.id});
       return () => {
         pong.destroy(true);
       }
-    }, []);
+    }, [user]);
 
     return (
         <Box id="PONG" sx={{ maxWidth: '880px' }}></Box>

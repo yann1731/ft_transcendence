@@ -83,7 +83,7 @@ export class UserService { //creates a new user
         gamesPlayed: updateUserDto.gamesPlayed,
         userStatus: updateUserDto.userStatus,
         twoFaEnabled: updateUserDto.twoFaEnabled,
-        refresh_token: updateUserDto.refresh_token
+        refresh_token: updateUserDto.refresh_token,
       }
     });
     if (!user)

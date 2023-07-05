@@ -7,6 +7,8 @@ import Box from '@mui/material/Box';
 import '../../App.css';
 import { UserContext } from 'Contexts/userContext';
 import { Message } from 'Components/Interfaces';
+import { Socket } from "socket.io"
+import { SocketContext } from "../../Contexts/socketContext";
 import { useTheme } from '@mui/material/styles';
 
 
@@ -17,7 +19,8 @@ const Chat = () => {
   const {user} = useContext(UserContext);
   const [messages, setMessages] = useState<Message[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  
+  const socket = useContext(SocketContext);
+
   // Handles the scrollbar to the bottom on scrolling chat messages
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
@@ -41,6 +44,7 @@ const Chat = () => {
       const messageInput = event.target as HTMLInputElement;
       const messageText = messageInput.value.trim();
       if (messageText !== '') {
+        socket.emit("test");
         sendMessage(messageText);
         messageInput.value = '';
       }
