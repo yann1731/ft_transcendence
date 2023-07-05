@@ -5,7 +5,7 @@ import Handler2FA from "./2FAActivation";
 import Box from "@mui/material/Box";
 import UserNameHandler from "./UsernameHandler";
 import { useContext } from "react";
-import { UserContext, User } from "Contexts/userContext";
+import { UserContext } from "Contexts/userContext";
 
 const Item = styled(Paper)(({ theme }) => ({
 	...theme.typography.body2,

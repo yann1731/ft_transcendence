@@ -2,7 +2,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import { keyframes } from "@emotion/react";
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { UserContext } from "Contexts/userContext";
 import { useContext, useEffect } from "react";
 
