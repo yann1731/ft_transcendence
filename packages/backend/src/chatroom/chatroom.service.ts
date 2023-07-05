@@ -27,11 +27,12 @@ export class ChatroomService { //specifically to create a password protected cha
   }
   
   async create(createChatroomDto: CreateChatroomDto) { //creates either a public or private chatroom. Associates ownerId to the user who created it
+    const defaultPicture = 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg';
     const chatroom = await this.prisma.chatroom.create({
       data: {
         chatroomOwner: {connect: { id: createChatroomDto.userId}},
         name: createChatroomDto.name,
-        picture: createChatroomDto.picture !== null ? createChatroomDto.picture : undefined,
+        picture: createChatroomDto.picture !== null ? createChatroomDto.picture : defaultPicture,
         state: createChatroomDto.state,
       }
     });
