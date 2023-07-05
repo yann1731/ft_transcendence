@@ -15,7 +15,7 @@ export class ChatroomService { //specifically to create a password protected cha
       data: {
         chatroomOwner: {connect: { id: createPasswordChatroomDto.userId}},
         name: createPasswordChatroomDto.name,
-        picture: createPasswordChatroomDto.picture !== null ? createPasswordChatroomDto.picture : undefined,
+        picture: createPasswordChatroomDto.picture !== null ? createPasswordChatroomDto.picture : 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg',
         state: createPasswordChatroomDto.state,
         password: hashedPass,
       }
@@ -31,7 +31,7 @@ export class ChatroomService { //specifically to create a password protected cha
       data: {
         chatroomOwner: {connect: { id: createChatroomDto.userId}},
         name: createChatroomDto.name,
-        picture: createChatroomDto.picture !== null ? createChatroomDto.picture : undefined,
+        picture: createChatroomDto.picture !== null ? createChatroomDto.picture : 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg',
         state: createChatroomDto.state,
       }
     });
@@ -46,6 +46,7 @@ export class ChatroomService { //specifically to create a password protected cha
   }
 
   async findOne(name: string) { //returns a single chatroom using id
+    
     const chatroom = await this.prisma.chatroom.findUnique({where: { name }});
     if (!chatroom)
       throw new BadRequestException;
