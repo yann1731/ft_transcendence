@@ -285,57 +285,47 @@ export default function OptionBarChans() {
             </Box>
           </AccordionDetails>
         </Accordion>
-          )}
+        )}
         {mode !== 'Delete' && (
           <ChanPictureSetter onPictureSelected={handlePictureSelection} />
-          )}
-          <Button onClick={handleChannel} className="profilePageButtons">
-            {mode}
-          </Button>
-        {mode !== 'delete' ? 
-          <Box>
-            {mode !== 'edit' ?
-              <Button onClick={handleChannel} className="profilePageButtons">
-                Create
-              </Button>
-            : 
-              <Button onClick={handleChannel} className="profilePageButtons">
-                Done Editing
-              </Button>
-            }
-            <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px'}}>
-              Cancel
-            </Button>
-          </Box>
-          :         
-          <Box>
-            <Button onClick={handleDialog} className="profilePageButtons">
-              Delete
-            </Button>
-              <Dialog
-                open={isDialogOpen}
-                onClose={handleCloseWindow}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-                >
-                <DialogTitle id="alert-dialog-title">
-                  {"Do you really want to delete this channel?"}
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText color={"red"} id="alert-dialog-description">
-                    All messages from this channel will be permanently lost.
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button className="profilePageButtons" onClick={handleCloseWindow}>Cancel</Button>
-                  <Button className="profilePageButtons" onClick={handleChannel}>Agree</Button>
-                </DialogActions>
-              </Dialog>
-            <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px' }}>
-              Cancel
-            </Button>
-          </Box>
+        )}
+        {mode !== 'Delete' ?
+        <Button onClick={handleChannel} className="profilePageButtons">
+          {mode}
+        </Button>
+        :
+        <Button onClick={handleDialog} className="profilePageButtons">
+          {mode}
+        </Button>
         }
+        <Box>
+          <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px'}}>
+            Cancel
+          </Button>
+        </Box>
+        {mode === 'Delete' && (
+          <Box>
+            <Dialog
+              open={isDialogOpen}
+              onClose={handleCloseWindow}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              >
+              <DialogTitle id="alert-dialog-title">
+                {"Do you really want to delete this channel?"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText color={"red"} id="alert-dialog-description">
+                  All messages from this channel will be permanently lost.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button className="profilePageButtons" onClick={handleCloseWindow}>Cancel</Button>
+                <Button className="profilePageButtons" onClick={handleChannel}>Agree</Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        )}
       </Box>
     );
 
