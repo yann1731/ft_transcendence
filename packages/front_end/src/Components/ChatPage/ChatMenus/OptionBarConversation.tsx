@@ -8,6 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import { UserContext } from 'Contexts/userContext';
+import { Avatar } from '@mui/material';
 
 export default function OptionBarConversation() {
     /* Settings vont être pris directement dans les objets Users, qui seront divisé en 3 categories, Owner, Admin et Standard*/
@@ -24,13 +25,13 @@ export default function OptionBarConversation() {
     };
   return (
     <AppBar position="relative" sx={{ boxShadow: '0' }}>
-      <Box className={"chatOptionBars"}>
+      <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>
                 <DehazeIcon></DehazeIcon>
               </IconButton>
             </Tooltip>
-            {user?.chatInUse}
+            {user?.chatInUse?.Name}
             <Menu
               sx={{ mt: '40px' }}
               id="menu-appbar"
@@ -46,13 +47,14 @@ export default function OptionBarConversation() {
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
-            >
+              >
               {AdminSettings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
             </Menu>
+            <Avatar src={user?.chatInUse?.Picture} sx={{ marginRight: 0.5 }}></Avatar>
           </Box>
       </AppBar>
   );
