@@ -13,6 +13,7 @@ const spin = keyframes`
 
 export default function GetToken() {
   const {user, setUser} = useContext(UserContext);
+  
   useEffect(() => {
     let urlParams = new URLSearchParams(window.location.search);
     let authorizationCode = urlParams.get("code");

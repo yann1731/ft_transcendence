@@ -26,11 +26,11 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
     YvelocityMax: number = 225;
 
 	handleConnection() {
-		console.log('New client connected');
+		console.log('New client connected to gameSocket');
 	}
 	 
 	handleDisconnect() {
-		console.log('Client disconnected');
+		console.log('Client disconnected from gameSocket');
 	}
 
 	@SubscribeMessage("movement")

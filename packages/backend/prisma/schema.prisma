@@ -56,7 +56,9 @@ model User {
 }
 
 model Chatroom {
+  name          String            @unique
   id            String            @id @default(uuid())
+  picture       String            @default("https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg")
   messages      ChatroomMessage[]
   state         chatRoomState     @default(public)
   chatroomOwner User              @relation(fields: [userId], references: [id])

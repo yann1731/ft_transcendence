@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
 import OptionBarFriends from './ChatMenus/OptionBarFriends';
@@ -8,12 +8,13 @@ import OptionBarChans from './ChatMenus/OptionBarChans';
 import { CssBaseline } from '@mui/material';
 import Chat from './ChatBox';
 import OptionBarConversation from './ChatMenus/OptionBarConversation';
-import { UserContext } from 'Contexts/userContext';
+import { io, Socket } from "socket.io-client";
+import { SocketContext, socket} from "../../Contexts/socketContext";
 
 function ChatPage() {
-const {user} = useContext(UserContext);
 	return (
 	  	<React.Fragment>
+			<SocketContext.Provider value={socket}>
 			<CssBaseline />
 			<BackgroundContainer>
 			  <div>
@@ -32,6 +33,7 @@ const {user} = useContext(UserContext);
 				</div>
 			  </div>
 	  		</BackgroundContainer>
+			</SocketContext.Provider>
 		</React.Fragment>
 	);
   }

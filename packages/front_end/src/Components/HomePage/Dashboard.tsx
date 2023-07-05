@@ -93,7 +93,7 @@ const DashboardContainer: React.FC = () => {
         <Box className={"homeScoreBar"}>
           <DashboardBar></DashboardBar>
         <Box className={"homeScoreBox"}>
-            <Box sx={{ textAlign: 'center' }}>
+            <Box sx={{ textAlign: 'center', width: '100%' }}>
               <Box sx={{color: 'white', fontSize: '20px' }}>Hall of Fame</Box>
               <Divider style={{ marginBottom: '10px' }} />
               <Box className="dashboardContents">[GAMES PLAYED]<br></br>{highestGamesPlayed}<br></br>{nicknameGamesPlayed}</Box>
