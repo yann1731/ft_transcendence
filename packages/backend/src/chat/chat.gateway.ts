@@ -17,8 +17,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log('Client disconnected from chatSocket');
 	}
 
-  @SubscribeMessage("test")
+  @SubscribeMessage("sendMessage")
   handleTest(client: Socket, data: any) {
     console.log("Sending from: " + client.id + " to: " + data.target);
+    console.log(client.id, client.rooms);
+    this.server.to(client.id).emit("setMessage", data.message);
   }
 }
