@@ -1,19 +1,23 @@
 import * as React from 'react';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import {Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox} from '@mui/material';
+import { Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox, Dialog} from '@mui/material';
 import '../../../App.css';
 import { Chatroom } from 'Components/Interfaces';
 import ChanPictureSetter from '../ChatComponents/ChatPictureSetter';
 import axios from 'axios';
 import { useContext } from 'react';
-import { UserContext } from 'Contexts/userContext';
+import { UserContext, User } from 'Contexts/userContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { ChatInUse } from 'Components/Interfaces';
 import { useTheme } from '@mui/material/styles';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
 
 export default function OptionBarChans() {
 
-    const Chansettings = ['Create', 'Modify', 'Delete'];
+    const Chansettings = ['Create', 'Edit', 'Delete'];
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [isCreationWindowOpen, setWindowIsOpen] = React.useState(false);
     const [channelName, setChannelName] = React.useState('');
@@ -25,7 +29,8 @@ export default function OptionBarChans() {
     const {user, updateUser} = useContext(UserContext);
     const theme = useTheme();
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
-    
+    const [isDialogOpen, setDialog] = React.useState(false);
+
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
@@ -41,11 +46,14 @@ export default function OptionBarChans() {
       };
   
       fetchChannels();
-    }, [chatroom]);
+    }, []);
 
-    const DeleteChatInUse = (Chat: string) => {
-      const chatInUse: ChatInUse = {
-        chatInUse: Chat,
+    const DeleteChatInUse = (Name: string, Picture: string) => {
+      const chatInUse: Partial<User> = {
+        chatInUse: {
+        Name: Name,
+        Picture: Picture,
+        },
       };
       updateUser(chatInUse);
     }
@@ -64,6 +72,7 @@ export default function OptionBarChans() {
     };
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
+      setDialog(false);
     };
     
     const handlePictureSelection = (picture: string | null) => {
@@ -77,18 +86,12 @@ export default function OptionBarChans() {
         setPassword(null)
     };
 
+    const handleDialog = () => {
+      setDialog(true);
+    }
+
     const chanOption = (option: string) => {
-      switch(option)
-      {
-        case 'Create':
-          handleMode('create');
-          break;
-        case 'Delete':
-          handleMode('delete');
-          break;
-        case 'Modify' :
-          handleMode('modify')
-        }
+        handleMode(option);
         handleCloseUserMenu();
     };
     
@@ -106,7 +109,7 @@ export default function OptionBarChans() {
       };
       console.log(newChannel);
       
-      if (mode === 'create')
+      if (mode === 'Create')
       {
         if (isProtected === 'pwProtected')
         {
@@ -136,13 +139,13 @@ export default function OptionBarChans() {
           }
         }
       }
-      else if (mode === 'modify')
+      else if (mode === 'edit')
       {
         try {
           const response = await axios.patch(`http://localhost:4242/chatroom/${channelName}`, newChannel);
           console.log('Chatroom modified:', response.data);
         } catch (error) {
-          console.error('Error modifying chatroom:', error);
+          console.error('Error editing chatroom:', error);
           alert('Error changing chatroom');
         }
       }
@@ -151,7 +154,8 @@ export default function OptionBarChans() {
         try {
           const response = await axios.delete(`http://localhost:4242/chatroom/${channelName}`);
           console.log('Chatroom deleted:', response.data);
-          DeleteChatInUse('')
+          DeleteChatInUse('', '')
+          setDialog(false);
         } catch (error) {
           console.error('Error deleting chatroom:', error);
           alert('Error deleting chatroom');
@@ -188,9 +192,9 @@ export default function OptionBarChans() {
         }}
       >
         <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
-          {mode === 'create' ? 'Create New Channel' : 'Modify Channel'}
+          {mode}
         </Typography>
-        {mode === 'create' ?  
+        {mode === 'Create' ?  
         <TextField
             variant='outlined'
             label="Channel Name"
@@ -224,7 +228,7 @@ export default function OptionBarChans() {
               />
         }
         />}
-        {mode !== 'delete' && (
+        {mode !== 'Delete' && (
           <Accordion variant="outlined" sx={{ marginBottom: 2 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="body1">Channel Privacy</Typography>
@@ -281,19 +285,47 @@ export default function OptionBarChans() {
             </Box>
           </AccordionDetails>
         </Accordion>
-          )}
-        {mode !== 'delete' && (
+        )}
+        {mode !== 'Delete' && (
           <ChanPictureSetter onPictureSelected={handlePictureSelection} />
-          )}
-        {mode !== 'delete' ? 
-          <Button onClick={handleChannel} className="profilePageButtons">
-            Create
-          </Button>
-          :            
-            <Button onClick={handleChannel} className="profilePageButtons">
-              Delete
-            </Button>
+        )}
+        {mode !== 'Delete' ?
+        <Button onClick={handleChannel} className="profilePageButtons">
+          {mode}
+        </Button>
+        :
+        <Button onClick={handleDialog} className="profilePageButtons">
+          {mode}
+        </Button>
         }
+        <Box>
+          <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px'}}>
+            Cancel
+          </Button>
+        </Box>
+        {mode === 'Delete' && (
+          <Box>
+            <Dialog
+              open={isDialogOpen}
+              onClose={handleCloseWindow}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              >
+              <DialogTitle id="alert-dialog-title">
+                {"Do you really want to delete this channel?"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText color={"red"} id="alert-dialog-description">
+                  All messages from this channel will be permanently lost.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button className="profilePageButtons" onClick={handleCloseWindow}>Cancel</Button>
+                <Button className="profilePageButtons" onClick={handleChannel}>Agree</Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        )}
       </Box>
     );
 

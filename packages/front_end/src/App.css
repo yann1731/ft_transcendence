@@ -60,7 +60,8 @@
 }
 
 .chatOptionBars {
-  flex-grow: 0;
+  display: flex;
+  align-items: center;
   background-color: var(--primary-color);
 }
 
@@ -70,10 +71,13 @@
     height: 81.3vh;
     display: flex;
     flex-direction: column;
+    margin-top: 10px;
 }
 
 .chatTextField {
   display: flex;
+  flex-grow: 1;
+  margin-right: 20px;
   align-items: flex-end;
   width: 100%;
 }
@@ -105,12 +109,17 @@
   margin-left: 20px;
   margin-right: 20px;
 }
+
+.focusedTextField {
+  flex-grow: 1;
+}
   
 .focusedTextField .MuiInputLabel-root.Mui-focused {
   color: white;
 }
 .focusedTextField .MuiOutlinedInput-root.Mui-focused fieldset {
   border-width: 1px;
+  border-color: white;
 }
 
 .font-face-gm { 
@@ -121,9 +130,11 @@
   background-color: var(--secondary-color);
   overflow-y: auto;
   overflow-x: auto;
-  height: 39vh;
+  height: 38vh;
   border-radius: 10px;
   padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 .friendsAndChannelStyle {
   width: min(35vw, 400px);
@@ -326,4 +337,10 @@
 .toolbar .MuiAppBar-root {
   background-image: none;
   background-color: var(--secondary-color);
+}
+
+.grosPogo {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
 }

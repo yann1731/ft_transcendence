@@ -9,8 +9,13 @@ import { UserContext } from 'Contexts/userContext';
 import { Message } from 'Components/Interfaces';
 import { Socket } from "socket.io"
 import { SocketContext } from "../../Contexts/socketContext";
+import { useTheme } from '@mui/material/styles';
+
 
 const Chat = () => {
+  const theme = useTheme();
+  const buttonColor = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1'
+
   const {user} = useContext(UserContext);
   const [messages, setMessages] = useState<Message[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -23,7 +28,7 @@ const Chat = () => {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
   }, [messages]);
-
+  
   const sendMessage = (messageText: string) => {
     const newMessage: Message = {
       text: messageText,
@@ -56,9 +61,9 @@ const Chat = () => {
       }
     }
   };
-
+  
   return (
-  <Box className={"chatSection"}>
+    <Box className={"chatSection"}>
     <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
       <List>
         {messages.map((message, index) => (
@@ -83,13 +88,13 @@ const Chat = () => {
       <Box style={{ padding: '20px' }}>
         <Box className={"chatTextField"}>
           <TextField
-            sx={{ flexGrow: 1, marginRight: '20px' }}
+            className={"focusedTextField .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline"}
+            sx={{ marginRight: '20px' }}
             id="message-input"
             label="Type Something"
             onKeyDown={handleKeyDown}
-            className={"focusedTextField .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline"}
           />
-          <Fab color="primary" aria-label="add" onClick={handleClick} sx={{ flexShrink: 0}}>
+          <Fab color="primary" aria-label="add" onClick={handleClick} sx={{ flexShrink: 0}} style={{ color: buttonColor }}>
             <SendIcon />
           </Fab>
         </Box>
