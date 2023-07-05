@@ -1,4 +1,4 @@
-import { ConfigurableModuleBuilder } from "@nestjs/common";
+
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 
@@ -154,7 +154,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 			}
 		}
 		else{
-			if (this.twoHost.length >= 1 && this.twoHost.length >= 2){
+			if (this.twoHost.length >= 1 && this.twoWaiting.length >= 2){
 				let host: [Socket, string, boolean, boolean, boolean, boolean] = this.twoHost.shift();
 				let opponent1 : Socket = this.twoWaiting.shift()
 				let opponent2 : Socket = this.twoWaiting.shift()

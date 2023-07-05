@@ -322,16 +322,16 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.paddle_init();
 
         this.socket.on("movement", (data: any) => {
-			if (data.player === 1)
+			if (data.which === 1)
             	if (this.paddle1.body)
                 	this.paddle1.setY(data.newPos + this.paddle1.body.height / 2);
-			if (data.player === 2)
+			if (data.which === 2)
             	if (this.paddle2.body)
                 	this.paddle2.setY(data.newPos + this.paddle2.body.height / 2);
-			if (data.player === 3)
+			if (data.which === 3)
             	if (this.paddle3.body)
                 	this.paddle3.setY(data.newPos + this.paddle3.body.height / 2);
-			if (data.player === 4)
+			if (data.which === 4)
             	if (this.paddle4.body)
                 	this.paddle4.setY(data.newPos + this.paddle4.body.height / 2);
         })
@@ -516,7 +516,9 @@ export default class oneVSoneOther extends Phaser.Scene{
                 this.paddle4.enableBody();
                 this.ball.setX(this.physics.world.bounds.width / 2);
                 this.ball.setY(this.physics.world.bounds.height / 2);
-                this.paddle2.setY(this.physics.world.bounds.height / 2);
+                this.paddle2.setY(this.physics.world.bounds.height / 4);
+                this.paddle3.setY(this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4);
+                this.paddle4.setY(this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4);
                 if (this.multi === true)
                     this.multiball.destroy(true);
                 this.multi = false;
@@ -554,11 +556,13 @@ export default class oneVSoneOther extends Phaser.Scene{
        		if (this.keys.w.isDown)
        		    this.paddle2.setVelocityY(-this.paddlespeed * this.modifier1);
        		if (this.keys.s.isDown)
-       		    this.paddle2.setVelocityY(this.paddlespeed * this.modifier1);
-				
+                if(this.paddle2.body)
+                    if (this.paddle2.body.y + this.paddle2.body.height + this.paddle2.body.height * 0.1 < this.physics.world.bounds.height / 2)
+                        this.paddle2.setVelocityY(this.paddlespeed * this.modifier1);
+	
        		if (this.paddle2.body){
        		    if (this.paddle2.body.y !== this.oldPosition)
-       		        this.socket.emit("movement", this.paddle2.body.y)
+       		        this.socket.emit("movement", {newPos: this.paddle2.body.y, which: 2})
        		    this.oldPosition = this.paddle2.body.y
        		}
 		}
@@ -567,13 +571,15 @@ export default class oneVSoneOther extends Phaser.Scene{
        		this.paddle3.setVelocityY(0);
 
 			if (this.keys.w.isDown)
-			this.paddle3.setVelocityY(-this.paddlespeed * this.modifier2);
+                if(this.paddle3.body)
+                    if (this.paddle3.body.y - this.paddle3.body.height * 0.1 > this.physics.world.bounds.height / 2)
+			            this.paddle3.setVelocityY(-this.paddlespeed * this.modifier2);
 			if (this.keys.s.isDown)
 			this.paddle3.setVelocityY(this.paddlespeed * this.modifier2);
 			
 			if (this.paddle3.body){
 				if (this.paddle3.body.y !== this.oldPosition)
-				this.socket.emit("movement", this.paddle3.body.y)
+				this.socket.emit("movement", {newPos: this.paddle3.body.y, which: 3})
 				this.oldPosition = this.paddle3.body.y
 			}
 		}
@@ -582,13 +588,15 @@ export default class oneVSoneOther extends Phaser.Scene{
 			this.paddle2.setVelocityY(0);
 			
        		if (this.keys.w.isDown)
-       		    this.paddle4.setVelocityY(-this.paddlespeed * this.modifier2);
+                if(this.paddle4.body)
+                    if (this.paddle4.body.y - this.paddle4.body.height * 0.1 > this.physics.world.bounds.height / 2)
+       		            this.paddle4.setVelocityY(-this.paddlespeed * this.modifier2);
        		if (this.keys.s.isDown)
        		    this.paddle4.setVelocityY(this.paddlespeed * this.modifier2);
 
        		if (this.paddle4.body){
        		    if (this.paddle4.body.y !== this.oldPosition)
-       		        this.socket.emit("movement", this.paddle4.body.y)
+       		        this.socket.emit("movement", {newPos: this.paddle4.body.y, which: 4})
        		    this.oldPosition = this.paddle4.body.y
        		}
 		}

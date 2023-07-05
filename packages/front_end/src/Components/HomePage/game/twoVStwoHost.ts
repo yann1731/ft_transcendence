@@ -446,7 +446,7 @@ export default class oneVSone extends Phaser.Scene{
                     this.paddle3.setY(data.newPos + this.paddle3.body.height / 2);
             if (data.which === 4)
                 if (this.paddle4.body)
-                    this.paddle.setY(data.newPos + this.paddle4.body.height / 2);
+                    this.paddle4.setY(data.newPos + this.paddle4.body.height / 2);
         })
 
         if (this.powerup){
@@ -644,30 +644,9 @@ export default class oneVSone extends Phaser.Scene{
 		
         if (this.paddle1.body){
             if (this.paddle1.body.y !== this.oldPosition)
-                this.socket.emit("movement", {pos: this.paddle1.body.y, player: 1})
+                this.socket.emit("movement", {newPos: this.paddle1.body.y, which: 1})
             this.oldPosition = this.paddle1.body.y
         }
-
-        /* if (this.keys.q.isDown)
-            if (this.paddle3.body)
-                if (this.paddle3.body.y - this.paddle3.body.height * 0.1 > this.physics.world.bounds.height / 2)
-                    this.paddle3.setVelocityY(-this.paddlespeed * this.modifier1);
-        if (this.keys.a.isDown)
-            this.paddle3.setVelocityY(this.paddlespeed * this.modifier1);
-		
-        if (this.cursors?.up.isDown)
-        this.paddle2.setVelocityY(-this.paddlespeed * this.modifier2);
-        if (this.cursors?.down.isDown)
-            if (this.paddle2.body)
-                if (this.paddle2.body.y + this.paddle2.body.height + this.paddle2.body.height * 0.1 < this.physics.world.bounds.height / 2)
-                    this.paddle2.setVelocityY(this.paddlespeed * this.modifier2);
-
-        if (this.keys.e.isDown)
-            if (this.paddle4.body)
-                if (this.paddle4.body.y - this.paddle4.body.height * 0.1 > this.physics.world.bounds.height / 2)
-                    this.paddle4.setVelocityY(-this.paddlespeed * this.modifier2);
-        if (this.keys.d.isDown)
-        this.paddle4.setVelocityY(this.paddlespeed * this.modifier2); */
         
         if (this.paddlespeed < 625)
             this.paddlespeed += 0.5;
