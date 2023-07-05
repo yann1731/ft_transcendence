@@ -14,6 +14,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+//VÉRIFIER QUE L'IAMGE SE MET À JOUR DANS CHATINUSE, DANS L'UTILISATEUR ET DANS LES CHATROOMS
 
 export default function OptionBarChans() {
 
@@ -21,7 +22,7 @@ export default function OptionBarChans() {
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [isCreationWindowOpen, setWindowIsOpen] = React.useState(false);
     const [channelName, setChannelName] = React.useState('');
-    const [channelPicture, setChannelPicture] = React.useState<string | null>(null);
+    const [channelPicture, setChannelPicture] = React.useState<string | undefined>(undefined);
     const [isProtected, setIsProtected] = React.useState('public');
     const [pwd, setPassword] = React.useState<string | null> ('');
     const [mode, setMode] = React.useState<string>('');
@@ -46,16 +47,30 @@ export default function OptionBarChans() {
       };
   
       fetchChannels();
-    }, []);
+    }, [chatroom]);
 
-    const DeleteChatInUse = (Name: string, Picture: string) => {
-      const chatInUse: Partial<User> = {
-        chatInUse: {
-        Name: Name,
-        Picture: Picture,
-        },
-      };
-      updateUser(chatInUse);
+    const DeleteChatInUse = (Name: string) => {
+      if (user?.Chatroom && user?.Chatroom.length !== 0)
+      {
+        const chatroom = user?.Chatroom?.find((obj) => {
+          return obj.name === Name;
+        });
+        user.chatInUse = chatroom;
+        const updatedUser: Partial<User> = {
+          ...user,
+          chatInUse: chatroom,
+        };
+        updateUser(updatedUser);
+      }
+      else if (user !== null)
+      {
+        const chatroom = undefined;
+        const updatedUser: Partial<User> = {
+          ...user,
+          chatInUse: chatroom,
+        };
+        updateUser(updatedUser);
+      }
     }
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -75,7 +90,7 @@ export default function OptionBarChans() {
       setDialog(false);
     };
     
-    const handlePictureSelection = (picture: string | null) => {
+    const handlePictureSelection = (picture: string | undefined) => {
       setChannelPicture(picture);
     };
     
@@ -95,6 +110,21 @@ export default function OptionBarChans() {
         handleCloseUserMenu();
     };
     
+    const SetChatInUse = (name: string) => {
+      if (user !== null)
+      {
+        const chatroom = user?.Chatroom?.find((obj) => {
+          return obj.name === name;
+        });
+        user.chatInUse = chatroom;
+        const updatedUser: Partial<User> = {
+          ...user,
+          chatInUse: chatroom,
+        };
+        updateUser(updatedUser);
+      }
+    };
+
     const handleChannel = async () => {
       if (!channelName) {
         alert('No channel name given')
@@ -116,8 +146,12 @@ export default function OptionBarChans() {
           try {
             const response = await axios.post('http://localhost:4242/chatroom/password', newChannel);
             
-            if (response.status === 200) {
+            if (response.status === 201) {
               console.log('Chatroom created:', response.data);
+              const newChannelData: Chatroom = response.data;
+              const updatedChatrooms: Chatroom[] = [...user?.Chatroom || [], newChannelData];
+              const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+              updateUser(updatedUser);
             }
           } catch (error) {
             console.error('Error creating chatroom:', error);
@@ -129,9 +163,12 @@ export default function OptionBarChans() {
         {
           try {
             const response = await axios.post('http://localhost:4242/chatroom', newChannel);
-            
-            if (response.status === 200) {
+            if (response.status === 201) {
               console.log('Chatroom created:', response.data);
+              const newChannelData: Chatroom = response.data;
+              const updatedChatrooms: Chatroom[] = [...user?.Chatroom || [], newChannelData];
+              const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+              updateUser(updatedUser);
             }
           } catch (error) {
             console.error('Error creating chatroom:', error);
@@ -139,14 +176,28 @@ export default function OptionBarChans() {
           }
         }
       }
-      else if (mode === 'edit')
+      else if (mode === 'Edit')
       {
         try {
           const response = await axios.patch(`http://localhost:4242/chatroom/${channelName}`, newChannel);
           console.log('Chatroom modified:', response.data);
+          
+          const newChannelData: Chatroom = response.data;
+          const channelIndex = user?.Chatroom?.findIndex((obj) => obj.name === channelName);
+          
+          if (channelIndex && channelIndex !== -1) {
+            const updatedChatrooms: Chatroom[] = [
+              ...(user?.Chatroom?.slice(0, channelIndex) || []),
+              newChannelData,
+              ...(user?.Chatroom?.slice(channelIndex + 1) || []),
+            ];
+            
+            const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+            updateUser(updatedUser);
+          } 
         } catch (error) {
           console.error('Error editing chatroom:', error);
-          alert('Error changing chatroom');
+          alert('Error: could not edit channel');
         }
       }
       else
@@ -154,7 +205,12 @@ export default function OptionBarChans() {
         try {
           const response = await axios.delete(`http://localhost:4242/chatroom/${channelName}`);
           console.log('Chatroom deleted:', response.data);
-          DeleteChatInUse('', '')
+          const updatedUser: Partial<User> = {
+            ...user,
+            Chatroom: user?.Chatroom?.filter((obj) => obj.name !== channelName),
+          };
+          updateUser(updatedUser);
+          DeleteChatInUse(channelName)
           setDialog(false);
         } catch (error) {
           console.error('Error deleting chatroom:', error);

@@ -14,7 +14,7 @@ interface MyChannelsProps {
 
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
     const [channels, setChannels] = useState<Chatroom[]>([]);
-    const {updateUser} = useContext(UserContext);
+    const {updateUser, user} = useContext(UserContext);
 
     
     useEffect(() => {
@@ -38,30 +38,25 @@ interface MyChannelsProps {
     channel.name.toLowerCase().includes(searchText.toLowerCase())
     );
  
-    const SetChatInUse = (name: string, picture: string | undefined | null) => {
-      if (picture !== null) {
-        const chatInUse: Partial<User> = {
-          chatInUse: {
-          Name: name,
-          Picture: picture,
-          },
+    const SetChatInUse = (name: string) => {
+      if (user !== null)
+      {
+        const chatroom = user?.Chatroom?.find((obj) => {
+          return obj.name === name;
+        });
+        user.chatInUse = chatroom;
+        const updatedUser: Partial<User> = {
+          ...user,
+          chatInUse: chatroom,
         };
-        updateUser(chatInUse);
+        updateUser(updatedUser);
       }
-      else {
-        const chatInUse: Partial<User> = {
-          chatInUse: {
-          Name: name,
-          },
-        };
-        updateUser(chatInUse);
-      }
-    }
+    };
     
     return (
     <List>
         {filteredChannels.map((channel) => (
-            <ListItemButton key={channel.id} onClick={() => SetChatInUse(channel.name, channel.picture)}>
+            <ListItemButton key={channel.id} onClick={() => SetChatInUse(channel.name)}>
                 <ListItemIcon>
                     <Avatar alt={channel.name} src={channel.picture || undefined} />
                 </ListItemIcon>

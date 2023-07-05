@@ -52,22 +52,8 @@ export default function OptionBarFriends() {
     };
 
     const friendsOption = (option: string) => {
-      switch(option)
-      {
-        case 'Add Friend':
-          handleMode('Add');
-          break;
-        case 'Block':
-          handleMode('Block');
-          break;
-        case 'Invite to Play':
-            handleMode('Invite');
-            break;
-        case 'View Profile':
-            handleMode('View');
-            break;
-      }
-        handleCloseUserMenu();
+      handleMode(option);
+      handleCloseUserMenu();
     };
 
     const handleFriends = async () => {

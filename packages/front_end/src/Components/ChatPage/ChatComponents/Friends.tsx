@@ -25,30 +25,26 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   friend.name.toLowerCase().includes(searchText.toLowerCase())
   );
   
-  const SetChatInUse = (name: string, picture: string | undefined | null) => {
-    if (picture !== null) {
-      const chatInUse: Partial<User> = {
-        chatInUse: {
-        Name: name,
-        Picture: picture,
-        },
+  const SetChatInUse = (name: string) => {
+    if (user !== null)
+    {
+      const chatroom = user?.Chatroom?.find((obj) => {
+        return obj.name === name;
+      });
+      user.chatInUse = chatroom;
+      const updatedUser: Partial<User> = {
+        ...user,
+        chatInUse: chatroom,
       };
-      updateUser(chatInUse);
+      
+      updateUser(updatedUser);
     }
-    else {
-      const chatInUse: Partial<User> = {
-        chatInUse: {
-        Name: name,
-        },
-      };
-      updateUser(chatInUse);
-    }
-  }
+  };
   
     return (
       <List>
         {filteredFriends.map((friend) => (
-          <ListItemButton key={friend.id} onClick={() => SetChatInUse(friend.name, friend.avatar)}>
+          <ListItemButton key={friend.id} onClick={() => SetChatInUse(friend.name)}>
             <ListItemIcon>
               <Avatar alt={friend.name} src={friend.avatar} />
             </ListItemIcon>

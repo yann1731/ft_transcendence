@@ -96,7 +96,7 @@ export interface ChatroomUser {
 export interface Chatroom {
     name: string;
     id: string ;
-    picture?: string | null;
+    picture?: string;
 	messages?: ChatroomMessage[] ;
 	state: string ;
 	chatroomOwner?: User | null;
@@ -141,6 +141,5 @@ export interface HallOfFame {
 }
 
 export interface ChatInUse {
-    Name: string;
-    Picture?: string;
+    Chat: Chatroom;
 }
