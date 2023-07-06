@@ -23,8 +23,11 @@ export default function OptionBarChans() {
     const [channelPicture, setChannelPicture] = React.useState<string | null>(null);
     const [isProtected, setIsProtected] = React.useState('public');
     const [pwd, setPassword] = React.useState<string | null> ('');
+    const [join, setJoinPassword] = React.useState<string | null> ('');
     const [mode, setMode] = React.useState<string>('');
-    const [chatroom, setChatroom] = React.useState<Chatroom[]>([]);
+    const [ownChatroom, setOwnChatroom] = React.useState<Chatroom[]>([]);
+    const [adminChatroom, setAdminChatroom] = React.useState<Chatroom[]>([]);
+    const [joinChatroom, setJoinChatroom] = React.useState<Chatroom[]>([]);
     const {user, updateUser} = useContext(UserContext);
     const theme = useTheme();
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
@@ -33,19 +36,41 @@ export default function OptionBarChans() {
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
-          const response = await axios.get('http://localhost:4242/chatroom'); // Replace with your backend endpoint
-          
+          const response = await axios.get('http://localhost:4242/chatroom');
           if (response.status === 200) {
             const chatroomData: Chatroom[] = response.data;
-            setChatroom(chatroomData);
-          }
+            const ownerChat: Chatroom[] = [];
+            const joinChat: Chatroom[] = [];
+            const adminChat: Chatroom[] = [];
+
+            chatroomData.forEach(chat => {
+              const isUser = chat.users?.find((obj) => {
+                return obj.id === user?.id;
+              });
+              if (isUser !== undefined)
+                adminChat.push(chat);
+              if (chat.userId === user?.id)
+              {
+                adminChat.push(chat);
+                ownerChat.push(chat);
+              }
+              else
+              {
+                if (chat.state !== 'private')
+                  joinChat.push(chat);
+              }
+              })
+              setOwnChatroom(ownerChat);
+              setAdminChatroom(adminChat);
+              setJoinChatroom(joinChat);
+            }
         } catch (error) {
           console.error('Error fetching channels:', error);
         }
       };
-  
+      
       fetchChannels();
-    }, [chatroom]);
+    }, [ownChatroom, joinChatroom, adminChatroom]);
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
@@ -98,7 +123,6 @@ export default function OptionBarChans() {
         password: isProtected === 'pwProtected' ? pwd : null,
       };
       console.log(newChannel);
-      
       if (mode === 'Create')
       {
         if (isProtected === 'pwProtected')
@@ -240,6 +264,19 @@ export default function OptionBarChans() {
       }
     };
 
+    const getOptionsByMode = () => {
+      switch (mode) {
+        case 'Delete':
+          return ownChatroom;
+        case 'Join':
+          return joinChatroom;
+        case 'Edit':
+          return adminChatroom;
+        default:
+          return [];
+      }
+    };
+
     const channelHandlerWindow = (
       <Box
         sx={{
@@ -273,26 +310,26 @@ export default function OptionBarChans() {
           /> 
           : 
           <Autocomplete
-              disablePortal
-              id="Channels"
-              options={chatroom}
-              getOptionLabel={(option) => decodeURIComponent(option.name)}
-              fullWidth
-              sx={{ marginBottom: 2 }}
-              onChange={handleChannelSelection}
-              renderInput={(params) => 
-              <TextField
-                {...params}
-                className="newChannelTextField"
-                sx={{
-                  '& label': { color: createChannelcolors },
-                  '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
-                }}
-                label="Channels" 
-              />
-        }
-        />}
-        {mode !== 'Delete' && (
+          disablePortal
+          id="Channels"
+          options={getOptionsByMode()}
+          getOptionLabel={(option) => decodeURIComponent(option.name)}
+          fullWidth
+          sx={{ marginBottom: 2 }}
+          onChange={handleChannelSelection}
+          renderInput={(params) => 
+            <TextField
+            {...params}
+            className="newChannelTextField"
+            sx={{
+              '& label': { color: createChannelcolors },
+              '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+            }}
+            label="Channels" 
+            />
+          }
+          />}
+        {mode !== 'Delete' && mode !== 'Join' && (
           <Accordion variant="outlined" sx={{ marginBottom: 2 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="body1">Channel Privacy</Typography>
@@ -304,8 +341,8 @@ export default function OptionBarChans() {
                 value="public"
                 control={
                   <Checkbox 
-                    checked={isProtected === 'public'} 
-                    sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
+                  checked={isProtected === 'public'} 
+                  sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
                   />
                 }
                 label="Public"
@@ -328,8 +365,8 @@ export default function OptionBarChans() {
                 value="protected"
                 control={
                   <Checkbox 
-                    checked={isProtected === 'pwProtected'} 
-                    sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
+                  checked={isProtected === 'pwProtected'} 
+                  sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
                   />
                 }
                 label="Password Protected"
@@ -350,9 +387,9 @@ export default function OptionBarChans() {
           </AccordionDetails>
         </Accordion>
         )}
-        {mode !== 'Delete' && (
+        {mode !== 'Delete' && mode !== 'Join' && (
           <ChanPictureSetter onPictureSelected={handlePictureSelection} />
-        )}
+          )}
         {mode !== 'Delete' ?
         <Button onClick={handleChannel} className="profilePageButtons">
           {mode}
@@ -390,9 +427,50 @@ export default function OptionBarChans() {
             </Dialog>
           </Box>
         )}
+        {mode === 'Join' && isProtected !== 'pwProtected' && (
+        <Button onClick={handleChannel} className="profilePageButtons">
+          {mode}
+        </Button>)}
+        {mode === 'Join' && isProtected === 'pwProtected' && (
+          <Box>
+            <Dialog
+              open={isDialogOpen}
+              onClose={handleCloseWindow}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              >
+              <DialogTitle id="alert-dialog-title">
+                {"Please, enter password to join the chat!"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText color={"red"} id="alert-dialog-description" textAlign={'center'}>
+                  Enter Password: 
+                  <TextField
+                      variant='outlined'
+                      label="Password"
+                      fullWidth
+                      className="newChannelTextField"
+                      sx={{ 
+                        marginBottom: 2,
+                        marginTop: 2,
+                        '& label': { color: createChannelcolors },
+                        '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+                      }}
+                      value={join}
+                      onChange={(e) => setJoinPassword(e.target.value)}
+                    /> 
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button className="profilePageButtons" onClick={handleCloseWindow}>Cancel</Button>
+                <Button className="profilePageButtons" onClick={handleChannel}>Join</Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        )}
       </Box>
     );
-
+    
   return (
       <AppBar position="relative" sx={{ boxShadow: '0' }}>
       <Box className={"chatOptionBars"}>
