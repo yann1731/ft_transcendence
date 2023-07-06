@@ -282,6 +282,7 @@ export default class oneVSthreeHost extends Phaser.Scene{
     }
 
     create() {
+        this.load.on("complete", this.preload);
         this.text_init();
         this.ball_init();
         this.paddle_init();
@@ -289,6 +290,18 @@ export default class oneVSthreeHost extends Phaser.Scene{
         this.keys.a  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);  
         this.keys.d  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);  
         
+        this.socket.on("movement2", (data: any) => {
+			if (data.which === 2)
+            	if (this.paddle2.body)
+                	this.paddle2.setY(data.newPos + this.paddle2.body.height / 2);
+			if (data.which === 3)
+            	if (this.paddle3.body)
+                	this.paddle3.setX(data.newPos + this.paddle3.body.width / 2);
+			if (data.which === 4)
+            	if (this.paddle4.body)
+                	this.paddle4.setY(data.newPos + this.paddle4.body.height / 2);
+        })
+
         if (this.powerup){
             this.power = new PowerUp(this, Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1));
             this.physics.add.overlap(this.ball, this.power, this.power_up, undefined, this);
@@ -315,10 +328,10 @@ export default class oneVSthreeHost extends Phaser.Scene{
             this.ball.enableBody();
             this.ball.setX(this.physics.world.bounds.width / 2);
             this.ball.setY(this.physics.world.bounds.height / 2);
-            this.paddle1.setY(this.physics.world.bounds.height / 2);
+            this.paddle1.setX(this.physics.world.bounds.width / 2);
             this.paddle2.setY(this.physics.world.bounds.height / 2);
             this.paddle3.setX(this.physics.world.bounds.width / 2);
-            this.paddle4.setX(this.physics.world.bounds.width / 2);
+            this.paddle4.setY(this.physics.world.bounds.height / 2);
             if (this.multi === true)
                 this.multiball.destroy(true);
             this.multi = false;
@@ -333,20 +346,24 @@ export default class oneVSthreeHost extends Phaser.Scene{
             this.paddlespeed = 400;
             this.modifier1 = 1;
             this.modifier2 = 1;
-            this.paddle1.setScale(0.15, 0.25);
+            this.reduce = true;
+            this.paddle1.setScale(1.5, 0.25);
             this.paddle2.setScale(0.15, 0.25);
 			this.paddle3.setScale(0.35, 0.15);
-			this.paddle4.setScale(1.5, 0.15);
+			this.paddle4.setScale(0.15, 0.25);
             this.ball.setTexture("ball")
             this.ball.setScale(0.2);
             if (this.powerup === true){
                 this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
                 this.power.enableBody(true, this.power.x, this.power.y, true, true);
+                this.socket.emit("newPower", {x: this.power.x, y: this.power.y});
             }
         }, [], this);
     }
 
     end(player: number) {
+        if (this.power)
+            this.power.setVisible(false);
         if (player === 1)
             this.player2VictoryText.setVisible(true);
         else
@@ -360,7 +377,7 @@ export default class oneVSthreeHost extends Phaser.Scene{
     	/* if (this.ball.body)
            if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width || this.ball.body.x === 0 ||
 			this.ball.body.y === 0) {
-                this.socket.emit("point", 0);
+                this.socket.emit("point", 1);
 				if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width)
                 	this.ball.body.x = this.physics.world.bounds.width - 1 - this.ball.body.width;
 				else if (this.ball.body.x === 0)
@@ -375,6 +392,7 @@ export default class oneVSthreeHost extends Phaser.Scene{
                 this.inverse.setVisible(false);
                 this.multiBall.setVisible(false);
                 this.points2++;
+                this.reduce = false;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points2 === this.win)
                     this.end(2);
@@ -388,7 +406,7 @@ export default class oneVSthreeHost extends Phaser.Scene{
             if (this.multiball.body)
 				if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width || this.multiball.body.x === 0 ||
 					this.multiball.body.y === 0) {
-                    this.socket.emit("point", 0);
+                    this.socket.emit("point", 1);
 					if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width)
                     	this.multiball.body.x = this.physics.world.bounds.width - 1 - this.multiball.body.width;
 					else if (this.multiball.body.x === 0)
@@ -402,6 +420,7 @@ export default class oneVSthreeHost extends Phaser.Scene{
                     this.inverse.setVisible(false);
                     this.multiBall.setVisible(false);
                     this.points2++;
+                    this.reduce = false;
                     this.score.setText(`${this.points2}          ${this.points1}`);
                     if (this.points2 === this.win)
                         this.end(2);
@@ -412,13 +431,14 @@ export default class oneVSthreeHost extends Phaser.Scene{
         if (this.ball.body)
             if (this.ball.body?.y + this.ball.body.height === this.physics.world.bounds.height) {
                 this.ball.body.y = this.physics.world.bounds.height - 1 - this.ball.body.y;
-                this.socket.emit("point", 1);
+                this.socket.emit("point", 0);
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
                 this.inverse.setVisible(false);
                 this.multiBall.setVisible(false);
                 this.points1++;
+                this.reduce = false;
                 if (this.multi === true)
                     this.multiball.disableBody();
                 this.score.setText(`${this.points2}          ${this.points1}`);
@@ -432,21 +452,22 @@ export default class oneVSthreeHost extends Phaser.Scene{
             if (this.multiball.body)
 				if (this.multiball.body?.y + this.multiball.body.height === this.physics.world.bounds.height) {
                 	this.multiball.body.y = this.physics.world.bounds.height - 1 - this.multiball.body.y;
-                    this.socket.emit("point", 1);
+                    this.socket.emit("point", 0);
                     this.smash.setVisible(false);
                     this.bigBall.setVisible(false);
                     this.bigPaddle.setVisible(false);
                     this.inverse.setVisible(false);
                     this.multiBall.setVisible(false);
                     this.points1++;
+                    this.reduce = false;
                     this.multiball.disableBody();
                     this.score.setText(`${this.points2}          ${this.points1}`);
                     if (this.points1 === this.win)
                         this.end(1);
                     else
                         this.new_point(2);
-                } 
-         */
+                }  */
+        
 
        
         this.paddle1.setVelocityX(0);
@@ -457,9 +478,9 @@ export default class oneVSthreeHost extends Phaser.Scene{
             this.paddle1.setVelocityX(-this.paddlespeed * this.modifier2);
 		
        if (this.paddle1.body){
-           if (this.paddle1.body.y !== this.oldPosition)
-               this.socket.emit("movement2", {newPos: this.paddle1.body.y, which: 1})
-           this.oldPosition = this.paddle1.body.y
+           if (this.paddle1.body.x !== this.oldPosition)
+               this.socket.emit("movement2", {newPos: this.paddle1.body.x, which: 1})
+           this.oldPosition = this.paddle1.body.x
        }
 
         this.ball.angle += this.rotation;
@@ -471,18 +492,18 @@ export default class oneVSthreeHost extends Phaser.Scene{
                     this.newOldVelocityX = 0;
                     this.ball.setDrag(1.05)
                 }
-            if(this.ball.body.velocity.x >= 1000)
+            if(this.ball.body.velocity.x >= 700)
                 this.ball.setDrag(1);
         }
         
 
         if (this.paddlespeed < 700)
             this.paddlespeed += 0.5;
-		this.paddleScale -= this.rate;
         if (this.reduce === true){
+            this.paddleScale -= this.rate;
 		    this.paddle1.setScale(this.paddleScale, 0.15)
 		    if (this.paddleScale <= 0.35){
-                this.socket.emit("point", 0)
+                this.socket.emit("point", 1)
                 this.reduce = false;
 		    	this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
@@ -525,47 +546,61 @@ export default class oneVSthreeHost extends Phaser.Scene{
                     this.time.delayedCall(1000, () => {
                         this.bigPaddle.setVisible(false)
                     }, [], this);
-					switch (Phaser.Math.RND.between(1, 3)){
-						case 1:
-							this.paddle1.setScale(0.5, 0.90);
-                        	this.time.delayedCall(7500, () => {
-                            	this.paddle1.setScale(0.15, 0.25);
-                        	}, [], this);
-							break;
-						case 2:
-							this.paddle2.setScale(0.5, 0.90);
-                        	this.time.delayedCall(7500, () => {
-                            	this.paddle2.setScale(0.15, 0.25);
-                        	}, [], this);
-							break;
-						case 3:
-							this.paddle3.setScale(0.9, 0.5);
-                        	this.time.delayedCall(7500, () => {
-                            	this.paddle3.setScale(0.25, 0.15);
-                        	}, [], this);
-							break;
-					}
-					break;
+                    if (this.ball.body.velocity.x > 0){
+                        if (Phaser.Math.RND.frac() === 1){
+                            this.socket.emit("power", {which: 2, player: 1});
+                        	this.paddle1.setScale(0.5, 0.90);
+                        }
+						else
+                        {
+                            this.socket.emit("power", {which: 2, player: 3});
+                        	this.paddle3.setScale(0.5, 0.90);
+                        }
+                        this.time.delayedCall(7500, () => {
+                            this.paddle1.setScale(0.15, 0.25);
+                            this.paddle3.setScale(0.15, 0.25);
+                        }, [], this);
+                    } else{
+						if (Phaser.Math.RND.frac() === 1){
+                        	this.paddle2.setScale(0.5, 0.90);
+                            this.socket.emit("power", {which: 2, player: 2});
+                        }
+						else{
+                        	this.paddle4.setScale(0.5, 0.90);
+                            this.socket.emit("power", {which: 2, player: 4});
+                        }
+                        this.time.delayedCall(7500, () => {
+                            this.paddle2.setScale(0.15, 0.25);
+                            this.paddle4.setScale(0.15, 0.25);
+                        }, [], this);
+                    }
+                    break;
                 case 3:
                     this.inverse.setVisible(true);
                     this.time.delayedCall(1000, () => {
                         this.inverse.setVisible(false)
                     }, [], this);
-					if (Phaser.Math.RND.frac() === 1)
-                    	this.modifier1 = -1;
-					else
-						this.modifier2 = -1;
-                    this.time.delayedCall(5000, () => {
-                            this.modifier1 = 1;
+                    if (this.ball.body.velocity.x > 0){
+                        this.socket.emit("power", {which: 3, player: 2});
+                        this.modifier2 = -1;
+                        this.time.delayedCall(5000, () => {
                             this.modifier2 = 1;
-                    }, [], this);
+                        }, [], this);
+                    } else{
+                        this.socket.emit("power", {which: 3, player: 1});
+                        this.modifier1 = -1;
+                        this.time.delayedCall(5000, () => {
+                            this.modifier1 = 1;
+                        }, [], this);
+                    }
                     break;
                 case 4:
+                    this.socket.emit("power", {which: 4});
                     this.bigBall.setVisible(true);
                     this.time.delayedCall(1000, () => {
                         this.bigBall.setVisible(false)
                     }, [], this);
-                    this.ball.setTexture("bigball")
+                    this.ball.setTexture("bigBall")
                     this.ball.setScale(1, 1);
                     this.time.delayedCall(5000, () => {
                         this.ball.setTexture("ball")
@@ -574,6 +609,7 @@ export default class oneVSthreeHost extends Phaser.Scene{
                     break;
                 case 5:
                     if (this.ball.body){
+                        this.socket.emit("power", {which: 5})
                         this.multiBall.setVisible(true);
                         this.time.delayedCall(1000, () => {
                             this.multiBall.setVisible(false)
@@ -615,6 +651,7 @@ export default class oneVSthreeHost extends Phaser.Scene{
 
         this.time.delayedCall(Phaser.Math.RND.between(2000, 7000), () => {
             this.power.enableBody(true, this.power.x, this.power.y, true, true);
+            this.socket.emit("newPower", {x: this.power.x, y: this.power.y})
         }, [], this);
 
         this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))

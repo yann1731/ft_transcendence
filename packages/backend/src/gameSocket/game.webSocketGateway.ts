@@ -53,7 +53,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	@SubscribeMessage("update")
 	handleUpdate(client: Socket, data: any){
 		const room = Array.from(client.rooms).filter(room => room !== client.id)
-		client.broadcast.to(String(room[0])).emit("update", {x: data.x, y: data.y});
+		client.broadcast.to(String(room[0])).emit("update", data);
 	}
 	
 	@SubscribeMessage("multi")

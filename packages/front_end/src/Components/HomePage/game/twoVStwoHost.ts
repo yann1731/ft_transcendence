@@ -429,6 +429,7 @@ export default class oneVSone extends Phaser.Scene{
     }
 
     create() {
+        
         this.map_init();
         this.text_init();
         this.ball_init();

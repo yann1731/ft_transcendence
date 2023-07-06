@@ -14,11 +14,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-
 
 export default function OptionBarChans() {
 
@@ -36,7 +31,6 @@ export default function OptionBarChans() {
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
     const [isDialogOpen, setDialog] = React.useState(false);
 
-    const [isDialogOpen, setDialog] = React.useState(false);
 
     React.useEffect(() => {
       const fetchChannels = async () => {
@@ -98,9 +92,6 @@ export default function OptionBarChans() {
       setDialog(true);
     }
 
-    const handleDialog = () => {
-      setDialog(true);
-    }
 
     const chanOption = (option: string) => {
         handleMode(option);

@@ -253,6 +253,7 @@ export default class threeVSoneOther extends Phaser.Scene{
     }
 
     create() {
+        this.load.on("complete", this.preload);
         this.text_init();
         this.ball_init();
         this.paddle_init();
@@ -260,7 +261,7 @@ export default class threeVSoneOther extends Phaser.Scene{
         this.socket.on("movement2", (data: any) => {
 			if (data.which === 1)
             	if (this.paddle1.body)
-                	this.paddle1.setY(data.newPos + this.paddle1.body.height / 2);
+                	this.paddle1.setX(data.newPos + this.paddle1.body.width / 2);
 			if (data.which === 2)
             	if (this.paddle2.body)
                 	this.paddle2.setY(data.newPos + this.paddle2.body.height / 2);
@@ -277,6 +278,7 @@ export default class threeVSoneOther extends Phaser.Scene{
                 this.ball.setX(data.x + this.ball.body.width / 2)
                 this.ball.setY(data.y + this.ball.body.height / 2)
             }
+            console.log(data.scale);
 			this.paddle1.setScale(data.scale, 0.15);
         })
 
@@ -401,8 +403,6 @@ export default class threeVSoneOther extends Phaser.Scene{
                 this.player2Score.setVisible(true);
             this.rotation = 0;
             this.time.delayedCall(1500, () => {
-                if (this.multi === true)
-                        this.multiball.destroy();
                 this.rotation = 1;
                 this.player1Score.setVisible(false);
                 this.player2Score.setVisible(false);
@@ -412,17 +412,17 @@ export default class threeVSoneOther extends Phaser.Scene{
                 this.ball.setX(this.physics.world.bounds.width / 2);
                 this.ball.setY(this.physics.world.bounds.height / 2);
                 this.paddle2.setY(this.physics.world.bounds.height / 4);
-                this.paddle3.setY(this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4);
-                this.paddle4.setY(this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4);
+                this.paddle3.setX(this.physics.world.bounds.width / 2);
+                this.paddle4.setY(this.physics.world.bounds.height / 2);
                 if (this.multi === true)
                     this.multiball.destroy(true);
                 this.multi = false;
                 this.paddlespeed = 400;
+                this.paddleScale = 1.5
                 this.modifier1 = 1;
                 this.modifier2 = 1;
-                this.paddle1.setScale(0.15, 0.25);
                 this.paddle2.setScale(0.15, 0.25);
-                this.paddle3.setScale(0.15, 0.25);
+                this.paddle3.setScale(0.35, 0.15);
                 this.paddle4.setScale(0.15, 0.25);
                 this.ball.setTexture("ball")
                 this.ball.setScale(0.2);

@@ -2,7 +2,7 @@
 import io from 'socket.io-client';
 import Phaser from "phaser";
 import '../../../App.css';
-import { NumberLiteralType } from 'typescript';
+
 
 
 interface gameData {
@@ -831,7 +831,7 @@ export default class option extends Phaser.Scene{
 				this.time.delayedCall(2000, () => {
 					game.setText('game starting in 1');
 				}, [], this);
-				this.time.delayedCall(3000, () => {
+				this.time.delayedCall(3050, () => {
 					this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed, socket: this.socket, ballX: data.ballX, ballY: data.ballY})
 				}, [], this);
 				});
