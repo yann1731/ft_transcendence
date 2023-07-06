@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
 
 interface ChanPictureSetterProps {
   onPictureSelected: (picture: string) => void;
