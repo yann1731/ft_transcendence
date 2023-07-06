@@ -4,6 +4,8 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2'
 import { CreatePasswordChatroomDto } from './dto/create-passwordChatroom.dto';
+import { Prisma } from '@prisma/client';
+const {validator } = Prisma;
 
 @Injectable()
 export class ChatroomService { //specifically to create a password protected chatroom
@@ -11,11 +13,12 @@ export class ChatroomService { //specifically to create a password protected cha
 
   async createWithPass(createPasswordChatroomDto: CreatePasswordChatroomDto) {
     const hashedPass = await argon2.hash(createPasswordChatroomDto.password);
+    const defaultPicture = 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg';
     const chatroom = await this.prisma.chatroom.create({
       data: {
         chatroomOwner: {connect: { id: createPasswordChatroomDto.userId}},
         name: createPasswordChatroomDto.name,
-        picture: createPasswordChatroomDto.picture !== null ? createPasswordChatroomDto.picture : undefined,
+        picture: createPasswordChatroomDto.picture !== null ? createPasswordChatroomDto.picture : defaultPicture,
         state: createPasswordChatroomDto.state,
         password: hashedPass,
       }
@@ -28,18 +31,26 @@ export class ChatroomService { //specifically to create a password protected cha
   
   async create(createChatroomDto: CreateChatroomDto) { //creates either a public or private chatroom. Associates ownerId to the user who created it
     const defaultPicture = 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg';
+
+    const { name } = createChatroomDto;
+
+    const encodedName = encodeURIComponent(name);
+
     const chatroom = await this.prisma.chatroom.create({
       data: {
         chatroomOwner: {connect: { id: createChatroomDto.userId}},
-        name: createChatroomDto.name,
+        name: encodedName,
         picture: createChatroomDto.picture !== null ? createChatroomDto.picture : defaultPicture,
         state: createChatroomDto.state,
       }
     });
     if (!chatroom)
-      throw new BadRequestException;
-    else
+      throw new BadRequestException('Failed to create chatroom');
+    else {
+      console.log("created " + createChatroomDto.name);
+      console.log("it created " + name);
       return chatroom ;
+    }
   }
 
   async findAll() { //returns all currently created chatrooms
@@ -64,16 +75,17 @@ export class ChatroomService { //specifically to create a password protected cha
   }
 
   async update(name: string, updateChatroomDto: UpdateChatroomDto) { 
-    const { state, picture, password } = updateChatroomDto; 
+    const { state, picture, password } = updateChatroomDto;
+    const encodedName = encodeURIComponent(name);
     let updatedPicture = picture; 
     if (updatedPicture === "") {
       updatedPicture = 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg'; 
-  }
+    }
     if (password)
     {
       const hashedPass = await argon2.hash(updateChatroomDto.password.toString());
       const chatroom = await this.prisma.chatroom.update({where: {
-        name
+        name : encodedName,
       },
       data: {
         state,
@@ -83,15 +95,18 @@ export class ChatroomService { //specifically to create a password protected cha
           create: [updateChatroomDto.users]
         }
       }});
-      if (!chatroom)
+      if (!chatroom) {
         throw new BadRequestException;
-      else
+      }
+      else {
+        console.log("updated " + name);
         return chatroom;
+      }
     }
     else
     {
       const chatroom = await this.prisma.chatroom.update({where: {
-        name
+        name: encodedName,
       },
       data: {
         state,
@@ -109,10 +124,11 @@ export class ChatroomService { //specifically to create a password protected cha
   }
 
   async remove(name: string) { //deletes a chatroom. Will also need to delete all users associated with this chatroom
-    const chatroom = await this.prisma.chatroom.delete({where: { name }});
+    const encodedName = encodeURIComponent(name)
+    const chatroom = await this.prisma.chatroom.delete({where: { name: encodedName }});
     if (!chatroom)
       throw new BadRequestException;
-    else
+    else 
       return chatroom;
   }
 }

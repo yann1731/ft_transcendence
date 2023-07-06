@@ -14,6 +14,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
 
 export default function OptionBarChans() {
 
@@ -31,6 +36,8 @@ export default function OptionBarChans() {
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
     const [isDialogOpen, setDialog] = React.useState(false);
 
+    const [isDialogOpen, setDialog] = React.useState(false);
+
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
@@ -46,7 +53,7 @@ export default function OptionBarChans() {
       };
   
       fetchChannels();
-    }, []);
+    }, [chatroom]);
 
     const DeleteChatInUse = (Name: string, Picture: string) => {
       const chatInUse: Partial<User> = {
@@ -73,6 +80,7 @@ export default function OptionBarChans() {
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
       setDialog(false);
+      setDialog(false);
     };
     
     const handlePictureSelection = (picture: string | null) => {
@@ -85,6 +93,10 @@ export default function OptionBarChans() {
       if (newValue !== 'pwProtected')
         setPassword(null)
     };
+
+    const handleDialog = () => {
+      setDialog(true);
+    }
 
     const handleDialog = () => {
       setDialog(true);
@@ -139,7 +151,7 @@ export default function OptionBarChans() {
           }
         }
       }
-      else if (mode === 'edit')
+      else if (mode === 'Edit')
       {
         try {
           const response = await axios.patch(`http://localhost:4242/chatroom/${channelName}`, newChannel);
@@ -208,11 +220,12 @@ export default function OptionBarChans() {
             value={channelName}
             onChange={(e) => setChannelName(e.target.value)}
           /> 
-          : <Autocomplete
+          : 
+          <Autocomplete
               disablePortal
               id="Channels"
               options={chatroom}
-              getOptionLabel={(option) => option.name}
+              getOptionLabel={(option) => decodeURIComponent(option.name)}
               fullWidth
               sx={{ marginBottom: 2 }}
               onChange={handleChannelSelection}
