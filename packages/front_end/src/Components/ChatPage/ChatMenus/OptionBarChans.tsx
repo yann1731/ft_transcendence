@@ -1,6 +1,6 @@
 import * as React from 'react';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import { Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox} from '@mui/material';
+import { Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox, Dialog} from '@mui/material';
 import '../../../App.css';
 import { Chatroom } from 'Components/Interfaces';
 import ChanPictureSetter from '../ChatComponents/ChatPictureSetter';
@@ -9,10 +9,20 @@ import { useContext } from 'react';
 import { UserContext, User } from 'Contexts/userContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useTheme } from '@mui/material/styles';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
 
 export default function OptionBarChans() {
 
-    const Chansettings = ['Create', 'Modify', 'Delete'];
+    const Chansettings = ['Create', 'Edit', 'Delete'];
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [isCreationWindowOpen, setWindowIsOpen] = React.useState(false);
     const [channelName, setChannelName] = React.useState('');
@@ -24,7 +34,10 @@ export default function OptionBarChans() {
     const {user, updateUser} = useContext(UserContext);
     const theme = useTheme();
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
-    
+    const [isDialogOpen, setDialog] = React.useState(false);
+
+    const [isDialogOpen, setDialog] = React.useState(false);
+
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
@@ -40,7 +53,7 @@ export default function OptionBarChans() {
       };
   
       fetchChannels();
-    }, []);
+    }, [chatroom]);
 
     const DeleteChatInUse = (Name: string, Picture: string) => {
       const chatInUse: Partial<User> = {
@@ -66,6 +79,8 @@ export default function OptionBarChans() {
     };
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
+      setDialog(false);
+      setDialog(false);
     };
     
     const handlePictureSelection = (picture: string | null) => {
@@ -78,6 +93,14 @@ export default function OptionBarChans() {
       if (newValue !== 'pwProtected')
         setPassword(null)
     };
+
+    const handleDialog = () => {
+      setDialog(true);
+    }
+
+    const handleDialog = () => {
+      setDialog(true);
+    }
 
     const chanOption = (option: string) => {
         handleMode(option);
@@ -128,13 +151,13 @@ export default function OptionBarChans() {
           }
         }
       }
-      else if (mode === 'Modify')
+      else if (mode === 'Edit')
       {
         try {
           const response = await axios.patch(`http://localhost:4242/chatroom/${channelName}`, newChannel);
           console.log('Chatroom modified:', response.data);
         } catch (error) {
-          console.error('Error modifying chatroom:', error);
+          console.error('Error editing chatroom:', error);
           alert('Error changing chatroom');
         }
       }
@@ -144,6 +167,7 @@ export default function OptionBarChans() {
           const response = await axios.delete(`http://localhost:4242/chatroom/${channelName}`);
           console.log('Chatroom deleted:', response.data);
           DeleteChatInUse('', '')
+          setDialog(false);
         } catch (error) {
           console.error('Error deleting chatroom:', error);
           alert('Error deleting chatroom');
@@ -196,11 +220,12 @@ export default function OptionBarChans() {
             value={channelName}
             onChange={(e) => setChannelName(e.target.value)}
           /> 
-          : <Autocomplete
+          : 
+          <Autocomplete
               disablePortal
               id="Channels"
               options={chatroom}
-              getOptionLabel={(option) => option.name}
+              getOptionLabel={(option) => decodeURIComponent(option.name)}
               fullWidth
               sx={{ marginBottom: 2 }}
               onChange={handleChannelSelection}
@@ -273,13 +298,47 @@ export default function OptionBarChans() {
             </Box>
           </AccordionDetails>
         </Accordion>
-          )}
+        )}
         {mode !== 'Delete' && (
           <ChanPictureSetter onPictureSelected={handlePictureSelection} />
-          )}
-          <Button onClick={handleChannel} className="profilePageButtons">
-            {mode}
+        )}
+        {mode !== 'Delete' ?
+        <Button onClick={handleChannel} className="profilePageButtons">
+          {mode}
+        </Button>
+        :
+        <Button onClick={handleDialog} className="profilePageButtons">
+          {mode}
+        </Button>
+        }
+        <Box>
+          <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px'}}>
+            Cancel
           </Button>
+        </Box>
+        {mode === 'Delete' && (
+          <Box>
+            <Dialog
+              open={isDialogOpen}
+              onClose={handleCloseWindow}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              >
+              <DialogTitle id="alert-dialog-title">
+                {"Do you really want to delete this channel?"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText color={"red"} id="alert-dialog-description">
+                  All messages from this channel will be permanently lost.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button className="profilePageButtons" onClick={handleCloseWindow}>Cancel</Button>
+                <Button className="profilePageButtons" onClick={handleChannel}>Agree</Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        )}
       </Box>
     );
 
