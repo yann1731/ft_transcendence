@@ -1,10 +1,10 @@
 version: '3.9'
 
 services:
-  backend:
-    container_name: backend
+  app:
+    container_name: app
     build:
-      context: ./packages/backend
+      context: ./packages
       dockerfile: Dockerfile
     restart: always
     env_file:
@@ -12,13 +12,12 @@ services:
     networks:
       - tr-net
     volumes:
-        - ./packages/backend:/serv/backend
+        - application:/application/
         # - ./packages:/serv
         # - bk:/srv/app
     tty: true
     ports:
-      - 4242:4242
-      - 5001:5000
+      - 3000:3000
     depends_on:
       - database
   
@@ -33,19 +32,6 @@ services:
     networks:
       - tr-net
 
-  frontend:
-    container_name: frontend
-    build:
-      context: ./packages/front_end
-      dockerfile: Dockerfile
-    # restart: always to be re-enabled later
-    networks:
-      - tr-net
-    volumes:
-      - ./packages/front_end/src:/app/src/
-    ports:
-      - 3000:3000
-
 networks:
     tr-net:
       name: tr-net
@@ -55,8 +41,7 @@ networks:
       #    - subnet: 172.16.0.0/28
 
 volumes:
-  backend:
-  frontend:
+  application:
 # volumes:
 #   bk:
 #     driver: local
