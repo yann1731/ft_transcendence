@@ -67,7 +67,7 @@ export class ChatroomService { //specifically to create a password protected cha
   async update(name: string, updateChatroomDto: UpdateChatroomDto) { 
     const { state, picture, password } = updateChatroomDto; 
     let updatedPicture = picture; 
-    if (updatedPicture === "") {
+    if (updatedPicture === null) {
       updatedPicture = 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg'; 
   }
     if (password)

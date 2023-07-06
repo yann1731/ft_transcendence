@@ -15,7 +15,6 @@ interface MyChannelsProps {
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
     const [channels, setChannels] = useState<Chatroom[]>([]);
     const {updateUser, user} = useContext(UserContext);
-
     
     useEffect(() => {
       const fetchChannels = async () => {
@@ -34,10 +33,6 @@ interface MyChannelsProps {
       fetchChannels();
     }, [channels]);
     
-    const filteredChannels = channels.filter((channel) =>
-    channel.name.toLowerCase().includes(searchText.toLowerCase())
-    );
- 
     const SetChatInUse = (name: string) => {
       if (user !== null)
       {
@@ -52,6 +47,10 @@ interface MyChannelsProps {
         updateUser(updatedUser);
       }
     };
+
+    const filteredChannels = channels.filter((channel) =>
+      channel.name.toLowerCase().includes(searchText.toLowerCase())
+    );
     
     return (
     <List>

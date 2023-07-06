@@ -18,11 +18,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 export default function OptionBarChans() {
 
-    const Chansettings = ['Create', 'Edit', 'Delete'];
+    const Chansettings = ['Create', 'Join', 'Edit', 'Delete'];
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [isCreationWindowOpen, setWindowIsOpen] = React.useState(false);
     const [channelName, setChannelName] = React.useState('');
-    const [channelPicture, setChannelPicture] = React.useState<string | undefined>(undefined);
+    const [channelPicture, setChannelPicture] = React.useState<string | null>(null);
     const [isProtected, setIsProtected] = React.useState('public');
     const [pwd, setPassword] = React.useState<string | null> ('');
     const [mode, setMode] = React.useState<string>('');
@@ -49,30 +49,6 @@ export default function OptionBarChans() {
       fetchChannels();
     }, [chatroom]);
 
-    const DeleteChatInUse = (Name: string) => {
-      if (user?.Chatroom && user?.Chatroom.length !== 0)
-      {
-        const chatroom = user?.Chatroom?.find((obj) => {
-          return obj.name === Name;
-        });
-        user.chatInUse = chatroom;
-        const updatedUser: Partial<User> = {
-          ...user,
-          chatInUse: chatroom,
-        };
-        updateUser(updatedUser);
-      }
-      else if (user !== null)
-      {
-        const chatroom = undefined;
-        const updatedUser: Partial<User> = {
-          ...user,
-          chatInUse: chatroom,
-        };
-        updateUser(updatedUser);
-      }
-    }
-
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
     };
@@ -90,7 +66,7 @@ export default function OptionBarChans() {
       setDialog(false);
     };
     
-    const handlePictureSelection = (picture: string | undefined) => {
+    const handlePictureSelection = (picture: string | null) => {
       setChannelPicture(picture);
     };
     
@@ -108,21 +84,6 @@ export default function OptionBarChans() {
     const chanOption = (option: string) => {
         handleMode(option);
         handleCloseUserMenu();
-    };
-    
-    const SetChatInUse = (name: string) => {
-      if (user !== null)
-      {
-        const chatroom = user?.Chatroom?.find((obj) => {
-          return obj.name === name;
-        });
-        user.chatInUse = chatroom;
-        const updatedUser: Partial<User> = {
-          ...user,
-          chatInUse: chatroom,
-        };
-        updateUser(updatedUser);
-      }
     };
 
     const handleChannel = async () => {
@@ -151,6 +112,7 @@ export default function OptionBarChans() {
               const newChannelData: Chatroom = response.data;
               const updatedChatrooms: Chatroom[] = [...user?.Chatroom || [], newChannelData];
               const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+              updatedUser.chatInUse = newChannelData;
               updateUser(updatedUser);
               try {
                 const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
@@ -173,18 +135,18 @@ export default function OptionBarChans() {
         else
         {
           try {
-            const response = await axios.post('http://localhost:4242/chatroom', newChannel);
+            const response = await axios.post('http://localhost:4242/chatroom/', newChannel);
             if (response.status === 201) {
               console.log('Chatroom created:', response.data);
               const newChannelData: Chatroom = response.data;
               const updatedChatrooms: Chatroom[] = [...user?.Chatroom || [], newChannelData];
               const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+              updatedUser.chatInUse = newChannelData;
               updateUser(updatedUser);
               try {
                 const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
                 updatedUser);
                 if (response.status === 200) {
-                  alert(user?.Chatroom?.at(4)?.name)
                   console.log('Image uploaded successfully!');
                 } else {
                   console.error('Image upload failed.');
@@ -216,6 +178,7 @@ export default function OptionBarChans() {
             ];
             
             const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+            updatedUser.chatInUse = newChannelData;
             updateUser(updatedUser);
             try {
               const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
@@ -243,10 +206,11 @@ export default function OptionBarChans() {
             ...user,
             Chatroom: user?.Chatroom?.filter((obj) => obj.name !== channelName),
           };
+          updatedUser.chatInUse = undefined;
           updateUser(updatedUser);
           try {
             const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
-              updatedUser);
+            updatedUser);
             if (response.status === 200) {
               console.log('Image uploaded successfully!');
             } else {
@@ -255,7 +219,6 @@ export default function OptionBarChans() {
           } catch (error) {
             console.error('Error occurred while uploading the image:', error);
           }
-          DeleteChatInUse(channelName)
           setDialog(false);
         } catch (error) {
           console.error('Error deleting chatroom:', error);
@@ -263,7 +226,7 @@ export default function OptionBarChans() {
         }
       }
       setChannelName('');
-      setChannelPicture('');
+      setChannelPicture(null);
       setPassword('');
       setIsProtected('public');
       handleCloseWindow();

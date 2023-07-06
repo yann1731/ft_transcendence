@@ -69,13 +69,6 @@ export class UserService { //creates a new user
         throw new BadRequestException(errors);
       }
 
-    const existingChatrooms = user?.Chatroom || [];
-    const updatedChatrooms = [...existingChatrooms, newChannelData];
-    const userWithUpdatedChatrooms = {
-      ...user,
-      Chatroom: updatedChatrooms,
-    };
-
     const user = await this.prisma.user.update({
       where: {
         id
@@ -91,15 +84,12 @@ export class UserService { //creates a new user
         userStatus: updateUserDto.userStatus,
         twoFaEnabled: updateUserDto.twoFaEnabled,
         refresh_token: updateUserDto.refresh_token,
-        Chatroom: {
-        set: chatrooms,
-        }
       }
     });
     if (!user)
-      throw new BadRequestException;
+    throw new BadRequestException;
     else
-      return user;
+    return user;
   }
 
   async remove(id: string) { //removes a specific user by id

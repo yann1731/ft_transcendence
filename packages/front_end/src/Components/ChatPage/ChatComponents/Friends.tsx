@@ -5,6 +5,7 @@ import Avatar from '@mui/material/Avatar';
 import { ListItemButton } from '@mui/material';
 import { UserContext, User } from 'Contexts/userContext';
 import { useContext } from 'react';
+import { Chatroom } from 'Components/Interfaces';
 
 interface MyFriendsProps {
     searchText: string;
@@ -25,10 +26,17 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   friend.name.toLowerCase().includes(searchText.toLowerCase())
   );
   
-  const SetChatInUse = (name: string) => {
+  const SetChatInUse = (name: string, picture: string) => {
     if (user !== null)
     {
-      const chatroom = user?.Chatroom?.find((obj) => {
+      const newChannel: Partial<Chatroom> = {
+        name: name,
+        picture: picture,
+        state: "private",
+        userId: user?.id,
+        password: null,
+      };
+       const chatroom = user?.Chatroom?.find((obj) => {
         return obj.name === name;
       });
       user.chatInUse = chatroom;
@@ -37,14 +45,14 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
         chatInUse: chatroom,
       };
       
-      updateUser(updatedUser);
+     updateUser(updatedUser);
     }
   };
   
     return (
       <List>
         {filteredFriends.map((friend) => (
-          <ListItemButton key={friend.id} onClick={() => SetChatInUse(friend.name)}>
+          <ListItemButton key={friend.id} onClick={() => SetChatInUse(friend.name, friend.avatar)}>
             <ListItemIcon>
               <Avatar alt={friend.name} src={friend.avatar} />
             </ListItemIcon>

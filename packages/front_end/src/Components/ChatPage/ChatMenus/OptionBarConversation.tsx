@@ -21,7 +21,7 @@ export default function OptionBarConversation() {
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
-          const response = await axios.get('http://localhost:4242/user'); // Replace with your backend endpoint
+          const response = await axios.get('http://localhost:4242/user');
           
           if (response.status === 200) {
             const UsersData: User[] = response.data;
@@ -167,7 +167,9 @@ export default function OptionBarConversation() {
     );
 
   return (
-    <AppBar position="relative" sx={{ boxShadow: '0' }}>
+    <Box>
+    {user?.chatInUse !== undefined ? (
+      <AppBar position="relative" sx={{ boxShadow: '0' }}>
       <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu}>
@@ -197,9 +199,17 @@ export default function OptionBarConversation() {
                 </MenuItem>
               ))}
             </Menu>
-            <Avatar src={user?.chatInUse?.picture} sx={{ marginRight: 0.5 }}></Avatar>
+              <Avatar src={user?.chatInUse?.picture ?? ''} sx={{ marginRight: 0.5 }}></Avatar>
           </Box>
           <Modal open={isFriendManagementWindowOpen} onClose={handleCloseWindow}>{friendHandlerWindow}</Modal>
-      </AppBar>
+          </AppBar>
+          ) : (
+            <AppBar position="relative" sx={{ boxShadow: '0'}}>
+              <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
+              </Box>
+            </AppBar>
+          )
+      }
+    </Box>
   );
 }
