@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
-import { onlineStatus } from '@prisma/client';
+import { Chatroom, onlineStatus } from '@prisma/client';
 import { IsString, IsEmail, MinLength, IsNumber, IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 export class UpdateUserDto {
@@ -46,4 +46,7 @@ export class UpdateUserDto {
     @IsOptional()
     @IsString()
     refresh_token?: string;
+
+    @IsOptional()
+    Chatroom?: Chatroom[];
 }

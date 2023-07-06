@@ -4,7 +4,7 @@ import { Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, Te
 import '../../../App.css';
 import { Chatroom } from 'Components/Interfaces';
 import ChanPictureSetter from '../ChatComponents/ChatPictureSetter';
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import { useContext } from 'react';
 import { UserContext, User } from 'Contexts/userContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -152,6 +152,17 @@ export default function OptionBarChans() {
               const updatedChatrooms: Chatroom[] = [...user?.Chatroom || [], newChannelData];
               const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
               updateUser(updatedUser);
+              try {
+                const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
+                updatedUser);
+                if (response.status === 200) {
+                  console.log('Image uploaded successfully!');
+                } else {
+                  console.error('Image upload failed.');
+                }
+              } catch (error) {
+                console.error('Error occurred while uploading the image:', error);
+              }
             }
           } catch (error) {
             console.error('Error creating chatroom:', error);
@@ -169,6 +180,18 @@ export default function OptionBarChans() {
               const updatedChatrooms: Chatroom[] = [...user?.Chatroom || [], newChannelData];
               const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
               updateUser(updatedUser);
+              try {
+                const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
+                updatedUser);
+                if (response.status === 200) {
+                  alert(user?.Chatroom?.at(4)?.name)
+                  console.log('Image uploaded successfully!');
+                } else {
+                  console.error('Image upload failed.');
+                }
+              } catch (error) {
+                console.error('Error occurred while uploading the image:', error);
+              }
             }
           } catch (error) {
             console.error('Error creating chatroom:', error);
@@ -194,6 +217,17 @@ export default function OptionBarChans() {
             
             const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
             updateUser(updatedUser);
+            try {
+              const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
+                updatedUser);
+              if (response.status === 200) {
+                console.log('Image uploaded successfully!');
+              } else {
+                console.error('Image upload failed.');
+              }
+            } catch (error) {
+              console.error('Error occurred while uploading the image:', error);
+            }
           } 
         } catch (error) {
           console.error('Error editing chatroom:', error);
@@ -210,6 +244,17 @@ export default function OptionBarChans() {
             Chatroom: user?.Chatroom?.filter((obj) => obj.name !== channelName),
           };
           updateUser(updatedUser);
+          try {
+            const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
+              updatedUser);
+            if (response.status === 200) {
+              console.log('Image uploaded successfully!');
+            } else {
+              console.error('Image upload failed.');
+            }
+          } catch (error) {
+            console.error('Error occurred while uploading the image:', error);
+          }
           DeleteChatInUse(channelName)
           setDialog(false);
         } catch (error) {
