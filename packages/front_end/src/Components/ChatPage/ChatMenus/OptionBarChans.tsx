@@ -14,6 +14,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
 
 export default function OptionBarChans() {
 
@@ -29,6 +34,8 @@ export default function OptionBarChans() {
     const {user, updateUser} = useContext(UserContext);
     const theme = useTheme();
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
+    const [isDialogOpen, setDialog] = React.useState(false);
+
     const [isDialogOpen, setDialog] = React.useState(false);
 
     React.useEffect(() => {
@@ -73,6 +80,7 @@ export default function OptionBarChans() {
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
       setDialog(false);
+      setDialog(false);
     };
     
     const handlePictureSelection = (picture: string | null) => {
@@ -85,6 +93,10 @@ export default function OptionBarChans() {
       if (newValue !== 'pwProtected')
         setPassword(null)
     };
+
+    const handleDialog = () => {
+      setDialog(true);
+    }
 
     const handleDialog = () => {
       setDialog(true);
