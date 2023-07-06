@@ -87,9 +87,9 @@ export class UserService { //creates a new user
       }
     });
     if (!user)
-      throw new BadRequestException;
+    throw new BadRequestException;
     else
-      return user;
+    return user;
   }
 
   async remove(id: string) { //removes a specific user by id

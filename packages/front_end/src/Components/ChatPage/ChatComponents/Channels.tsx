@@ -14,8 +14,7 @@ interface MyChannelsProps {
 
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
     const [channels, setChannels] = useState<Chatroom[]>([]);
-    const {updateUser} = useContext(UserContext);
-    
+    const {updateUser, user} = useContext(UserContext);
     
     useEffect(() => {
       const fetchChannels = async () => {
@@ -34,36 +33,31 @@ interface MyChannelsProps {
       fetchChannels();
     }, [channels]);
     
+    const SetChatInUse = (name: string) => {
+      if (user !== null)
+      {
+        const chatroom = user?.Chatroom?.find((obj) => {
+          return obj.name === name;
+        });
+        user.chatInUse = chatroom;
+        const updatedUser: Partial<User> = {
+          ...user,
+          chatInUse: chatroom,
+        };
+        updateUser(updatedUser);
+      }
+    };
+
     const filteredChannels = channels.filter((channel) =>
-    channel.name.toLowerCase().includes(searchText.toLowerCase())
+      channel.name.toLowerCase().includes(searchText.toLowerCase())
     );
- 
-    const SetChatInUse = (name: string, picture: string | undefined | null) => {
-      if (picture !== null) {
-        const chatInUse: Partial<User> = {
-          chatInUse: {
-          Name: name,
-          Picture: picture,
-          },
-        };
-        updateUser(chatInUse);
-      }
-      else {
-        const chatInUse: Partial<User> = {
-          chatInUse: {
-          Name: name,
-          },
-        };
-        updateUser(chatInUse);
-      }
-    }
     
     return (
       <List>
         {filteredChannels.map((channel) => {
           const decodedName = decodeURIComponent(channel.name);
           return (
-            <ListItemButton key={channel.id} onClick={() => SetChatInUse(decodedName, channel.picture)}>
+            <ListItemButton key={channel.id} onClick={() => SetChatInUse(decodedName)}>
               <ListItemIcon>
                 <Avatar alt={decodedName} src={channel.picture || undefined} />
               </ListItemIcon>
