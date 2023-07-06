@@ -44,6 +44,7 @@ export class ChatroomService { //specifically to create a password protected cha
         state: createChatroomDto.state,
       }
     });
+    console.log("picture is : " + createChatroomDto.picture);
     if (!chatroom)
       throw new BadRequestException('Failed to create chatroom');
     else {

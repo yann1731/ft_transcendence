@@ -30,8 +30,6 @@ export default function OptionBarChans() {
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
     const [isDialogOpen, setDialog] = React.useState(false);
 
-    const [isDialogOpen, setDialog] = React.useState(false);
-
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
@@ -77,10 +75,6 @@ export default function OptionBarChans() {
       if (newValue !== 'pwProtected')
         setPassword(null)
     };
-
-    const handleDialog = () => {
-      setDialog(true);
-    }
 
     const handleDialog = () => {
       setDialog(true);
