@@ -53,17 +53,20 @@ interface MyChannelsProps {
     );
     
     return (
-    <List>
-        {filteredChannels.map((channel) => (
-            <ListItemButton key={channel.id} onClick={() => SetChatInUse(channel.name)}>
-                <ListItemIcon>
-                    <Avatar alt={channel.name} src={channel.picture || undefined} />
-                </ListItemIcon>
-                <ListItemText primary={channel.name} />
+      <List>
+        {filteredChannels.map((channel) => {
+          const decodedName = decodeURIComponent(channel.name);
+          return (
+            <ListItemButton key={channel.id} onClick={() => SetChatInUse(decodedName)}>
+              <ListItemIcon>
+                <Avatar alt={decodedName} src={channel.picture || undefined} />
+              </ListItemIcon>
+              <ListItemText primary={decodedName} />
             </ListItemButton>
-        ))}
-    </List>
+          );
+        })}
+      </List>
     );
-};
+  };
 
 export default MyChannels;

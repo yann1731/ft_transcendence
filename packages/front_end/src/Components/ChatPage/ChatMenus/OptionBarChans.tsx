@@ -14,8 +14,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-//VÉRIFIER QUE L'IAMGE SE MET À JOUR DANS CHATINUSE, DANS L'UTILISATEUR ET DANS LES CHATROOMS
-
 export default function OptionBarChans() {
 
     const Chansettings = ['Create', 'Join', 'Edit', 'Delete'];
@@ -30,6 +28,8 @@ export default function OptionBarChans() {
     const {user, updateUser} = useContext(UserContext);
     const theme = useTheme();
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
+    const [isDialogOpen, setDialog] = React.useState(false);
+
     const [isDialogOpen, setDialog] = React.useState(false);
 
     React.useEffect(() => {
@@ -64,6 +64,7 @@ export default function OptionBarChans() {
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
       setDialog(false);
+      setDialog(false);
     };
     
     const handlePictureSelection = (picture: string | null) => {
@@ -76,6 +77,10 @@ export default function OptionBarChans() {
       if (newValue !== 'pwProtected')
         setPassword(null)
     };
+
+    const handleDialog = () => {
+      setDialog(true);
+    }
 
     const handleDialog = () => {
       setDialog(true);
@@ -272,11 +277,12 @@ export default function OptionBarChans() {
             value={channelName}
             onChange={(e) => setChannelName(e.target.value)}
           /> 
-          : <Autocomplete
+          : 
+          <Autocomplete
               disablePortal
               id="Channels"
               options={chatroom}
-              getOptionLabel={(option) => option.name}
+              getOptionLabel={(option) => decodeURIComponent(option.name)}
               fullWidth
               sx={{ marginBottom: 2 }}
               onChange={handleChannelSelection}
