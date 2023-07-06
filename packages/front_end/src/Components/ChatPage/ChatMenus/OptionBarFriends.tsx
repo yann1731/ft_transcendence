@@ -5,7 +5,6 @@ import '../../../App.css';
 import { useTheme } from '@mui/material/styles';
 import { UserContext, User } from 'Contexts/userContext';
 import axios from 'axios';
-import { Mode } from '@mui/icons-material';
 
 export default function OptionBarFriends() {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
@@ -53,22 +52,8 @@ export default function OptionBarFriends() {
     };
 
     const friendsOption = (option: string) => {
-      switch(option)
-      {
-        case 'Add Friend':
-          handleMode('Add');
-          break;
-        case 'Block':
-          handleMode('Block');
-          break;
-        case 'Invite to Play':
-            handleMode('Invite');
-            break;
-        case 'View Profile':
-            handleMode('View');
-            break;
-      }
-        handleCloseUserMenu();
+      handleMode(option);
+      handleCloseUserMenu();
     };
 
     const handleFriends = async () => {
@@ -82,15 +67,15 @@ export default function OptionBarFriends() {
       if (mode === 'Add')
       {
         try {
-          const response = await axios.patch(`http://localhost:4242/user/${user?.id}`, { friendListA: [newFriend]});
+          const response = await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: newFriend?.id});
           console.log('Friend successfuly added', response.data);
         } catch (error) {
           console.error('Error adding new friend', error);
-          alert('Error adding new friend');
+          alert('Error adding new friend' + error);
         }
         if (user && user.friendListA && user.friendListA.length > 0) {
           alert(user.friendListA[0]);
-        }   
+        }
       }
       else if (mode === 'Block')
       {
@@ -104,7 +89,6 @@ export default function OptionBarFriends() {
         if (user && user.friendListA && user.friendListA.length > 0) {
           alert(user.friendListA[0]);
         }   
-
       }
       else if (mode === 'Invite')
       {
