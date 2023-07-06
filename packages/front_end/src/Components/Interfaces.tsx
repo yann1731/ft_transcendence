@@ -141,6 +141,5 @@ export interface HallOfFame {
 }
 
 export interface ChatInUse {
-    Name: string;
-    Picture?: string;
+    Chat: Chatroom;
 }

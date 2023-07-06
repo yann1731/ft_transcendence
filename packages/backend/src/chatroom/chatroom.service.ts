@@ -59,6 +59,7 @@ export class ChatroomService { //specifically to create a password protected cha
   }
 
   async findOne(name: string) { //returns a single chatroom using id
+    
     const chatroom = await this.prisma.chatroom.findUnique({where: { name }});
     if (!chatroom)
       throw new BadRequestException;
@@ -79,7 +80,7 @@ export class ChatroomService { //specifically to create a password protected cha
     const { state, picture, password } = updateChatroomDto;
     const encodedName = encodeURIComponent(name);
     let updatedPicture = picture; 
-    if (updatedPicture === "") {
+    if (updatedPicture === null) {
       updatedPicture = 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg'; 
     }
     if (password)
