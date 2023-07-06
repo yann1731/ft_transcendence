@@ -1,4 +1,3 @@
-
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 
@@ -15,7 +14,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	oneWaiting: Socket[] = []
 	twoHost: [Socket, string, boolean, boolean, boolean, boolean][] = []
 	twoWaiting: Socket[] = []
-	threeHost: [Socket, string, boolean, boolean, boolean, boolean][] = []
+	threeHost: [Socket, string, boolean, number][] = []
 	threeWaiting: Socket[] = []
 
 	XVelocityMin1: number = 350;
@@ -37,6 +36,12 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	handleMovement(client: Socket, newpos: number) {
 		const room = Array.from(client.rooms).filter(room => room !== client.id)
 		client.broadcast.to(String(room[0])).emit("movement", newpos);
+	}
+
+	@SubscribeMessage("movement2")
+	handleMovement2(client: Socket, data: any) {
+		const room = Array.from(client.rooms).filter(room => room !== client.id)
+		client.broadcast.to(String(room[0])).emit("movement2", data);
 	}
 
 	@SubscribeMessage("point")
@@ -180,6 +185,68 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 			}
 			else
 				this.twoWaiting.push(client);
+		}
+	}
+
+	@SubscribeMessage("3v1")
+	handle3v1(client: Socket, data: any){
+		if (data.start){
+			client.join(data.name);
+			if (this.threeWaiting.length >= 3){
+				let opponent1 : Socket = this.threeWaiting.shift()
+				let opponent2 : Socket = this.threeWaiting.shift()
+				let opponent3 : Socket = this.threeWaiting.shift()
+				opponent1.join(data.name);
+				opponent2.join(data.name);
+				opponent3.join(data.name);
+				if (Math.floor(Math.random() * 2) === 0){
+					this.x = Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1;
+					this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+					if (Math.floor(Math.random() * 2) === 0)
+						this.y *= -1;            
+				} else{
+					this.x = Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2;
+					this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+					if (Math.floor(Math.random() * 2) === 0)
+						this.y *= -1;
+				}
+				this.server.to(client.id).emit("player", 1)
+				this.server.to(opponent1.id).emit("player", 2)
+				this.server.to(opponent2.id).emit("player", 3)
+				this.server.to(opponent3.id).emit("player", 4)
+				this.server.in(data.name).emit("start", {ballX: this.x, ballY: this.y, power: data.power, scale: data.scale});
+			}
+			else {
+				this.threeHost.push([client, data.name, data.power, data.scale])
+			}
+		}
+		else{
+			if (this.threeHost.length >= 1 && this.threeWaiting.length >= 2){
+				let host: [Socket, string, boolean, number] = this.threeHost.shift();
+				let opponent1 : Socket = this.threeWaiting.shift()
+				let opponent2 : Socket = this.threeWaiting.shift()
+				opponent1.join(host[1]);
+				opponent2.join(host[1]);
+				client.join(host[1]);
+				if (Math.floor(Math.random() * 2) === 0){
+					this.x = Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1;
+					this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+					if (Math.floor(Math.random() * 2) === 0)
+						this.y *= -1;            
+				} else{
+					this.x = Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2;
+					this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+					if (Math.floor(Math.random() * 2) === 0)
+						this.y *= -1;
+				}
+				this.server.to(host[0].id).emit("player", 1)
+				this.server.to(client.id).emit("player", 2)
+				this.server.to(opponent1.id).emit("player", 3)
+				this.server.to(opponent2.id).emit("player", 4)
+				this.server.in(host[1]).emit("start", {ballX: this.x, ballY: this.y, power: host[2], scale: host[3]});
+			}
+			else
+				this.threeWaiting.push(client);
 		}
 	}
 }

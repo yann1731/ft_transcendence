@@ -437,7 +437,7 @@ export default class oneVSone extends Phaser.Scene{
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);             
         
-        this.socket.on("movement", (data: any) => {
+        this.socket.on("movement2", (data: any) => {
             if (data.which === 2)
                 if (this.paddle2.body)
                     this.paddle2.setY(data.newPos + this.paddle2.body.height / 2);
@@ -548,9 +548,6 @@ export default class oneVSone extends Phaser.Scene{
             this.wall3.setVisible(false);
         }
         this.paddle1.disableBody();
-        this.paddle2.disableBody();
-        this.paddle3.disableBody();
-        this.paddle4.disableBody();
         this.scene.pause();
         return;
     }
@@ -613,7 +610,7 @@ export default class oneVSone extends Phaser.Scene{
             this.new_point(2);
         }
         
-        if (this.multi)
+    if (this.multi)
         if (this.multiball.body)
         if (this.multiball.body?.x === 0) {
             this.multiball.body.x = 1;
@@ -632,7 +629,7 @@ export default class oneVSone extends Phaser.Scene{
                     this.new_point(2);
             }
         
-        this.paddle1.setVelocityY(0);
+    this.paddle1.setVelocityY(0);
 
         
         if (this.keys.w.isDown)
@@ -644,7 +641,7 @@ export default class oneVSone extends Phaser.Scene{
 		
         if (this.paddle1.body){
             if (this.paddle1.body.y !== this.oldPosition)
-                this.socket.emit("movement", {newPos: this.paddle1.body.y, which: 1})
+                this.socket.emit("movement2", {newPos: this.paddle1.body.y, which: 1})
             this.oldPosition = this.paddle1.body.y
         }
         

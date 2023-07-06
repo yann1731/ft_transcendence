@@ -3,7 +3,8 @@ import '../../App.css';
 import option from './game/Option';
 import oneVSoneHost from './game/oneVSoneHost';
 import oneVSoneOther from './game/oneVSoneOther';
-import threeVSone from './game/threeVSone';
+import threeVSoneHost from './game/threeVSoneHost';
+import threeVSoneOther from './game/threeVSoneOther';
 import twoVStwoHost from './game/twoVStwoHost';
 import twoVStwoOther from './game/twoVStwoOther'
 import Box from '@mui/material/Box';
@@ -31,7 +32,8 @@ export default function PongGame() {
           option,
           oneVSoneHost,
           oneVSoneOther,
-          threeVSone,
+          threeVSoneHost,
+          threeVSoneOther,
           twoVStwoHost,
           twoVStwoOther
         ]
