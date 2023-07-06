@@ -68,7 +68,7 @@
 .chatSection {
     background-color: var(--secondary-color);
     border-radius: 10px;
-    height: 81.3vh;
+    height: 81vh;
     display: flex;
     flex-direction: column;
     margin-top: 10px;

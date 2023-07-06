@@ -26,7 +26,7 @@ export interface User {
 	sentChatroomMessages?: ChatroomMessage[] ;
 	Chatroom?: Chatroom[] ;
 	refresh_token?: string;
-  chatInUse?: ChatInUse;
+  chatInUse?: Chatroom;
 }
 
 export interface UserContextType {

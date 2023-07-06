@@ -4,7 +4,7 @@ import { Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, Te
 import '../../../App.css';
 import { Chatroom } from 'Components/Interfaces';
 import ChanPictureSetter from '../ChatComponents/ChatPictureSetter';
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import { useContext } from 'react';
 import { UserContext, User } from 'Contexts/userContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -17,7 +17,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 export default function OptionBarChans() {
 
-    const Chansettings = ['Create', 'Edit', 'Delete'];
+    const Chansettings = ['Create', 'Join', 'Edit', 'Delete'];
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [isCreationWindowOpen, setWindowIsOpen] = React.useState(false);
     const [channelName, setChannelName] = React.useState('');
@@ -46,17 +46,7 @@ export default function OptionBarChans() {
       };
   
       fetchChannels();
-    }, []);
-
-    const DeleteChatInUse = (Name: string, Picture: string) => {
-      const chatInUse: Partial<User> = {
-        chatInUse: {
-        Name: Name,
-        Picture: Picture,
-        },
-      };
-      updateUser(chatInUse);
-    }
+    }, [chatroom]);
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
@@ -72,6 +62,7 @@ export default function OptionBarChans() {
     };
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
+      setDialog(false);
       setDialog(false);
     };
     
@@ -94,7 +85,7 @@ export default function OptionBarChans() {
         handleMode(option);
         handleCloseUserMenu();
     };
-    
+
     const handleChannel = async () => {
       if (!channelName) {
         alert('No channel name given')
@@ -116,8 +107,24 @@ export default function OptionBarChans() {
           try {
             const response = await axios.post('http://localhost:4242/chatroom/password', newChannel);
             
-            if (response.status === 200) {
+            if (response.status === 201) {
               console.log('Chatroom created:', response.data);
+              const newChannelData: Chatroom = response.data;
+              const updatedChatrooms: Chatroom[] = [...user?.Chatroom || [], newChannelData];
+              const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+              updatedUser.chatInUse = newChannelData;
+              updateUser(updatedUser);
+              try {
+                const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
+                updatedUser);
+                if (response.status === 200) {
+                  console.log('Image uploaded successfully!');
+                } else {
+                  console.error('Image upload failed.');
+                }
+              } catch (error) {
+                console.error('Error occurred while uploading the image:', error);
+              }
             }
           } catch (error) {
             console.error('Error creating chatroom:', error);
@@ -128,10 +135,25 @@ export default function OptionBarChans() {
         else
         {
           try {
-            const response = await axios.post('http://localhost:4242/chatroom', newChannel);
-            
-            if (response.status === 200) {
+            const response = await axios.post('http://localhost:4242/chatroom/', newChannel);
+            if (response.status === 201) {
               console.log('Chatroom created:', response.data);
+              const newChannelData: Chatroom = response.data;
+              const updatedChatrooms: Chatroom[] = [...user?.Chatroom || [], newChannelData];
+              const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+              updatedUser.chatInUse = newChannelData;
+              updateUser(updatedUser);
+              try {
+                const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
+                updatedUser);
+                if (response.status === 200) {
+                  console.log('Image uploaded successfully!');
+                } else {
+                  console.error('Image upload failed.');
+                }
+              } catch (error) {
+                console.error('Error occurred while uploading the image:', error);
+              }
             }
           } catch (error) {
             console.error('Error creating chatroom:', error);
@@ -139,14 +161,40 @@ export default function OptionBarChans() {
           }
         }
       }
-      else if (mode === 'edit')
+      else if (mode === 'Edit')
       {
         try {
           const response = await axios.patch(`http://localhost:4242/chatroom/${channelName}`, newChannel);
           console.log('Chatroom modified:', response.data);
+          
+          const newChannelData: Chatroom = response.data;
+          const channelIndex = user?.Chatroom?.findIndex((obj) => obj.name === channelName);
+          
+          if (channelIndex && channelIndex !== -1) {
+            const updatedChatrooms: Chatroom[] = [
+              ...(user?.Chatroom?.slice(0, channelIndex) || []),
+              newChannelData,
+              ...(user?.Chatroom?.slice(channelIndex + 1) || []),
+            ];
+            
+            const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+            updatedUser.chatInUse = newChannelData;
+            updateUser(updatedUser);
+            try {
+              const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
+                updatedUser);
+              if (response.status === 200) {
+                console.log('Image uploaded successfully!');
+              } else {
+                console.error('Image upload failed.');
+              }
+            } catch (error) {
+              console.error('Error occurred while uploading the image:', error);
+            }
+          } 
         } catch (error) {
           console.error('Error editing chatroom:', error);
-          alert('Error changing chatroom');
+          alert('Error: could not edit channel');
         }
       }
       else
@@ -154,7 +202,23 @@ export default function OptionBarChans() {
         try {
           const response = await axios.delete(`http://localhost:4242/chatroom/${channelName}`);
           console.log('Chatroom deleted:', response.data);
-          DeleteChatInUse('', '')
+          const updatedUser: Partial<User> = {
+            ...user,
+            Chatroom: user?.Chatroom?.filter((obj) => obj.name !== channelName),
+          };
+          updatedUser.chatInUse = undefined;
+          updateUser(updatedUser);
+          try {
+            const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
+            updatedUser);
+            if (response.status === 200) {
+              console.log('Image uploaded successfully!');
+            } else {
+              console.error('Image upload failed.');
+            }
+          } catch (error) {
+            console.error('Error occurred while uploading the image:', error);
+          }
           setDialog(false);
         } catch (error) {
           console.error('Error deleting chatroom:', error);
@@ -162,7 +226,7 @@ export default function OptionBarChans() {
         }
       }
       setChannelName('');
-      setChannelPicture('');
+      setChannelPicture(null);
       setPassword('');
       setIsProtected('public');
       handleCloseWindow();
@@ -208,11 +272,12 @@ export default function OptionBarChans() {
             value={channelName}
             onChange={(e) => setChannelName(e.target.value)}
           /> 
-          : <Autocomplete
+          : 
+          <Autocomplete
               disablePortal
               id="Channels"
               options={chatroom}
-              getOptionLabel={(option) => option.name}
+              getOptionLabel={(option) => decodeURIComponent(option.name)}
               fullWidth
               sx={{ marginBottom: 2 }}
               onChange={handleChannelSelection}
