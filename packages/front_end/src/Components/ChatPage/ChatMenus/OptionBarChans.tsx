@@ -14,8 +14,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-//VÉRIFIER QUE L'IAMGE SE MET À JOUR DANS CHATINUSE, DANS L'UTILISATEUR ET DANS LES CHATROOMS
-
 export default function OptionBarChans() {
 
     const Chansettings = ['Create', 'Join', 'Edit', 'Delete'];
@@ -63,6 +61,7 @@ export default function OptionBarChans() {
     };
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
+      setDialog(false);
       setDialog(false);
     };
     
@@ -272,11 +271,12 @@ export default function OptionBarChans() {
             value={channelName}
             onChange={(e) => setChannelName(e.target.value)}
           /> 
-          : <Autocomplete
+          : 
+          <Autocomplete
               disablePortal
               id="Channels"
               options={chatroom}
-              getOptionLabel={(option) => option.name}
+              getOptionLabel={(option) => decodeURIComponent(option.name)}
               fullWidth
               sx={{ marginBottom: 2 }}
               onChange={handleChannelSelection}
