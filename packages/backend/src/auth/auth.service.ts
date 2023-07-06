@@ -41,12 +41,13 @@ export class AuthService {
             grant_type: 'authorization_code',
             client_id: uid,
             client_secret: secret,
-            redirect_uri: 'http://localhost:3000/wait',
+            redirect_uri: 'http://10.0.0.145:3000/wait',
             code: code
             });
             console.log('Successfully got token');
             return response.data;
         } catch (error) {
+            console.error(error);
             console.error('Failed getting token');
             throw new BadRequestException('Failed getting token', error);
         }
