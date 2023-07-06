@@ -3,6 +3,7 @@ import {Avatar, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typogr
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import { UserContext, User } from 'Contexts/userContext';
 import { useTheme } from '@mui/material/styles';
+import ClearIcon from '@mui/icons-material/Clear';
 import axios from 'axios';
 
 export default function OptionBarConversation() {
@@ -206,6 +207,11 @@ export default function OptionBarConversation() {
           ) : (
             <AppBar position="relative" sx={{ boxShadow: '0'}}>
               <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
+              <Tooltip title="No active chat">
+              <IconButton onClick={handleOpenUserMenu}>
+                <ClearIcon></ClearIcon>
+              </IconButton>
+            </Tooltip>
               </Box>
             </AppBar>
           )
