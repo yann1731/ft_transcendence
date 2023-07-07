@@ -316,9 +316,9 @@ export default class threeVSoneOther extends Phaser.Scene{
                         }, [], this);
                     }
                     else if (data.player === 3){
-                        this.paddle3.setScale(0.5, 0.90);
+                        this.paddle3.setScale(1, 0.90);
                         this.time.delayedCall(7500, () => {
-                            this.paddle3.setScale(0.9, 0.5);
+                            this.paddle3.setScale(0.35, 0.15);
                         }, [], this);
                     }
                     else {
@@ -411,7 +411,7 @@ export default class threeVSoneOther extends Phaser.Scene{
                 this.paddle4.enableBody();
                 this.ball.setX(this.physics.world.bounds.width / 2);
                 this.ball.setY(this.physics.world.bounds.height / 2);
-                this.paddle2.setY(this.physics.world.bounds.height / 4);
+                this.paddle2.setY(this.physics.world.bounds.height / 2);
                 this.paddle3.setX(this.physics.world.bounds.width / 2);
                 this.paddle4.setY(this.physics.world.bounds.height / 2);
                 if (this.multi === true)

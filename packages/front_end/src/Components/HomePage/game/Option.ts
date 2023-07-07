@@ -153,7 +153,7 @@ export default class option extends Phaser.Scene{
 			  	this.time.delayedCall(2000, () => {
 					  game.setText('game starting in 1');
 			  	}, [], this);
-			  	this.time.delayedCall(3000, () => {
+			  	this.time.delayedCall(2950, () => {
 						if (this.single === true)
 					  		this.scene.start('oneVSoneOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket});
 						else if (this.multiple === true)

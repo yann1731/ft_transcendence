@@ -675,6 +675,7 @@ export default class oneVSone extends Phaser.Scene{
             switch(this.multi ? Phaser.Math.RND.between(1, 4) : Phaser.Math.RND.between(1, 5)){
                 case 1:
                     this.smash.setVisible(true);
+                    this.socket.emit("power", {which: 1});
                     this.time.delayedCall(1000, () => {
                         this.smash.setVisible(false)
                     }, [], this);

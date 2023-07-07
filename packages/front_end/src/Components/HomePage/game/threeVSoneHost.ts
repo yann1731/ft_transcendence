@@ -305,6 +305,7 @@ export default class oneVSthreeHost extends Phaser.Scene{
         if (this.powerup){
             this.power = new PowerUp(this, Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1));
             this.physics.add.overlap(this.ball, this.power, this.power_up, undefined, this);
+            this.socket.emit("newPower", {x: this.power.x, y: this.power.y});
         }
     }
 
@@ -530,6 +531,7 @@ export default class oneVSthreeHost extends Phaser.Scene{
         if (this.ball.body)
             switch(this.multi ? Phaser.Math.RND.between(1, 4) : Phaser.Math.RND.between(1, 5)){
                 case 1:
+                    this.socket.emit("power", {which: 1});
                     this.smash.setVisible(true);
                     this.time.delayedCall(1000, () => {
                         this.smash.setVisible(false)
@@ -542,37 +544,33 @@ export default class oneVSthreeHost extends Phaser.Scene{
                     }
                     break;
                 case 2:
+                    if (this.ball.body.velocity.y < 0){
                     this.bigPaddle.setVisible(true);
                     this.time.delayedCall(1000, () => {
                         this.bigPaddle.setVisible(false)
                     }, [], this);
-                    if (this.ball.body.velocity.x > 0){
-                        if (Phaser.Math.RND.frac() === 1){
-                            this.socket.emit("power", {which: 2, player: 1});
-                        	this.paddle1.setScale(0.5, 0.90);
-                        }
-						else
-                        {
-                            this.socket.emit("power", {which: 2, player: 3});
-                        	this.paddle3.setScale(0.5, 0.90);
-                        }
-                        this.time.delayedCall(7500, () => {
-                            this.paddle1.setScale(0.15, 0.25);
-                            this.paddle3.setScale(0.15, 0.25);
-                        }, [], this);
+                    let which: number = Phaser.Math.RND.between(1, 3);
+                    if (which === 1){
+                        this.socket.emit("power", {which: 2, player: 1});
+                    	this.paddle1.setScale(0.5, 0.90);
+                    }
+					else if (which === 2)
+                    {
+                        this.socket.emit("power", {which: 2, player: 2});
+                    	this.paddle2.setScale(0.5, 0.90);
+                    }
+					else
+                    {
+                        this.socket.emit("power", {which: 2, player: 3});
+                    	this.paddle2.setScale(1, 0.5);
+                    }
+                    this.time.delayedCall(7500, () => {
+                        this.paddle1.setScale(0.15, 0.25);
+                        this.paddle2.setScale(0.15, 0.25);
+                        this.paddle3.setScale(0.35, 0.15);
+                    }, [], this);
                     } else{
-						if (Phaser.Math.RND.frac() === 1){
-                        	this.paddle2.setScale(0.5, 0.90);
-                            this.socket.emit("power", {which: 2, player: 2});
-                        }
-						else{
-                        	this.paddle4.setScale(0.5, 0.90);
-                            this.socket.emit("power", {which: 2, player: 4});
-                        }
-                        this.time.delayedCall(7500, () => {
-                            this.paddle2.setScale(0.15, 0.25);
-                            this.paddle4.setScale(0.15, 0.25);
-                        }, [], this);
+						this.power_up()
                     }
                     break;
                 case 3:
