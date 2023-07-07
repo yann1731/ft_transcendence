@@ -7,12 +7,14 @@ import ChanPictureSetter from '../ChatComponents/ChatPictureSetter';
 import axios, {AxiosResponse} from 'axios';
 import { useContext } from 'react';
 import { UserContext, User } from 'Contexts/userContext';
+import { SocketContext } from "../../../Contexts/socketContext";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useTheme } from '@mui/material/styles';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+
 
 export default function OptionBarChans() {
 
@@ -32,6 +34,9 @@ export default function OptionBarChans() {
     const theme = useTheme();
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
     const [isDialogOpen, setDialog] = React.useState(false);
+
+    // Sockets implementation
+    const socket = useContext(SocketContext);
 
     React.useEffect(() => {
       const fetchChannels = async () => {
@@ -131,6 +136,7 @@ export default function OptionBarChans() {
             const response = await axios.post('http://localhost:4242/chatroom/password', newChannel);
             
             if (response.status === 201) {
+              socket.emit("createChannel", {channelName: newChannel.name });
               console.log('Chatroom created:', response.data);
               const newChannelData: Chatroom = response.data;
               const updatedChatrooms: Chatroom[] = [...user?.Chatroom || [], newChannelData];
@@ -157,9 +163,14 @@ export default function OptionBarChans() {
         }
         else
         {
+          
           try {
             const response = await axios.post('http://localhost:4242/chatroom/', newChannel);
             if (response.status === 201) {
+              socket.emit("createChannel", {channelName: newChannel.name });
+              socket.on("fail", () => {
+                throw Error;
+              });
               console.log('Chatroom created:', response.data);
               const newChannelData: Chatroom = response.data;
               const updatedChatrooms: Chatroom[] = [...user?.Chatroom || [], newChannelData];

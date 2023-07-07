@@ -31,7 +31,7 @@ interface MyChannelsProps {
         }
       };
       fetchChannels();
-    }, [channels]);
+    }, []);
     
     const SetChatInUse = (name: string) => {
       if (user !== null)
