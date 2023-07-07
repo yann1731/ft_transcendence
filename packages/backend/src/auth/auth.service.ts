@@ -52,7 +52,7 @@ export class AuthService {
             console.log('Successfully got token');
             return response.data;
         } catch (error) {
-            console.log(error);
+            console.error(error);
             console.error('Failed getting token');
             throw new BadRequestException('Failed getting token', error);
         }
