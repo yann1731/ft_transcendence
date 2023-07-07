@@ -8,13 +8,11 @@ services:
       dockerfile: Dockerfile
     restart: always
     env_file:
-      - .env
+      - ./packages/.env
     networks:
       - tr-net
     volumes:
         - application:/application/
-        # - ./packages:/serv
-        # - bk:/srv/app
     tty: true
     ports:
       - 3000:3000
@@ -35,17 +33,6 @@ services:
 networks:
     tr-net:
       name: tr-net
-      # driver: bridge
-      # ipam:
-      #   config:
-      #    - subnet: 172.16.0.0/28
 
 volumes:
   application:
-# volumes:
-#   bk:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       o: bind
-#       device: ${HOME}/ft_transcendence/packages/backend
