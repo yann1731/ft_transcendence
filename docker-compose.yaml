@@ -1,21 +1,24 @@
 version: '3.9'
 
 services:
-  app:
-    container_name: app
+  backend:
+    container_name: backend
     build:
-      context: ./packages
+      context: ./packages/backend
       dockerfile: Dockerfile
     restart: always
     env_file:
-      - ./packages/.env
+      - .env
     networks:
       - tr-net
     volumes:
-        - application:/application/
+        - ./packages/backend:/serv/backend
+        # - ./packages:/serv
+        # - bk:/srv/app
     tty: true
     ports:
-      - 3000:3000
+      - 4242:4242
+      - 5001:5000
     depends_on:
       - database
   
@@ -30,9 +33,34 @@ services:
     networks:
       - tr-net
 
+  frontend:
+    container_name: frontend
+    build:
+      context: ./packages/front_end
+      dockerfile: Dockerfile
+    # restart: always to be re-enabled later
+    networks:
+      - tr-net
+    volumes:
+      - ./packages/front_end/src:/app/src/
+    ports:
+      - 3000:3000
+
 networks:
     tr-net:
       name: tr-net
+      # driver: bridge
+      # ipam:
+      #   config:
+      #    - subnet: 172.16.0.0/28
 
 volumes:
-  application:
+  backend:
+  frontend:
+# volumes:
+#   bk:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ${HOME}/ft_transcendence/packages/backend

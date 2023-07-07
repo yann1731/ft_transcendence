@@ -37,22 +37,16 @@ export class AuthService {
         const secret: string = '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';
 
         try {
-            let ipAddr = process.env.IP_ADDRESS;
-            if (!ipAddr) {
-                ipAddr = 'localhost';
-            }
-            console.log(`http://${ipAddr}:3000/wait`);
             const response = await axios.post('https://api.intra.42.fr/oauth/token', {
             grant_type: 'authorization_code',
             client_id: uid,
             client_secret: secret,
-            redirect_uri: `http://${ipAddr}:3000/wait`,
+            redirect_uri: 'http://localhost:3000/wait',
             code: code
             });
             console.log('Successfully got token');
             return response.data;
         } catch (error) {
-            console.error(error);
             console.error('Failed getting token');
             throw new BadRequestException('Failed getting token', error);
         }

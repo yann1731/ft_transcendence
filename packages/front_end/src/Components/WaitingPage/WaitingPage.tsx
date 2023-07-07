@@ -19,13 +19,13 @@ export default function GetToken() {
     let authorizationCode = urlParams.get("code");
     const fetchTokenAndUser = async () => {
       try {
-        const response = await axios.post("/oauth", {
+        const response = await axios.post("http://localhost:4242/oauth", {
           code: authorizationCode,
         });
         console.log("here's the access token");
         console.log(response);
         
-        const newUser = await axios.post("/user", {
+        const newUser = await axios.post("http://localhost:4242/user", {
           code: response.data.access_token,
           refresh_token: response.data.refresh_token,
           created_at: response.data.created_at,
@@ -34,7 +34,7 @@ export default function GetToken() {
         console.log(newUser);
 
         setUser(newUser.data);
-        window.location.assign("/home");
+        window.location.assign("http://localhost:3000/home");
       } catch (error) {
         console.log("hit error");
         console.error(error);
