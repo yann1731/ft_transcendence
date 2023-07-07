@@ -40,6 +40,7 @@ const Chat = () => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
 
+  // Catch data here.
   useEffect(() => {
     socket.on("setMessage", (data) => {
       console.log(data);
@@ -52,7 +53,7 @@ const Chat = () => {
       const messageInput = event.target as HTMLInputElement;
       const messageText = messageInput.value.trim();
       if (messageText !== '') {
-        socket.emit("sendMessage", {target: user?.chatInUse?.Name, message: messageText});
+        socket.emit("sendMessage", {target: user?.chatInUse?.name, message: messageText});
         //sendMessage(messageText);
         messageInput.value = '';
       }
