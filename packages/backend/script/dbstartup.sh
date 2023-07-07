@@ -13,7 +13,5 @@ echo "Running prisma migrate..."
 npx prisma migrate dev --name "init"
 echo "Prisma migrate done..."
 
-# >&2 echo "Postgres is up - executing command"
-
 echo "Running npm run start:dev..."
 npm run start:dev
