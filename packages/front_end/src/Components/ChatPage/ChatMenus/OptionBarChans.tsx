@@ -25,7 +25,7 @@ export default function OptionBarChans() {
     const [channelPicture, setChannelPicture] = React.useState<string | null>(null);
     const [isProtected, setIsProtected] = React.useState('public');
     const [pwd, setPassword] = React.useState<string | null> ('');
-    const [join, setJoinPassword] = React.useState<string | null> ('');
+    const [joinPassword, setJoinPassword] = React.useState<string | null> ('');
     const [mode, setMode] = React.useState<string>('');
     const [ownChatroom, setOwnChatroom] = React.useState<Chatroom[]>([]);
     const [adminChatroom, setAdminChatroom] = React.useState<Chatroom[]>([]);
@@ -49,11 +49,11 @@ export default function OptionBarChans() {
             const adminChat: Chatroom[] = [];
 
             chatroomData.forEach(chat => {
-              const isUser = chat.users?.find((obj) => {
+              const isUser = chat.users?.find((obj: any) => {
                 return obj.id === user?.id;
               });
               if (isUser !== undefined)
-                adminChat.push(chat);
+              adminChat.push(chat);
               if (chat.userId === user?.id)
               {
                 adminChat.push(chat);
@@ -62,13 +62,13 @@ export default function OptionBarChans() {
               else
               {
                 if (chat.state !== 'private')
-                  joinChat.push(chat);
+                joinChat.push(chat);
               }
-              })
-              setOwnChatroom(ownerChat);
-              setAdminChatroom(adminChat);
-              setJoinChatroom(joinChat);
-            }
+            })
+            setOwnChatroom(ownerChat);
+            setAdminChatroom(adminChat);
+            setJoinChatroom(joinChat);
+          }
         } catch (error) {
           console.error('Error fetching channels:', error);
         }
@@ -76,11 +76,11 @@ export default function OptionBarChans() {
       
       fetchChannels();
     }, [ownChatroom, joinChatroom, adminChatroom]);
-
+    
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
     };
-  
+    
     const handleCloseUserMenu = () => {
       setAnchorElUser(null);
     };
@@ -89,6 +89,7 @@ export default function OptionBarChans() {
       setMode(mode);
       setWindowIsOpen(true);
     };
+
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
       setDialog(false);
@@ -103,18 +104,18 @@ export default function OptionBarChans() {
       const newValue = expanded;
       setIsProtected(newValue);
       if (newValue !== 'pwProtected')
-        setPassword(null)
+      setPassword(null)
     };
-
+    
     const handleDialog = () => {
       setDialog(true);
-    }
-
-    const chanOption = (option: string) => {
-        handleMode(option);
-        handleCloseUserMenu();
     };
-
+    
+    const chanOption = (option: string) => {
+      handleMode(option);
+      handleCloseUserMenu();
+    };
+    
     const handleChannel = async () => {
       if (!channelName) {
         alert('No channel name given')
@@ -202,7 +203,7 @@ export default function OptionBarChans() {
           console.log('Chatroom modified:', response.data);
           
           const newChannelData: Chatroom = response.data;
-          const channelIndex = user?.Chatroom?.findIndex((obj) => obj.name === channelName);
+          const channelIndex = user?.Chatroom?.findIndex((obj: any) => obj.name === channelName);
           
           if (channelIndex && channelIndex !== -1) {
             const updatedChatrooms: Chatroom[] = [
@@ -216,7 +217,7 @@ export default function OptionBarChans() {
             updateUser(updatedUser);
             try {
               const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
-                updatedUser);
+              updatedUser);
               if (response.status === 200) {
                 console.log('Image uploaded successfully!');
               } else {
@@ -231,14 +232,14 @@ export default function OptionBarChans() {
           alert('Error: could not edit channel');
         }
       }
-      else
+      else if (mode === "Delete")
       {
         try {
           const response = await axios.delete(`http://localhost:4242/chatroom/${channelName}`);
           console.log('Chatroom deleted:', response.data);
           const updatedUser: Partial<User> = {
             ...user,
-            Chatroom: user?.Chatroom?.filter((obj) => obj.name !== channelName),
+            Chatroom: user?.Chatroom?.filter((obj: any) => obj.name !== channelName),
           };
           updatedUser.chatInUse = undefined;
           updateUser(updatedUser);
@@ -259,6 +260,42 @@ export default function OptionBarChans() {
           alert('Error deleting chatroom');
         }
       }
+      else if (mode === "Join")
+      {
+        try {
+          const response = await axios.patch(`http://localhost:4242/chatroom/${channelName}`);
+          console.log('User added to chatroom', response.data);
+          const newChannelData: Chatroom = response.data;
+          const channelIndex = user?.Chatroom?.findIndex((obj: any) => obj.name === channelName);
+          
+          if (channelIndex && channelIndex !== -1) {
+            const updatedChatrooms: Chatroom[] = [
+              ...(user?.Chatroom?.slice(0, channelIndex) || []),
+              newChannelData,
+              ...(user?.Chatroom?.slice(channelIndex + 1) || []),
+            ];
+            
+            const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+            updatedUser.chatInUse = newChannelData;
+            updateUser(updatedUser);
+            try {
+              const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
+              updatedUser);
+              if (response.status === 200) {
+                console.log('Channel added to user sucessfully!');
+              } else {
+                console.error('Channel could not be added to user');
+              }
+            } catch (error) {
+              console.error('Channel could not be added to user: ', error);
+            }
+            setDialog(false);
+          }
+        } catch (error) {
+          console.error('Error adding user to channel', error);
+          alert('Error adding user to channel');
+        }
+      }
       setChannelName('');
       setChannelPicture(null);
       setPassword('');
@@ -274,7 +311,7 @@ export default function OptionBarChans() {
         setChannelName('');
       }
     };
-
+    
     const getOptionsByMode = () => {
       switch (mode) {
         case 'Delete':
@@ -287,38 +324,75 @@ export default function OptionBarChans() {
           return [];
       }
     };
-
+            
+    const checkChannelPrivacy = () => {
+      const chat = user?.Chatroom?.find((obj: any) => {
+        return obj.name === channelName;
+      })
+      if (chat !== undefined)
+      {
+        if (chat.state === "pwProtected")
+        {
+          setIsProtected("pwProtected");
+          handleDialog();
+          return ;
+        }
+      }
+      setIsProtected("public");
+      handleChannel();
+    };
+      
+    const handleJoin = () => {
+      const chat = user?.Chatroom?.find((obj: any) => {
+        return obj.name === channelName;
+      })
+      if (chat !== undefined)
+      {
+        if (joinPassword === chat?.password)
+          handleChannel();
+        else
+        {
+          setJoinPassword("");
+          alert("Password does not match, please try again")
+          return ;
+        }
+      }
+      setJoinPassword("");
+      alert("Password does not match, please try again")
+      return ;
+    };
+    
     const channelHandlerWindow = (
       <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
-          borderRadius: 3
+      sx={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+        borderRadius: 3
         }}
-      >
+        >
         <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
           {mode}
         </Typography>
         {mode === 'Create' ?  
         <TextField
-            variant='outlined'
-            label="Channel Name"
-            fullWidth
-            className="newChannelTextField"
-            sx={{ 
-              marginBottom: 2,
-              '& label': { color: createChannelcolors },
-              '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+        variant='outlined'
+        label="Channel Name"
+        fullWidth
+        className="newChannelTextField"
+        sx={{ 
+          marginBottom: 2,
+          '& label': { color: createChannelcolors },
+          '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
             }}
             value={channelName}
             onChange={(e) => setChannelName(e.target.value)}
-          /> 
+            /> 
           : 
           <Autocomplete
           disablePortal
@@ -347,53 +421,52 @@ export default function OptionBarChans() {
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-
-            <FormControlLabel
-                value="public"
-                control={
-                  <Checkbox 
-                  checked={isProtected === 'public'} 
-                  sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
-                  />
-                }
-                label="Public"
-                sx={{ marginBottom: 2 }}
-                onClick={(event) => handleIsProtected(event, 'public')}
-                />
               <FormControlLabel
-                value="private"
-                control={
-                  <Checkbox 
-                  checked={isProtected === 'private'} 
-                  sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }} 
+                  value="public"
+                  control={
+                    <Checkbox 
+                    checked={isProtected === 'public'} 
+                    sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
+                    />
+                  }
+                  label="Public"
+                  sx={{ marginBottom: 2 }}
+                  onClick={(event) => handleIsProtected(event, 'public')}
                   />
-                }
-                label="Private"
-                sx={{ marginBottom: 2 }}
-                onClick={(event) => handleIsProtected(event, 'private')}
-                />
-              <FormControlLabel
-                value="protected"
-                control={
-                  <Checkbox 
-                  checked={isProtected === 'pwProtected'} 
-                  sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
+                <FormControlLabel
+                  value="private"
+                  control={
+                    <Checkbox 
+                    checked={isProtected === 'private'} 
+                    sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }} 
+                    />
+                  }
+                  label="Private"
+                  sx={{ marginBottom: 2 }}
+                  onClick={(event) => handleIsProtected(event, 'private')}
                   />
-                }
-                label="Password Protected"
-                sx={{ marginBottom: 2 }}
-                onClick={(event) => handleIsProtected(event, 'pwProtected')}
-                />
-              {isProtected === 'pwProtected' && (
-                <TextField
-                label="Password"
-                fullWidth
-                type="password"
-                sx={{ marginBottom: 2 }}
-                value={pwd}
-                onChange={(e) => setPassword(e.target.value)}
-                />
-                )}
+                <FormControlLabel
+                  value="protected"
+                  control={
+                    <Checkbox 
+                    checked={isProtected === 'pwProtected'} 
+                    sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
+                    />
+                  }
+                  label="Password Protected"
+                  sx={{ marginBottom: 2 }}
+                  onClick={(event) => handleIsProtected(event, 'pwProtected')}
+                  />
+                {isProtected === 'pwProtected' && (
+                  <TextField
+                  label="Password"
+                  fullWidth
+                  type="password"
+                  sx={{ marginBottom: 2 }}
+                  value={pwd}
+                  onChange={(e) => setPassword(e.target.value)}
+                  />
+                  )}
             </Box>
           </AccordionDetails>
         </Accordion>
@@ -401,20 +474,22 @@ export default function OptionBarChans() {
         {mode !== 'Delete' && mode !== 'Join' && (
           <ChanPictureSetter onPictureSelected={handlePictureSelection} />
           )}
-        {mode !== 'Delete' ?
+        {mode !== 'Delete' && mode !== 'Join' && (
         <Button onClick={handleChannel} className="profilePageButtons">
           {mode}
-        </Button>
-        :
-        <Button onClick={handleDialog} className="profilePageButtons">
-          {mode}
-        </Button>
+        </Button>)
         }
+        {mode === 'Delete' && (
         <Box>
-          <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px'}}>
-            Cancel
+          <Button onClick={handleDialog} className="profilePageButtons">
+          {mode}
           </Button>
-        </Box>
+          <Box>
+            <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px'}}>
+              Cancel
+            </Button>
+          </Box>
+        </Box>)}
         {mode === 'Delete' && (
           <Box>
             <Dialog
@@ -438,48 +513,53 @@ export default function OptionBarChans() {
             </Dialog>
           </Box>
         )}
-        {mode === 'Join' && isProtected !== 'pwProtected' && (
-        <Button onClick={handleChannel} className="profilePageButtons">
-          {mode}
-        </Button>)}
-        {mode === 'Join' && isProtected === 'pwProtected' && (
+        {mode === 'Join' && (
           <Box>
-            <Dialog
-              open={isDialogOpen}
-              onClose={handleCloseWindow}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-              >
-              <DialogTitle id="alert-dialog-title">
-                {"Please, enter password to join the chat!"}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText color={"red"} id="alert-dialog-description" textAlign={'center'}>
-                  Enter Password: 
-                  <TextField
-                      variant='outlined'
-                      label="Password"
-                      fullWidth
-                      className="newChannelTextField"
-                      sx={{ 
-                        marginBottom: 2,
-                        marginTop: 2,
-                        '& label': { color: createChannelcolors },
-                        '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
-                      }}
-                      value={join}
-                      onChange={(e) => setJoinPassword(e.target.value)}
-                    /> 
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button className="profilePageButtons" onClick={handleCloseWindow}>Cancel</Button>
-                <Button className="profilePageButtons" onClick={handleChannel}>Join</Button>
-              </DialogActions>
-            </Dialog>
-          </Box>
-        )}
-      </Box>
+            <Button onClick={checkChannelPrivacy} className="profilePageButtons">
+              {mode}
+            </Button>
+            <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px'}}>
+              Cancel
+            </Button>
+          </Box>)}
+          {mode === 'Join' && isProtected === "pwProtected" && (
+            <Box>
+              <Dialog
+                open={isDialogOpen}
+                onClose={handleCloseWindow}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+                >
+                <DialogTitle id="alert-dialog-title">
+                  {"Please, enter password to join the chat!"}
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText color={"red"} id="alert-dialog-description" textAlign={'center'}>
+                    Enter Password: 
+                    <TextField
+                        variant='outlined'
+                        label="Password"
+                        fullWidth
+                        className="newChannelTextField"
+                        sx={{ 
+                          marginBottom: 2,
+                          marginTop: 2,
+                          '& label': { color: createChannelcolors },
+                          '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+                        }}
+                        value={joinPassword}
+                        onChange={(e) => setJoinPassword(e.target.value)}
+                        /> 
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button className="profilePageButtons" onClick={handleCloseWindow}>Cancel</Button>
+                  <Button className="profilePageButtons" onClick={handleJoin}>Join</Button>
+                </DialogActions>
+              </Dialog>
+            </Box>)
+          }
+        </Box>
     );
     
   return (
