@@ -34,10 +34,11 @@ interface MyChannelsProps {
     }, [channels]);
     
     const SetChatInUse = (name: string) => {
+      const decodedName = decodeURIComponent(name);
       if (user !== null)
       {
         const chatroom = user?.Chatroom?.find((obj) => {
-          return obj.name === name;
+          return obj.name === decodedName;
         });
         user.chatInUse = chatroom;
         const updatedUser: Partial<User> = {
@@ -56,8 +57,9 @@ interface MyChannelsProps {
       <List>
         {filteredChannels.map((channel) => {
           const decodedName = decodeURIComponent(channel.name);
+          const encodedName = encodeURIComponent(channel.name);
           return (
-            <ListItemButton key={channel.id} onClick={() => SetChatInUse(decodedName)}>
+            <ListItemButton key={channel.id} onClick={() => SetChatInUse(encodedName)}>
               <ListItemIcon>
                 <Avatar alt={decodedName} src={channel.picture || undefined} />
               </ListItemIcon>
