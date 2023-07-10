@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { promises } from 'dns';
 import { ValidationPipe } from '@nestjs/common';
+import { TokenGuard } from 'src/guard/token.guard';
 
 
 // {
@@ -17,6 +18,7 @@ import { ValidationPipe } from '@nestjs/common';
 //   backend   |
 // }
 @Controller('user')
+@UseGuards(TokenGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

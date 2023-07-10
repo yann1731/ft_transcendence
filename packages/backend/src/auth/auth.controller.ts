@@ -10,9 +10,4 @@ export class AuthController {
   oauthCallback(@Body('code') code: string) {
     return this.authService.oauthCallback(code);
   }
-
-  @Post('signin')
-  signin() {
-    return this.authService.signin();
-  }
 }

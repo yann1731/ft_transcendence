@@ -51,9 +51,4 @@ export class AuthService {
             throw new BadRequestException('Failed getting token', error);
         }
     }
-
-
-    signin () { //checks credentials, if user exists and provided password is valid returns a new token
-        
-    }
 }
