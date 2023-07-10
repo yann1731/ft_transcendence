@@ -18,7 +18,6 @@ import { TokenGuard } from 'src/guard/token.guard';
 //   backend   |
 // }
 @Controller('user')
-@UseGuards(TokenGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -33,16 +32,19 @@ export class UserController {
   }
 
   @Get(':id')
+  @UseGuards(TokenGuard)
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }
 
   @Patch(':id')
+  @UseGuards(TokenGuard)
   update(@Param('id') id: string, @Body(new ValidationPipe({ transform: true })) updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
+  @UseGuards(TokenGuard)
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }
