@@ -1,7 +1,9 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { PrivatemessageService } from './privatemessage.service';
+import { TokenGuard } from 'src/guard/token.guard';
 
 @Controller('privatemessage')
+// @UseGuards(TokenGuard)
 export class PrivatemessageController {
   constructor(private readonly privatemessageService: PrivatemessageService) {}
 

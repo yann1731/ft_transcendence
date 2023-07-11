@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ChatroomuserService } from './chatroomuser.service';
 import { CreateChatroomuserDto } from './dto/create-chatroomuser.dto';
 import { UpdateChatroomuserDto } from './dto/update-chatroomuser.dto';
+import { TokenGuard } from 'src/guard/token.guard';
 
 @Controller('chatroomuser')
+// @UseGuards(TokenGuard)
 export class ChatroomuserController {
   constructor(private readonly chatroomuserService: ChatroomuserService) {}
 

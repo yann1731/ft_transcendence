@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { UserfriendshipService } from './userfriendship.service';
 import { CreateUserfriendshipDto } from './dto/create-userfriendship.dto';
+import { TokenGuard } from 'src/guard/token.guard';
 
 @Controller('userfriendship')
+// @UseGuards(TokenGuard)
 export class UserfriendshipController {
   constructor(private readonly userfriendshipService: UserfriendshipService) {}
 

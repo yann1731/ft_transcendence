@@ -5,8 +5,8 @@ import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { CreatePasswordChatroomDto } from './dto/create-passwordChatroom.dto';
 import { TokenGuard } from 'src/guard/token.guard';
 
-@UseGuards(TokenGuard)
 @Controller('chatroom')
+// @UseGuards(TokenGuard)
 export class ChatroomController {
   constructor(private readonly chatroomService: ChatroomService) {}
 

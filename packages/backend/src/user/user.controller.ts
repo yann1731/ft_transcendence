@@ -27,24 +27,25 @@ export class UserController {
   }
 
   @Get() //returns all users
+  // @UseGuards(TokenGuard)
   findAll() {
     return this.userService.findAll();
   }
 
   @Get(':id') //returns single user by id
-  @UseGuards(TokenGuard)
+  // @UseGuards(TokenGuard)
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }
 
   @Patch(':id') //updates single by id
-  @UseGuards(TokenGuard)
+  // @UseGuards(TokenGuard)
   update(@Param('id') id: string, @Body(new ValidationPipe({ transform: true })) updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id') //deletes single user by id
-  @UseGuards(TokenGuard)
+  // @UseGuards(TokenGuard)
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }
