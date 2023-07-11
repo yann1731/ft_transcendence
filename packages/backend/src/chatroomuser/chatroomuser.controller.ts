@@ -7,27 +7,27 @@ import { UpdateChatroomuserDto } from './dto/update-chatroomuser.dto';
 export class ChatroomuserController {
   constructor(private readonly chatroomuserService: ChatroomuserService) {}
 
-  @Post()
+  @Post() //create chatroomuser joined to particular user id and chatroom id
   create(@Body() createChatroomuserDto: CreateChatroomuserDto) {
     return this.chatroomuserService.create(createChatroomuserDto);
   }
 
-  @Get()
+  @Get() //returns all currently created chatroomusers
   findAll() {
     return this.chatroomuserService.findAll();
   }
 
-  @Get(':id')
+  @Get(':id') //returns single chatroomuser by it's id
   findOne(@Param('id') id: string) {
     return this.chatroomuserService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch(':id') //updates chatroomuser by id
   update(@Param('id') id: string , @Body() updateChatroomuserDto: UpdateChatroomuserDto) {
     return this.chatroomuserService.update(id, updateChatroomuserDto);
   }
 
-  @Delete(':id')
+  @Delete(':id') //deletes single chatroomuser by id provided
   remove(@Param('id') id: string) {
     return this.chatroomuserService.remove(id);
   }

@@ -32,7 +32,7 @@ export class ChatroomuserService {
     return await this.prisma.chatroomUser.findMany();
   }
 
-  async findOne(id: string) { //returns a specific chatroonuser by id
+  async findOne(id: string) { //returns a specific chatroomuser by id
     const chatroomuser = await this.prisma.chatroomUser.findUnique({where:
       { id }
     });
