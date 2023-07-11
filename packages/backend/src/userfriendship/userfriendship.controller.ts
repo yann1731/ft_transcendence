@@ -16,6 +16,11 @@ export class UserfriendshipController {
     return this.userfriendshipService.findAll();
   }
 
+  @Get('user/:id')
+  findAllUF(@Param('id') id: string) { //returns all userfriendships associated with id
+    return this.userfriendshipService.findAllUF(id);
+  }
+
   @Get(':id') //returns single userfriendship relation by id
   findOne(@Param('id') id: string) {
     return this.userfriendshipService.findOne(id);
