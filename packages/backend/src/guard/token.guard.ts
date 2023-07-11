@@ -13,7 +13,7 @@ export class TokenGuard implements CanActivate {
     }
 }
 
-async function validateRequest(request, prisma): Promise<boolean> {
+async function validateRequest(request, prisma): Promise<boolean> { //validates token and user id for request to endpoints
     const userId: string = request.headers.userid;
     const token: string = request.headers.authorization;
 

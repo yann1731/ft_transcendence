@@ -6,22 +6,22 @@ import { CreateUserblockDto } from './dto/create-userblock.dto';
 export class UserblocksController {
   constructor(private readonly userblocksService: UserblocksService) {}
 
-  @Post()
+  @Post() //create userblock relation based on the infos within createUserblockDto
   create(@Body() createUserblockDto: CreateUserblockDto) {
     return this.userblocksService.create(createUserblockDto);
   }
 
-  @Get()
+  @Get() //returns all userblockrelations
   findAll() {
     return this.userblocksService.findAll();
   }
 
-  @Get(':id')
+  @Get(':id') //returns a single userblock relation by id
   findOne(@Param('id') id: string) {
     return this.userblocksService.findOne(id);
   }
 
-  @Delete(':id')
+  @Delete(':id') //deletes a single userblock relation by id
   remove(@Param('id') id: string) {
     return this.userblocksService.remove(id);
   }

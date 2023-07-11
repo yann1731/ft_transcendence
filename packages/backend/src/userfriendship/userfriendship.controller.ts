@@ -6,22 +6,22 @@ import { CreateUserfriendshipDto } from './dto/create-userfriendship.dto';
 export class UserfriendshipController {
   constructor(private readonly userfriendshipService: UserfriendshipService) {}
 
-  @Post()
+  @Post() //creates new userfriendship using the information contained within createUserfriendshipDto
   create(@Body() createUserfriendshipDto: CreateUserfriendshipDto) {
     return this.userfriendshipService.create(createUserfriendshipDto);
   }
 
-  @Get()
+  @Get() //returns all userfriendship relations
   findAll() {
     return this.userfriendshipService.findAll();
   }
 
-  @Get(':id')
+  @Get(':id') //returns single userfriendship relation by id
   findOne(@Param('id') id: string) {
     return this.userfriendshipService.findOne(id);
   }
 
-  @Delete(':id')
+  @Delete(':id') //delete single userfriendship relation by id
   remove(@Param('id') id: string) {
     return this.userfriendshipService.remove(id);
   }

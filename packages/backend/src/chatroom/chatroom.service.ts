@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2'
 import { CreatePasswordChatroomDto } from './dto/create-passwordChatroom.dto';
 import { Prisma } from '@prisma/client';
+import {userPermission} from '@prisma/client'
 const {validator } = Prisma;
 
 @Injectable()
@@ -23,6 +24,12 @@ export class ChatroomService { //specifically to create a password protected cha
         password: hashedPass,
       }
     });
+    const chatroomuser = await this.prisma.chatroomUser.create({data:
+    {
+      userId: createPasswordChatroomDto.userId,
+      chatroomId: chatroom.id,
+      permission: userPermission.owner
+    }});
     if (!chatroom)
     throw new BadRequestException;
     else
@@ -44,8 +51,14 @@ export class ChatroomService { //specifically to create a password protected cha
         state: createChatroomDto.state,
       }
     });
+    const chatroomuser = await this.prisma.chatroomUser.create({data:
+    {
+      userId: createChatroomDto.userId,
+      chatroomId: chatroom.id,
+      permission: userPermission.owner
+    }});
     console.log("picture is : " + createChatroomDto.picture);
-    if (!chatroom)
+    if (!chatroom || !chatroomuser)
       throw new BadRequestException('Failed to create chatroom');
     else {
       console.log("created " + createChatroomDto.name);
@@ -58,9 +71,9 @@ export class ChatroomService { //specifically to create a password protected cha
     return await this.prisma.chatroom.findMany();
   }
 
-  async findOne(name: string) { //returns a single chatroom using id
+  async findOne(id: string) { //returns a single chatroom using id
     
-    const chatroom = await this.prisma.chatroom.findUnique({where: { name }});
+    const chatroom = await this.prisma.chatroom.findUnique({where: { id }});
     if (!chatroom)
       throw new BadRequestException;
     else

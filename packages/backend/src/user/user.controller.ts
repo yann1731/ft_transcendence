@@ -22,28 +22,28 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body('code') code: string, @Body('refresh_token') refresh_token: string, @Body('expires_in') expires_in: number, @Body('created_at') created_at: number) {
+  create(@Body('code') code: string, @Body('refresh_token') refresh_token: string, @Body('expires_in') expires_in: number, @Body('created_at') created_at: number) { //creates a new user using token, refresh_token, expires_in and created_at. Also calls 42 api to get more info on user
     return this.userService.create(code, refresh_token, expires_in, created_at);
   }
 
-  @Get()
+  @Get() //returns all users
   findAll() {
     return this.userService.findAll();
   }
 
-  @Get(':id')
+  @Get(':id') //returns single user by id
   @UseGuards(TokenGuard)
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch(':id') //updates single by id
   @UseGuards(TokenGuard)
   update(@Param('id') id: string, @Body(new ValidationPipe({ transform: true })) updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
 
-  @Delete(':id')
+  @Delete(':id') //deletes single user by id
   @UseGuards(TokenGuard)
   remove(@Param('id') id: string) {
     return this.userService.remove(id);

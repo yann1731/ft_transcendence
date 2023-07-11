@@ -32,7 +32,7 @@ import { Prisma } from "@prisma/client";
 export class AuthService {
     constructor(private prisma: PrismaService) {}
 
-    async oauthCallback(code: string): Promise<AxiosResponse["data"]> {
+    async oauthCallback(code: string): Promise<AxiosResponse["data"]> { //calls 42 api to exchange code for token
         const uid: string =  'u-s4t2ud-47600cc08a77769cea8bec6cacdd6ef77df4be8fbb4984a8b9435f3cdddee480';
         const secret: string = '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';
 
