@@ -24,6 +24,16 @@ export class ChatroomuserController {
     return this.chatroomuserService.findOne(id);
   }
 
+  @Get('chatroom/:id') // returns all chatroomusers associated to the chatroomid
+  findAllChatroomUsersByChatroomId(@Param('id') id: string) {
+    return this.chatroomuserService.findAllChatroomUsersByChatroomId(id);
+  }
+
+  @Get('user/:id') //returns all chatroomusers associated to the user id
+  findAllChatroomUsersByUserId(@Param('id') id: string) {
+    return this.chatroomuserService.findAllChatroomUsersByUserId(id);
+  }
+
   @Patch(':id') //updates chatroomuser by id
   update(@Param('id') id: string , @Body() updateChatroomuserDto: UpdateChatroomuserDto) {
     return this.chatroomuserService.update(id, updateChatroomuserDto);
