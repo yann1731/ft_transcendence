@@ -26,7 +26,7 @@ const pages = [
 ];
 const settings = ['Profile settings', 'Logout'];
 
-function ResponsiveAppBar() {
+function DashboardAppBar() {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -229,4 +229,4 @@ function ResponsiveAppBar() {
   );
 }
 
-export default ResponsiveAppBar;
+export default DashboardAppBar;
