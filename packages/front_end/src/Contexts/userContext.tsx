@@ -40,7 +40,7 @@ export const UserContext = createContext<UserContextType>({
   setUser: () => {},
   updateUser: () => {}
 });
-
+// Faire un api get pour mettre les default settings à jour avec la DB
 const defaultState = {
   user: {
     avatar: '',

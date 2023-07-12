@@ -1,26 +1,7 @@
+import { User } from "Contexts/userContext";
 // Interfaces.tsx
 export{};
 // User
-interface User {
-    avatar: string,
-    username: string,
-    email: string,
-    win: number,
-    loss: number,
-    gamesPlayed: number,
-    userStatus: string,
-    twoFaEnabled: boolean,
-    friendListA?: UserFriendship[],
-    friendListB?: UserFriendship[],
-    blockedUsers?: UserBlocks[],
-    blockedBy?: UserBlocks[],
-    chatrooms?: ChatroomUser[],
-    sentMessages?: PrivateMessage[],
-    receivedMessages?: PrivateMessage[],
-    sentChatroomMessages?: ChatroomMessage[],
-    Chatroom?: Chatroom[],
-    id: string ;
-}
 
 // Pour Dashboard
 export interface userStats {
@@ -83,10 +64,10 @@ export interface Message {
 export interface ChatroomUser {
 	id: string;
 	userId: string ;
-	user?: User ;
+	user: User | null;
 	chatroomId: string ;
 	chatroom?: Chatroom ;
-	permission: boolean ;
+	permission: userPermission ;
 	banStatus: boolean ;
 	banUntil: Date  | null;
 	muteStatus: boolean ;
@@ -143,3 +124,9 @@ export interface HallOfFame {
 export interface ChatInUse {
     Chat: Chatroom;
 }
+
+export enum userPermission {
+    owner,
+    admin,
+    regular
+  }

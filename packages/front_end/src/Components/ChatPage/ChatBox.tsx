@@ -28,8 +28,9 @@ const Chat = () => {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
   }, [messages]);
-  
-  const sendMessage = (messageText: string) => {
+
+
+  const setMessage = (messageText: string) => {
     const newMessage: Message = {
       text: messageText,
       timestamp: new Date().toLocaleTimeString(),
@@ -39,13 +40,21 @@ const Chat = () => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
 
+  // Catch data here.
+  useEffect(() => {
+    socket.on("setMessage", (data) => {
+      console.log(data);
+      setMessage(data)
+    });
+  }, []);
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       const messageInput = event.target as HTMLInputElement;
       const messageText = messageInput.value.trim();
       if (messageText !== '') {
-        socket.emit("test");
-        sendMessage(messageText);
+        socket.emit("sendMessage", {target: user?.chatInUse?.name, message: messageText});
+        //sendMessage(messageText);
         messageInput.value = '';
       }
     }
@@ -56,7 +65,7 @@ const Chat = () => {
     if (messageInput) {
       const messageText = messageInput.value.trim();
       if (messageText !== '') {
-        sendMessage(messageText);
+        //sendMessage(messageText);
         messageInput.value = '';
       }
     }
