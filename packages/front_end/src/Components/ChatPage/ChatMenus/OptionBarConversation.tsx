@@ -360,7 +360,7 @@ export default function OptionBarConversation() {
 
   return (
     <Box>
-    {user?.chatInUse !== undefined ? (
+    {user?.chatInUse !== null && user?.chatInUse !== undefined ? (
       <AppBar position="relative" sx={{ boxShadow: '0' }}>
         <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
               <Tooltip title="Open settings">
@@ -368,7 +368,7 @@ export default function OptionBarConversation() {
                   <DehazeIcon></DehazeIcon>
                 </IconButton>
               </Tooltip>
-              {user?.chatInUse?.name}
+              {decodeURIComponent(user?.chatInUse?.name)}
               <Menu
                 sx={{ mt: '40px' }}
                 id="menu-appbar"

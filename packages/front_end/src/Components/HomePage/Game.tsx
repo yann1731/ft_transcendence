@@ -45,6 +45,6 @@ export default function PongGame() {
     }, [user]);
 
     return (
-        <Box id="PONG" sx={{ maxWidth: '880px' }}></Box>
+        <Box id="PONG" style={{ maxHeight: '82.7vh' }}></Box>
     );
 }
