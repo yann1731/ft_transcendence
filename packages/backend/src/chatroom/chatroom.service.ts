@@ -30,10 +30,10 @@ export class ChatroomService { //specifically to create a password protected cha
       chatroomId: chatroom.id,
       permission: userPermission.owner
     }});
-    if (!chatroom)
-    throw new BadRequestException;
+    if (!chatroom || !chatroomuser)
+      throw new BadRequestException;
     else
-    return chatroom;
+      return chatroom;
   }
   
   async create(createChatroomDto: CreateChatroomDto) { //creates either a public or private chatroom. Associates ownerId to the user who created it
