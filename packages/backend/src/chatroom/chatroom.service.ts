@@ -80,14 +80,17 @@ export class ChatroomService { //specifically to create a password protected cha
       return chatroom;
   }
 
-  async findAllUsers(id: string) { //returns all chatroomusers associated to a chatroom by id
-    const users = await this.prisma.chatroomUser.findMany({where: { chatroomId: id }});
-
+  async findAllUsers(chatroomId: string) {
+    const users = await this.prisma.chatroom.findUnique({
+      where: { id: chatroomId },
+      include: { users: { include: { user: true } } },
+    });
     if (!users)
       throw new BadRequestException;
     else
       return users;
   }
+
 
   async update(name: string, updateChatroomDto: UpdateChatroomDto) { 
     const { state, picture, password } = updateChatroomDto;

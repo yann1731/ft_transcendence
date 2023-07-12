@@ -30,9 +30,9 @@ export class ChatroomController {
     return this.chatroomService.findOne(id);
   }
 
-  @Get('/user/:id') //returns all users associated with chatroom with provided id
-  findAllUsers(@Param('id') id: string) {
-    return this.chatroomService.findAllUsers(id);
+  @Get('/users/:chatroomId') //returns all users associated with chatroom with provided id
+  findAllUsers(@Param('chatroomId') chatroomId: string) {
+    return this.chatroomService.findAllUsers(chatroomId);
   }
 
   @Patch(':id') //update chatroom with provided id
