@@ -20,7 +20,10 @@ export default function OptionBarFriends() {
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
-          const response = await axios.get('http://localhost:4242/user');
+          const response = await axios.get('http://localhost:4242/user', {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           
           if (response.status === 200) {
             const UsersData: User[] = response.data;
@@ -67,7 +70,10 @@ export default function OptionBarFriends() {
       if (mode === 'Add')
       {
         try {
-          const response = await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: newFriend?.id});
+          const response = await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: newFriend?.id}, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           console.log('Friend successfuly added', response.data);
         } catch (error) {
           console.error('Error adding new friend', error);

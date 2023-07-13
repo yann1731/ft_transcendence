@@ -35,20 +35,27 @@ export default function OptionBarChans() {
     const theme = useTheme();
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
     const [isDialogOpen, setDialog] = React.useState(false);
-
     // Sockets implementation
     const socket = useContext(SocketContext);
+    const [refresh, setRefresh] = React.useState<Boolean>(false);
 
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
-          const response = await axios.get('http://localhost:4242/chatroom');
+          const response = await axios.get('http://localhost:4242/chatroom', {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           if (response.status === 200) {
             console.log('Chatrooms fetched');
             const chatroomData: Chatroom[] = response.data;
             
             try {
-              const response = await axios.get(`http://localhost:4242/chatroomuser`);
+              //TODO Changer endpoint pour gsingle chatroomuser, à partir de l'id de notre current user
+              const response = await axios.get(`http://localhost:4242/chatroomuser`, {headers: {
+                'Authorization': user?.token,
+                'userId': user?.id
+              }});
               
               if (response.status === 200) {
                 console.log('ChatroomUsers fetched: ', response.data);
@@ -61,15 +68,18 @@ export default function OptionBarChans() {
                   const isJoined = chatroomUsersData.find(user => user.chatroomId === chat.id);
                   if (isJoined?.permission === userPermission.admin)
                   {
+                    alert("ICI Radio-Canada");
                     adminChatroom.push(chat);
                   }
                   else if (isJoined?.permission === userPermission.owner)
                   {
+                    alert("pouet");
                     adminChatroom.push(chat);
                     ownChatroom.push(chat);
                   }
                   else if (isJoined === undefined)
                   {
+                    alert("bizounours")
                     if (chat.state !== 'private')
                     {
                       joinChatroom.push(chat);
@@ -89,9 +99,8 @@ export default function OptionBarChans() {
           console.error('Error fetching channels:', error);
         }
       };
-      
       fetchChannels();
-    }, []);
+    }, [refresh]);
     
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
@@ -132,12 +141,12 @@ export default function OptionBarChans() {
       handleCloseUserMenu();
     };
     
+
     const handleChannel = async () => {
       if (!channelName) {
         alert('No channel name given')
         return ;
       }
-
       const newChannel: Partial<Chatroom> = {
         name: channelName,
         picture: channelPicture,
@@ -151,7 +160,10 @@ export default function OptionBarChans() {
         if (isProtected === 'pwProtected')
         {
           try {
-            const response = await axios.post('http://localhost:4242/chatroom/password', newChannel);
+            const response = await axios.post('http://localhost:4242/chatroom/password', newChannel, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
             
             if (response.status === 201) {
               socket.emit("createChannel", {channelName: newChannel.name });
@@ -172,7 +184,10 @@ export default function OptionBarChans() {
         else
         {
           try {
-            const response = await axios.post('http://localhost:4242/chatroom/', newChannel);
+            const response = await axios.post('http://localhost:4242/chatroom/', newChannel, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
             if (response.status === 201) {
               socket.emit("createChannel", {channelName: newChannel.name });
               socket.on("fail", () => {
@@ -195,7 +210,10 @@ export default function OptionBarChans() {
       else if (mode === 'Edit')
       {
         try {
-          const response = await axios.patch(`http://localhost:4242/chatroom/${channelName}`, newChannel);
+          const response = await axios.patch(`http://localhost:4242/chatroom/${channelName}`, newChannel, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           console.log('Chatroom modified:', response.data);
           
           const newChannelData: Chatroom = response.data;           
@@ -209,7 +227,10 @@ export default function OptionBarChans() {
       else if (mode === "Delete")
       {
         try {
-          const response = await axios.delete(`http://localhost:4242/chatroom/${channelName}`);
+          const response = await axios.delete(`http://localhost:4242/chatroom/${channelName}`, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           console.log('Chatroom deleted:', response.data);
           
           setOwnChatroom(prevOwnChat => prevOwnChat.filter(chat => chat.name !== channelName));
@@ -237,7 +258,10 @@ export default function OptionBarChans() {
             banUntil: null,
             muteStatus: false,
           }
-          const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser);
+          const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           console.log('User added to chatroom', response.data);
           
           setJoinChatroom(prevJoinChat => prevJoinChat.filter(chat => chat.name !== channelName));
@@ -249,28 +273,31 @@ export default function OptionBarChans() {
             alert('Error adding user to channel');
         }
       }
+      handleCloseWindow();
+      setMode('');
       setChannelName('');
       setChannelPicture(null);
       setPassword('');
       setIsProtected('public');
-      handleCloseWindow();
-      setMode('');
+      setRefresh(!refresh);
     };
     
     const handleChannelSelection = (event: React.ChangeEvent<{}>, value: Chatroom | null) => {
       if (value) {
         setChannelName(value.name);
         const editChan = adminChatroom.find((obj) => {
-          return obj.name === channelName});
-        if (editChan !== undefined)
-        {
-          setIsProtected(editChan?.state);
-          setChannelPicture(editChan.picture);
-          if (isProtected === 'pwProtected')
-            setPassword(editChan?.password);
-        }
-      } else {
-        setChannelName('');
+          return obj.name === value.name});
+          if (editChan !== undefined)
+          {
+            setIsProtected(editChan?.state);
+            setChannelPicture(editChan.picture);
+            if (editChan.state === 'pwProtected')
+            {
+              setPassword(editChan?.password);
+            }
+          }
+        } else {
+          setChannelName('');
       }
     };
     
@@ -434,13 +461,16 @@ export default function OptionBarChans() {
         </Accordion>
         )}
         {mode !== 'Delete' && mode !== 'Join' && (
+          <Box>
           <ChanPictureSetter onPictureSelected={handlePictureSelection} />
+          <Button onClick={handleChannel} className="profilePageButtons">
+            {mode}
+          </Button>
+          <Button onClick={handleCloseWindow} className="profilePageButtons" sx={{ marginTop: '15px'}}>
+            Cancel
+          </Button>
+          </Box>
           )}
-        {mode !== 'Delete' && mode !== 'Join' && (
-        <Button onClick={handleChannel} className="profilePageButtons">
-          {mode}
-        </Button>)
-        }
         {mode === 'Delete' && (
         <Box>
           <Button onClick={handleDialog} className="profilePageButtons">

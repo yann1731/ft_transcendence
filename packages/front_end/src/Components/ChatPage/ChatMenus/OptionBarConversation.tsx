@@ -29,7 +29,10 @@ export default function OptionBarConversation() {
       const fetchUsers = async () => {
         try {
           //Éventuellement, juste aller chercher ceux du channel in use
-          const response = await axios.get('http://localhost:4242/chatroomuser');
+          const response = await axios.get('http://localhost:4242/chatroomuser', {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           if (response.status === 200) {
             const ChatroomUsersData: ChatroomUser[] = response.data;
             setChatroomUsers(ChatroomUsersData);
@@ -38,7 +41,10 @@ export default function OptionBarConversation() {
           console.error('Error fetching chatroom users', error);
         }
         try {
-          const response = await axios.get('http://localhost:4242/user');
+          const response = await axios.get('http://localhost:4242/user', {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           if (response.status === 200) {
             const UsersData: User[] = response.data;
             setUsers(UsersData);
@@ -48,7 +54,9 @@ export default function OptionBarConversation() {
                 return obj.id === userToFind.userId;
               })
               if (isUser !== undefined)
+              {
                 tempUsers.push(isUser);
+              }
             });
             setUserInCurrentChat(tempUsers);
           } 
@@ -56,9 +64,8 @@ export default function OptionBarConversation() {
           console.error('Error fetching chatroom users', error);
         }
       };
-      
       fetchUsers();
-    }, []);
+    }, [user?.chatInUse, chatroomUsers]);
     
     const handleMode = (mode: string) => {
       setMode(mode);
@@ -123,7 +130,10 @@ export default function OptionBarConversation() {
             banUntil: null,
             muteStatus: false,
           }
-          const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser);
+          const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           if(response.status === 200)
           {
             console.log('User added to chatroom', response.data);
@@ -146,7 +156,10 @@ export default function OptionBarConversation() {
           }
           chatUser.banStatus = true;
           try {
-            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser);
+            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
             if (response.status === 200) {
               const ChatroomUsersData: ChatroomUser = response.data;
               setChatroomUsers(prevChatUsers => [...prevChatUsers, ChatroomUsersData]);
@@ -166,7 +179,10 @@ export default function OptionBarConversation() {
             return ;
           }
           try {
-            const response = await axios.delete(`http://localhost:4242/chatroomuser/${chatUser.id}`);
+            const response = await axios.delete(`http://localhost:4242/chatroomuser/${chatUser.id}`, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
             if (response.status === 200) {
               console.log('User removed from channel', response.data);
             } else {
@@ -188,7 +204,10 @@ export default function OptionBarConversation() {
           }
           chatUser.permission = userPermission.admin;
           try {
-            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser);
+            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
             if (response.status === 200) {
               const ChatroomUsersData: ChatroomUser = response.data;
               setChatroomUsers(prevChatUsers => [...prevChatUsers, ChatroomUsersData]);
@@ -214,7 +233,10 @@ export default function OptionBarConversation() {
           }
           chatUser.muteStatus = true;
           try {
-            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser);
+            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
             if (response.status === 200) {
               const ChatroomUsersData: ChatroomUser = response.data;
               setChatroomUsers(prevChatUsers => [...prevChatUsers, ChatroomUsersData]);
@@ -235,7 +257,10 @@ export default function OptionBarConversation() {
           }
           chatUser.muteStatus = false;
           try {
-            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser);
+            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
             if (response.status === 200) {
               const ChatroomUsersData: ChatroomUser = response.data;
               setChatroomUsers(prevChatUsers => [...prevChatUsers, ChatroomUsersData]);
@@ -250,7 +275,10 @@ export default function OptionBarConversation() {
         if (chatUser?.permission === userPermission.owner)
         {
           try {
-            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.id}`);
+            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.id}`, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
             if (response.status === 200) {
               console.log('Channel deleted', response.data);
               const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
@@ -265,7 +293,10 @@ export default function OptionBarConversation() {
         else
         {
           try {
-            const response = await axios.delete(`http://localhost:4242/chatroomuser/${chatUser?.id}`);
+            const response = await axios.delete(`http://localhost:4242/chatroomuser/${chatUser?.id}`, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
             if (response.status === 200) {
               console.log('User removed from channel', response.data);
               const updatedUser: Partial<User> = { ...user, chatInUse: undefined };

@@ -27,7 +27,10 @@ const UsernameHandler = () => {
   const handleChangeUsername = async () => {
     try {
       const response: AxiosResponse = await axios.patch(`http://localhost:4242/user/${user?.id}`,
-        { ...user, nickname: newNickname });
+        { ...user, nickname: newNickname }, {headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }});
 
       if (response.status === 200) {
         const updatedUser = response.data;

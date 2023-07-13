@@ -3,7 +3,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import { ListItemButton } from '@mui/material';
-import { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Chatroom, ChatroomUser } from 'Components/Interfaces';
 import axios from 'axios';
 import { UserContext, User } from 'Contexts/userContext';
@@ -20,7 +20,10 @@ interface MyChannelsProps {
     useEffect(() => {
       const fetchChannels = async () => {
         try {
-          const response = await axios.get('http://localhost:4242/chatroom');
+          const response = await axios.get('http://localhost:4242/chatroom', {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           
           if (response.status === 200) {
             setChannels(response.data);
@@ -31,7 +34,7 @@ interface MyChannelsProps {
         }
       };
       fetchChannels();
-    }, [channels]);
+    }, [user]);
     
     useEffect(() => {
       const fetchJoinedChannels = async () => {
@@ -39,7 +42,10 @@ interface MyChannelsProps {
           //Vrai api call
           //const response = await axios.get(`http://localhost:4242/chatroomuser/${user?.id}`);
           //Temp api call
-          const response = await axios.get(`http://localhost:4242/chatroomuser`);
+          const response = await axios.get(`http://localhost:4242/chatroomuser`, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }})
           
           if (response.status === 200) {
             const chatroomUsersData: ChatroomUser[] = response.data;
@@ -60,7 +66,7 @@ interface MyChannelsProps {
         }
       };
       fetchJoinedChannels();
-    }, [joinedChannels]);
+    }, [channels, user]);
     
     const SetChatInUse = (name: string) => {
       const decodedName = decodeURIComponent(name);

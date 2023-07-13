@@ -24,10 +24,10 @@ const DashboardContainer: React.FC = () => {
       try {
         const token = user?.token;
         const userId = user?.id;
-        const response: AxiosResponse = await axios.get(`http://localhost:4242/user/${userId}`, {headers: {
+        const response: AxiosResponse = await axios.get(`http://localhost:4242/user/`, {headers: {
           'Authorization': token,
           'userId': userId
-        }});
+        }} );
         const data: HallOfFame[] = response.data;
         
         data.forEach(score => {
