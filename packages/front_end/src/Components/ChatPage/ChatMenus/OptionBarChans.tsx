@@ -31,7 +31,6 @@ export default function OptionBarChans() {
     const [ownChatroom, setOwnChatroom] = React.useState<Chatroom[]>([]);
     const [adminChatroom, setAdminChatroom] = React.useState<Chatroom[]>([]);
     const [joinChatroom, setJoinChatroom] = React.useState<Chatroom[]>([]);
-    const [chatToEdit, setChatToEdit] = React.useState<Chatroom>();
     const {user, updateUser} = useContext(UserContext);
     const theme = useTheme();
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
@@ -55,20 +54,30 @@ export default function OptionBarChans() {
                 console.log('ChatroomUsers fetched: ', response.data);
                 
                 const chatroomUsersData: ChatroomUser[] = response.data;
+                const adminChatroom: Chatroom[] = [];
+                const ownChatroom: Chatroom[] = [];
+                const joinChatroom: Chatroom[] = [];
                 chatroomData.forEach(chat => {
                   const isJoined = chatroomUsersData.find(user => user.chatroomId === chat.id);
                   if (isJoined?.permission === userPermission.admin)
-                    setAdminChatroom(prevAdminChat => [...prevAdminChat, chat]);
+                  {
+                    adminChatroom.push(chat);
+                  }
                   else if (isJoined?.permission === userPermission.owner)
                   {
-                    setOwnChatroom(prevOwnChat => [...prevOwnChat, chat]);
-                    setAdminChatroom(prevAdminChat => [...prevAdminChat, chat]);
+                    adminChatroom.push(chat);
+                    ownChatroom.push(chat);
                   }
                   else if (isJoined === undefined)
                   {
                     if (chat.state !== 'private')
-                     setJoinChatroom(prevJoinChat => [...prevJoinChat, chat]);
+                    {
+                      joinChatroom.push(chat);
+                    }
                   }
+                  setAdminChatroom(adminChatroom);
+                  setOwnChatroom(ownChatroom);
+                  setJoinChatroom(joinChatroom);
                 })
               }
             } catch (error) {
@@ -128,6 +137,7 @@ export default function OptionBarChans() {
         alert('No channel name given')
         return ;
       }
+
       const newChannel: Partial<Chatroom> = {
         name: channelName,
         picture: channelPicture,
@@ -252,7 +262,6 @@ export default function OptionBarChans() {
         setChannelName(value.name);
         const editChan = adminChatroom.find((obj) => {
           return obj.name === channelName});
-        setChatToEdit(editChan);
         if (editChan !== undefined)
         {
           setIsProtected(editChan?.state);

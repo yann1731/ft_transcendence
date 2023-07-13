@@ -15,7 +15,6 @@ interface MyChannelsProps {
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
     const [channels, setChannels] = useState<Chatroom[]>([]);
     const [joinedChannels, setJoinedChannels] = useState<Chatroom[]>([]);
-    const [chatUsers, setChatUsers] = useState<ChatroomUser[]>([]);
     const {updateUser, user} = useContext(UserContext);
     
     useEffect(() => {
@@ -32,7 +31,7 @@ interface MyChannelsProps {
         }
       };
       fetchChannels();
-    }, [channels, setChannels]);
+    }, [channels]);
     
     useEffect(() => {
       const fetchJoinedChannels = async () => {
@@ -43,7 +42,6 @@ interface MyChannelsProps {
           const response = await axios.get(`http://localhost:4242/chatroomuser`);
           
           if (response.status === 200) {
-            setChatUsers(response.data);
             const chatroomUsersData: ChatroomUser[] = response.data;
             const chans: Chatroom[] = [];
 
@@ -62,7 +60,7 @@ interface MyChannelsProps {
         }
       };
       fetchJoinedChannels();
-    }, [chatUsers, setChatUsers, joinedChannels, setJoinedChannels]);
+    }, [joinedChannels]);
     
     const SetChatInUse = (name: string) => {
       const decodedName = decodeURIComponent(name);
