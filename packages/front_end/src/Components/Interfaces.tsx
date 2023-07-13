@@ -126,7 +126,7 @@ export interface ChatInUse {
 }
 
 export enum userPermission {
-    owner,
-    admin,
-    regular
+    owner = "owner",
+    admin = "admin",
+    regular = "regular"
   }

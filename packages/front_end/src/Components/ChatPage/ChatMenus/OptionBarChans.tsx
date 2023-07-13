@@ -37,7 +37,6 @@ export default function OptionBarChans() {
     const [isDialogOpen, setDialog] = React.useState(false);
     // Sockets implementation
     const socket = useContext(SocketContext);
-    const [refresh, setRefresh] = React.useState<Boolean>(false);
 
     React.useEffect(() => {
       const fetchChannels = async () => {
@@ -66,20 +65,17 @@ export default function OptionBarChans() {
                 const joinChatroom: Chatroom[] = [];
                 chatroomData.forEach(chat => {
                   const isJoined = chatroomUsersData.find(user => user.chatroomId === chat.id);
-                  if (isJoined?.permission === userPermission.admin)
+                  if (isJoined?.permission === "admin")
                   {
-                    alert("ICI Radio-Canada");
                     adminChatroom.push(chat);
                   }
-                  else if (isJoined?.permission === userPermission.owner)
+                  else if (isJoined?.permission === "owner")
                   {
-                    alert("pouet");
                     adminChatroom.push(chat);
                     ownChatroom.push(chat);
                   }
                   else if (isJoined === undefined)
                   {
-                    alert("bizounours")
                     if (chat.state !== 'private')
                     {
                       joinChatroom.push(chat);
@@ -100,7 +96,7 @@ export default function OptionBarChans() {
         }
       };
       fetchChannels();
-    }, [refresh]);
+    }, []);
     
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
@@ -145,6 +141,8 @@ export default function OptionBarChans() {
     const handleChannel = async () => {
       if (!channelName) {
         alert('No channel name given')
+        if (mode === 'Delete')
+          setDialog(false);
         return ;
       }
       const newChannel: Partial<Chatroom> = {
@@ -241,6 +239,7 @@ export default function OptionBarChans() {
         } catch (error) {
           console.error('Error deleting chatroom:', error);
           alert('Error deleting chatroom');
+
         }
       }
       else if (mode === "Join")
@@ -279,7 +278,6 @@ export default function OptionBarChans() {
       setChannelPicture(null);
       setPassword('');
       setIsProtected('public');
-      setRefresh(!refresh);
     };
     
     const handleChannelSelection = (event: React.ChangeEvent<{}>, value: Chatroom | null) => {

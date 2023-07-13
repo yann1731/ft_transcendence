@@ -22,14 +22,14 @@ export default function OptionBarConversation() {
     const {user, updateUser} = React.useContext(UserContext);
     const [userRights, setUserRights] = React.useState(UserSettings);
     const [chatroomUsers, setChatroomUsers] = React.useState<ChatroomUser[]>([]);
-    const [usersInCurrentChat, setUserInCurrentChat] = React.useState<User[]>([]);
+    const [usersInCurrentChat, setUsersInCurrentChat] = React.useState<User[]>([]);
 
 
     React.useEffect(() => {
       const fetchUsers = async () => {
         try {
           //Éventuellement, juste aller chercher ceux du channel in use
-          const response = await axios.get('http://localhost:4242/chatroomuser', {headers: {
+          const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }});
@@ -58,14 +58,14 @@ export default function OptionBarConversation() {
                 tempUsers.push(isUser);
               }
             });
-            setUserInCurrentChat(tempUsers);
+            setUsersInCurrentChat(tempUsers);
           } 
         } catch (error) {
           console.error('Error fetching chatroom users', error);
         }
       };
       fetchUsers();
-    }, [user?.chatInUse, chatroomUsers]);
+    }, []);
     
     const handleMode = (mode: string) => {
       setMode(mode);
@@ -75,14 +75,14 @@ export default function OptionBarConversation() {
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
     };
-    // FAIRE EN SORTE DE TROUVER SI LE CURRENT USER EST ADMIN OU NON DANS LE CHATINUSE
+    // TODO S'assurer qu'il n'y a pas de variables superflus. Peut-être n'tuiliser suelement que chatroomUsers et usersInCurrentChat
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
       
       if (user?.chatInUse?.userId === user?.id)
-      setUserRights(AdminSettings);
+        setUserRights(AdminSettings);
       else
-      setUserRights(UserSettings);
+        setUserRights(UserSettings);
     };
     
     const handleCloseUserMenu = () => {
