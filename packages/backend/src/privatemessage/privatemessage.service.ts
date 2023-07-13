@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class PrivatemessageService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(senderId: string, recipientId: string) {
+  async findAll(senderId: string, recipientId: string) { //returns all messages between 2 users
     const messages = await this.prisma.privateMessage.findMany({ 
       where: {
           OR: [

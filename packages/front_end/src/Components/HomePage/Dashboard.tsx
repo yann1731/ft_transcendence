@@ -22,7 +22,12 @@ const DashboardContainer: React.FC = () => {
   useEffect(() => {
     const fetchHallOfFame = async () => {
       try {
-        const response: AxiosResponse = await axios.get('http://localhost:4242/user');
+        const token = user?.token;
+        const userId = user?.id;
+        const response: AxiosResponse = await axios.get(`http://localhost:4242/user/${userId}`, {headers: {
+          'Authorization': token,
+          'userId': userId
+        }});
         const data: HallOfFame[] = response.data;
         
         data.forEach(score => {

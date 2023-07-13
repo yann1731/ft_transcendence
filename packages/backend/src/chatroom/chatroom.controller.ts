@@ -1,44 +1,46 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards } from '@nestjs/common';
 import { ChatroomService } from './chatroom.service';
 import { CreateChatroomDto } from './dto/create-chatroom.dto';
 import { UpdateChatroomDto } from './dto/update-chatroom.dto';
 import { CreatePasswordChatroomDto } from './dto/create-passwordChatroom.dto';
+import { TokenGuard } from 'src/guard/token.guard';
 
 @Controller('chatroom')
+// @UseGuards(TokenGuard)
 export class ChatroomController {
   constructor(private readonly chatroomService: ChatroomService) {}
 
-  @Post("/password")
+  @Post("/password") //creates a new password protected chatroom with it's associated chatroomuser whose permission is set as owner
   createWithPass(@Body(new ValidationPipe({transform: true})) createPasswordChatroomDto: CreatePasswordChatroomDto) {
     return this.chatroomService.createWithPass(createPasswordChatroomDto);
   }
 
-  @Post()
+  @Post() //creates a new chatroom with it's associated chatroomuser whose permission is set as owner
   create(@Body(new ValidationPipe({transform: true})) createChatroomDto: CreateChatroomDto) {
     return this.chatroomService.create(createChatroomDto);
   }
 
-  @Get()
+  @Get() //returns all currently created chatrooms
   findAll() {
     return this.chatroomService.findAll();
   }
 
-  @Get(':name')
-  findOne(@Param('name') name: string) {
-    return this.chatroomService.findOne(name);
+  @Get(':id') //returns single chatroom with id provided
+  findOne(@Param('id') id: string) {
+    return this.chatroomService.findOne(id);
   }
 
-  @Get('/user/:id')
-  findAllUsers(@Param('id') id: string) {
-    return this.chatroomService.findAllUsers(id);
+  @Get('/users/:chatroomId') //returns all users associated with chatroom with provided id
+  findAllUsers(@Param('chatroomId') chatroomId: string) {
+    return this.chatroomService.findAllUsers(chatroomId);
   }
 
-  @Patch(':id')
+  @Patch(':id') //update chatroom with provided id
   update(@Param('id') id: string, @Body() updateChatroomDto: UpdateChatroomDto) {
     return this.chatroomService.update(id, updateChatroomDto);
   }
 
-  @Delete(':id')
+  @Delete(':id') //deletes single chatroom with provided id
   remove(@Param('id') id: string) {
     return this.chatroomService.remove(id);
   }

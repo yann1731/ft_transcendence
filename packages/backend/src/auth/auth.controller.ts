@@ -6,13 +6,8 @@ import { responseEncoding } from 'axios';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('oauth')
+  @Post('oauth') //calls 42 oauth api with provided code
   oauthCallback(@Body('code') code: string) {
     return this.authService.oauthCallback(code);
-  }
-
-  @Post('signin')
-  signin() {
-    return this.authService.signin();
   }
 }

@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateChatroomuserDto } from './dto/create-chatroomuser.dto';
 import { UpdateChatroomuserDto } from './dto/update-chatroomuser.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ChatroomUser } from '@prisma/client';
 
 @Injectable()
 export class ChatroomuserService {
@@ -32,7 +33,7 @@ export class ChatroomuserService {
     return await this.prisma.chatroomUser.findMany();
   }
 
-  async findOne(id: string) { //returns a specific chatroonuser by id
+  async findOne(id: string) { //returns a specific chatroomuser by id
     const chatroomuser = await this.prisma.chatroomUser.findUnique({where:
       { id }
     });
@@ -40,6 +41,26 @@ export class ChatroomuserService {
       throw new BadRequestException;
     else
       return chatroomuser;
+  }
+
+  async findAllChatroomUsersByChatroomId(id: string) { //returns all chatroomusers associated with the particular chatroomid
+    const chatroomusers = await this.prisma.chatroomUser.findMany({where: {
+      chatroomId: id
+    }});
+    if (!chatroomusers)
+      throw new BadRequestException;
+    else
+      return chatroomusers;
+  }
+
+  async findAllChatroomUsersByUserId(id: string) { //returns all chatroomusers associated with the particular userId
+    const chatroomusers = await this.prisma.chatroomUser.findMany({where: {
+      userId: id
+    }});
+    if (!chatroomusers)
+      throw new BadRequestException;
+    else
+      return chatroomusers;
   }
 
   async update(id: string, updateChatroomuserDto: UpdateChatroomuserDto) { //updates a chatroomuser to change permission, ban, length of ban and mute. all those are optional
