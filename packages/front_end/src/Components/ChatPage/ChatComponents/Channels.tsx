@@ -66,7 +66,7 @@ interface MyChannelsProps {
         }
       };
       fetchJoinedChannels();
-    }, [channels, user]);
+    }, [channels]);
     
     const SetChatInUse = (name: string) => {
       const decodedName = decodeURIComponent(name);

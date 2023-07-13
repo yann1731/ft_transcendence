@@ -55,10 +55,9 @@ export default function OptionBarConversation() {
               })
               if (isUser !== undefined)
               {
-                tempUsers.push(isUser);
+                setUsersInCurrentChat(prevUser => [...prevUser, isUser]);
               }
             });
-            setUsersInCurrentChat(tempUsers);
           } 
         } catch (error) {
           console.error('Error fetching chatroom users', error);
@@ -93,7 +92,7 @@ export default function OptionBarConversation() {
       handleMode(option);
       handleCloseUserMenu();
     };
-
+    
     const handleFriends = async () => {
       if (!UserName && mode !== 'Quit' && mode !== 'View Members') {
         alert('No username was given')
@@ -271,8 +270,8 @@ export default function OptionBarConversation() {
         }                
       }
       else if (mode === 'Quit')
-      {      
-        if (chatUser?.permission === userPermission.owner)
+      {     
+        if (user?.id === user?.chatInUse?.userId)
         {
           try {
             const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.id}`, {headers: {
@@ -370,7 +369,9 @@ export default function OptionBarConversation() {
           </div>
           )}
           {mode === 'Quit' && (
-            <Button>{mode}</Button>
+            <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
+              {mode}
+            </Button>
           )}
           {mode === 'View Members' && (
             <List>
