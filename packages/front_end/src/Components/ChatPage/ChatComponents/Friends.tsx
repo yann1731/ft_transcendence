@@ -26,38 +26,40 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   friend.name.toLowerCase().includes(searchText.toLowerCase())
   );
   
-/*   const SetChatInUse = (name: string, picture: string) => {
+  const SetChatInUse = (name: string, picture: string) => {
     if (user !== null)
     {
-      const newChatroom: Partial<Chatroom> = {
+      const newChannel: Partial<Chatroom> = {
         name: name,
         picture: picture,
         state: "private",
         userId: user?.id,
         password: null,
       };
-
-      user.chatInUse = newChatroom;
+       const chatroom = user?.Chatroom?.find((obj) => {
+        return obj.name === name;
+      });
+      user.chatInUse = chatroom;
       const updatedUser: Partial<User> = {
         ...user,
-        chatInUse: newChatroom,
+        chatInUse: chatroom,
       };
       
      updateUser(updatedUser);
     }
-  }; */
+  };
   
     return (
       <List>
-        {/*{filteredFriends.map((friend) => (
-         <ListItemButton key={friend.id} onClick={() => SetChatInUse(friend.name, friend.avatar)}>
+        {filteredFriends.map((friend) => (
+          <ListItemButton key={friend.id} onClick={() => SetChatInUse(friend.name, friend.avatar)}>
             <ListItemIcon>
               <Avatar alt={friend.name} src={friend.avatar} />
             </ListItemIcon>
             <ListItemText primary={friend.name} />
             <ListItemText secondary={friend.status} sx={{ textAlign: 'right' }} />
-        </ListItemButton>
-        ))}*/}
+          </ListItemButton>
+        ))}
       </List>
     );
   };

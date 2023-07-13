@@ -10,11 +10,8 @@ import { UserblocksModule } from './userblocks/userblocks.module';
 import { ChatModule } from './chat/chat.module';
 import { AuthModule } from './auth/auth.module';
 import { GameModule } from './gameSocket/game.module';
-import { ServeStaticModule } from '@nestjs/serve-static'
-import { join } from 'path';
 
 @Module({
-  imports: [PrismaModule, UserModule, ChatroomModule, ChatroomuserModule, PrivatemessageModule, ChatroommessageModule, UserfriendshipModule, UserblocksModule, ChatModule, AuthModule, GameModule, 
-  ServeStaticModule.forRoot({ rootPath: join(__dirname, '..', 'build')})]
+  imports: [PrismaModule, UserModule, ChatroomModule, ChatroomuserModule, PrivatemessageModule, ChatroommessageModule, UserfriendshipModule, UserblocksModule, ChatModule, AuthModule, GameModule]
 })
 export class AppModule {}

@@ -20,7 +20,7 @@ export default function OptionBarFriends() {
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
-          const response = await axios.get('http://localhost:4242/user');
+          const response = await axios.get('http://localhost:4242/user'); // Replace with your backend endpoint
           
           if (response.status === 200) {
             const UsersData: User[] = response.data;

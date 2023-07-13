@@ -4,7 +4,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import { ListItemButton } from '@mui/material';
 import { useState, useEffect, useContext } from 'react';
-import { Chatroom, ChatroomUser } from 'Components/Interfaces';
+import { Chatroom } from 'Components/Interfaces';
 import axios from 'axios';
 import { UserContext, User } from 'Contexts/userContext';
   
@@ -14,8 +14,6 @@ interface MyChannelsProps {
 
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
     const [channels, setChannels] = useState<Chatroom[]>([]);
-    const [joinedChannels, setJoinedChannels] = useState<Chatroom[]>([]);
-    const [chatUsers, setChatUsers] = useState<ChatroomUser[]>([]);
     const {updateUser, user} = useContext(UserContext);
     
     useEffect(() => {
@@ -25,52 +23,24 @@ interface MyChannelsProps {
           
           if (response.status === 200) {
             setChannels(response.data);
+            console.log('Chatroom created:', response.data);
           }
         } catch (error) {
-          console.error('Error getting chatroom:', error);
-          alert('Error: could not get chatroom: ' + error);
+          console.error('Error creating chatroom:', error);
+          alert('Error: could not create channel: ');
         }
       };
       fetchChannels();
-    }, [channels, setChannels]);
-    
-    useEffect(() => {
-      const fetchJoinedChannels = async () => {
-        try {
-          //Vrai api call
-          //const response = await axios.get(`http://localhost:4242/chatroomuser/${user?.id}`);
-          //Temp api call
-          const response = await axios.get(`http://localhost:4242/chatroomuser`);
-          
-          if (response.status === 200) {
-            setChatUsers(response.data);
-            const chatroomUsersData: ChatroomUser[] = response.data;
-            const chans: Chatroom[] = [];
-
-            channels.forEach(channel => {
-              const isJoined = chatroomUsersData.find(user => user.chatroomId === channel.id);
-              if (isJoined) {
-                chans.push(channel);
-                }
-            });
-            setJoinedChannels(chans)
-            console.log('ChatroomUsers fetched: ', response.data);
-          }
-        } catch (error) {
-          console.error('Error getting ChatroomUsers: ', error);
-          alert('Error: could not get ChatroomUsers: ' + error);
-        }
-      };
-      fetchJoinedChannels();
-    }, [chatUsers, setChatUsers, joinedChannels, setJoinedChannels]);
+    }, [channels]);
     
     const SetChatInUse = (name: string) => {
       const decodedName = decodeURIComponent(name);
       if (user !== null)
       {
-        const chatroom = joinedChannels.find((obj) => {
+        const chatroom = user?.Chatroom?.find((obj) => {
           return obj.name === decodedName;
         });
+        user.chatInUse = chatroom;
         const updatedUser: Partial<User> = {
           ...user,
           chatInUse: chatroom,
@@ -79,7 +49,7 @@ interface MyChannelsProps {
       }
     };
 
-    const filteredChannels = joinedChannels.filter((channel) =>
+    const filteredChannels = channels.filter((channel) =>
       channel.name.toLowerCase().includes(searchText.toLowerCase())
     );
     

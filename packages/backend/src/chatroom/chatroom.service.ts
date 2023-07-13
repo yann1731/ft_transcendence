@@ -5,8 +5,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2'
 import { CreatePasswordChatroomDto } from './dto/create-passwordChatroom.dto';
 import { Prisma } from '@prisma/client';
-import { userPermission } from '@prisma/client';
-
 const {validator } = Prisma;
 
 @Injectable()
@@ -25,16 +23,10 @@ export class ChatroomService { //specifically to create a password protected cha
         password: hashedPass,
       }
     });
-    const chatroomuser = await this.prisma.chatroomUser.create({data:
-      {
-        userId: createPasswordChatroomDto.userId,
-        chatroomId: chatroom.id,
-        permission: userPermission.owner
-      }});
     if (!chatroom)
-      throw new BadRequestException;
+    throw new BadRequestException;
     else
-      return chatroom;
+    return chatroom;
   }
   
   async create(createChatroomDto: CreateChatroomDto) { //creates either a public or private chatroom. Associates ownerId to the user who created it
@@ -52,12 +44,6 @@ export class ChatroomService { //specifically to create a password protected cha
         state: createChatroomDto.state,
       }
     });
-    const chatroomuser = await this.prisma.chatroomUser.create({data:
-      {
-        userId: createChatroomDto.userId,
-        chatroomId: chatroom.id,
-        permission: userPermission.owner
-    }});
     console.log("picture is : " + createChatroomDto.picture);
     if (!chatroom)
       throw new BadRequestException('Failed to create chatroom');
