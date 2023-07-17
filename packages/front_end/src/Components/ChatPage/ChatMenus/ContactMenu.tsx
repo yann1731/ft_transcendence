@@ -8,19 +8,16 @@ import { Avatar, Typography } from '@mui/material';
 
 export default function ContactMenu({Useravatar}: { Useravatar: string | undefined }) {
 
-    const chatSettings = ['Add', 'Ban', 'Invite to Play', 'Kick', 'Make Admin', 'Mute', 'View Profile'];
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorEl(event.currentTarget);
     };
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
+
     return (
       <React.Fragment>
         <Box sx={{}}>
-          <Tooltip title="Contact options">
+          <Tooltip title="Contact Profile">
             <IconButton
               onClick={handleClick}
               aria-controls={open ? 'Contact options' : undefined}
@@ -31,18 +28,6 @@ export default function ContactMenu({Useravatar}: { Useravatar: string | undefin
             </IconButton>
           </Tooltip>
         </Box>
-        <Menu
-          anchorEl={anchorEl}
-          id="Contact options"
-          open={open}
-          onClick={handleClose}
-        >
-          {chatSettings.map((setting) => (
-            <MenuItem key={setting} onClick={handleClose}>
-              <Typography textAlign="left">{setting}</Typography>
-            </MenuItem>
-          ))}
-        </Menu>
       </React.Fragment>
     );
-  }
+  } 

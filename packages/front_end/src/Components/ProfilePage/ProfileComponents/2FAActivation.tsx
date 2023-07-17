@@ -43,7 +43,7 @@ const Handler2FA = () => {
 
   const updateUser2FA = async (updatedUser: User) => {
      try {
-      const response = await axios.get('http://localhost:4242/user/' + user?.id, {headers: {
+      const response = await axios.patch('http://localhost:4242/user/' + user?.id, updatedUser, {headers: {
         'Authorization': user?.token,
         'userId': user?.id
       }})

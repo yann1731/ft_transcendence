@@ -105,7 +105,7 @@ model ChatroomMessage {
   senderId   String
   sender     User     @relation(fields: [senderId], references: [id])
   chatroomId String
-  chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
+  chatroom   Chatroom @relation(fields: [chatroomId], references: [id], onDelete: Cascade)
 }
 
 model UserFriendship {

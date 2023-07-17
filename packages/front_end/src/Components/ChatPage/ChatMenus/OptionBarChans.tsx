@@ -35,6 +35,7 @@ export default function OptionBarChans() {
     const theme = useTheme();
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
     const [isDialogOpen, setDialog] = React.useState(false);
+    const [refresh, setRefresh] = React.useState(false);
     // Sockets implementation
     const socket = useContext(SocketContext);
 
@@ -96,7 +97,7 @@ export default function OptionBarChans() {
         }
       };
       fetchChannels();
-    }, []);
+    }, [refresh]);
     
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
@@ -110,15 +111,21 @@ export default function OptionBarChans() {
       setMode(mode);
       setWindowIsOpen(true);
     };
-
+    
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
       setDialog(false);
-      setDialog(false);
+      setMode('');
+      setChannelName('');
+      setChannelPicture(null);
+      setPassword('');
+      setIsProtected('public');
     };
     
-    const handlePictureSelection = (picture: string | null) => {
-      setChannelPicture(picture);
+    const handlePictureSelection = (picture: string | null | undefined) => {
+      if (picture) {
+        setChannelPicture(picture);
+      }
     };
     
     const handleIsProtected = (event: React.SyntheticEvent, expanded: string) => {
@@ -221,6 +228,7 @@ export default function OptionBarChans() {
           console.error('Error editing chatroom:', error);
           alert('Error: could not edit channel');
         }
+        setRefresh(!refresh)
       }
       else if (mode === "Delete")
       {
@@ -273,11 +281,6 @@ export default function OptionBarChans() {
         }
       }
       handleCloseWindow();
-      setMode('');
-      setChannelName('');
-      setChannelPicture(null);
-      setPassword('');
-      setIsProtected('public');
     };
     
     const handleChannelSelection = (event: React.ChangeEvent<{}>, value: Chatroom | null) => {
@@ -291,6 +294,7 @@ export default function OptionBarChans() {
             setChannelPicture(editChan.picture);
             if (editChan.state === 'pwProtected')
             {
+              //TODO Dehasher le password
               setPassword(editChan?.password);
             }
           }
@@ -460,7 +464,7 @@ export default function OptionBarChans() {
         )}
         {mode !== 'Delete' && mode !== 'Join' && (
           <Box>
-          <ChanPictureSetter onPictureSelected={handlePictureSelection} />
+          <ChanPictureSetter onPictureSelected={handlePictureSelection} defaultPicture={channelPicture} />
           <Button onClick={handleChannel} className="profilePageButtons">
             {mode}
           </Button>

@@ -27,11 +27,10 @@ interface MyChannelsProps {
           
           if (response.status === 200) {
             setChannels(response.data);
-            console.log('Chatroom created:', response.data);
           }
         } catch (error) {
-          console.error('Error creating chatroom:', error);
-          alert('Error: could not create channel: ');
+          console.error('Error getting chatroom:', error);
+          alert('Error: could not get chatroom: ' + error);
         }
       };
       fetchChannels();
@@ -73,10 +72,9 @@ interface MyChannelsProps {
       const decodedName = decodeURIComponent(name);
       if (user !== null)
       {
-        const chatroom = user?.Chatroom?.find((obj) => {
+        const chatroom = joinedChannels.find((obj) => {
           return obj.name === decodedName;
         });
-        user.chatInUse = chatroom;
         const updatedUser: Partial<User> = {
           ...user,
           chatInUse: chatroom,
@@ -85,7 +83,7 @@ interface MyChannelsProps {
       }
     };
 
-    const filteredChannels = channels.filter((channel) =>
+    const filteredChannels = joinedChannels.filter((channel) =>
       channel.name.toLowerCase().includes(searchText.toLowerCase())
     );
     

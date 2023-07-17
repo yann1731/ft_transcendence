@@ -18,7 +18,7 @@ export default function OptionBarFriends() {
     const {user, updateUser} = React.useContext(UserContext);
 
     React.useEffect(() => {
-      const fetchChannels = async () => {
+      const fetchUsers = async () => {
         try {
           const response = await axios.get('http://localhost:4242/user', {headers: {
             'Authorization': user?.token,
@@ -34,7 +34,7 @@ export default function OptionBarFriends() {
         }
       };
   
-      fetchChannels();
+      fetchUsers();
     }, []);
 
     const handleMode = (mode: string) => {
