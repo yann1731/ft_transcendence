@@ -8,24 +8,22 @@ import axios from 'axios';
 import { Chatroom, ChatroomUser, userPermission } from 'Components/Interfaces';
 
 export default function OptionBarConversation() {
-    const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
-    const UserSettings = ['Add', 'Quit', 'View Members'];
-    const [mode, setMode] = React.useState<string>('');
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-    const [isFriendManagementWindowOpen, setWindowIsOpen] = React.useState(false);
-    const theme = useTheme();
-    const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
-    const [UserName, setUserName] = React.useState('');
-    const [Users, setUsers] = React.useState<User[]>([]);
-    const [chatroomUser, setChatroomUser] = React.useState<ChatroomUser[]>([]);
-    const [nonFriendsUsers, setNonFriendsUsers] = React.useState<User[]>([]);
-    const {user, updateUser} = React.useContext(UserContext);
-    const [userRights, setUserRights] = React.useState(UserSettings);
-    const [chatroomUsers, setChatroomUsers] = React.useState<ChatroomUser[]>([]);
-    const [usersInCurrentChat, setUsersInCurrentChat] = React.useState<User[]>([]);
-    const [refresh, setRefresh] = React.useState<Boolean>(false);
-
-    React.useEffect(() => {
+  const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
+  const UserSettings = ['Add', 'Quit', 'View Members'];
+  const [mode, setMode] = React.useState<string>('');
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [isFriendManagementWindowOpen, setWindowIsOpen] = React.useState(false);
+  const theme = useTheme();
+  const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
+  const [UserName, setUserName] = React.useState('');
+  const [Users, setUsers] = React.useState<User[]>([]);
+  const [chatroomUser, setChatroomUser] = React.useState<ChatroomUser[]>([]);
+  const {user, updateUser} = React.useContext(UserContext);
+  const [userRights, setUserRights] = React.useState(UserSettings);
+  const [chatroomUsers, setChatroomUsers] = React.useState<ChatroomUser[]>([]);
+  const [usersInCurrentChat, setUsersInCurrentChat] = React.useState<User[]>([]);
+  const [usersNotInCurrentChat, setUsersNotInCurrentChat] = React.useState<User[]>([]);
+  React.useEffect(() => {
       const fetchUsers = async () => {
         try {
           const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.id}`, {headers: {
@@ -47,24 +45,30 @@ export default function OptionBarConversation() {
           if (response.status === 200) {
             const UsersData: User[] = response.data;
             setUsers(UsersData);
-            const tempUsers: User[] = [];
-            chatroomUsers.forEach(userToFind => {
-              const isUser = Users.find((obj) => {
-                return obj.id === userToFind.userId;
+            const tempUsersInChan: User[] = [];
+            const tempUsersNotInChan: User[] = [];
+            Users.forEach(userToFind => {
+              const isUser = chatroomUsers.find((obj) => {
+                return obj.userId === userToFind.id;
               })
-              if (isUser !== undefined)
+              if (isUser !== undefined && isUser?.userId !== user?.id)
               {
-                tempUsers.push(isUser)
+                tempUsersInChan.push(userToFind);
               }
-              setUsersInCurrentChat(tempUsers);
+              else if (isUser === undefined)
+              {
+                tempUsersNotInChan.push(userToFind);
+              }
             });
+            setUsersInCurrentChat(tempUsersInChan);
+            setUsersNotInCurrentChat(tempUsersNotInChan);
           } 
         } catch (error) {
           console.error('Error fetching chatroom users', error);
         }
       };
       fetchUsers();
-    }, [refresh]);
+    }, [mode, user?.chatInUse?.id]);
     
     const handleMode = (mode: string) => {
       setMode(mode);
@@ -113,11 +117,6 @@ export default function OptionBarConversation() {
 
       if (mode === 'Add')
       {
-        if (chatUser !== undefined)
-        {
-          alert("User already in chat!");
-          return;
-        }
         try {
           const newChatroomuser: Partial<ChatroomUser> = {
             userId: Friend?.id,
@@ -274,7 +273,7 @@ export default function OptionBarConversation() {
         if (user?.id === user?.chatInUse?.userId)
         {
           try {
-            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.id}`, {headers: {
+            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.name}`, {headers: {
               'Authorization': user?.token,
               'userId': user?.id
             }});
@@ -311,7 +310,6 @@ export default function OptionBarConversation() {
       setUserName('');
       handleCloseWindow();
       setMode('');
-      setRefresh(!refresh);
     };
     
     const handleUserSelection = (event: React.ChangeEvent<{}>, value: User | null) => {
@@ -339,12 +337,12 @@ export default function OptionBarConversation() {
         <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
         {mode}
         </Typography>
-        {mode !== 'Quit' && mode !== 'View Members' && (
+        {mode !== 'Quit' && mode !== 'View Members' && mode !== 'Add' && (
           <div>
             <Autocomplete
             disablePortal
             id="Users"
-            options={nonFriendsUsers}
+            options={usersInCurrentChat}
             getOptionLabel={(option) => option.nickname}
             fullWidth
             sx={{ marginBottom: 2 }}
@@ -367,25 +365,55 @@ export default function OptionBarConversation() {
           <Button onClick={handleCloseWindow} className="profilePageButtons">
             cancel
           </Button>
-          </div>
-          )}
-          {mode === 'Quit' && (
-            <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
-              {mode}
-            </Button>
-          )}
-          {mode === 'View Members' && (
-            <List>
-              {usersInCurrentChat.map((user) => (
-                <ListItemButton key={user.id}>
-                  <ListItemIcon>
-                    <Avatar alt={user?.nickname} src={user?.avatar || undefined} />
-                  </ListItemIcon>
-                  <ListItemText primary={user?.nickname} />
-                </ListItemButton>
-              ))}
-            </List>
-          )}
+        </div>
+        )}
+        {mode === 'Add' && (
+          <div>
+            <Autocomplete
+            disablePortal
+            id="Users"
+            options={usersNotInCurrentChat}
+            getOptionLabel={(option) => option.nickname}
+            fullWidth
+            sx={{ marginBottom: 2 }}
+            onChange={handleUserSelection}
+            renderInput={(params) => 
+              <TextField
+              {...params}
+              className="Search For User"
+              sx={{
+                '& label': { color: createChannelcolors },
+                '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+              }}
+              label="Users" 
+              />
+            }
+            />
+          <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
+            {mode}
+          </Button>
+          <Button onClick={handleCloseWindow} className="profilePageButtons">
+            cancel
+          </Button>
+        </div>
+        )}
+        {mode === 'Quit' && (
+          <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
+            {mode}
+          </Button>
+        )}
+        {mode === 'View Members' && (
+          <List>
+            {usersInCurrentChat.map((user) => (
+              <ListItemButton key={user.id}>
+                <ListItemIcon>
+                  <Avatar alt={user?.nickname} src={user?.avatar || undefined} />
+                </ListItemIcon>
+                <ListItemText primary={user?.nickname} />
+              </ListItemButton>
+            ))}
+          </List>
+        )}
       </Box>
     );
 

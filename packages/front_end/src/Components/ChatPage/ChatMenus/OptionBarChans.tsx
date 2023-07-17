@@ -51,8 +51,7 @@ export default function OptionBarChans() {
             const chatroomData: Chatroom[] = response.data;
             
             try {
-              //TODO Changer endpoint pour gsingle chatroomuser, à partir de l'id de notre current user
-              const response = await axios.get(`http://localhost:4242/chatroomuser`, {headers: {
+              const response = await axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
               }});
@@ -97,7 +96,7 @@ export default function OptionBarChans() {
         }
       };
       fetchChannels();
-    }, [refresh]);
+    }, [refresh, user?.chatInUse?.id]);
     
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
