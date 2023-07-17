@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@mui/material';
 import { UserContext, User } from "Contexts/userContext";
 import { useContext } from "react";
+import axios from 'axios';
 
 type ToggleActive = () => void;
 
@@ -41,16 +42,13 @@ const Handler2FA = () => {
   };
 
   const updateUser2FA = async (updatedUser: User) => {
-    const response = await fetch('http://localhost:4242/user/' + user?.id, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedUser),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Erreur lors de la mise à jour de twoFaEnabled');
+     try {
+      const response = await axios.patch('http://localhost:4242/user/' + user?.id, updatedUser, {headers: {
+        'Authorization': user?.token,
+        'userId': user?.id
+      }})
+    } catch (error){
+      console.error('Erreur lors de la mise à jour de twoFaEnabled' + error)
     }
   };
   return (

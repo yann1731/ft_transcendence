@@ -3,6 +3,7 @@ import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/
 
 interface ChanPictureSetterProps {
   onPictureSelected: (picture: string) => void;
+  defaultPicture?: string | null;
 }
 
 const ChanPictureSetter: React.FC<ChanPictureSetterProps> = ({ onPictureSelected }) => {
@@ -19,10 +20,7 @@ const ChanPictureSetter: React.FC<ChanPictureSetterProps> = ({ onPictureSelected
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-
-    if (file) {
       setSelectedImage(file);
-    }
   };
 
   const uploadImage = async () => {

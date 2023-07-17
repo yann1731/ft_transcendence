@@ -36,7 +36,7 @@ model User {
   nickname             String            @unique
   token                String            @unique
   token_created_at     Int
-  token_expires_at     Int
+  token_expires_in     Int
   refresh_token        String            @unique
   email                String            @unique
   win                  Int               @default(0)
@@ -74,7 +74,7 @@ model Chatroom {
     userId     String
     user       User     @relation(fields: [userId], references: [id])
     chatroomId String
-    chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
+    chatroom   Chatroom @relation(fields: [chatroomId], references: [id], onDelete: Cascade)
 
     permission userPermission @default(regular)
     banStatus  Boolean @default(false)
@@ -105,7 +105,7 @@ model ChatroomMessage {
   senderId   String
   sender     User     @relation(fields: [senderId], references: [id])
   chatroomId String
-  chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
+  chatroom   Chatroom @relation(fields: [chatroomId], references: [id], onDelete: Cascade)
 }
 
 model UserFriendship {

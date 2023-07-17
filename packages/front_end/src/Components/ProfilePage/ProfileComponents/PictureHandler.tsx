@@ -39,7 +39,10 @@ const PictureHandler: React.FC = () => {
           updateUser(updatedUser);
           try {
             const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
-              updatedUser);
+              updatedUser, {headers: {
+                'Authorization': user?.token,
+                'userId': user?.id
+              }});
             if (response.status === 200) {
               console.log('Image uploaded successfully!');
             } else {
