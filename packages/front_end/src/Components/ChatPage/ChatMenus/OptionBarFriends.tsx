@@ -20,7 +20,10 @@ export default function OptionBarFriends() {
     React.useEffect(() => {
       const fetchChannels = async () => {
         try {
-          const response = await axios.get('http://localhost:4242/user'); // Replace with your backend endpoint
+          const response = await axios.get('http://localhost:4242/user', {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           
           if (response.status === 200) {
             const UsersData: User[] = response.data;
@@ -32,7 +35,7 @@ export default function OptionBarFriends() {
       };
   
       fetchChannels();
-    }, [Users]);
+    }, []);
 
     const handleMode = (mode: string) => {
       setMode(mode);
@@ -67,7 +70,10 @@ export default function OptionBarFriends() {
       if (mode === 'Add')
       {
         try {
-          const response = await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: newFriend?.id});
+          const response = await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: newFriend?.id}, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           console.log('Friend successfuly added', response.data);
         } catch (error) {
           console.error('Error adding new friend', error);
@@ -79,16 +85,7 @@ export default function OptionBarFriends() {
       }
       else if (mode === 'Block')
       {
-        try {
-          const response = await axios.patch(`http://localhost:4242/user/${user?.id}`, { blockedUsers: [newFriend]});
-          console.log('User successfuly blocked', response.data);
-        } catch (error) {
-          console.error('Error blocking user', error);
-          alert('Error blocking user');
-        }
-        if (user && user.friendListA && user.friendListA.length > 0) {
-          alert(user.friendListA[0]);
-        }   
+
       }
       else if (mode === 'Invite')
       {

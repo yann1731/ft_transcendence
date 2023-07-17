@@ -143,3 +143,9 @@ export interface HallOfFame {
 export interface ChatInUse {
     Chat: Chatroom;
 }
+
+export enum userPermission {
+    owner = "owner",
+    admin = "admin",
+    regular = "regular"
+  }

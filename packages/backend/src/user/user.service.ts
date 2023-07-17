@@ -9,9 +9,7 @@ import axios from 'axios';
 export class UserService { //creates a new user
   constructor(private prisma: PrismaService) { }
 
-  async create(code: string, refresh_token: string, expires_in: number, created_at: number) {
-    console.log(expires_in);
-    console.log(created_at);
+  async create(code: string, refresh_token: string, expires_in: number, created_at: number) { //creates a new user using token, refresh_token, expires_in and created_at. Also calls 42 api to get more info on user
     const response = await axios.get('https://api.intra.42.fr/v2/me', {
       headers: {
         Authorization: `Bearer ${code}`
@@ -31,7 +29,7 @@ export class UserService { //creates a new user
           nickname: response.data.login,
           avatar: response.data.image.link,
           token: code,
-          token_expires_at: expires_in,
+          token_expires_in: expires_in,
           token_created_at: created_at
         }
       });

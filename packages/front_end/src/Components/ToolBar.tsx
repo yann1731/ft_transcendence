@@ -30,7 +30,7 @@ function DashboardAppBar() {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const {user} = useContext(UserContext);
+  const {user, setUser} = useContext(UserContext);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -53,6 +53,7 @@ function DashboardAppBar() {
       console.log('Clicked on Profile settings');
     }
     else if (setting === 'Logout') {
+      setUser(null);
       navigate('/');
       console.log('Clicked on Logout');
     }

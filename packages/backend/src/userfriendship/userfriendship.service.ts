@@ -35,6 +35,13 @@ export class UserfriendshipService {
       return userfriendship;
   }
 
+  async findAllUF(id: string) {
+    const userfriendships = await this.prisma.userFriendship.findMany({where: 
+    {
+      
+    }})
+  }
+
   async findOne(id: string) { //returns a friendship pair by id
     const userfriendship = await this.prisma.userFriendship.findUnique({where: { id }});
     if (!userfriendship)

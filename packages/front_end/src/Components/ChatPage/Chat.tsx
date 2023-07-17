@@ -10,8 +10,22 @@ import Chat from './ChatBox';
 import OptionBarConversation from './ChatMenus/OptionBarConversation';
 import { io, Socket } from "socket.io-client";
 import { SocketContext, socket} from "../../Contexts/socketContext";
+import { UserContext } from 'Contexts/userContext';
+import SignIn from 'Components/Login/LoginPage';
+import LoginToolBar from 'Components/Login/LoginToolBar';
 
 function ChatPage() {
+	const { user } = useContext(UserContext);
+	if (!user) {
+		return (
+			<div>
+                <BackgroundContainer>
+                    <LoginToolBar />
+                    <SignIn />
+                </BackgroundContainer>
+            </div>
+		)
+	}
 	return (
 	  	<React.Fragment>
 			<SocketContext.Provider value={socket}>
