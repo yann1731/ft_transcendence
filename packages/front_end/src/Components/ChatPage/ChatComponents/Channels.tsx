@@ -3,13 +3,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import { ListItemButton } from '@mui/material';
-<<<<<<< HEAD
-import { useState, useEffect, useContext } from 'react';
-import { Chatroom } from 'Components/Interfaces';
-=======
 import React, { useState, useEffect, useContext } from 'react';
 import { Chatroom, ChatroomUser } from 'Components/Interfaces';
->>>>>>> anthony
 import axios from 'axios';
 import { UserContext, User } from 'Contexts/userContext';
   
@@ -19,10 +14,7 @@ interface MyChannelsProps {
 
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
     const [channels, setChannels] = useState<Chatroom[]>([]);
-<<<<<<< HEAD
-=======
     const [joinedChannels, setJoinedChannels] = useState<Chatroom[]>([]);
->>>>>>> anthony
     const {updateUser, user} = useContext(UserContext);
     
     useEffect(() => {
@@ -43,8 +35,6 @@ interface MyChannelsProps {
         }
       };
       fetchChannels();
-<<<<<<< HEAD
-=======
     }, [user]);
     
     useEffect(() => {
@@ -77,7 +67,6 @@ interface MyChannelsProps {
         }
       };
       fetchJoinedChannels();
->>>>>>> anthony
     }, [channels]);
     
     const SetChatInUse = (name: string) => {
