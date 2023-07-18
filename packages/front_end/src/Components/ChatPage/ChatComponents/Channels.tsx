@@ -4,7 +4,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import { ListItemButton } from '@mui/material';
 import React, { useState, useEffect, useContext } from 'react';
-import { Chatroom, ChatroomUser } from 'Components/Interfaces';
+import { Chatroom, ChatroomUser, ChatInUse, chatroomType } from 'Components/Interfaces';
 import axios from 'axios';
 import { UserContext, User } from 'Contexts/userContext';
   
@@ -75,11 +75,18 @@ interface MyChannelsProps {
         const chatroom = joinedChannels.find((obj) => {
           return obj.name === decodedName;
         });
-        const updatedUser: Partial<User> = {
-          ...user,
-          chatInUse: chatroom,
-        };
-        updateUser(updatedUser);
+        if (chatroom !== undefined)
+        {
+          const newChatInUse: ChatInUse = {
+            chat: chatroom,
+            type: chatroomType.channel
+          }
+          const updatedUser: Partial<User> = {
+            ...user,
+            chatInUse: newChatInUse
+          };
+          updateUser(updatedUser);
+        }
       }
     };
 

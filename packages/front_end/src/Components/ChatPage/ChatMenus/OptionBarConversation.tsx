@@ -10,6 +10,7 @@ import { Chatroom, ChatroomUser, userPermission } from 'Components/Interfaces';
 export default function OptionBarConversation() {
   const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
   const UserSettings = ['Add', 'Quit', 'View Members'];
+  const FriendSettings = ['Mute', 'Unmute']
   const [mode, setMode] = React.useState<string>('');
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const [isFriendManagementWindowOpen, setWindowIsOpen] = React.useState(false);
@@ -23,10 +24,11 @@ export default function OptionBarConversation() {
   const [chatroomUsers, setChatroomUsers] = React.useState<ChatroomUser[]>([]);
   const [usersInCurrentChat, setUsersInCurrentChat] = React.useState<User[]>([]);
   const [usersNotInCurrentChat, setUsersNotInCurrentChat] = React.useState<User[]>([]);
+
   React.useEffect(() => {
       const fetchUsers = async () => {
         try {
-          const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.id}`, {headers: {
+          const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }});
@@ -47,6 +49,7 @@ export default function OptionBarConversation() {
             setUsers(UsersData);
             const tempUsersInChan: User[] = [];
             const tempUsersNotInChan: User[] = [];
+            
             Users.forEach(userToFind => {
               const isUser = chatroomUsers.find((obj) => {
                 return obj.userId === userToFind.id;
@@ -68,7 +71,7 @@ export default function OptionBarConversation() {
         }
       };
       fetchUsers();
-    }, [mode, user?.chatInUse?.id]);
+    }, [mode, user?.chatInUse?.chat?.id]);
     
     const handleMode = (mode: string) => {
       setMode(mode);
@@ -81,8 +84,9 @@ export default function OptionBarConversation() {
     // TODO S'assurer qu'il n'y a pas de variables superflus. Peut-être n'tuiliser suelement que chatroomUsers et usersInCurrentChat
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
-      
-      if (user?.chatInUse?.userId === user?.id)
+      if (user?.chatInUse?.type === "friend")
+        setUserRights(FriendSettings)
+      else if (user?.chatInUse?.chat?.userId === user?.id)
         setUserRights(AdminSettings);
       else
         setUserRights(UserSettings);
@@ -112,7 +116,7 @@ export default function OptionBarConversation() {
       });
 
       const chatUser = chatroomUser.find((obj) => {
-        return obj.chatroomId === user?.chatInUse?.id;
+        return obj.chatroomId === user?.chatInUse?.chat?.id;
       });
 
       if (mode === 'Add')
@@ -121,8 +125,8 @@ export default function OptionBarConversation() {
           const newChatroomuser: Partial<ChatroomUser> = {
             userId: Friend?.id,
             user: Friend,
-            chatroomId: user?.chatInUse?.id,
-            chatroom: user?.chatInUse,
+            chatroomId: user?.chatInUse?.chat?.id,
+            chatroom: user?.chatInUse?.chat,
             permission: userPermission.regular,
             banStatus: false,
             banUntil: null,
@@ -219,7 +223,7 @@ export default function OptionBarConversation() {
       {
         if (chatUser !== undefined)
         {
-          if (chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin)
+          if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && user?.chatInUse?.type !== "friend")
           {
             alert("Cannot mute owner or an admin");
             return ;
@@ -270,10 +274,10 @@ export default function OptionBarConversation() {
       }
       else if (mode === 'Quit')
       {     
-        if (user?.id === user?.chatInUse?.userId)
+        if (user?.id === user?.chatInUse?.chat?.userId)
         {
           try {
-            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.name}`, {headers: {
+            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.name}`, {headers: {
               'Authorization': user?.token,
               'userId': user?.id
             }});
@@ -427,7 +431,7 @@ export default function OptionBarConversation() {
                   <DehazeIcon></DehazeIcon>
                 </IconButton>
               </Tooltip>
-              {decodeURIComponent(user?.chatInUse?.name)}
+              {decodeURIComponent(user?.chatInUse?.chat?.name)}
               <Menu
                 sx={{ mt: '40px' }}
                 id="menu-appbar"
@@ -450,7 +454,7 @@ export default function OptionBarConversation() {
                   </MenuItem>
                 ))}
               </Menu>
-                <Avatar src={user?.chatInUse?.picture ?? ''} sx={{ marginRight: 0.5 }}></Avatar>
+                <Avatar src={user?.chatInUse?.chat?.picture ?? ''} sx={{ marginRight: 0.5 }}></Avatar>
             </Box>
           <Modal open={isFriendManagementWindowOpen} onClose={handleCloseWindow}>{friendHandlerWindow}</Modal>
           </AppBar>

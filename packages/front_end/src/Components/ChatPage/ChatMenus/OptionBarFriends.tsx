@@ -5,7 +5,7 @@ import '../../../App.css';
 import { useTheme } from '@mui/material/styles';
 import { UserContext, User } from 'Contexts/userContext';
 import axios from 'axios';
-import { UserFriendship } from 'Components/Interfaces';
+import { UserFriendship, Chatroom, userPermission, ChatroomUser, chatroomType, ChatInUse } from 'Components/Interfaces';
 
 export default function OptionBarFriends() {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
@@ -116,6 +116,50 @@ export default function OptionBarFriends() {
         } catch (error) {
           console.error('Error adding new friend', error);
           alert('Error adding new friend: ' + error);
+        }
+        try {
+          const newChannel: Partial<Chatroom> = {
+            name: friendToModify?.username,
+            picture: friendToModify?.avatar,
+            state: "private",
+            userId: user?.id,
+            password: null,
+          };
+          const response = await axios.post(`http://localhost:4242/chatroom`, newChannel, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
+          console.log('Friend chat successfuly added', response.data);
+          const newChan = response.data;
+          const newChatInUse: ChatInUse = {
+            chat: newChan,
+            type: chatroomType.channel,
+        }
+          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
+          updateUser(updatedUser);
+          try {
+            const newChatroomuser: Partial<ChatroomUser> = {
+              userId: friendToModify?.id,
+              user: friendToModify,
+              chatroomId: newChan?.id,
+              chatroom: newChan,
+              permission: userPermission.owner,
+              banStatus: false,
+              banUntil: null,
+              muteStatus: false,
+            }
+            const response = await axios.post(`http://localhost:4242/chatroomuser`,  newChatroomuser, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
+            console.log('Friend chatroomuser successfuly added', response.data);
+          } catch (error) {
+            console.error('Error adding new friend chatroomuser', error);
+            alert('Error adding new friend chatroomuser: ' + error);
+          }
+        } catch (error) {
+          console.error('Error adding new friend chat', error);
+          alert('Error adding new friend chat: ' + error);
         }
       }
       else if (mode === 'Block')

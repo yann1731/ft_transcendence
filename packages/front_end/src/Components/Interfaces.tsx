@@ -1,7 +1,6 @@
 import { User } from "Contexts/userContext";
 // Interfaces.tsx
 export{};
-// User
 
 // Pour Dashboard
 export interface userStats {
@@ -75,7 +74,7 @@ export interface ChatroomUser {
 
 // Variables utiles ChatRoom
 export interface Chatroom {
-    name: string;
+	name: string;
     id: string ;
     picture?: string | null;
 	messages?: ChatroomMessage[] ;
@@ -122,11 +121,17 @@ export interface HallOfFame {
 }
 
 export interface ChatInUse {
-    Chat: Chatroom;
+    chat: Chatroom;
+	type: chatroomType;
 }
 
 export enum userPermission {
     owner = "owner",
     admin = "admin",
-    regular = "regular"
-  }
+    regular = "regular",
+}
+
+export enum chatroomType {
+    friend = "friend",
+    channel = "channel",
+}
