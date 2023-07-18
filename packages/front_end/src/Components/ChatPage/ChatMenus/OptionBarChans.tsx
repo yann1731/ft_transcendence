@@ -14,7 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { userPermission } from 'Components/Interfaces';
+import { userPermission, ChatInUse, chatroomType } from 'Components/Interfaces';
 
 
 export default function OptionBarChans() {
@@ -51,8 +51,7 @@ export default function OptionBarChans() {
             const chatroomData: Chatroom[] = response.data;
             
             try {
-              //TODO Changer endpoint pour gsingle chatroomuser, à partir de l'id de notre current user
-              const response = await axios.get(`http://localhost:4242/chatroomuser`, {headers: {
+              const response = await axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
               }});
@@ -97,7 +96,7 @@ export default function OptionBarChans() {
         }
       };
       fetchChannels();
-    }, [refresh]);
+    }, [refresh, user?.chatInUse?.chat?.id]);
     
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
@@ -173,9 +172,12 @@ export default function OptionBarChans() {
             if (response.status === 201) {
               socket.emit("createChannel", {channelName: newChannel.name });
               console.log('Chatroom created:', response.data);
-              
-              const newChannelData: Chatroom = response.data;
-              const updatedUser: Partial<User> = { ...user, chatInUse: newChannelData };
+              const newChannelData = response.data;
+              const newChatInUse: ChatInUse = {
+                  chat: newChannelData,
+                  type: chatroomType.channel,
+              }
+              const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse};
               updateUser(updatedUser);
               setOwnChatroom(prevOwnChat => [...prevOwnChat, newChannelData]);
               setAdminChatroom(prevAdminChat => [...prevAdminChat, newChannelData]);
@@ -200,8 +202,12 @@ export default function OptionBarChans() {
               });
               console.log('Chatroom created:', response.data);
               
-              const newChannelData: Chatroom = response.data;
-              const updatedUser: Partial<User> = { ...user, chatInUse: newChannelData };
+              const newChannelData = response.data;
+              const newChatInUse: ChatInUse = {
+                  chat: newChannelData,
+                  type: chatroomType.channel,
+              }
+              const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
               updateUser(updatedUser);
               setOwnChatroom(prevOwnChat => [...prevOwnChat, newChannelData]);
               setAdminChatroom(prevAdminChat => [...prevAdminChat, newChannelData]);
@@ -221,8 +227,11 @@ export default function OptionBarChans() {
           }});
           console.log('Chatroom modified:', response.data);
           
-          const newChannelData: Chatroom = response.data;           
-          const updatedUser: Partial<User> = { ...user, chatInUse: newChannelData };
+          const newChatInUse: ChatInUse = {
+              chat: response.data,
+              type: chatroomType.channel,
+          }
+          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
           updateUser(updatedUser);
         } catch (error) {
           console.error('Error editing chatroom:', error);
@@ -247,7 +256,7 @@ export default function OptionBarChans() {
         } catch (error) {
           console.error('Error deleting chatroom:', error);
           alert('Error deleting chatroom');
-
+          
         }
       }
       else if (mode === "Join")
@@ -255,32 +264,36 @@ export default function OptionBarChans() {
         try {
           const newChan = joinChatroom.find((obj) => {
             return obj.name === channelName});
-          const newChatroomuser: Partial<ChatroomUser> = {
-            userId: user?.id,
-            user: user,
-            chatroomId: newChan?.id,
-            chatroom: newChan,
-            permission: userPermission.regular,
-            banStatus: false,
-            banUntil: null,
-            muteStatus: false,
-          }
-          const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
-            'Authorization': user?.token,
-            'userId': user?.id
-          }});
-          console.log('User added to chatroom', response.data);
-          
-          setJoinChatroom(prevJoinChat => prevJoinChat.filter(chat => chat.name !== channelName));
-          const updatedUser: Partial<User> = { ...user, chatInUse: newChan };
-          updateUser(updatedUser);
-          setDialog(false);
-        } catch (error) {
+            const newChatroomuser: Partial<ChatroomUser> = {
+              userId: user?.id,
+              user: user,
+              chatroomId: newChan?.id,
+              chatroom: newChan,
+              permission: userPermission.regular,
+              banStatus: false,
+              banUntil: null,
+              muteStatus: false,
+            }
+            const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
+            console.log('User added to chatroom', response.data);
+            
+            setJoinChatroom(prevJoinChat => prevJoinChat.filter(chat => chat.name !== channelName));
+            const newChatInUse: ChatInUse = {
+                chat: response.data,
+                type: chatroomType.channel,
+            }
+            const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
+            updateUser(updatedUser);
+            setDialog(false);
+          } catch (error) {
             console.error('Error adding user to channel', error);
             alert('Error adding user to channel');
+          }
         }
-      }
-      handleCloseWindow();
+        handleCloseWindow();
     };
     
     const handleChannelSelection = (event: React.ChangeEvent<{}>, value: Chatroom | null) => {

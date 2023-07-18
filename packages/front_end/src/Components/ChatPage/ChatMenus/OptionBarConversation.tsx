@@ -8,27 +8,27 @@ import axios from 'axios';
 import { Chatroom, ChatroomUser, userPermission } from 'Components/Interfaces';
 
 export default function OptionBarConversation() {
-    const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
-    const UserSettings = ['Add', 'Quit', 'View Members'];
-    const [mode, setMode] = React.useState<string>('');
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-    const [isFriendManagementWindowOpen, setWindowIsOpen] = React.useState(false);
-    const theme = useTheme();
-    const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
-    const [UserName, setUserName] = React.useState('');
-    const [Users, setUsers] = React.useState<User[]>([]);
-    const [chatroomUser, setChatroomUser] = React.useState<ChatroomUser[]>([]);
-    const [nonFriendsUsers, setNonFriendsUsers] = React.useState<User[]>([]);
-    const {user, updateUser} = React.useContext(UserContext);
-    const [userRights, setUserRights] = React.useState(UserSettings);
-    const [chatroomUsers, setChatroomUsers] = React.useState<ChatroomUser[]>([]);
-    const [usersInCurrentChat, setUsersInCurrentChat] = React.useState<User[]>([]);
-    const [refresh, setRefresh] = React.useState<Boolean>(false);
+  const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
+  const UserSettings = ['Add', 'Quit', 'View Members'];
+  const FriendSettings = ['Mute', 'Unmute']
+  const [mode, setMode] = React.useState<string>('');
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [isFriendManagementWindowOpen, setWindowIsOpen] = React.useState(false);
+  const theme = useTheme();
+  const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
+  const [UserName, setUserName] = React.useState('');
+  const [Users, setUsers] = React.useState<User[]>([]);
+  const [chatroomUser, setChatroomUser] = React.useState<ChatroomUser[]>([]);
+  const {user, updateUser} = React.useContext(UserContext);
+  const [userRights, setUserRights] = React.useState(UserSettings);
+  const [chatroomUsers, setChatroomUsers] = React.useState<ChatroomUser[]>([]);
+  const [usersInCurrentChat, setUsersInCurrentChat] = React.useState<User[]>([]);
+  const [usersNotInCurrentChat, setUsersNotInCurrentChat] = React.useState<User[]>([]);
 
-    React.useEffect(() => {
+  React.useEffect(() => {
       const fetchUsers = async () => {
         try {
-          const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.id}`, {headers: {
+          const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }});
@@ -47,24 +47,31 @@ export default function OptionBarConversation() {
           if (response.status === 200) {
             const UsersData: User[] = response.data;
             setUsers(UsersData);
-            const tempUsers: User[] = [];
-            chatroomUsers.forEach(userToFind => {
-              const isUser = Users.find((obj) => {
-                return obj.id === userToFind.userId;
+            const tempUsersInChan: User[] = [];
+            const tempUsersNotInChan: User[] = [];
+            
+            Users.forEach(userToFind => {
+              const isUser = chatroomUsers.find((obj) => {
+                return obj.userId === userToFind.id;
               })
-              if (isUser !== undefined)
+              if (isUser !== undefined && isUser?.userId !== user?.id)
               {
-                tempUsers.push(isUser)
+                tempUsersInChan.push(userToFind);
               }
-              setUsersInCurrentChat(tempUsers);
+              else if (isUser === undefined)
+              {
+                tempUsersNotInChan.push(userToFind);
+              }
             });
+            setUsersInCurrentChat(tempUsersInChan);
+            setUsersNotInCurrentChat(tempUsersNotInChan);
           } 
         } catch (error) {
           console.error('Error fetching chatroom users', error);
         }
       };
       fetchUsers();
-    }, [refresh]);
+    }, [mode, user?.chatInUse?.chat?.id]);
     
     const handleMode = (mode: string) => {
       setMode(mode);
@@ -74,11 +81,17 @@ export default function OptionBarConversation() {
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
     };
-    // TODO S'assurer qu'il n'y a pas de variables superflus. Peut-être n'tuiliser suelement que chatroomUsers et usersInCurrentChat
+    // TODO S'assurer qu'il n'y a pas de variables superflus. Peut-être n'utiliser suelement que chatroomUsers et usersInCurrentChat
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
-      
-      if (user?.chatInUse?.userId === user?.id)
+      let currentChatroomUser: ChatroomUser | undefined;
+      chatroomUsers.forEach(users => {
+        if (users.userId === user?.id)
+          currentChatroomUser = users;
+      });
+      if (user?.chatInUse?.type === "friend")
+        setUserRights(FriendSettings)
+      else if (user?.chatInUse?.chat?.userId === user?.id || currentChatroomUser?.permission === userPermission.admin)
         setUserRights(AdminSettings);
       else
         setUserRights(UserSettings);
@@ -108,22 +121,17 @@ export default function OptionBarConversation() {
       });
 
       const chatUser = chatroomUser.find((obj) => {
-        return obj.chatroomId === user?.chatInUse?.id;
+        return obj.chatroomId === user?.chatInUse?.chat?.id;
       });
 
       if (mode === 'Add')
       {
-        if (chatUser !== undefined)
-        {
-          alert("User already in chat!");
-          return;
-        }
         try {
           const newChatroomuser: Partial<ChatroomUser> = {
             userId: Friend?.id,
             user: Friend,
-            chatroomId: user?.chatInUse?.id,
-            chatroom: user?.chatInUse,
+            chatroomId: user?.chatInUse?.chat?.id,
+            chatroom: user?.chatInUse?.chat,
             permission: userPermission.regular,
             banStatus: false,
             banUntil: null,
@@ -146,6 +154,7 @@ export default function OptionBarConversation() {
       }
       else if (mode === 'Ban')
       {
+        // TODO Kick + implementer "timer" pour enelever channel du join
         if (chatUser !== undefined)
         {
           if (chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin)
@@ -220,7 +229,7 @@ export default function OptionBarConversation() {
       {
         if (chatUser !== undefined)
         {
-          if (chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin)
+          if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && user?.chatInUse?.type !== "friend")
           {
             alert("Cannot mute owner or an admin");
             return ;
@@ -271,10 +280,10 @@ export default function OptionBarConversation() {
       }
       else if (mode === 'Quit')
       {     
-        if (user?.id === user?.chatInUse?.userId)
+        if (user?.id === user?.chatInUse?.chat?.userId)
         {
           try {
-            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.id}`, {headers: {
+            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.name}`, {headers: {
               'Authorization': user?.token,
               'userId': user?.id
             }});
@@ -311,7 +320,6 @@ export default function OptionBarConversation() {
       setUserName('');
       handleCloseWindow();
       setMode('');
-      setRefresh(!refresh);
     };
     
     const handleUserSelection = (event: React.ChangeEvent<{}>, value: User | null) => {
@@ -339,12 +347,12 @@ export default function OptionBarConversation() {
         <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
         {mode}
         </Typography>
-        {mode !== 'Quit' && mode !== 'View Members' && (
+        {mode !== 'Quit' && mode !== 'View Members' && mode !== 'Add' && (
           <div>
             <Autocomplete
             disablePortal
             id="Users"
-            options={nonFriendsUsers}
+            options={usersInCurrentChat}
             getOptionLabel={(option) => option.nickname}
             fullWidth
             sx={{ marginBottom: 2 }}
@@ -367,25 +375,55 @@ export default function OptionBarConversation() {
           <Button onClick={handleCloseWindow} className="profilePageButtons">
             cancel
           </Button>
-          </div>
-          )}
-          {mode === 'Quit' && (
-            <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
-              {mode}
-            </Button>
-          )}
-          {mode === 'View Members' && (
-            <List>
-              {usersInCurrentChat.map((user) => (
-                <ListItemButton key={user.id}>
-                  <ListItemIcon>
-                    <Avatar alt={user?.nickname} src={user?.avatar || undefined} />
-                  </ListItemIcon>
-                  <ListItemText primary={user?.nickname} />
-                </ListItemButton>
-              ))}
-            </List>
-          )}
+        </div>
+        )}
+        {mode === 'Add' && (
+          <div>
+            <Autocomplete
+            disablePortal
+            id="Users"
+            options={usersNotInCurrentChat}
+            getOptionLabel={(option) => option.nickname}
+            fullWidth
+            sx={{ marginBottom: 2 }}
+            onChange={handleUserSelection}
+            renderInput={(params) => 
+              <TextField
+              {...params}
+              className="Search For User"
+              sx={{
+                '& label': { color: createChannelcolors },
+                '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+              }}
+              label="Users" 
+              />
+            }
+            />
+          <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
+            {mode}
+          </Button>
+          <Button onClick={handleCloseWindow} className="profilePageButtons">
+            cancel
+          </Button>
+        </div>
+        )}
+        {mode === 'Quit' && (
+          <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
+            {mode}
+          </Button>
+        )}
+        {mode === 'View Members' && (
+          <List>
+            {usersInCurrentChat.map((user) => (
+              <ListItemButton key={user.id}>
+                <ListItemIcon>
+                  <Avatar alt={user?.nickname} src={user?.avatar || undefined} />
+                </ListItemIcon>
+                <ListItemText primary={user?.nickname} />
+              </ListItemButton>
+            ))}
+          </List>
+        )}
       </Box>
     );
 
@@ -394,50 +432,50 @@ export default function OptionBarConversation() {
     {user?.chatInUse !== null && user?.chatInUse !== undefined ? (
       <AppBar position="relative" sx={{ boxShadow: '0' }}>
         <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu}>
-                  <DehazeIcon></DehazeIcon>
-                </IconButton>
-              </Tooltip>
-              {decodeURIComponent(user?.chatInUse?.name)}
-              <Menu
-                sx={{ mt: '40px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-                >
-                {userRights.map((setting) => (
-                  <MenuItem key={setting} onClick={() => friendsOption(setting)}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-                <Avatar src={user?.chatInUse?.picture ?? ''} sx={{ marginRight: 0.5 }}></Avatar>
-            </Box>
-          <Modal open={isFriendManagementWindowOpen} onClose={handleCloseWindow}>{friendHandlerWindow}</Modal>
-          </AppBar>
-          ) : (
-            <AppBar position="relative" sx={{ boxShadow: '0'}}>
-              <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
-                <Tooltip title="No active chat">
-                  <IconButton onClick={handleOpenUserMenu}>
-                    <ClearIcon></ClearIcon>
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </AppBar>
-          )
-      }
+          <Tooltip title="Open settings">
+            <IconButton onClick={handleOpenUserMenu}>
+              <DehazeIcon></DehazeIcon>
+            </IconButton>
+          </Tooltip>
+          {decodeURIComponent(user?.chatInUse?.chat?.name)}
+          <Menu
+            sx={{ mt: '40px' }}
+            id="menu-appbar"
+            anchorEl={anchorElUser}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+            >
+            {userRights.map((setting) => (
+              <MenuItem key={setting} onClick={() => friendsOption(setting)}>
+                <Typography textAlign="center">{setting}</Typography>
+              </MenuItem>
+            ))}
+          </Menu>
+            <Avatar src={user?.chatInUse?.chat?.picture ?? ''} sx={{ marginRight: 0.5 }}></Avatar>
+        </Box>
+        <Modal open={isFriendManagementWindowOpen} onClose={handleCloseWindow}>{friendHandlerWindow}</Modal>
+      </AppBar>
+      ) : (
+        <AppBar position="relative" sx={{ boxShadow: '0'}}>
+          <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
+            <Tooltip title="No active chat">
+              <IconButton onClick={handleOpenUserMenu}>
+                <ClearIcon></ClearIcon>
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </AppBar>
+      )
+    }
     </Box>
   );
 }
