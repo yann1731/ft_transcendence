@@ -5,7 +5,7 @@ import '../../../App.css';
 import { useTheme } from '@mui/material/styles';
 import { UserContext, User } from 'Contexts/userContext';
 import axios from 'axios';
-import { UserFriendship } from 'Components/Interfaces';
+import { UserFriendship, Chatroom, userPermission, ChatroomUser, chatroomType, ChatInUse } from 'Components/Interfaces';
 
 export default function OptionBarFriends() {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
@@ -113,6 +113,21 @@ export default function OptionBarFriends() {
             'userId': user?.id
           }});
           console.log('Friend successfuly added', response.data);
+          const username = friendToModify?.username === undefined ? "pouet" : friendToModify?.username;
+          const newChannel: Chatroom = {
+            id: "",
+            name: username,
+            picture: friendToModify?.avatar,
+            state: "private",
+            userId: user?.id,
+            password: null,
+          };
+          const newChatInUse: ChatInUse = {
+            chat: newChannel,
+            type: chatroomType.channel,
+        }
+          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
+          updateUser(updatedUser);
         } catch (error) {
           console.error('Error adding new friend', error);
           alert('Error adding new friend: ' + error);

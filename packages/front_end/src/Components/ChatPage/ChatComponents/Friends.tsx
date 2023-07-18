@@ -5,7 +5,8 @@ import Avatar from '@mui/material/Avatar';
 import { ListItemButton } from '@mui/material';
 import { UserContext, User } from 'Contexts/userContext';
 import { useContext } from 'react';
-import { Chatroom } from 'Components/Interfaces';
+import { Chatroom, ChatInUse, chatroomType } from 'Components/Interfaces';
+import React from 'react'
 
 interface MyFriendsProps {
     searchText: string;
@@ -26,30 +27,38 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   friend.name.toLowerCase().includes(searchText.toLowerCase())
   );
   
-/*   const SetChatInUse = (name: string, picture: string) => {
+  // Éventuellement, remplacer par api get chatroom
+  const SetChatInUse = (name: string, picture: string) => {
     if (user !== null)
     {
-      const newChatroom: Partial<Chatroom> = {
+      const newChatroom: Chatroom = {
+        id: "",
         name: name,
         picture: picture,
+        messages: [],
         state: "private",
+        chatroomOwner: user,
         userId: user?.id,
         password: null,
+        users:[]
       };
 
-      user.chatInUse = newChatroom;
+      const newChatInUse: ChatInUse = {
+        chat: newChatroom,
+        type: chatroomType.friend
+      }
       const updatedUser: Partial<User> = {
         ...user,
-        chatInUse: newChatroom,
+        chatInUse: newChatInUse,
       };
       
      updateUser(updatedUser);
     }
-  }; */
+  };
   
     return (
       <List>
-        {/*{filteredFriends.map((friend) => (
+        {filteredFriends.map((friend) => (
          <ListItemButton key={friend.id} onClick={() => SetChatInUse(friend.name, friend.avatar)}>
             <ListItemIcon>
               <Avatar alt={friend.name} src={friend.avatar} />
@@ -57,7 +66,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
             <ListItemText primary={friend.name} />
             <ListItemText secondary={friend.status} sx={{ textAlign: 'right' }} />
         </ListItemButton>
-        ))}*/}
+        ))}
       </List>
     );
   };
