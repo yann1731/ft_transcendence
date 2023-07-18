@@ -39,10 +39,7 @@ interface MyChannelsProps {
     useEffect(() => {
       const fetchJoinedChannels = async () => {
         try {
-          //Vrai api call
-          //const response = await axios.get(`http://localhost:4242/chatroomuser/${user?.id}`);
-          //Temp api call
-          const response = await axios.get(`http://localhost:4242/chatroomuser`, {headers: {
+          const response = await axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }})

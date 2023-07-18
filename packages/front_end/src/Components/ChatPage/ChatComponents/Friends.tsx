@@ -32,7 +32,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
     if (user !== null)
     {
       const newChatroom: Chatroom = {
-        id: "1234567",
+        id: "",
         name: name,
         picture: picture,
         messages: [],
@@ -58,7 +58,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   
     return (
       <List>
-        {filteredFriends.map((friend) => {
+        {filteredFriends.map((friend) => (
          <ListItemButton key={friend.id} onClick={() => SetChatInUse(friend.name, friend.avatar)}>
             <ListItemIcon>
               <Avatar alt={friend.name} src={friend.avatar} />
@@ -66,7 +66,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
             <ListItemText primary={friend.name} />
             <ListItemText secondary={friend.status} sx={{ textAlign: 'right' }} />
         </ListItemButton>
-        })}
+        ))}
       </List>
     );
   };

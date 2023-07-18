@@ -81,12 +81,17 @@ export default function OptionBarConversation() {
     const handleCloseWindow = () => {
       setWindowIsOpen(false);
     };
-    // TODO S'assurer qu'il n'y a pas de variables superflus. Peut-être n'tuiliser suelement que chatroomUsers et usersInCurrentChat
+    // TODO S'assurer qu'il n'y a pas de variables superflus. Peut-être n'utiliser suelement que chatroomUsers et usersInCurrentChat
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
+      let currentChatroomUser: ChatroomUser | undefined;
+      chatroomUsers.forEach(users => {
+        if (users.userId === user?.id)
+          currentChatroomUser = users;
+      });
       if (user?.chatInUse?.type === "friend")
         setUserRights(FriendSettings)
-      else if (user?.chatInUse?.chat?.userId === user?.id)
+      else if (user?.chatInUse?.chat?.userId === user?.id || currentChatroomUser?.permission === userPermission.admin)
         setUserRights(AdminSettings);
       else
         setUserRights(UserSettings);
@@ -149,6 +154,7 @@ export default function OptionBarConversation() {
       }
       else if (mode === 'Ban')
       {
+        // TODO Kick + implementer "timer" pour enelever channel du join
         if (chatUser !== undefined)
         {
           if (chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin)
@@ -426,50 +432,50 @@ export default function OptionBarConversation() {
     {user?.chatInUse !== null && user?.chatInUse !== undefined ? (
       <AppBar position="relative" sx={{ boxShadow: '0' }}>
         <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu}>
-                  <DehazeIcon></DehazeIcon>
-                </IconButton>
-              </Tooltip>
-              {decodeURIComponent(user?.chatInUse?.chat?.name)}
-              <Menu
-                sx={{ mt: '40px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-                >
-                {userRights.map((setting) => (
-                  <MenuItem key={setting} onClick={() => friendsOption(setting)}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-                <Avatar src={user?.chatInUse?.chat?.picture ?? ''} sx={{ marginRight: 0.5 }}></Avatar>
-            </Box>
-          <Modal open={isFriendManagementWindowOpen} onClose={handleCloseWindow}>{friendHandlerWindow}</Modal>
-          </AppBar>
-          ) : (
-            <AppBar position="relative" sx={{ boxShadow: '0'}}>
-              <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
-                <Tooltip title="No active chat">
-                  <IconButton onClick={handleOpenUserMenu}>
-                    <ClearIcon></ClearIcon>
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </AppBar>
-          )
-      }
+          <Tooltip title="Open settings">
+            <IconButton onClick={handleOpenUserMenu}>
+              <DehazeIcon></DehazeIcon>
+            </IconButton>
+          </Tooltip>
+          {decodeURIComponent(user?.chatInUse?.chat?.name)}
+          <Menu
+            sx={{ mt: '40px' }}
+            id="menu-appbar"
+            anchorEl={anchorElUser}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+            >
+            {userRights.map((setting) => (
+              <MenuItem key={setting} onClick={() => friendsOption(setting)}>
+                <Typography textAlign="center">{setting}</Typography>
+              </MenuItem>
+            ))}
+          </Menu>
+            <Avatar src={user?.chatInUse?.chat?.picture ?? ''} sx={{ marginRight: 0.5 }}></Avatar>
+        </Box>
+        <Modal open={isFriendManagementWindowOpen} onClose={handleCloseWindow}>{friendHandlerWindow}</Modal>
+      </AppBar>
+      ) : (
+        <AppBar position="relative" sx={{ boxShadow: '0'}}>
+          <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
+            <Tooltip title="No active chat">
+              <IconButton onClick={handleOpenUserMenu}>
+                <ClearIcon></ClearIcon>
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </AppBar>
+      )
+    }
     </Box>
   );
 }
