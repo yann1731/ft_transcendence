@@ -29,8 +29,8 @@ interface MyChannelsProps {
             setChannels(response.data);
           }
         } catch (error) {
-          console.error('Error getting chatroom:', error);
-          alert('Error: could not get chatroom: ' + error);
+          console.error('Error getting chatrooms:', error);
+          alert('Error: could not get chatrooms: ' + error);
         }
       };
       fetchChannels();
@@ -49,10 +49,10 @@ interface MyChannelsProps {
             const chans: Chatroom[] = [];
 
             channels.forEach(channel => {
-              const isJoined = chatroomUsersData.find(user => user.chatroomId === channel.id);
-              if (isJoined) {
-                chans.push(channel);
-                }
+              chatroomUsersData.forEach(users => {
+                if (channel?.id === users?.chatroomId && users.banStatus !== true)
+                  chans.push(channel);
+              })
             });
             setJoinedChannels(chans)
             console.log('ChatroomUsers fetched: ', response.data);

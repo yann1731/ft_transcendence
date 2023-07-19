@@ -5,7 +5,7 @@ import { UserContext, User } from 'Contexts/userContext';
 import { useTheme } from '@mui/material/styles';
 import ClearIcon from '@mui/icons-material/Clear';
 import axios from 'axios';
-import { Chatroom, ChatroomUser, userPermission } from 'Components/Interfaces';
+import { Chatroom, chatroomType, ChatroomUser, userPermission } from 'Components/Interfaces';
 
 export default function OptionBarConversation() {
   const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
@@ -101,6 +101,11 @@ export default function OptionBarConversation() {
       setAnchorElUser(null);
     };
     
+    const closeChat = () => {
+      const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
+          updateUser(updatedUser);
+    };
+
     const friendsOption = (option: string) => {
       handleMode(option);
       handleCloseUserMenu();
@@ -162,9 +167,11 @@ export default function OptionBarConversation() {
             alert("Cannot ban owner or Admin");
             return ;
           }
-          chatUser.banStatus = true;
+          const newChatUser: Partial<ChatroomUser> = {
+            banStatus: true,
+          }
           try {
-            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
               'Authorization': user?.token,
               'userId': user?.id
             }});
@@ -426,19 +433,27 @@ export default function OptionBarConversation() {
         )}
       </Box>
     );
-
-  return (
-    <Box>
+    
+    return (
+      <Box>
     {user?.chatInUse !== null && user?.chatInUse !== undefined ? (
       <AppBar position="relative" sx={{ boxShadow: '0' }}>
         <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
-          <Tooltip title="Open settings">
+          {user?.chatInUse?.type === chatroomType.channel ? (
+            <Tooltip title="Open settings">
             <IconButton onClick={handleOpenUserMenu}>
               <DehazeIcon></DehazeIcon>
             </IconButton>
           </Tooltip>
+          ) : (
+            <Tooltip title="Close conversation">
+            <IconButton onClick={closeChat}>
+              <ClearIcon></ClearIcon>
+            </IconButton>
+          </Tooltip>)}
           {decodeURIComponent(user?.chatInUse?.chat?.name)}
-          <Menu
+          {user?.chatInUse?.type === chatroomType.channel && (
+            <Menu
             sx={{ mt: '40px' }}
             id="menu-appbar"
             anchorEl={anchorElUser}
@@ -459,22 +474,21 @@ export default function OptionBarConversation() {
                 <Typography textAlign="center">{setting}</Typography>
               </MenuItem>
             ))}
-          </Menu>
+          </Menu>)}
             <Avatar src={user?.chatInUse?.chat?.picture ?? ''} sx={{ marginRight: 0.5 }}></Avatar>
         </Box>
         <Modal open={isFriendManagementWindowOpen} onClose={handleCloseWindow}>{friendHandlerWindow}</Modal>
       </AppBar>
       ) : (
-        <AppBar position="relative" sx={{ boxShadow: '0'}}>
-          <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
-            <Tooltip title="No active chat">
-              <IconButton onClick={handleOpenUserMenu}>
-                <ClearIcon></ClearIcon>
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </AppBar>
-      )
+      <AppBar position="relative" sx={{ boxShadow: '0'}}>
+        <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
+          <Tooltip title="No active chat">
+            <IconButton onClick={handleOpenUserMenu}>
+              <ClearIcon></ClearIcon>
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </AppBar>)
     }
     </Box>
   );
