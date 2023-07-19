@@ -123,13 +123,23 @@ export class ChatroomService { //specifically to create a password protected cha
     }
     else
     {
+      let hashedPass: string | null = null;
+    
+      const existingChatroom = await this.prisma.chatroom.findUnique({ where: { name: encodedName } });
+
+      if (existingChatroom && existingChatroom.password) {
+        hashedPass = existingChatroom.password;
+      } else if (password) {
+        hashedPass = await argon2.hash(password.toString());
+      }
+      
       const chatroom = await this.prisma.chatroom.update({where: {
         name: encodedName,
       },
       data: {
         state,
         picture: updatedPicture,
-        password: null,
+        password: hashedPass,
         users: {
           create: [updateChatroomDto.users]
         }

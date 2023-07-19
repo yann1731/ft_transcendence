@@ -36,7 +36,7 @@ export default function OptionBarFriends() {
           console.error('Error fetching users', error);
         }
         try {
-          const response = await axios.get(`http://localhost:4242/userfriendship/user/${user?.id}`, {headers: {
+          const response = await axios.get(`http://localhost:4242/userfriendship/`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }});
@@ -44,25 +44,41 @@ export default function OptionBarFriends() {
           if (response.status === 200) {
             const FriendshipData: UserFriendship[] = response.data;
             const tempFriends: User[] = [];
-            FriendshipData.forEach(Friend => {
-              const isFriend = Users.find((User) => {
-                return User.id == Friend.userAId || User.id == Friend.userBId
+            if (FriendshipData.length !== 0)
+            {
+              FriendshipData.forEach(friend => {
+                if (user !== null && user.id === friend.userAId)
+                {
+                  const isFriend = Users.find((users) => {
+                    return (users.id === friend.userBId)
+                  })
+                  if (isFriend !== undefined)
+                  {
+                    tempFriends.push(isFriend);
+                  }
+                }
+                else if (user !== null && user.id === friend.userBId)
+                {
+                  const isFriend = Users.find((users) => {
+                    return (users.id === friend.userAId)
+                  })
+                  if (isFriend !== undefined)
+                  {
+                    tempFriends.push(isFriend);
+                  }
+                }
               })
-              if (isFriend !== undefined)
-              {
-                tempFriends.push(isFriend)
-              }
-            })
+            }
             setFriendUsers(tempFriends);
-
+            
             const tempIsNotFriend: User[] = [];
-            Users.forEach(Friend => {
-              const notFriend = FriendUsers.find((users) => {
-                return users?.id != Friend?.id;
+            Users.forEach(users => {
+              const notFriend = FriendUsers.find((friend) => {
+                return users?.id === friend?.id;
               })
-              if (notFriend !== undefined)
+              if (notFriend === undefined && users?.id !== user?.id)
               {
-                tempIsNotFriend.push(notFriend)
+                tempIsNotFriend.push(users);
               }
             });
             setNonFriendUsers(tempIsNotFriend);
@@ -105,7 +121,7 @@ export default function OptionBarFriends() {
       const friendToModify = Users.find((obj) => {
         return obj.nickname === UserName;
       });
-      if (mode === 'Add')
+      if (mode === 'Add Friend')
       {
         try {
           const response = await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: friendToModify?.id}, {headers: {
@@ -185,7 +201,7 @@ export default function OptionBarFriends() {
         <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
         {mode}
         </Typography>
-        {mode !== "Add" ?
+        {mode !== "Add Friend" ?
         <Autocomplete
           disablePortal
           id="Users"
