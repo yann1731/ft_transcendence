@@ -4,9 +4,9 @@ import {useTheme, Avatar, Button, Modal, Autocomplete, TextField, Menu, IconButt
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import ClearIcon from '@mui/icons-material/Clear';
 import { UserContext, User } from 'Contexts/userContext';
-import { chatroomType, ChatroomUser, userPermission } from 'Components/Interfaces';
+import { chatroomType, ChatroomUser, userPermission, ChatInUse } from 'Components/Interfaces';
 
-export default function OptionBarConversation() {
+const OptionBarConversation: React.FC = () => {
   const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
   const UserSettings = ['Add', 'Quit', 'View Members'];
   const FriendSettings = ['Mute', 'Unmute']
@@ -17,7 +17,6 @@ export default function OptionBarConversation() {
   const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
   const [UserName, setUserName] = React.useState('');
   const [Users, setUsers] = React.useState<User[]>([]);
-  const [chatroomUser, setChatroomUser] = React.useState<ChatroomUser[]>([]);
   const {user, updateUser} = React.useContext(UserContext);
   const [userRights, setUserRights] = React.useState(UserSettings);
   const [chatroomUsers, setChatroomUsers] = React.useState<ChatroomUser[]>([]);
@@ -25,75 +24,76 @@ export default function OptionBarConversation() {
   const [usersNotInCurrentChat, setUsersNotInCurrentChat] = React.useState<User[]>([]);
 
   React.useEffect(() => {
-      const fetchUsers = async () => {
-        try {
-          const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
-            'Authorization': user?.token,
-            'userId': user?.id
-          }});
-          if (response.status === 200) {
-            const ChatroomUsersData: ChatroomUser[] = response.data;
-            setChatroomUsers(ChatroomUsersData);
-          } 
-        } catch (error) {
-          console.error('Error fetching chatroom users', error);
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }});
+        if (response.status === 200) {
+          const ChatroomUsersData: ChatroomUser[] = response.data;
+          setChatroomUsers(ChatroomUsersData);
+        } 
+      } catch (error) {
+        console.error('Error fetching chatroom users', error);
+      }
+      try {
+        const response = await axios.get('http://localhost:4242/user', {headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }});
+        if (response.status === 200) {
+          const UsersData: User[] = response.data;
+          setUsers(UsersData);
+          const tempUsersInChan: User[] = [];
+          const tempUsersNotInChan: User[] = [];
+          
+          Users.forEach((userToFind: User) => {
+            const isUser = chatroomUsers.find((chatUser: ChatroomUser) => {
+              return chatUser.userId === userToFind.id;
+            })
+            if (isUser !== undefined && user?.id !== isUser?.userId && isUser.banStatus !== true)
+            {
+              tempUsersInChan.push(userToFind);
+            }
+            else if (isUser === undefined)
+            {
+              tempUsersNotInChan.push(userToFind);
+            }
+          });
+          setUsersInCurrentChat(tempUsersInChan);
+          setUsersNotInCurrentChat(tempUsersNotInChan);
         }
-        try {
-          const response = await axios.get('http://localhost:4242/user', {headers: {
-            'Authorization': user?.token,
-            'userId': user?.id
-          }});
-          if (response.status === 200) {
-            const UsersData: User[] = response.data;
-            setUsers(UsersData);
-            const tempUsersInChan: User[] = [];
-            const tempUsersNotInChan: User[] = [];
-            
-            Users.forEach((userToFind: User) => {
-              const isUser = chatroomUsers.find((chatUser: ChatroomUser) => {
-                return chatUser.userId === userToFind.id;
-              })
-              if (isUser !== undefined && isUser?.userId !== user?.id)
-              {
-                tempUsersInChan.push(userToFind);
-              }
-              else if (isUser === undefined)
-              {
-                tempUsersNotInChan.push(userToFind);
-              }
-            });
-            setUsersInCurrentChat(tempUsersInChan);
-            setUsersNotInCurrentChat(tempUsersNotInChan);
-          } 
-        } catch (error) {
-          console.error('Error fetching chatroom users', error);
-        }
-      };
-      fetchUsers();
-    }, [mode, user?.chatInUse?.chat?.id, Users, chatroomUsers, user?.id, user?.token]);
-    
-    const handleMode = (mode: string) => {
-      setMode(mode);
-      setWindowIsOpen(true);
+      } catch (error) {
+        console.error('Error fetching chatroom users', error);
+      }
     };
+    fetchUsers();
+  }, [mode]);
+  
+  const handleMode = (mode: string) => {
+    setMode(mode);
+    setWindowIsOpen(true);
+  };
+  
+  const handleCloseWindow = () => {
+    setWindowIsOpen(false);
+  };
+  // TODO S'assurer qu'il n'y a pas de variables superflus. Peut-être n'utiliser suelement que chatroomUsers et usersInCurrentChat
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
     
-    const handleCloseWindow = () => {
-      setWindowIsOpen(false);
-    };
-    // TODO S'assurer qu'il n'y a pas de variables superflus. Peut-être n'utiliser suelement que chatroomUsers et usersInCurrentChat
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-      setAnchorElUser(event.currentTarget);
       let currentChatroomUser: ChatroomUser | undefined;
       chatroomUsers.forEach((chatUser: ChatroomUser) => {
         if (chatUser.userId === user?.id)
-          currentChatroomUser = chatUser;
+        currentChatroomUser = chatUser;
       });
       if (user?.chatInUse?.type === "friend")
-        setUserRights(FriendSettings)
+      setUserRights(FriendSettings)
       else if (user?.chatInUse?.chat?.userId === user?.id || currentChatroomUser?.permission === userPermission.admin)
-        setUserRights(AdminSettings);
+      setUserRights(AdminSettings);
       else
-        setUserRights(UserSettings);
+      setUserRights(UserSettings);
     };
     
     const handleCloseUserMenu = () => {
@@ -102,9 +102,9 @@ export default function OptionBarConversation() {
     
     const closeChat = () => {
       const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
-          updateUser(updatedUser);
+      updateUser(updatedUser);
     };
-
+    
     const friendsOption = (option: string) => {
       handleMode(option);
       handleCloseUserMenu();
@@ -118,14 +118,13 @@ export default function OptionBarConversation() {
       const Friend = Users.find((friend: User) => {
         return friend.nickname === UserName;
       });
-     
-      chatroomUsers.forEach((chatUser: ChatroomUser) => {
-        if (chatUser.userId === Friend?.id)
-          setChatroomUser((prevUser: any) => [...prevUser, user]);
+      
+      const chatUser = chatroomUsers.find((chatUser: ChatroomUser) => {
+        return chatUser.userId === Friend?.id;
       });
-
-      const chatUser = chatroomUser.find((chatUser: ChatroomUser) => {
-        return chatUser.chatroomId === user?.chatInUse?.chat?.id;
+      
+      const selfChatroomUser = chatroomUsers.find((self: ChatroomUser) => {
+        return user?.id === self?.userId;
       });
 
       if (mode === 'Add')
@@ -158,10 +157,9 @@ export default function OptionBarConversation() {
       }
       else if (mode === 'Ban')
       {
-        // TODO Kick + implementer "timer" pour enelever channel du join
         if (chatUser !== undefined)
         {
-          if (chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin)
+          if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && selfChatroomUser?.permission !== userPermission.owner)
           {
             alert("Cannot ban owner or Admin");
             return ;
@@ -187,7 +185,7 @@ export default function OptionBarConversation() {
       {
         if (chatUser !== undefined)
         {
-          if (chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin)
+          if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && selfChatroomUser?.permission !== userPermission.owner)
           {
             alert("Cannot kick owner or Admin");
             return ;
@@ -216,9 +214,11 @@ export default function OptionBarConversation() {
             alert("This user is already an admin");
             return ;
           }
-          chatUser.permission = userPermission.admin;
+          const newChatUser: Partial<ChatroomUser> = {
+            permission: userPermission.admin,
+          }
           try {
-            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
               'Authorization': user?.token,
               'userId': user?.id
             }});
@@ -235,7 +235,7 @@ export default function OptionBarConversation() {
       {
         if (chatUser !== undefined)
         {
-          if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && user?.chatInUse?.type !== "friend")
+          if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && selfChatroomUser?.permission !== userPermission.owner)
           {
             alert("Cannot mute owner or an admin");
             return ;
@@ -289,7 +289,8 @@ export default function OptionBarConversation() {
         if (user?.id === user?.chatInUse?.chat?.userId)
         {
           try {
-            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.name}`, {headers: {
+            alert(user?.chatInUse?.chat?.id)
+            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
               'Authorization': user?.token,
               'userId': user?.id
             }});
@@ -307,7 +308,7 @@ export default function OptionBarConversation() {
         else
         {
           try {
-            const response = await axios.delete(`http://localhost:4242/chatroomuser/${chatUser?.id}`, {headers: {
+            const response = await axios.delete(`http://localhost:4242/chatroomuser/${selfChatroomUser?.id}`, {headers: {
               'Authorization': user?.token,
               'userId': user?.id
             }});
@@ -351,7 +352,7 @@ export default function OptionBarConversation() {
         }}
         >
         <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
-        {mode}
+          {mode}
         </Typography>
         {mode !== 'Quit' && mode !== 'View Members' && mode !== 'Add' && (
           <div>
@@ -491,4 +492,5 @@ export default function OptionBarConversation() {
     }
     </Box>
   );
-}
+};
+export default OptionBarConversation;

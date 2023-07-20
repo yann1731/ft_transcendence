@@ -6,7 +6,7 @@ import '../../../App.css';
 import { UserContext, User } from 'Contexts/userContext';
 import { UserFriendship, Chatroom, chatroomType, ChatInUse } from 'Components/Interfaces';
 
-export default function OptionBarFriends() {
+const OptionBarFriends: React.FC = () => {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
     const [mode, setMode] = React.useState<string>('');
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -198,7 +198,7 @@ export default function OptionBarFriends() {
         }}
       >
         <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
-        {mode}
+          {mode}
         </Typography>
         {mode !== "Add Friend" ?
         <Autocomplete
@@ -210,16 +210,16 @@ export default function OptionBarFriends() {
           sx={{ marginBottom: 2 }}
           onChange={handleUserSelection}
           renderInput={(params) => 
-          <TextField
-            {...params}
-            className="Search For User"
-            sx={{
-              '& label': { color: createChannelcolors },
-              '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
-            }}
-            label="Users" 
-          />
-        }
+            <TextField
+              {...params}
+              className="Search For User"
+              sx={{
+                '& label': { color: createChannelcolors },
+                '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+              }}
+              label="Users" 
+            />
+          }
         />
         :
         <Autocomplete
@@ -231,16 +231,16 @@ export default function OptionBarFriends() {
           sx={{ marginBottom: 2 }}
           onChange={handleUserSelection}
           renderInput={(params) => 
-          <TextField
-            {...params}
-            className="Search For User"
-            sx={{
-              '& label': { color: createChannelcolors },
-              '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
-            }}
-            label="Users" 
-          />
-        }
+            <TextField
+              {...params}
+              className="Search For User"
+              sx={{
+                '& label': { color: createChannelcolors },
+                '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+              }}
+              label="Users" 
+            />
+          }
         />}
         <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
           {mode}
@@ -288,4 +288,5 @@ export default function OptionBarFriends() {
           <Modal open={isFriendManagementWindowOpen} onClose={handleCloseWindow}>{friendHandlerWindow}</Modal>
       </AppBar>
   );
-}
+};
+export default OptionBarFriends;
