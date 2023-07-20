@@ -1,13 +1,12 @@
+import axios from 'axios';
 import * as React from 'react';
-import {Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar } from '@mui/material';
+import { useTheme, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar } from '@mui/material';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import '../../../App.css';
-import { useTheme } from '@mui/material/styles';
 import { UserContext, User } from 'Contexts/userContext';
-import axios from 'axios';
-import { UserFriendship, Chatroom, userPermission, ChatroomUser, chatroomType, ChatInUse } from 'Components/Interfaces';
+import { UserFriendship, Chatroom, chatroomType, ChatInUse } from 'Components/Interfaces';
 
-export default function OptionBarFriends() {
+const OptionBarFriends: React.FC = () => {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
     const [mode, setMode] = React.useState<string>('');
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -36,7 +35,7 @@ export default function OptionBarFriends() {
           console.error('Error fetching users', error);
         }
         try {
-          const response = await axios.get(`http://localhost:4242/userfriendship/user/${user?.id}`, {headers: {
+          const response = await axios.get(`http://localhost:4242/userfriendship/`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }});
@@ -44,25 +43,41 @@ export default function OptionBarFriends() {
           if (response.status === 200) {
             const FriendshipData: UserFriendship[] = response.data;
             const tempFriends: User[] = [];
-            FriendshipData.forEach(Friend => {
-              const isFriend = Users.find((User) => {
-                return User.id == Friend.userAId || User.id == Friend.userBId
+            if (FriendshipData.length !== 0)
+            {
+              FriendshipData.forEach((friend: UserFriendship) => {
+                if (user !== null && user.id === friend.userAId)
+                {
+                  const isFriend = Users.find((users: User) => {
+                    return (users.id === friend.userBId)
+                  })
+                  if (isFriend !== undefined)
+                  {
+                    tempFriends.push(isFriend);
+                  }
+                }
+                else if (user !== null && user.id === friend.userBId)
+                {
+                  const isFriend = Users.find((users: User) => {
+                    return (users.id === friend.userAId)
+                  })
+                  if (isFriend !== undefined)
+                  {
+                    tempFriends.push(isFriend);
+                  }
+                }
               })
-              if (isFriend !== undefined)
-              {
-                tempFriends.push(isFriend)
-              }
-            })
+            }
             setFriendUsers(tempFriends);
-
+            
             const tempIsNotFriend: User[] = [];
-            Users.forEach(Friend => {
-              const notFriend = FriendUsers.find((users) => {
-                return users?.id != Friend?.id;
+            Users.forEach((users: User) => {
+              const notFriend = FriendUsers.find((friend: User) => {
+                return users?.id === friend?.id;
               })
-              if (notFriend !== undefined)
+              if (notFriend === undefined && users?.id !== user?.id)
               {
-                tempIsNotFriend.push(notFriend)
+                tempIsNotFriend.push(users);
               }
             });
             setNonFriendUsers(tempIsNotFriend);
@@ -73,7 +88,7 @@ export default function OptionBarFriends() {
       };
   
       fetchUsers();
-    }, [mode]);
+    }, [mode, FriendUsers, Users, user]);
 
     const handleMode = (mode: string) => {
       setMode(mode);
@@ -102,10 +117,10 @@ export default function OptionBarFriends() {
         alert('No username was given')
         return ;
       }
-      const friendToModify = Users.find((obj) => {
-        return obj.nickname === UserName;
+      const friendToModify = Users.find((friend: User) => {
+        return friend.nickname === UserName;
       });
-      if (mode === 'Add')
+      if (mode === 'Add Friend')
       {
         try {
           const response = await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: friendToModify?.id}, {headers: {
@@ -159,9 +174,9 @@ export default function OptionBarFriends() {
       setMode('');
     };
     
-    const handleUserSelection = (event: React.ChangeEvent<{}>, value: User | null) => {
-      if (value) {
-        setUserName(value.nickname);
+    const handleUserSelection = (event: React.ChangeEvent<{}>, friend: User | null) => {
+      if (friend) {
+        setUserName(friend.nickname);
       } else {
         setUserName('');
       }
@@ -183,9 +198,9 @@ export default function OptionBarFriends() {
         }}
       >
         <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
-        {mode}
+          {mode}
         </Typography>
-        {mode !== "Add" ?
+        {mode !== "Add Friend" ?
         <Autocomplete
           disablePortal
           id="Users"
@@ -195,16 +210,16 @@ export default function OptionBarFriends() {
           sx={{ marginBottom: 2 }}
           onChange={handleUserSelection}
           renderInput={(params) => 
-          <TextField
-            {...params}
-            className="Search For User"
-            sx={{
-              '& label': { color: createChannelcolors },
-              '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
-            }}
-            label="Users" 
-          />
-        }
+            <TextField
+              {...params}
+              className="Search For User"
+              sx={{
+                '& label': { color: createChannelcolors },
+                '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+              }}
+              label="Users" 
+            />
+          }
         />
         :
         <Autocomplete
@@ -216,16 +231,16 @@ export default function OptionBarFriends() {
           sx={{ marginBottom: 2 }}
           onChange={handleUserSelection}
           renderInput={(params) => 
-          <TextField
-            {...params}
-            className="Search For User"
-            sx={{
-              '& label': { color: createChannelcolors },
-              '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
-            }}
-            label="Users" 
-          />
-        }
+            <TextField
+              {...params}
+              className="Search For User"
+              sx={{
+                '& label': { color: createChannelcolors },
+                '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+              }}
+              label="Users" 
+            />
+          }
         />}
         <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
           {mode}
@@ -263,7 +278,7 @@ export default function OptionBarFriends() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
               >
-              {settings.map((setting) => (
+              {settings.map((setting: string) => (
                 <MenuItem key={setting} onClick={() => friendsOption(setting)}>
                     <Typography textAlign="left">{setting}</Typography>
                 </MenuItem>
@@ -273,4 +288,5 @@ export default function OptionBarFriends() {
           <Modal open={isFriendManagementWindowOpen} onClose={handleCloseWindow}>{friendHandlerWindow}</Modal>
       </AppBar>
   );
-}
+};
+export default OptionBarFriends;

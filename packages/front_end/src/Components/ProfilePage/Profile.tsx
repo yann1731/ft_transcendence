@@ -23,9 +23,9 @@ export default function DividerProfile() {
     return (
         <div>
             <BackgroundContainer>
-                <ResponsiveAppBar></ResponsiveAppBar>
+                <ResponsiveAppBar />
                 <br></br>
-                <ProfileContainer></ProfileContainer>
+                <ProfileContainer />
             </BackgroundContainer>
         </div>
     )

@@ -47,6 +47,10 @@ const Handler2FA = () => {
         'Authorization': user?.token,
         'userId': user?.id
       }})
+      if (response.status === 200)
+      {
+        console.log("2FA updated");
+      }
     } catch (error){
       console.error('Erreur lors de la mise à jour de twoFaEnabled' + error)
     }
