@@ -1,6 +1,5 @@
 import "@fontsource/roboto"
-import { PaletteMode } from '@mui/material';
-import { createTheme, ThemeOptions } from "@mui/material";
+import { createTheme, ThemeOptions, PaletteMode } from "@mui/material";
 
 export const getDesignTokens = (mode: PaletteMode) => ({
 	palette: {

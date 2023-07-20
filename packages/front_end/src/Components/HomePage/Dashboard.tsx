@@ -1,9 +1,8 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
+import { Box, Divider } from '@mui/material/';
 import DashboardBar from './DashboardBar';
-import Divider from '@mui/material/Divider';
-import { UserContext, UserContextType } from 'Contexts/userContext';
+import { UserContext } from 'Contexts/userContext';
 import { HallOfFame } from 'Components/Interfaces';
 import { useEffect, useState, useContext } from 'react';
 import axios, { AxiosResponse } from 'axios';
@@ -30,7 +29,7 @@ const DashboardContainer: React.FC = () => {
         }} );
         const data: HallOfFame[] = response.data;
         
-        data.forEach(score => {
+        data.forEach((score: HallOfFame) => {
           if (score.win >= highestScore) {
             if (score.win > highestScore)
             {
@@ -89,15 +88,15 @@ const DashboardContainer: React.FC = () => {
       }
     };
     fetchHallOfFame();
-  }, []);
+  }, [gamesPlayedHighestScore, gamesPlayedLowestScore, highestGamesPlayed, highestScore, lowestScore, nicknameGamesPlayed, nicknameHighScore, nicknameLowScore, user?.id, user?.token]);
 
   return (
     <React.Fragment>
       <CssBaseline />
       <Box sx={{ position: 'relative', marginTop: '114px' }}>
         <Box className={"homeScoreBar"}>
-          <DashboardBar></DashboardBar>
-        <Box className={"homeScoreBox"}>
+          <DashboardBar />
+          <Box className={"homeScoreBox"}>
             <Box sx={{ textAlign: 'center', width: '100%' }}>
               <Box sx={{color: 'white', fontSize: '20px' }}>Hall of Fame</Box>
               <Divider style={{ marginBottom: '10px' }} />
@@ -105,27 +104,27 @@ const DashboardContainer: React.FC = () => {
               <Box className="dashboardContents">[WINS]<br></br>{highestScore}<br></br>{nicknameHighScore}</Box>
               <Box className="dashboardContents">[LOSSES]<br></br>{lowestScore}<br></br>{nicknameLowScore}</Box>
             </Box>
-        </Box>
-        <Box className={"homeScoreBox"}>
+          </Box>
+          <Box className={"homeScoreBox"}>
             <Box sx={{ textAlign: 'center'}}>
               <Box sx={{mt: 1, color: 'white', fontSize: '20px'}}>Personal Stats</Box>
-                <Divider style={{ marginBottom: '10px' }} />
-                <Box className="dashboardContents">[GAMES PLAYED]<br></br>{user?.gamesPlayed}</Box>
-                <Box className="dashboardContents">[WINS]<br></br>{user?.win}</Box>
-                <Box className="dashboardContents">[LOSSES]<br></br>{user?.loss}</Box>
-                <Box className="dashboardContents">[WIN RATIO]<br></br>{user?.win}</Box>
+              <Divider style={{ marginBottom: '10px' }} />
+              <Box className="dashboardContents">[GAMES PLAYED]<br></br>{user?.gamesPlayed}</Box>
+              <Box className="dashboardContents">[WINS]<br></br>{user?.win}</Box>
+              <Box className="dashboardContents">[LOSSES]<br></br>{user?.loss}</Box>
+              <Box className="dashboardContents">[WIN RATIO]<br></br>{user?.win}</Box>
             </Box>
-        </Box>
-        <Box className={"homeScoreBox"}>
+          </Box>
+          <Box className={"homeScoreBox"}>
             <Box sx={{ textAlign: 'center',}}>
               <Box sx={{mt: 1, color: 'white', fontSize: '20px'}}>Opponent's Stats</Box>
-                <Divider style={{ marginBottom: '10px' }} />
-                <Box className="dashboardContents">[GAMES PLAYED]<br></br></Box>
-                <Box className="dashboardContents">[WINS]<br></br></Box>
-                <Box className="dashboardContents">[LOSSES]<br></br></Box>
-                <Box className="dashboardContents">[WIN RATIO]<br></br></Box>
+              <Divider style={{ marginBottom: '10px' }} />
+              <Box className="dashboardContents">[GAMES PLAYED]<br></br></Box>
+              <Box className="dashboardContents">[WINS]<br></br></Box>
+              <Box className="dashboardContents">[LOSSES]<br></br></Box>
+              <Box className="dashboardContents">[WIN RATIO]<br></br></Box>
             </Box>
-        </Box>
+          </Box>
         </Box>
       </Box>
     </React.Fragment>

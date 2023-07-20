@@ -1,8 +1,6 @@
-import { Grid } from "@mui/material";
-import Paper from "@mui/material/Paper";
+import { Grid, Box, Paper } from "@mui/material";
 import { experimentalStyled as styled } from '@mui/material/styles';
 import Handler2FA from "./2FAActivation";
-import Box from "@mui/material/Box";
 import UserNameHandler from "./UsernameHandler";
 import { useContext } from "react";
 import { UserContext } from "Contexts/userContext";

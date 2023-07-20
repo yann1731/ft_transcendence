@@ -14,6 +14,6 @@ root.render(
         <App />
       </div>
     </Provider> 
-    </BrowserRouter>
+  </BrowserRouter>
 );
 
