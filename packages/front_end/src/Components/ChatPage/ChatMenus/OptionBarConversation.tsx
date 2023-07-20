@@ -289,7 +289,6 @@ const OptionBarConversation: React.FC = () => {
         if (user?.id === user?.chatInUse?.chat?.userId)
         {
           try {
-            alert(user?.chatInUse?.chat?.id)
             const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
               'Authorization': user?.token,
               'userId': user?.id
