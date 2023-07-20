@@ -1,5 +1,4 @@
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
+import { Typography, Container } from "@mui/material/";
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import { keyframes } from "@emotion/react";
 import axios from 'axios';
@@ -41,15 +40,15 @@ export default function GetToken() {
       }
     };
 
-    fetchTokenAndUser(); // Call the async function.
-  }, []);
+    fetchTokenAndUser();
+  }, [setUser]);
 
-    return (
-        <Container maxWidth={false} sx={{ backgroundColor: 'black', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', width: "100%" }}>
-            <PokeBallIcon sx={{ fontSize: 200, position: 'relative', color: 'white', animation: `${spin} 2s linear infinite` }} />
-            <Typography variant="h6" color='white'>
-            Verifying... {user?.nickname}
-            </Typography>
-        </Container>
-        );
+  return (
+    <Container maxWidth={false} sx={{ backgroundColor: 'black', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', width: "100%" }}>
+        <PokeBallIcon sx={{ fontSize: 200, position: 'relative', color: 'white', animation: `${spin} 2s linear infinite` }} />
+        <Typography variant="h6" color='white'>
+          Verifying... {user?.nickname}
+        </Typography>
+    </Container>
+  );
 }

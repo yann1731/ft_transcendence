@@ -1,16 +1,13 @@
 
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { List, ListItem, ListItemText, Divider, TextField, Fab } from '@mui/material';
+import { useTheme, Box, List, ListItem, ListItemText, Divider, TextField, Fab } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import ContactMenu from './ChatMenus/ContactMenu';
-import Box from '@mui/material/Box';
 import '../../App.css';
 import { UserContext } from 'Contexts/userContext';
 import { Message } from 'Components/Interfaces';
 import { Socket } from "socket.io"
 import { SocketContext } from "../../Contexts/socketContext";
-import { useTheme } from '@mui/material/styles';
-
 
 const Chat = () => {
   const theme = useTheme();
@@ -36,7 +33,7 @@ const Chat = () => {
       nickname: user?.nickname,
       UserAvatar: user?.avatar,
     };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -64,43 +61,43 @@ const Chat = () => {
   
   return (
     <Box className={"chatSection"}>
-    <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
-      <List>
-        {messages.map((message, index) => (
-          <ListItem key={index}>
-            <Box sx={{ marginLeft: 'auto' }}>
-              <Box sx={{ textAlign: 'right' }}>
-                <ContactMenu {...{Useravatar: message.UserAvatar}}></ContactMenu>
-                <ListItemText primary={message.text}></ListItemText>
+      <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
+        <List>
+          {messages.map((message: Message, index: number) => (
+            <ListItem key={index}>
+              <Box sx={{ marginLeft: 'auto' }}>
+                <Box sx={{ textAlign: 'right' }}>
+                  <ContactMenu {...{Useravatar: message.UserAvatar}} />
+                  <ListItemText primary={message.text} />
+                </Box>
+                <Box sx={{ textAlign: 'right' }}>
+                  <ListItemText
+                    secondary={`${message.nickname}, ${message.timestamp}`}
+                  />
+                </Box>
               </Box>
-              <Box sx={{ textAlign: 'right' }}>
-                <ListItemText
-                  secondary={`${message.nickname}, ${message.timestamp}`}
-                ></ListItemText>
-              </Box>
-            </Box>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-    <Box sx={{ marginTop: 'auto' }}>
-      <Divider />
-      <Box style={{ padding: '20px' }}>
-        <Box className={"chatTextField"}>
-          <TextField
-            className={"focusedTextField .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline"}
-            sx={{ marginRight: '20px' }}
-            id="message-input"
-            label="Type Something"
-            onKeyDown={handleKeyDown}
-          />
-          <Fab color="primary" aria-label="add" onClick={handleClick} sx={{ flexShrink: 0}} style={{ color: buttonColor }}>
-            <SendIcon />
-          </Fab>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+      <Box sx={{ marginTop: 'auto' }}>
+        <Divider />
+        <Box style={{ padding: '20px' }}>
+          <Box className={"chatTextField"}>
+            <TextField
+              className={"focusedTextField .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline"}
+              sx={{ marginRight: '20px' }}
+              id="message-input"
+              label="Type Something"
+              onKeyDown={handleKeyDown}
+            />
+            <Fab color="primary" aria-label="add" onClick={handleClick} sx={{ flexShrink: 0}} style={{ color: buttonColor }}>
+              <SendIcon />
+            </Fab>
+          </Box>
         </Box>
       </Box>
     </Box>
-  </Box>
   );
 }
  export default Chat;

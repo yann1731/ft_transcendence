@@ -1,10 +1,5 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Tooltip from '@mui/material/Tooltip';
-import { Avatar, Typography } from '@mui/material';
+import { Avatar, Tooltip, IconButton, Box } from '@mui/material';
 
 export default function ContactMenu({Useravatar}: { Useravatar: string | undefined }) {
 
@@ -23,8 +18,8 @@ export default function ContactMenu({Useravatar}: { Useravatar: string | undefin
               aria-controls={open ? 'Contact options' : undefined}
               aria-haspopup="true"
               aria-expanded={open ? 'true' : undefined}
-            >
-              <Avatar src={Useravatar} sx={{ width: 32, height: 32 }}></Avatar>
+              >
+              <Avatar src={Useravatar} sx={{ width: 32, height: 32 }} />
             </IconButton>
           </Tooltip>
         </Box>

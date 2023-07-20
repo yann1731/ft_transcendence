@@ -7,9 +7,8 @@ import Login from './Login/Login';
 import Wait from './WaitingPage/Wait';
 import { useSelector } from "react-redux";
 import { useState, useMemo } from "react";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, PaletteMode } from '@mui/material/';
 import { RootState } from 'store/store';
-import { PaletteMode } from '@mui/material';
 import { getDesignTokens } from '../Theme';
 import UserProvider from 'Contexts/userContext';
 

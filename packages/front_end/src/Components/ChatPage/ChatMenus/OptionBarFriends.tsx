@@ -1,11 +1,10 @@
+import axios from 'axios';
 import * as React from 'react';
-import {Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar } from '@mui/material';
+import { useTheme, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar } from '@mui/material';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import '../../../App.css';
-import { useTheme } from '@mui/material/styles';
 import { UserContext, User } from 'Contexts/userContext';
-import axios from 'axios';
-import { UserFriendship, Chatroom, userPermission, ChatroomUser, chatroomType, ChatInUse } from 'Components/Interfaces';
+import { UserFriendship, Chatroom, chatroomType, ChatInUse } from 'Components/Interfaces';
 
 export default function OptionBarFriends() {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
@@ -46,10 +45,10 @@ export default function OptionBarFriends() {
             const tempFriends: User[] = [];
             if (FriendshipData.length !== 0)
             {
-              FriendshipData.forEach(friend => {
+              FriendshipData.forEach((friend: UserFriendship) => {
                 if (user !== null && user.id === friend.userAId)
                 {
-                  const isFriend = Users.find((users) => {
+                  const isFriend = Users.find((users: User) => {
                     return (users.id === friend.userBId)
                   })
                   if (isFriend !== undefined)
@@ -59,7 +58,7 @@ export default function OptionBarFriends() {
                 }
                 else if (user !== null && user.id === friend.userBId)
                 {
-                  const isFriend = Users.find((users) => {
+                  const isFriend = Users.find((users: User) => {
                     return (users.id === friend.userAId)
                   })
                   if (isFriend !== undefined)
@@ -72,8 +71,8 @@ export default function OptionBarFriends() {
             setFriendUsers(tempFriends);
             
             const tempIsNotFriend: User[] = [];
-            Users.forEach(users => {
-              const notFriend = FriendUsers.find((friend) => {
+            Users.forEach((users: User) => {
+              const notFriend = FriendUsers.find((friend: User) => {
                 return users?.id === friend?.id;
               })
               if (notFriend === undefined && users?.id !== user?.id)
@@ -89,7 +88,7 @@ export default function OptionBarFriends() {
       };
   
       fetchUsers();
-    }, [mode]);
+    }, [mode, FriendUsers, Users, user]);
 
     const handleMode = (mode: string) => {
       setMode(mode);
@@ -118,8 +117,8 @@ export default function OptionBarFriends() {
         alert('No username was given')
         return ;
       }
-      const friendToModify = Users.find((obj) => {
-        return obj.nickname === UserName;
+      const friendToModify = Users.find((friend: User) => {
+        return friend.nickname === UserName;
       });
       if (mode === 'Add Friend')
       {
@@ -175,9 +174,9 @@ export default function OptionBarFriends() {
       setMode('');
     };
     
-    const handleUserSelection = (event: React.ChangeEvent<{}>, value: User | null) => {
-      if (value) {
-        setUserName(value.nickname);
+    const handleUserSelection = (event: React.ChangeEvent<{}>, friend: User | null) => {
+      if (friend) {
+        setUserName(friend.nickname);
       } else {
         setUserName('');
       }
@@ -279,7 +278,7 @@ export default function OptionBarFriends() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
               >
-              {settings.map((setting) => (
+              {settings.map((setting: string) => (
                 <MenuItem key={setting} onClick={() => friendsOption(setting)}>
                     <Typography textAlign="left">{setting}</Typography>
                 </MenuItem>

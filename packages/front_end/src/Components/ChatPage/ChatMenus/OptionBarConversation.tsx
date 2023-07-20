@@ -1,11 +1,10 @@
-import * as React from 'react';
-import {Avatar, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, List, ListItemIcon, ListItemButton, ListItemText } from '@mui/material';
-import DehazeIcon from '@mui/icons-material/Dehaze';
-import { UserContext, User } from 'Contexts/userContext';
-import { useTheme } from '@mui/material/styles';
-import ClearIcon from '@mui/icons-material/Clear';
 import axios from 'axios';
-import { Chatroom, chatroomType, ChatroomUser, userPermission } from 'Components/Interfaces';
+import * as React from 'react';
+import {useTheme, Avatar, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, List, ListItemIcon, ListItemButton, ListItemText } from '@mui/material';
+import DehazeIcon from '@mui/icons-material/Dehaze';
+import ClearIcon from '@mui/icons-material/Clear';
+import { UserContext, User } from 'Contexts/userContext';
+import { chatroomType, ChatroomUser, userPermission } from 'Components/Interfaces';
 
 export default function OptionBarConversation() {
   const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
@@ -50,9 +49,9 @@ export default function OptionBarConversation() {
             const tempUsersInChan: User[] = [];
             const tempUsersNotInChan: User[] = [];
             
-            Users.forEach(userToFind => {
-              const isUser = chatroomUsers.find((obj) => {
-                return obj.userId === userToFind.id;
+            Users.forEach((userToFind: User) => {
+              const isUser = chatroomUsers.find((chatUser: ChatroomUser) => {
+                return chatUser.userId === userToFind.id;
               })
               if (isUser !== undefined && isUser?.userId !== user?.id)
               {
@@ -71,7 +70,7 @@ export default function OptionBarConversation() {
         }
       };
       fetchUsers();
-    }, [mode, user?.chatInUse?.chat?.id]);
+    }, [mode, user?.chatInUse?.chat?.id, Users, chatroomUsers, user?.id, user?.token]);
     
     const handleMode = (mode: string) => {
       setMode(mode);
@@ -85,9 +84,9 @@ export default function OptionBarConversation() {
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);
       let currentChatroomUser: ChatroomUser | undefined;
-      chatroomUsers.forEach(users => {
-        if (users.userId === user?.id)
-          currentChatroomUser = users;
+      chatroomUsers.forEach((chatUser: ChatroomUser) => {
+        if (chatUser.userId === user?.id)
+          currentChatroomUser = chatUser;
       });
       if (user?.chatInUse?.type === "friend")
         setUserRights(FriendSettings)
@@ -116,17 +115,17 @@ export default function OptionBarConversation() {
         alert('No username was given')
         return ;
       }
-      const Friend = Users.find((obj) => {
-        return obj.nickname === UserName;
+      const Friend = Users.find((friend: User) => {
+        return friend.nickname === UserName;
       });
      
-      chatroomUsers.forEach(user => {
-        if (user.userId === Friend?.id)
-          setChatroomUser(prevUser => [...prevUser, user]);
+      chatroomUsers.forEach((chatUser: ChatroomUser) => {
+        if (chatUser.userId === Friend?.id)
+          setChatroomUser((prevUser: any) => [...prevUser, user]);
       });
 
-      const chatUser = chatroomUser.find((obj) => {
-        return obj.chatroomId === user?.chatInUse?.chat?.id;
+      const chatUser = chatroomUser.find((chatUser: ChatroomUser) => {
+        return chatUser.chatroomId === user?.chatInUse?.chat?.id;
       });
 
       if (mode === 'Add')
@@ -150,7 +149,7 @@ export default function OptionBarConversation() {
           {
             console.log('User added to chatroom', response.data);
             const ChatroomUsersData: ChatroomUser = response.data;
-            setChatroomUsers(prevChatUsers => [...prevChatUsers, ChatroomUsersData]);
+            setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
           }
         } catch (error) {
             console.error('Error adding user to channel', error);
@@ -177,7 +176,7 @@ export default function OptionBarConversation() {
             }});
             if (response.status === 200) {
               const ChatroomUsersData: ChatroomUser = response.data;
-              setChatroomUsers(prevChatUsers => [...prevChatUsers, ChatroomUsersData]);
+              setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
             } 
           } catch (error) {
             console.error('Error fetching chatroom users', error);
@@ -225,7 +224,7 @@ export default function OptionBarConversation() {
             }});
             if (response.status === 200) {
               const ChatroomUsersData: ChatroomUser = response.data;
-              setChatroomUsers(prevChatUsers => [...prevChatUsers, ChatroomUsersData]);
+              setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
             } 
           } catch (error) {
             console.error('Error fetching chatroom users', error);
@@ -254,7 +253,7 @@ export default function OptionBarConversation() {
             }});
             if (response.status === 200) {
               const ChatroomUsersData: ChatroomUser = response.data;
-              setChatroomUsers(prevChatUsers => [...prevChatUsers, ChatroomUsersData]);
+              setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
             } 
           } catch (error) {
             console.error('Error fetching chatroom users', error);
@@ -278,7 +277,7 @@ export default function OptionBarConversation() {
             }});
             if (response.status === 200) {
               const ChatroomUsersData: ChatroomUser = response.data;
-              setChatroomUsers(prevChatUsers => [...prevChatUsers, ChatroomUsersData]);
+              setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
             } 
           } catch (error) {
             console.error('Error fetching chatroom users', error);
@@ -329,9 +328,9 @@ export default function OptionBarConversation() {
       setMode('');
     };
     
-    const handleUserSelection = (event: React.ChangeEvent<{}>, value: User | null) => {
-      if (value) {
-        setUserName(value.nickname);
+    const handleUserSelection = (event: React.ChangeEvent<{}>, friend: User | null) => {
+      if (friend) {
+        setUserName(friend.nickname);
       } else {
         setUserName('');
       }
@@ -421,7 +420,7 @@ export default function OptionBarConversation() {
         )}
         {mode === 'View Members' && (
           <List>
-            {usersInCurrentChat.map((user) => (
+            {usersInCurrentChat.map((user: User) => (
               <ListItemButton key={user.id}>
                 <ListItemIcon>
                   <Avatar alt={user?.nickname} src={user?.avatar || undefined} />
@@ -469,7 +468,7 @@ export default function OptionBarConversation() {
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
             >
-            {userRights.map((setting) => (
+            {userRights.map((setting: string) => (
               <MenuItem key={setting} onClick={() => friendsOption(setting)}>
                 <Typography textAlign="center">{setting}</Typography>
               </MenuItem>

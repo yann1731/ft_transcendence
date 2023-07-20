@@ -1,20 +1,14 @@
 import * as React from 'react';
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import { Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox, Dialog} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { DialogTitle, DialogContentText, DialogContent, DialogActions, useTheme, Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox, Dialog} from '@mui/material';
 import '../../../App.css';
-import { Chatroom, ChatroomUser } from 'Components/Interfaces';
 import ChanPictureSetter from '../ChatComponents/ChatPictureSetter';
-import axios, {AxiosResponse} from 'axios';
+import axios from 'axios';
 import { useContext } from 'react';
 import { UserContext, User } from 'Contexts/userContext';
 import { SocketContext } from "../../../Contexts/socketContext";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useTheme } from '@mui/material/styles';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import { userPermission, ChatInUse, chatroomType } from 'Components/Interfaces';
+import { userPermission, ChatInUse, chatroomType, Chatroom, ChatroomUser } from 'Components/Interfaces';
 
 
 export default function OptionBarChans() {
@@ -62,7 +56,7 @@ export default function OptionBarChans() {
               const adminChatroom: Chatroom[] = [];
               const ownChatroom: Chatroom[] = [];
               const joinChatroom: Chatroom[] = [];
-              chatroomData.forEach(chat => {
+              chatroomData.forEach((chat: Chatroom) => {
                 const isJoined = chatroomUsersData.find(user => user.chatroomId === chat.id);
                 if (isJoined?.permission === "admin")
                 {
@@ -95,7 +89,7 @@ export default function OptionBarChans() {
       }
     };
     fetchChannels();
-  }, [refresh, user?.chatInUse?.chat?.id]);
+  }, [refresh, user?.chatInUse?.chat?.id, user?.id, user?.token]);
   
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -179,8 +173,8 @@ export default function OptionBarChans() {
             }
             const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse};
             updateUser(updatedUser);
-            setOwnChatroom(prevOwnChat => [...prevOwnChat, newChannelData]);
-            setAdminChatroom(prevAdminChat => [...prevAdminChat, newChannelData]);
+            setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, newChannelData]);
+            setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, newChannelData]);
           }
         } catch (error) {
           console.error('Error creating chatroom:', error);
@@ -209,8 +203,8 @@ export default function OptionBarChans() {
             }
             const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
             updateUser(updatedUser);
-            setOwnChatroom(prevOwnChat => [...prevOwnChat, newChannelData]);
-            setAdminChatroom(prevAdminChat => [...prevAdminChat, newChannelData]);
+            setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, newChannelData]);
+            setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, newChannelData]);
           }
         } catch (error) {
           console.error('Error creating chatroom:', error);
@@ -276,9 +270,9 @@ export default function OptionBarChans() {
         }});
         console.log('Chatroom deleted:', response.data);
         
-        setOwnChatroom(prevOwnChat => prevOwnChat.filter(chat => chat.name !== channelName));
-        setAdminChatroom(prevAdminChat => prevAdminChat.filter(chat => chat.name !== channelName));
-        setJoinChatroom(prevJoinChat => prevJoinChat.filter(chat => chat.name !== channelName));
+        setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.filter((chat: Chatroom) => chat.name !== channelName));
+        setAdminChatroom((prevAdminChat: Chatroom[]) => prevAdminChat.filter((chat: Chatroom) => chat.name !== channelName));
+        setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== channelName));
         const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
         updateUser(updatedUser);
       } catch (error) {
@@ -290,8 +284,8 @@ export default function OptionBarChans() {
     else if (mode === "Join")
     {
       try {
-        const newChan = joinChatroom.find((obj) => {
-          return obj.name === channelName});
+        const newChan = joinChatroom.find((chan: Chatroom) => {
+          return chan.name === channelName});
           const newChatroomuser: Partial<ChatroomUser> = {
             userId: user?.id,
             user: user,
@@ -308,7 +302,7 @@ export default function OptionBarChans() {
           }});
           console.log('User added to chatroom', response.data);
           
-          setJoinChatroom(prevJoinChat => prevJoinChat.filter(chat => chat.name !== channelName));
+          setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== channelName));
           const newChatInUse: ChatInUse = {
               chat: response.data,
               type: chatroomType.channel,
@@ -327,8 +321,8 @@ export default function OptionBarChans() {
   const handleChannelSelection = (event: React.ChangeEvent<{}>, value: Chatroom | null) => {
     if (value) {
       setChannelName(value.name);
-      const editChan = adminChatroom.find((obj) => {
-        return obj.name === value.name});
+      const editChan = adminChatroom.find((chan: Chatroom) => {
+        return chan.name === value.name});
         if (editChan !== undefined)
         {
           setIsProtected(editChan?.state);
@@ -353,8 +347,8 @@ export default function OptionBarChans() {
   };
           
   const checkChannelPrivacy = () => {
-    const chat = user?.Chatroom?.find((obj: any) => {
-      return obj.name === channelName;
+    const chat = user?.Chatroom?.find((chan: Chatroom) => {
+      return chan.name === channelName;
     })
     if (chat !== undefined)
     {
@@ -371,8 +365,8 @@ export default function OptionBarChans() {
   
   // TODO vérification du mot de passe devra être fait dans backend, utiliser websocket
   const handleJoin = async () => {
-    const chat = user?.Chatroom?.find((obj: any) => {
-      return obj.name === channelName;
+    const chat = user?.Chatroom?.find((chan: Chatroom) => {
+      return chan.name === channelName;
     })
     if (chat !== undefined)
     {
@@ -412,20 +406,20 @@ export default function OptionBarChans() {
         {mode}
       </Typography>
       {mode === 'Create' ?  
-      <TextField
-      variant='outlined'
-      label="Channel Name"
-      fullWidth
-      className="newChannelTextField"
-      sx={{ 
-        marginBottom: 2,
-        '& label': { color: createChannelcolors },
-        '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
-          }}
-          value={channelName}
-          onChange={(e) => setChannelName(e.target.value)}
+        <TextField
+        variant='outlined'
+        label="Channel Name"
+        fullWidth
+        className="newChannelTextField"
+        sx={{ 
+          marginBottom: 2,
+          '& label': { color: createChannelcolors },
+          '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+        }}
+        value={channelName}
+        onChange={(e) => setChannelName(e.target.value)}
           /> 
-        : 
+          : 
         <Autocomplete
         disablePortal
         id="Channels"
@@ -454,17 +448,17 @@ export default function OptionBarChans() {
         <AccordionDetails>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <FormControlLabel
-                value="public"
-                control={
-                  <Checkbox 
-                  checked={isProtected === 'public'} 
-                  sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
-                  />
-                }
-                label="Public"
-                sx={{ marginBottom: 2 }}
-                onClick={(event) => handleIsProtected(event, 'public')}
+              value="public"
+              control={
+                <Checkbox 
+                checked={isProtected === 'public'} 
+                sx={{ color: createChannelcolors, '&.Mui-checked': { color: createChannelcolors } }}
                 />
+              }
+              label="Public"
+              sx={{ marginBottom: 2 }}
+              onClick={(event) => handleIsProtected(event, 'public')}
+              />
               <FormControlLabel
                 value="private"
                 control={

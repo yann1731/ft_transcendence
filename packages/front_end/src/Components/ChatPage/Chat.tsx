@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
 import OptionBarFriends from './ChatMenus/OptionBarFriends';
@@ -19,8 +19,8 @@ function ChatPage() {
 	if (!user) {
 		return (
 			<div>
-                <BackgroundContainer>
-                    <LoginToolBar />
+            	<BackgroundContainer>
+                	<LoginToolBar />
                     <SignIn />
                 </BackgroundContainer>
             </div>
@@ -29,24 +29,24 @@ function ChatPage() {
 	return (
 	  	<React.Fragment>
 			<SocketContext.Provider value={socket}>
-			<CssBaseline />
-			<BackgroundContainer>
-			  <div>
-				<ResponsiveAppBar />
-				<div className="mainContainerStyle">
-					<div className="friendsAndChannelStyle">
-						<OptionBarFriends />
-						<FriendBox />
-						<OptionBarChans />
-						<ChannelBox />
-					</div>
-					<div className="conversationStyle">
-						<OptionBarConversation />
-						<Chat />
-					</div>
-				</div>
-			  </div>
-	  		</BackgroundContainer>
+				<CssBaseline />
+				<BackgroundContainer>
+					<div>
+					<ResponsiveAppBar />
+						<div className="mainContainerStyle">
+							<div className="friendsAndChannelStyle">
+								<OptionBarFriends />
+								<FriendBox />
+								<OptionBarChans />
+								<ChannelBox />
+							</div>
+							<div className="conversationStyle">
+								<OptionBarConversation />
+								<Chat />
+							</div>
+						</div>
+				  	</div>
+	  			</BackgroundContainer>
 			</SocketContext.Provider>
 		</React.Fragment>
 	);

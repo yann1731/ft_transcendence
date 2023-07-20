@@ -5,7 +5,6 @@ import { CssBaseline } from '@mui/material';
 import React, { useContext } from 'react';
 import PongGame from './Game';
 import HomeGameBar from './HomeGameBar';
-import Box from '@mui/material/Box';
 import { UserContext } from 'Contexts/userContext';
 import SignIn from 'Components/Login/LoginPage';
 import LoginToolBar from 'Components/Login/LoginToolBar';

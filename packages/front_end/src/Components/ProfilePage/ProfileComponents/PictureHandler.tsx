@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import { useContext } from "react";
-import { UserContext, User } from "Contexts/userContext";
+import { UserContext } from "Contexts/userContext";
 import axios, { AxiosResponse } from "axios";
 
 const PictureHandler: React.FC = () => {
@@ -63,21 +63,21 @@ const PictureHandler: React.FC = () => {
 
   return (
     <>
-    <MenuItem onClick={handleClickOpen}>Upload profile picture</MenuItem>
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Select new image</DialogTitle>
-      <DialogContent>
-        <input type="file" accept="image/*" onChange={handleImageChange} />
-        {selectedImage && (
-          <img src={URL.createObjectURL(selectedImage)} alt="Selected" />
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={uploadImage}>Upload</Button>
-        <Button onClick={handleClose}>Cancel</Button>
-      </DialogActions>
-    </Dialog>
-  </>
+      <MenuItem onClick={handleClickOpen}>Upload profile picture</MenuItem>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Select new image</DialogTitle>
+        <DialogContent>
+          <input type="file" accept="image/*" onChange={handleImageChange} />
+          {selectedImage && (
+            <img src={URL.createObjectURL(selectedImage)} alt="Selected" />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={uploadImage}>Upload</Button>
+          <Button onClick={handleClose}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

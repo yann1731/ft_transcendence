@@ -1,8 +1,4 @@
-import List from '@mui/material/List';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
-import { ListItemButton } from '@mui/material';
+import { Avatar, List, ListItemIcon, ListItemText, ListItemButton } from '@mui/material';
 import { UserContext, User } from 'Contexts/userContext';
 import { useContext } from 'react';
 import { Chatroom, ChatInUse, chatroomType, UserFriendship } from 'Components/Interfaces';
@@ -47,7 +43,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
             FriendshipData.forEach(friend => {
               if (user !== null && user.id === friend.userAId)
               {
-                const isFriend = Users.find((users) => {
+                const isFriend = Users.find((users: User) => {
                   return (users.id === friend.userBId)
                 })
                 if (isFriend !== undefined)
@@ -57,7 +53,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
               }
               else if (user !== null && user.id === friend.userBId)
               {
-                const isFriend = Users.find((users) => {
+                const isFriend = Users.find((users: User) => {
                   return (users.id === friend.userAId)
                 })
                 if (isFriend !== undefined)
@@ -75,9 +71,9 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
       }
     };
     fetchUsers();
-  }, [Users]);
+  }, [Users, user]);
 
-  const filteredFriends = FriendUsers.filter((friend) =>
+  const filteredFriends = FriendUsers.filter((friend: User) =>
   friend.username.toLowerCase().includes(searchText.toLowerCase())
   );
   
@@ -112,7 +108,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   
     return (
       <List>
-        {filteredFriends.map((friend) => (
+        {filteredFriends.map((friend: User) => (
          <ListItemButton key={friend.id} onClick={() => SetChatInUse(friend.username, friend.avatar)}>
             <ListItemIcon>
               <Avatar alt={friend.username} src={friend.avatar} />

@@ -1,8 +1,4 @@
-import List from '@mui/material/List';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
-import { ListItemButton } from '@mui/material';
+import { List, ListItemButton, ListItemText, ListItemIcon, Avatar } from '@mui/material';
 import React, { useState, useEffect, useContext } from 'react';
 import { Chatroom, ChatroomUser, ChatInUse, chatroomType } from 'Components/Interfaces';
 import axios from 'axios';
@@ -48,8 +44,8 @@ interface MyChannelsProps {
             const chatroomUsersData: ChatroomUser[] = response.data;
             const chans: Chatroom[] = [];
 
-            channels.forEach(channel => {
-              chatroomUsersData.forEach(users => {
+            channels.forEach((channel: Chatroom) => {
+              chatroomUsersData.forEach((users: ChatroomUser) => {
                 if (channel?.id === users?.chatroomId && users.banStatus !== true)
                   chans.push(channel);
               })
@@ -63,14 +59,14 @@ interface MyChannelsProps {
         }
       };
       fetchJoinedChannels();
-    }, [channels]);
+    }, [channels, user?.id, user?.token]);
     
     const SetChatInUse = (name: string) => {
       const decodedName = decodeURIComponent(name);
       if (user !== null)
       {
-        const chatroom = joinedChannels.find((obj) => {
-          return obj.name === decodedName;
+        const chatroom = joinedChannels.find((chat: Chatroom) => {
+          return chat.name === decodedName;
         });
         if (chatroom !== undefined)
         {
@@ -87,13 +83,13 @@ interface MyChannelsProps {
       }
     };
 
-    const filteredChannels = joinedChannels.filter((channel) =>
+    const filteredChannels = joinedChannels.filter((channel: Chatroom) =>
       channel.name.toLowerCase().includes(searchText.toLowerCase())
     );
     
     return (
       <List>
-        {filteredChannels.map((channel) => {
+        {filteredChannels.map((channel: Chatroom) => {
           const decodedName = decodeURIComponent(channel.name);
           const encodedName = encodeURIComponent(channel.name);
           return (
