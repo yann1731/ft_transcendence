@@ -6,6 +6,7 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 
 @WebSocketGateway({ cors: true, namespace: 'chatsocket' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private readonly chatService: ChatService) {};
   @WebSocketServer()
   server: Server;
 
@@ -18,7 +19,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
   @SubscribeMessage("test")
-  handleTest() {
+  handleTest(): void {
     console.log("Routing Successful!");
+  }
+
+  @SubscribeMessage("chatroom")
+  createChatroomMessage(@MessageBody() message: any): void {
+    const result = this.chatService.createChatroomMessage(message);
+    if (result) {
+      this.server.emit("chatroom", result);
+    }
+  }
+
+  @SubscribeMessage("privateMessage")
+  createPrivateMessage(message: any): void {
+    this.chatService.createPrivateMessage(message);
   }
 }
