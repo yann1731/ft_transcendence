@@ -295,8 +295,7 @@ const OptionBarConversation: React.FC = () => {
         if (user?.id === user?.chatInUse?.chat?.userId)
         {
           try {
-            // Make sure there's an endpoint for deleting chatroom with id
-            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
+            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.name}`, {headers: {
               'Authorization': user?.token,
               'userId': user?.id
             }});
