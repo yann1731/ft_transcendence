@@ -88,7 +88,7 @@ const DashboardContainer: React.FC = () => {
       }
     };
     fetchHallOfFame();
-  }, [gamesPlayedHighestScore, gamesPlayedLowestScore, highestGamesPlayed, highestScore, lowestScore, nicknameGamesPlayed, nicknameHighScore, nicknameLowScore, user?.id, user?.token]);
+  }, []);
 
   return (
     <React.Fragment>
