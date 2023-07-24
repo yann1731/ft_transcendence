@@ -32,6 +32,7 @@ const OptionBarChans: React.FC = () => {
   const [isDialogOpen, setDialog] = React.useState(false);
   const [refresh, setRefresh] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
+  const [wasPwProtected, setWasPwProtected] = React.useState(false);
   
   // Sockets implementation
   const socket = useContext(SocketContext);
@@ -92,7 +93,7 @@ const OptionBarChans: React.FC = () => {
       }
     };
     fetchChannels();
-  }, [refresh, user?.chatInUse?.chat?.id, user?.id, user?.token]);
+  }, [refresh, user?.chatInUse?.chat?.id]);
   
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -131,7 +132,9 @@ const OptionBarChans: React.FC = () => {
     const newValue = expanded;
     setIsProtected(newValue);
     if (newValue !== 'pwProtected')
-    setPassword(null)
+    {
+      setPassword(null)
+    }
   };
   
   const handleDialog = () => {
@@ -147,7 +150,9 @@ const OptionBarChans: React.FC = () => {
     if (!channelName) {
       alert('Error: No channel name given');
       if (mode === 'Delete')
-      setDialog(false);
+      {
+        setDialog(false);
+      }
       return ;
     }
     let newChannel: Partial<Chatroom> = {
@@ -223,6 +228,11 @@ const OptionBarChans: React.FC = () => {
     {
       if (isProtected === 'pwProtected' && pwd === "")
       {
+        if (wasPwProtected === false)
+        {
+          alert("Password empty, please add a password to the selected channel");
+          return ;
+        }
         const newChan: Partial<Chatroom> = {
           name: channelName,
           picture: channelPicture,
@@ -337,6 +347,14 @@ const OptionBarChans: React.FC = () => {
         {
           setIsProtected(editChan?.state);
           setChannelPicture(editChan.picture);
+          if (editChan?.state === "pwProtected")
+          {
+            setWasPwProtected(true);
+          }
+          else
+          {
+            setWasPwProtected(false);
+          }
         }
       } else {
         setChannelName('');
@@ -447,7 +465,7 @@ const OptionBarChans: React.FC = () => {
           }
         />
       }
-      {mode !== 'Delete' && mode !== 'Join' && ownChatroom.find((chat: Chatroom) => {return chat?.name === channelName}) && (
+      {(mode === 'Create' || (mode === 'Edit' && ownChatroom.find((chat: Chatroom) => {return chat?.name === channelName}))) && (
         <Accordion variant="outlined" sx={{ marginBottom: 2 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="body1">Channel Privacy</Typography>

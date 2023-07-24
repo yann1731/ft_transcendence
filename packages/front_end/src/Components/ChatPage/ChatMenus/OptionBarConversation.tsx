@@ -89,11 +89,17 @@ const OptionBarConversation: React.FC = () => {
         currentChatroomUser = chatUser;
       });
       if (user?.chatInUse?.type === "friend")
-      setUserRights(FriendSettings)
+      {
+        setUserRights(FriendSettings)
+      }
       else if (user?.chatInUse?.chat?.userId === user?.id || currentChatroomUser?.permission === userPermission.admin)
-      setUserRights(AdminSettings);
+      {
+        setUserRights(AdminSettings);
+      }
       else
-      setUserRights(UserSettings);
+      {
+        setUserRights(UserSettings);    
+      }
     };
     
     const handleCloseUserMenu = () => {
@@ -289,7 +295,7 @@ const OptionBarConversation: React.FC = () => {
         if (user?.id === user?.chatInUse?.chat?.userId)
         {
           try {
-            alert(user?.chatInUse?.chat?.id)
+            // Make sure there's an endpoint for deleting chatroom with id
             const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
               'Authorization': user?.token,
               'userId': user?.id

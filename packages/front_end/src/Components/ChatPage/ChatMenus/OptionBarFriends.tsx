@@ -88,7 +88,7 @@ const OptionBarFriends: React.FC = () => {
       };
   
       fetchUsers();
-    }, [mode, FriendUsers, Users, user]);
+    }, [mode]);
 
     const handleMode = (mode: string) => {
       setMode(mode);

@@ -41,7 +41,7 @@ export default function GetToken() {
     };
 
     fetchTokenAndUser();
-  }, [setUser]);
+  }, []);
 
   return (
     <Container maxWidth={false} sx={{ backgroundColor: 'black', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', width: "100%" }}>
