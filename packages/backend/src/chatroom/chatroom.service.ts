@@ -121,6 +121,24 @@ export class ChatroomService { //specifically to create a password protected cha
         return chatroom;
       }
     }
+    else if (state !== "pwProtected")
+    {
+      const chatroom = await this.prisma.chatroom.update({where: {
+        name: encodedName,
+      },
+      data: {
+        state,
+        picture: updatedPicture,
+        password: null,
+        users: {
+          create: [updateChatroomDto.users]
+        }
+      }});
+      if (!chatroom)
+        throw new BadRequestException;
+      else
+        return chatroom;
+    }
     else
     {
       let hashedPass: string | null = null;
