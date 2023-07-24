@@ -396,6 +396,12 @@ export default class twoVStwoOther extends Phaser.Scene{
         this.socket.on("power", (data: any) => {
             this.power.setVisible(false);
             switch (data.which){
+                case 1:
+                    this.smash.setVisible(true);
+                    this.time.delayedCall(1000, () => {
+                        this.smash.setVisible(false)
+                    }, [], this);
+                    break;
                 case 2:
                     this.bigPaddle.setVisible(true);
                     this.time.delayedCall(1000, () => {
