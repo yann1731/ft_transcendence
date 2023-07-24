@@ -1,15 +1,6 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
+import { AppBar, Box, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem } from '@mui/material/';
 import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import ThemeModeIcon from '@mui/icons-material/DarkMode'
 import { Link } from 'react-router-dom';
@@ -26,11 +17,11 @@ const pages = [
 ];
 const settings = ['Profile settings', 'Logout'];
 
-function ResponsiveAppBar() {
+function DashboardAppBar() {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const {user} = useContext(UserContext);
+  const {user, setUser} = useContext(UserContext);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -53,6 +44,7 @@ function ResponsiveAppBar() {
       console.log('Clicked on Profile settings');
     }
     else if (setting === 'Logout') {
+      setUser(null);
       navigate('/');
       console.log('Clicked on Logout');
     }
@@ -215,7 +207,7 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
+              {settings.map((setting: string) => (
                 <MenuItem key={setting} onClick={() => handleSettingClick(setting)}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
@@ -228,4 +220,4 @@ function ResponsiveAppBar() {
   );
 }
 
-export default ResponsiveAppBar;
+export default DashboardAppBar;

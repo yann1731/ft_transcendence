@@ -157,15 +157,12 @@
 
 .homeDashboardBoxes {
   margin-left: 20px;
-  margin-right: 20px; /* for space between boxes and game div */
+  margin-right: 20px;
   width: min(30vw, 310px);
 }
 .homeGameNChat {
   margin-top: 114px;
-  text-align: center;
-  font-weight: bold;
-  font-size: 25px;
-  max-width: 50vw;
+  max-width: 60vw;
 }
 
 .homeScoreBar {
@@ -198,14 +195,7 @@
   text-align: center;
   font-weight: bold;
   font-size: 25px;
-  width: 50vw;
-}
-
-.ingameChatBox {
-  background-color: var(--secondary-color);
-  height: 25vh;
-  max-height: 292px;
-  border-radius: 10px;
+  width: 60vw;
 }
 
 .loginBox {

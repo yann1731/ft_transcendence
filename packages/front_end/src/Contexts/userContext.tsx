@@ -26,7 +26,7 @@ export interface User {
 	sentChatroomMessages?: ChatroomMessage[] ;
 	Chatroom?: Chatroom[] ;
 	refresh_token?: string;
-  chatInUse?: Chatroom;
+  chatInUse?: ChatInUse;
 }
 
 export interface UserContextType {
@@ -41,7 +41,8 @@ export const UserContext = createContext<UserContextType>({
   updateUser: () => {}
 });
 
-const defaultState = {
+/* Peut-être inutile... À voir! 
+  const defaultState = {
   user: {
     avatar: '',
     nickname: '',
@@ -56,7 +57,7 @@ const defaultState = {
   },
   setUser: (user: User | null) => {},
   updateUser: (newUserData: Partial<User>) => {}
-} as UserContextType;
+} as UserContextType; */
   
 type UserProviderProps = {
   children: ReactNode;
@@ -69,7 +70,7 @@ export default function UserProvider({ children }: UserProviderProps) {
   });
   
   const updateUser = useCallback((newUserData: Partial<User>) => {
-    setUser((prevUser) => {
+    setUser((prevUser: User | null) => {
       if (prevUser === null) {
         return null;
       }

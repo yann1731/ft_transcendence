@@ -1,5 +1,4 @@
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
+import { Box, TextField }  from '@mui/material/';
 import MyChannels from './ChatComponents/Channels';
 import { useState, ChangeEvent } from 'react';
   
@@ -21,7 +20,7 @@ import { useState, ChangeEvent } from 'react';
 				onChange={handleSearchTextChange}
 			/>
 		</Box>
-		<MyChannels searchText={searchText}/>
+		<MyChannels searchText={searchText} />
 	</Box>
 	);
 };

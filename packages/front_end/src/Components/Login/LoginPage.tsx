@@ -1,8 +1,5 @@
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import { useEffect, useState } from "react";
-import { ThemeProvider } from '@mui/material/styles';
+import { useEffect } from "react";
+import { ThemeProvider, Container, Box, Button } from '@mui/material/';
 import { theme } from "../../Theme";
 
 export default function SignIn() {
@@ -33,20 +30,19 @@ export default function SignIn() {
 
   return (
     <Container component="main" maxWidth="xs" id="container" className="loginBox">
-        <br></br>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <ThemeProvider theme={ theme }>  
-          </ThemeProvider>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Sign In
-          </Button>
-        </Box>
-        <br />
+      <br />
+      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <ThemeProvider theme={ theme } />  
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+        >
+          Sign In
+        </Button>
+      </Box>
+      <br />
     </Container>
-    );
+  );
 }

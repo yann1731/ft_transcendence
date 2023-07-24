@@ -1,10 +1,6 @@
-import List from '@mui/material/List';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
-import { ListItemButton } from '@mui/material';
-import { useState, useEffect, useContext } from 'react';
-import { Chatroom } from 'Components/Interfaces';
+import { List, ListItemButton, ListItemText, ListItemIcon, Avatar } from '@mui/material';
+import React, { useState, useEffect, useContext } from 'react';
+import { Chatroom, ChatroomUser, ChatInUse, chatroomType } from 'Components/Interfaces';
 import axios from 'axios';
 import { UserContext, User } from 'Contexts/userContext';
   
@@ -14,50 +10,90 @@ interface MyChannelsProps {
 
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
     const [channels, setChannels] = useState<Chatroom[]>([]);
+    const [joinedChannels, setJoinedChannels] = useState<Chatroom[]>([]);
     const {updateUser, user} = useContext(UserContext);
     
     useEffect(() => {
       const fetchChannels = async () => {
         try {
-          const response = await axios.get('http://localhost:4242/chatroom');
+          const response = await axios.get('http://localhost:4242/chatroom', {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           
           if (response.status === 200) {
             setChannels(response.data);
-            console.log('Chatroom created:', response.data);
           }
         } catch (error) {
-          console.error('Error creating chatroom:', error);
-          alert('Error: could not create channel: ');
+          console.error('Error getting chatrooms:', error);
+          alert('Error: could not get chatrooms: ' + error);
         }
       };
       fetchChannels();
+    }, [user]);
+    
+    useEffect(() => {
+      const fetchJoinedChannels = async () => {
+        try {
+          const response = await axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }})
+          
+          if (response.status === 200) {
+            const chatroomUsersData: ChatroomUser[] = response.data;
+            const chans: Chatroom[] = [];
+
+            channels.forEach((channel: Chatroom) => {
+              chatroomUsersData.forEach((users: ChatroomUser) => {
+                if (channel?.id === users?.chatroomId && users.banStatus !== true)
+                  chans.push(channel);
+              })
+            });
+            setJoinedChannels(chans)
+            console.log('ChatroomUsers fetched: ', response.data);
+          }
+        } catch (error) {
+          console.error('Error getting ChatroomUsers: ', error);
+          alert('Error: could not get ChatroomUsers: ' + error);
+        }
+      };
+      fetchJoinedChannels();
     }, [channels]);
     
     const SetChatInUse = (name: string) => {
+      const decodedName = decodeURIComponent(name);
       if (user !== null)
       {
-        const chatroom = user?.Chatroom?.find((obj) => {
-          return obj.name === name;
+        const chatroom = joinedChannels.find((chat: Chatroom) => {
+          return chat.name === decodedName;
         });
-        user.chatInUse = chatroom;
-        const updatedUser: Partial<User> = {
-          ...user,
-          chatInUse: chatroom,
-        };
-        updateUser(updatedUser);
+        if (chatroom !== undefined)
+        {
+          const newChatInUse: ChatInUse = {
+            chat: chatroom,
+            type: chatroomType.channel
+          }
+          const updatedUser: Partial<User> = {
+            ...user,
+            chatInUse: newChatInUse
+          };
+          updateUser(updatedUser);
+        }
       }
     };
 
-    const filteredChannels = channels.filter((channel) =>
+    const filteredChannels = joinedChannels.filter((channel: Chatroom) =>
       channel.name.toLowerCase().includes(searchText.toLowerCase())
     );
     
     return (
       <List>
-        {filteredChannels.map((channel) => {
+        {filteredChannels.map((channel: Chatroom) => {
           const decodedName = decodeURIComponent(channel.name);
+          const encodedName = encodeURIComponent(channel.name);
           return (
-            <ListItemButton key={channel.id} onClick={() => SetChatInUse(decodedName)}>
+            <ListItemButton key={channel.id} onClick={() => SetChatInUse(encodedName)}>
               <ListItemIcon>
                 <Avatar alt={decodedName} src={channel.picture || undefined} />
               </ListItemIcon>

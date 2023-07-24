@@ -1,12 +1,12 @@
+import axios from 'axios';
 import * as React from 'react';
-import {Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar } from '@mui/material';
+import { useTheme, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar } from '@mui/material';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import '../../../App.css';
-import { useTheme } from '@mui/material/styles';
 import { UserContext, User } from 'Contexts/userContext';
-import axios from 'axios';
+import { UserFriendship, Chatroom, chatroomType, ChatInUse } from 'Components/Interfaces';
 
-export default function OptionBarFriends() {
+const OptionBarFriends: React.FC = () => {
     const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
     const [mode, setMode] = React.useState<string>('');
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -15,12 +15,17 @@ export default function OptionBarFriends() {
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
     const [UserName, setUserName] = React.useState('');
     const [Users, setUsers] = React.useState<User[]>([]);
+    const [NonFriendUsers, setNonFriendUsers] = React.useState<User[]>([]);
+    const [FriendUsers, setFriendUsers] = React.useState<User[]>([]);
     const {user, updateUser} = React.useContext(UserContext);
 
     React.useEffect(() => {
-      const fetchChannels = async () => {
+      const fetchUsers = async () => {
         try {
-          const response = await axios.get('http://localhost:4242/user'); // Replace with your backend endpoint
+          const response = await axios.get('http://localhost:4242/user', {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           
           if (response.status === 200) {
             const UsersData: User[] = response.data;
@@ -29,10 +34,61 @@ export default function OptionBarFriends() {
         } catch (error) {
           console.error('Error fetching users', error);
         }
+        try {
+          const response = await axios.get(`http://localhost:4242/userfriendship/`, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
+          
+          if (response.status === 200) {
+            const FriendshipData: UserFriendship[] = response.data;
+            const tempFriends: User[] = [];
+            if (FriendshipData.length !== 0)
+            {
+              FriendshipData.forEach((friend: UserFriendship) => {
+                if (user !== null && user.id === friend.userAId)
+                {
+                  const isFriend = Users.find((users: User) => {
+                    return (users.id === friend.userBId)
+                  })
+                  if (isFriend !== undefined)
+                  {
+                    tempFriends.push(isFriend);
+                  }
+                }
+                else if (user !== null && user.id === friend.userBId)
+                {
+                  const isFriend = Users.find((users: User) => {
+                    return (users.id === friend.userAId)
+                  })
+                  if (isFriend !== undefined)
+                  {
+                    tempFriends.push(isFriend);
+                  }
+                }
+              })
+            }
+            setFriendUsers(tempFriends);
+            
+            const tempIsNotFriend: User[] = [];
+            Users.forEach((users: User) => {
+              const notFriend = FriendUsers.find((friend: User) => {
+                return users?.id === friend?.id;
+              })
+              if (notFriend === undefined && users?.id !== user?.id)
+              {
+                tempIsNotFriend.push(users);
+              }
+            });
+            setNonFriendUsers(tempIsNotFriend);
+          }
+        } catch (error) {
+          console.error('Error fetching users', error);
+        }
       };
   
-      fetchChannels();
-    }, [Users]);
+      fetchUsers();
+    }, [mode, FriendUsers, Users, user]);
 
     const handleMode = (mode: string) => {
       setMode(mode);
@@ -61,34 +117,49 @@ export default function OptionBarFriends() {
         alert('No username was given')
         return ;
       }
-      const newFriend = Users.find((obj) => {
-        return obj.nickname === UserName;
+      const friendToModify = Users.find((friend: User) => {
+        return friend.nickname === UserName;
       });
-      if (mode === 'Add')
+      if (mode === 'Add Friend')
       {
         try {
-          const response = await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: newFriend?.id});
+          const response = await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: friendToModify?.id}, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           console.log('Friend successfuly added', response.data);
+          const username = friendToModify?.username === undefined ? "pouet" : friendToModify?.username;
+          const newChannel: Chatroom = {
+            id: "",
+            name: username,
+            picture: friendToModify?.avatar,
+            state: "private",
+            userId: user?.id,
+            password: null,
+          };
+          const newChatInUse: ChatInUse = {
+            chat: newChannel,
+            type: chatroomType.channel,
+        }
+          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
+          updateUser(updatedUser);
         } catch (error) {
           console.error('Error adding new friend', error);
-          alert('Error adding new friend' + error);
-        }
-        if (user && user.friendListA && user.friendListA.length > 0) {
-          alert(user.friendListA[0]);
+          alert('Error adding new friend: ' + error);
         }
       }
       else if (mode === 'Block')
       {
         try {
-          const response = await axios.patch(`http://localhost:4242/user/${user?.id}`, { blockedUsers: [newFriend]});
+          const response = await axios.post(`http://localhost:4242/userblocks`, {blocker: user?.id, blockedUser: friendToModify?.id}, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
           console.log('User successfuly blocked', response.data);
         } catch (error) {
           console.error('Error blocking user', error);
-          alert('Error blocking user');
+          alert('Error adding blocking user: ' + error);
         }
-        if (user && user.friendListA && user.friendListA.length > 0) {
-          alert(user.friendListA[0]);
-        }   
       }
       else if (mode === 'Invite')
       {
@@ -103,9 +174,9 @@ export default function OptionBarFriends() {
       setMode('');
     };
     
-    const handleUserSelection = (event: React.ChangeEvent<{}>, value: User | null) => {
-      if (value) {
-        setUserName(value.nickname);
+    const handleUserSelection = (event: React.ChangeEvent<{}>, friend: User | null) => {
+      if (friend) {
+        setUserName(friend.nickname);
       } else {
         setUserName('');
       }
@@ -127,28 +198,50 @@ export default function OptionBarFriends() {
         }}
       >
         <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
-        {mode}
+          {mode}
         </Typography>
+        {mode !== "Add Friend" ?
         <Autocomplete
           disablePortal
           id="Users"
-          options={Users}
+          options={FriendUsers}
           getOptionLabel={(option) => option.nickname}
           fullWidth
           sx={{ marginBottom: 2 }}
           onChange={handleUserSelection}
           renderInput={(params) => 
-          <TextField
-            {...params}
-            className="Search For User"
-            sx={{
-              '& label': { color: createChannelcolors },
-              '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
-            }}
-            label="Users" 
-          />
-        }
+            <TextField
+              {...params}
+              className="Search For User"
+              sx={{
+                '& label': { color: createChannelcolors },
+                '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+              }}
+              label="Users" 
+            />
+          }
         />
+        :
+        <Autocomplete
+          disablePortal
+          id="Users"
+          options={NonFriendUsers}
+          getOptionLabel={(option) => option.nickname}
+          fullWidth
+          sx={{ marginBottom: 2 }}
+          onChange={handleUserSelection}
+          renderInput={(params) => 
+            <TextField
+              {...params}
+              className="Search For User"
+              sx={{
+                '& label': { color: createChannelcolors },
+                '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+              }}
+              label="Users" 
+            />
+          }
+        />}
         <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
           {mode}
         </Button>
@@ -185,7 +278,7 @@ export default function OptionBarFriends() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
               >
-              {settings.map((setting) => (
+              {settings.map((setting: string) => (
                 <MenuItem key={setting} onClick={() => friendsOption(setting)}>
                     <Typography textAlign="left">{setting}</Typography>
                 </MenuItem>
@@ -195,4 +288,5 @@ export default function OptionBarFriends() {
           <Modal open={isFriendManagementWindowOpen} onClose={handleCloseWindow}>{friendHandlerWindow}</Modal>
       </AppBar>
   );
-}
+};
+export default OptionBarFriends;

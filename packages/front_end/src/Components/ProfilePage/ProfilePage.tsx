@@ -1,17 +1,10 @@
 import * as React from 'react';
-import { Box, IconButton, Menu, Typography } from '@mui/material';
-import Avatar from '@mui/material/Avatar';
-import Modal from '@mui/material/Modal';
+import { Box, IconButton, Menu, Typography, Avatar, Modal, Tooltip, MenuItem } from '@mui/material';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import MyStats from './ProfileComponents/UserStats';
 import PictureHandler from './ProfileComponents/PictureHandler';
 import { UserContext } from 'Contexts/userContext';
-import { useContext } from 'react';
-
-const settings = ['See profile picture', 'Upload profile picture'];
 
 function ProfileContainer() {
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -36,13 +29,13 @@ function ProfileContainer() {
 	};
 	return (
 		<Box className="profileMainBox">
-				<Avatar alt={user?.nickname} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}}></Avatar>
-				<div style={{ textAlign: 'center' }}>
-					<Tooltip title="Open profile settings">
+			<Avatar alt={user?.nickname} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}} />
+			<div style={{ textAlign: 'center' }}>
+				<Tooltip title="Open profile settings">
 					<IconButton onClick={handleOpenUserMenu}>
 						<AddAPhotoIcon />
 					</IconButton>
-					</Tooltip>
+				</Tooltip>
 				<Menu
 					sx={{ mt: '45px' }}
 					id="profile-settings-menu"
@@ -62,26 +55,26 @@ function ProfileContainer() {
 					<MenuItem onClick={() => handleOpen(user?.avatar)}>
 						<Typography textAlign="center">See profile picture</Typography>
 					</MenuItem>
-					<PictureHandler></PictureHandler>
+					<PictureHandler />
 				</Menu>
 				<Modal open={open} onClose={handleClose} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
 					<div>
 						<img src={user?.avatar} alt={user?.nickname} style={{color: 'white'}} />
 					</div>
 				</Modal>
-				</div>
-				<Box sx={{textAlign: 'center', mt: 1}}>Nickname: {user?.nickname}</Box>
-				<Box className="profileSection" sx={{
-					width: 400,
-					height: 450,
-					margin: 'auto',
-					borderRadius: 2.5,
-					mt: 3,
-					display: 'flex',
-					flexDirection: "column",
-					alignItems: 'center',
-				}}>
-				<MyStats></MyStats>
+			</div>
+			<Box sx={{textAlign: 'center', mt: 1}}>Nickname: {user?.nickname}</Box>
+			<Box className="profileSection" sx={{
+				width: 400,
+				height: 450,
+				margin: 'auto',
+				borderRadius: 2.5,
+				mt: 3,
+				display: 'flex',
+				flexDirection: "column",
+				alignItems: 'center',
+			}}>
+				<MyStats />
 			</Box>
 		</Box>
 	)
