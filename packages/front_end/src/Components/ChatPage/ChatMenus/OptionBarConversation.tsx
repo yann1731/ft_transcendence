@@ -9,7 +9,7 @@ import { chatroomType, ChatroomUser, userPermission, ChatInUse } from 'Component
 const OptionBarConversation: React.FC = () => {
   const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
   const UserSettings = ['Add', 'Quit', 'View Members'];
-  const FriendSettings = ['Mute', 'Unmute']
+  const FriendSettings = ['Block', 'Invite to Play', 'View Profile']
   const [mode, setMode] = React.useState<string>('');
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const [isFriendManagementWindowOpen, setWindowIsOpen] = React.useState(false);
@@ -73,6 +73,7 @@ const OptionBarConversation: React.FC = () => {
   
   const handleMode = (mode: string) => {
     setMode(mode);
+    
     setWindowIsOpen(true);
   };
   
@@ -83,304 +84,361 @@ const OptionBarConversation: React.FC = () => {
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
     
-      let currentChatroomUser: ChatroomUser | undefined;
-      chatroomUsers.forEach((chatUser: ChatroomUser) => {
-        if (chatUser.userId === user?.id)
-        currentChatroomUser = chatUser;
-      });
-      if (user?.chatInUse?.type === "friend")
-      {
-        setUserRights(FriendSettings)
-      }
-      else if (user?.chatInUse?.chat?.userId === user?.id || currentChatroomUser?.permission === userPermission.admin)
-      {
-        setUserRights(AdminSettings);
-      }
-      else
-      {
-        setUserRights(UserSettings);    
-      }
-    };
-    
-    const handleCloseUserMenu = () => {
-      setAnchorElUser(null);
-    };
-    
-    const closeChat = () => {
-      const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
-      updateUser(updatedUser);
-    };
-    
-    const friendsOption = (option: string) => {
-      handleMode(option);
-      handleCloseUserMenu();
-    };
-    
-    const handleFriends = async () => {
-      if (!UserName && mode !== 'Quit' && mode !== 'View Members') {
-        alert('No username was given')
-        return ;
-      }
-      const Friend = Users.find((friend: User) => {
-        return friend.nickname === UserName;
-      });
-      
-      const chatUser = chatroomUsers.find((chatUser: ChatroomUser) => {
-        return chatUser.userId === Friend?.id;
-      });
-      
-      const selfChatroomUser = chatroomUsers.find((self: ChatroomUser) => {
-        return user?.id === self?.userId;
-      });
+    let currentChatroomUser: ChatroomUser | undefined;
+    chatroomUsers.forEach((chatUser: ChatroomUser) => {
+      if (chatUser.userId === user?.id)
+      currentChatroomUser = chatUser;
+    });
+    if (user?.chatInUse?.type === "friend")
+    {
+      setUserRights(FriendSettings)
+    }
+    else if (user?.chatInUse?.chat?.userId === user?.id || currentChatroomUser?.permission === userPermission.admin)
+    {
+      setUserRights(AdminSettings);
+    }
+    else
+    {
+      setUserRights(UserSettings);    
+    }
+  };
+  
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+  
+  const closeChat = () => {
+    const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
+    updateUser(updatedUser);
+  };
+  
+  const friendsOption = (option: string) => {
+    handleMode(option);
+    handleCloseUserMenu();
+  };
+  
+  const handleFriends = async () => {
+    if (!UserName && mode !== 'Quit' && mode !== 'View Members' && mode !== 'Block' && mode !== 'Invite to Play' && mode !== 'View Profile') {
+      alert('No username was given')
+      return ;
+    }
+    const friendChat = Users.find((friend: User) => {
+      return friend.nickname === user?.chatInUse?.chat?.name;
+    })
 
-      if (mode === 'Add')
+    const Friend = Users.find((friend: User) => {
+      return friend.nickname === UserName;
+    });
+    
+    const chatUser = chatroomUsers.find((chatUser: ChatroomUser) => {
+      return chatUser.userId === Friend?.id;
+    });
+    
+    const selfChatroomUser = chatroomUsers.find((self: ChatroomUser) => {
+      return user?.id === self?.userId;
+    });
+    if (mode === 'Add')
+    {
+      try {
+        const newChatroomuser: Partial<ChatroomUser> = {
+          userId: Friend?.id,
+          user: Friend,
+          chatroomId: user?.chatInUse?.chat?.id,
+          chatroom: user?.chatInUse?.chat,
+          permission: userPermission.regular,
+          banStatus: false,
+          banUntil: null,
+          muteStatus: false,
+        }
+        const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }});
+        if(response.status === 200)
+        {
+          console.log('User added to chatroom', response.data);
+          const ChatroomUsersData: ChatroomUser = response.data;
+          setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
+        }
+      } catch (error) {
+          console.error('Error adding user to channel', error);
+          alert('Error adding user to channel');
+      }
+    }
+    else if (mode === 'Ban')
+    {
+      if (chatUser !== undefined)
       {
+        if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && selfChatroomUser?.permission !== userPermission.owner)
+        {
+          alert("Cannot ban owner or Admin");
+          return ;
+        }
+        const newChatUser: Partial<ChatroomUser> = {
+          banStatus: true,
+        }
         try {
-          const newChatroomuser: Partial<ChatroomUser> = {
-            userId: Friend?.id,
-            user: Friend,
-            chatroomId: user?.chatInUse?.chat?.id,
-            chatroom: user?.chatInUse?.chat,
-            permission: userPermission.regular,
-            banStatus: false,
-            banUntil: null,
-            muteStatus: false,
-          }
-          const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
+          const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }});
-          if(response.status === 200)
-          {
-            console.log('User added to chatroom', response.data);
+          if (response.status === 200) {
             const ChatroomUsersData: ChatroomUser = response.data;
             setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
+          } 
+        } catch (error) {
+          console.error('Error fetching chatroom users', error);
+        }
+      };
+    }
+    else if (mode === 'Kick')
+    {
+      if (chatUser !== undefined)
+      {
+        if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && selfChatroomUser?.permission !== userPermission.owner)
+        {
+          alert("Cannot kick owner or Admin");
+          return ;
+        }
+        try {
+          const response = await axios.delete(`http://localhost:4242/chatroomuser/${chatUser.id}`, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
+          if (response.status === 200) {
+            console.log('User removed from channel', response.data);
+          } else {
+            console.error('Removing user from channel failed');
           }
         } catch (error) {
-            console.error('Error adding user to channel', error);
-            alert('Error adding user to channel');
+          console.error('Error occurred while removing user from channel: ', error);
         }
       }
-      else if (mode === 'Ban')
+    }
+    else if (mode === 'Make Admin')
+    {
+      if (chatUser !== undefined)
       {
-        if (chatUser !== undefined)
+        if (chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin)
         {
-          if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && selfChatroomUser?.permission !== userPermission.owner)
-          {
-            alert("Cannot ban owner or Admin");
-            return ;
-          }
-          const newChatUser: Partial<ChatroomUser> = {
-            banStatus: true,
-          }
-          try {
-            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
-              'Authorization': user?.token,
-              'userId': user?.id
-            }});
-            if (response.status === 200) {
-              const ChatroomUsersData: ChatroomUser = response.data;
-              setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
-            } 
-          } catch (error) {
-            console.error('Error fetching chatroom users', error);
-          }
-        };
-      }
-      else if (mode === 'Kick')
+          alert("This user is already an admin");
+          return ;
+        }
+        const newChatUser: Partial<ChatroomUser> = {
+          permission: userPermission.admin,
+        }
+        try {
+          const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
+          if (response.status === 200) {
+            const ChatroomUsersData: ChatroomUser = response.data;
+            setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
+          } 
+        } catch (error) {
+          console.error('Error fetching chatroom users', error);
+        }
+      }        
+    }
+    else if (mode === 'Mute')
+    {
+      if (chatUser !== undefined)
       {
-        if (chatUser !== undefined)
+        if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && selfChatroomUser?.permission !== userPermission.owner)
         {
-          if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && selfChatroomUser?.permission !== userPermission.owner)
-          {
-            alert("Cannot kick owner or Admin");
-            return ;
+          alert("Cannot mute owner or an admin");
+          return ;
+        }
+        if (chatUser.muteStatus === true)
+        {
+          alert("Cannot mute, user already muted");
+          return ;
+        }
+        chatUser.muteStatus = true;
+        try {
+          const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
+          if (response.status === 200) {
+            const ChatroomUsersData: ChatroomUser = response.data;
+            setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
+          } 
+        } catch (error) {
+          console.error('Error fetching chatroom users', error);
+        }
+      }                
+    }
+    else if (mode === 'UnMute')
+    {
+      if (chatUser !== undefined)
+      {
+        if (chatUser.muteStatus === false)
+        {
+          alert("Cannot unmute, user not muted");
+          return ;
+        }
+        chatUser.muteStatus = false;
+        try {
+          const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
+          if (response.status === 200) {
+            const ChatroomUsersData: ChatroomUser = response.data;
+            setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
+          } 
+        } catch (error) {
+          console.error('Error fetching chatroom users', error);
+        }
+      }                
+    }
+    else if (mode === 'Quit')
+    {     
+      if (user?.id === user?.chatInUse?.chat?.userId)
+      {
+        try {
+          const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.name}`, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
+          if (response.status === 200) {
+            console.log('Channel deleted', response.data);
+            const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
+            updateUser(updatedUser);
+          } else {
+            console.error('Deleting channel failed');
           }
-          try {
-            const response = await axios.delete(`http://localhost:4242/chatroomuser/${chatUser.id}`, {headers: {
-              'Authorization': user?.token,
-              'userId': user?.id
-            }});
-            if (response.status === 200) {
-              console.log('User removed from channel', response.data);
-            } else {
-              console.error('Removing user from channel failed');
-            }
-          } catch (error) {
-            console.error('Error occurred while removing user from channel: ', error);
-          }
+        } catch (error) {
+          console.error('Error occurred while deleting channel: ', error);
         }
       }
-      else if (mode === 'Make Admin')
+      else
       {
-        if (chatUser !== undefined)
-        {
-          if (chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin)
-          {
-            alert("This user is already an admin");
-            return ;
+        try {
+          const response = await axios.delete(`http://localhost:4242/chatroomuser/${selfChatroomUser?.id}`, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
+          if (response.status === 200) {
+            console.log('User removed from channel', response.data);
+            const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
+            updateUser(updatedUser);
+          } else {
+            console.error('Removing user from channel failed');
           }
-          const newChatUser: Partial<ChatroomUser> = {
-            permission: userPermission.admin,
-          }
-          try {
-            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
-              'Authorization': user?.token,
-              'userId': user?.id
-            }});
-            if (response.status === 200) {
-              const ChatroomUsersData: ChatroomUser = response.data;
-              setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
-            } 
-          } catch (error) {
-            console.error('Error fetching chatroom users', error);
-          }
-        }        
-      }
-      else if (mode === 'Mute')
-      {
-        if (chatUser !== undefined)
-        {
-          if ((chatUser.permission === userPermission.owner || chatUser.permission === userPermission.admin) && selfChatroomUser?.permission !== userPermission.owner)
-          {
-            alert("Cannot mute owner or an admin");
-            return ;
-          }
-          if (chatUser.muteStatus === true)
-          {
-            alert("Cannot mute, user already muted");
-            return ;
-          }
-          chatUser.muteStatus = true;
-          try {
-            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
-              'Authorization': user?.token,
-              'userId': user?.id
-            }});
-            if (response.status === 200) {
-              const ChatroomUsersData: ChatroomUser = response.data;
-              setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
-            } 
-          } catch (error) {
-            console.error('Error fetching chatroom users', error);
-          }
-        }                
-      }
-      else if (mode === 'UnMute')
-      {
-        if (chatUser !== undefined)
-        {
-          if (chatUser.muteStatus === false)
-          {
-            alert("Cannot unmute, user not muted");
-            return ;
-          }
-          chatUser.muteStatus = false;
-          try {
-            const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
-              'Authorization': user?.token,
-              'userId': user?.id
-            }});
-            if (response.status === 200) {
-              const ChatroomUsersData: ChatroomUser = response.data;
-              setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
-            } 
-          } catch (error) {
-            console.error('Error fetching chatroom users', error);
-          }
-        }                
-      }
-      else if (mode === 'Quit')
-      {     
-        if (user?.id === user?.chatInUse?.chat?.userId)
-        {
-          try {
-            const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.name}`, {headers: {
-              'Authorization': user?.token,
-              'userId': user?.id
-            }});
-            if (response.status === 200) {
-              console.log('Channel deleted', response.data);
-              const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
-              updateUser(updatedUser);
-            } else {
-              console.error('Deleting channel failed');
-            }
-          } catch (error) {
-            console.error('Error occurred while deleting channel: ', error);
-          }
-        }
-        else
-        {
-          try {
-            const response = await axios.delete(`http://localhost:4242/chatroomuser/${selfChatroomUser?.id}`, {headers: {
-              'Authorization': user?.token,
-              'userId': user?.id
-            }});
-            if (response.status === 200) {
-              console.log('User removed from channel', response.data);
-              const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
-              updateUser(updatedUser);
-            } else {
-              console.error('Removing user from channel failed');
-            }
-          } catch (error) {
-            console.error('Error occurred while removing user from channel: ', error);
-          }
+        } catch (error) {
+          console.error('Error occurred while removing user from channel: ', error);
         }
       }
+    }
+    else if(mode === "Block")
+    {
+      try {
+        const response = await axios.post(`http://localhost:4242/userblocks`, {blockerId: user?.id, blockedUserId: friendChat?.id}, {headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }});
+        console.log('User successfuly blocked', response.data);
+      } catch (error) {
+        console.error('Error blocking user', error);
+        alert('Error adding blocking user: ' + error);
+      }
+      closeChat();
+    }
+    else if(mode === "Invite to Play")
+    {
+      alert(friendChat?.nickname);
+      closeChat();
+    }
+    else if(mode === "View Profile")
+    {
+      alert(friendChat?.nickname);
+      closeChat();
+    }
+    setUserName('');
+    handleCloseWindow();
+    setMode('');
+  };
+  
+  const handleUserSelection = (event: React.ChangeEvent<{}>, friend: User | null) => {
+    if (friend) {
+      setUserName(friend.nickname);
+    } else {
       setUserName('');
-      handleCloseWindow();
-      setMode('');
-    };
-    
-    const handleUserSelection = (event: React.ChangeEvent<{}>, friend: User | null) => {
-      if (friend) {
-        setUserName(friend.nickname);
-      } else {
-        setUserName('');
-      }
-    };
-        
-    const friendHandlerWindow = (
-      <Box
-      sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        boxShadow: 24,
-        p: 4,
-        borderRadius: 3
-        }}
-        >
-        <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
+    }
+  };
+      
+  const friendHandlerWindow = (
+    <Box
+    sx={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: 400,
+      bgcolor: 'background.paper',
+      boxShadow: 24,
+      p: 4,
+      borderRadius: 3
+      }}
+      >
+      <Typography variant="h6" component="div" sx={{ marginBottom: 2 }}>
+        {mode}
+      </Typography>
+      {mode !== 'Quit' && mode !== 'View Members' && mode !== 'Add' && mode !== 'Block' && mode !== 'Invite to Play' && mode !== 'View Profile' && (
+        <div>
+          <Autocomplete
+          disablePortal
+          id="Users"
+          options={usersInCurrentChat}
+          getOptionLabel={(option) => option.nickname}
+          fullWidth
+          sx={{ marginBottom: 2 }}
+          onChange={handleUserSelection}
+          renderInput={(params) => 
+            <TextField
+            {...params}
+            className="Search For User"
+            sx={{
+              '& label': { color: createChannelcolors },
+              '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+            }}
+            label="Users" 
+            />
+          }
+          />
+        <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
           {mode}
-        </Typography>
-        {mode !== 'Quit' && mode !== 'View Members' && mode !== 'Add' && (
-          <div>
-            <Autocomplete
-            disablePortal
-            id="Users"
-            options={usersInCurrentChat}
-            getOptionLabel={(option) => option.nickname}
-            fullWidth
-            sx={{ marginBottom: 2 }}
-            onChange={handleUserSelection}
-            renderInput={(params) => 
-              <TextField
-              {...params}
-              className="Search For User"
-              sx={{
-                '& label': { color: createChannelcolors },
-                '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
-              }}
-              label="Users" 
-              />
-            }
+        </Button>
+        <Button onClick={handleCloseWindow} className="profilePageButtons">
+          cancel
+        </Button>
+      </div>
+      )}
+      {mode === 'Add' && (
+        <div>
+          <Autocomplete
+          disablePortal
+          id="Users"
+          options={usersNotInCurrentChat}
+          getOptionLabel={(option) => option.nickname}
+          fullWidth
+          sx={{ marginBottom: 2 }}
+          onChange={handleUserSelection}
+          renderInput={(params) => 
+            <TextField
+            {...params}
+            className="Search For User"
+            sx={{
+              '& label': { color: createChannelcolors },
+              '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
+            }}
+            label="Users" 
             />
+          }
+          />
           <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
             {mode}
           </Button>
@@ -388,59 +446,44 @@ const OptionBarConversation: React.FC = () => {
             cancel
           </Button>
         </div>
-        )}
-        {mode === 'Add' && (
-          <div>
-            <Autocomplete
-            disablePortal
-            id="Users"
-            options={usersNotInCurrentChat}
-            getOptionLabel={(option) => option.nickname}
-            fullWidth
-            sx={{ marginBottom: 2 }}
-            onChange={handleUserSelection}
-            renderInput={(params) => 
-              <TextField
-              {...params}
-              className="Search For User"
-              sx={{
-                '& label': { color: createChannelcolors },
-                '& .MuiInputLabel-root.Mui-focused' : { color: createChannelcolors }
-              }}
-              label="Users" 
-              />
-            }
-            />
-          <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
-            {mode}
-          </Button>
-          <Button onClick={handleCloseWindow} className="profilePageButtons">
-            cancel
-          </Button>
-        </div>
-        )}
-        {mode === 'Quit' && (
-          <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
-            {mode}
-          </Button>
-        )}
-        {mode === 'View Members' && (
-          <List>
-            {usersInCurrentChat.map((user: User) => (
-              <ListItemButton key={user.id}>
-                <ListItemIcon>
-                  <Avatar alt={user?.nickname} src={user?.avatar || undefined} />
-                </ListItemIcon>
-                <ListItemText primary={user?.nickname} />
-              </ListItemButton>
-            ))}
-          </List>
-        )}
-      </Box>
-    );
-    
-    return (
-      <Box>
+      )}
+      {mode === 'Quit' && (
+        <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
+          {mode}
+        </Button>
+      )}
+      {mode === 'View Members' && (
+        <List>
+          {usersInCurrentChat.map((user: User) => (
+            <ListItemButton key={user.id}>
+              <ListItemIcon>
+                <Avatar alt={user?.nickname} src={user?.avatar || undefined} />
+              </ListItemIcon>
+              <ListItemText primary={user?.nickname} />
+            </ListItemButton>
+          ))}
+        </List>
+      )}
+      {mode === 'Block' && (
+        <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
+          {mode}
+        </Button>
+      )}
+      {mode === 'Invite to Play' && (
+        <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
+          {mode}
+        </Button>
+      )}
+      {mode === 'View Profile' && (
+        <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
+          {mode}
+        </Button>
+      )}
+    </Box>
+  );
+  
+  return (
+    <Box>
     {user?.chatInUse !== null && user?.chatInUse !== undefined ? (
       <AppBar position="relative" sx={{ boxShadow: '0' }}>
         <Box className={"chatOptionBars"} sx={{justifyContent: 'space-between' }}>
@@ -451,13 +494,13 @@ const OptionBarConversation: React.FC = () => {
             </IconButton>
           </Tooltip>
           ) : (
-            <Tooltip title="Close conversation">
-            <IconButton onClick={closeChat}>
-              <ClearIcon></ClearIcon>
+            <Tooltip title="Contact Menu">
+            <IconButton onClick={handleOpenUserMenu}>
+              <DehazeIcon></DehazeIcon>
             </IconButton>
           </Tooltip>)}
           {decodeURIComponent(user?.chatInUse?.chat?.name)}
-          {user?.chatInUse?.type === chatroomType.channel && (
+          {(user?.chatInUse?.type === chatroomType.channel || user?.chatInUse?.type === chatroomType.friend) && (
             <Menu
             sx={{ mt: '40px' }}
             id="menu-appbar"

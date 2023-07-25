@@ -7,7 +7,7 @@ import { UserContext, User } from 'Contexts/userContext';
 import { UserFriendship, Chatroom, chatroomType, ChatInUse } from 'Components/Interfaces';
 
 const OptionBarFriends: React.FC = () => {
-    const settings = ['Add Friend', 'Block', 'Invite to Play', 'View Profile'];
+    const settings = ['Add Friend', 'View Profile'];
     const [mode, setMode] = React.useState<string>('');
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [isFriendManagementWindowOpen, setWindowIsOpen] = React.useState(false);
@@ -17,6 +17,7 @@ const OptionBarFriends: React.FC = () => {
     const [Users, setUsers] = React.useState<User[]>([]);
     const [NonFriendUsers, setNonFriendUsers] = React.useState<User[]>([]);
     const [FriendUsers, setFriendUsers] = React.useState<User[]>([]);
+    const [BlockedFriends, setBlockedFriends] = React.useState<User[]>([]);
     const {user, updateUser} = React.useContext(UserContext);
 
     React.useEffect(() => {
@@ -147,23 +148,6 @@ const OptionBarFriends: React.FC = () => {
           console.error('Error adding new friend', error);
           alert('Error adding new friend: ' + error);
         }
-      }
-      else if (mode === 'Block')
-      {
-        try {
-          const response = await axios.post(`http://localhost:4242/userblocks`, {blocker: user?.id, blockedUser: friendToModify?.id}, {headers: {
-            'Authorization': user?.token,
-            'userId': user?.id
-          }});
-          console.log('User successfuly blocked', response.data);
-        } catch (error) {
-          console.error('Error blocking user', error);
-          alert('Error adding blocking user: ' + error);
-        }
-      }
-      else if (mode === 'Invite')
-      {
-
       }
       else if (mode === 'View')
       {
