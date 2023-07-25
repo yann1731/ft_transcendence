@@ -1,9 +1,14 @@
-import { Grid, Box, Paper } from "@mui/material";
+import { Grid, Box, Paper, Typography } from "@mui/material";
 import { experimentalStyled as styled } from '@mui/material/styles';
 import Handler2FA from "./2FAActivation";
 import UserNameHandler from "./UsernameHandler";
 import { useContext } from "react";
 import { UserContext } from "Contexts/userContext";
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui//icons-material/ExpandMore';
+import MatchHistory from './MatchHistory';
 
 const Item = styled(Paper)(({ theme }) => ({
 	...theme.typography.body2,
@@ -31,6 +36,7 @@ const MyStats = () => {
                 <Grid item sx={{width: '99%'}}>
                     <Item>Win Ratio: {winRatio.toFixed(2)}</Item>
                 </Grid>
+                <MatchHistory />
                 <Grid item xs={13}>
                     <Handler2FA></Handler2FA>
                 </Grid>
