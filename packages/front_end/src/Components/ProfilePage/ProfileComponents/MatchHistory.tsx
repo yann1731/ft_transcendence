@@ -3,7 +3,8 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
+//TODO BEFORE THE SWITCH, PULL MAIN !!!!!!
+//TODO switch to drop down menu
 export default function MatchHistory() {
     return (
                 <Grid item sx={{ width: '99%', textAlign: 'center' }}>
