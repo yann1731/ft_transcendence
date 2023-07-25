@@ -5,8 +5,10 @@ import { useState, useContext } from 'react';
 import MyStats from './ProfileComponents/UserStats';
 import PictureHandler from './ProfileComponents/PictureHandler';
 import { UserContext } from 'Contexts/userContext';
+import { LimitedProfile } from './Profile';
+import { LimitedStats } from '../ProfilePage/ProfileComponents/UserStats';
 
-function ProfileContainer() {
+export default function ProfileContainer() {
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 	const [open, setOpen] = useState(false);
  	const {user} = useContext(UserContext);
@@ -80,4 +82,25 @@ function ProfileContainer() {
 	)
 }
 
-export default ProfileContainer;
+export function ReadOnlyProfile() {
+	const [open, setOpen] = useState(false);
+ 	const {user} = useContext(UserContext);
+	
+	return (
+	<div>
+		<Avatar alt={user?.nickname} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}} />
+		<Box sx={{textAlign: 'center', mt: 1}}>Nickname: {user?.nickname}</Box>
+		<Box className="profileSection" sx={{
+			borderRadius: 2.5,
+			mt: 3,
+			display: 'flex',
+			flexDirection: "column",
+			alignItems: 'center',
+		}}>
+		<LimitedStats />
+		</Box>
+	</div>	
+	)
+}
+
+

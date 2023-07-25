@@ -31,7 +31,14 @@ const OptionBarFriends: React.FC = () => {
           
           if (response.status === 200) {
             const UsersData: User[] = response.data;
-            setUsers(UsersData);
+            let otherUsers: User[] = [];
+            UsersData.forEach((users: User) => {
+              if (users.id !== user?.id)
+              {
+                otherUsers.push(users);
+              }
+            })
+            setUsers(otherUsers);
           }
         } catch (error) {
           console.error('Error fetching users', error);
