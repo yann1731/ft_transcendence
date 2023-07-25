@@ -170,4 +170,4 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   };
   
 export default MyFriends;
-  
+

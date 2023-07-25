@@ -1,10 +1,11 @@
 import axios from 'axios';
 import * as React from 'react';
-import {useTheme, Avatar, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, List, ListItemIcon, ListItemButton, ListItemText } from '@mui/material';
+import {Popover, useTheme, Avatar, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, List, ListItemIcon, ListItemButton, ListItemText } from '@mui/material';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import ClearIcon from '@mui/icons-material/Clear';
 import { UserContext, User } from 'Contexts/userContext';
-import { chatroomType, ChatroomUser, userPermission, ChatInUse } from 'Components/Interfaces';
+import { chatroomType, ChatroomUser, userPermission } from 'Components/Interfaces';
+import { LimitedProfile } from 'Components/ProfilePage/Profile';
 
 const OptionBarConversation: React.FC = () => {
   const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
@@ -22,7 +23,10 @@ const OptionBarConversation: React.FC = () => {
   const [chatroomUsers, setChatroomUsers] = React.useState<ChatroomUser[]>([]);
   const [usersInCurrentChat, setUsersInCurrentChat] = React.useState<User[]>([]);
   const [usersNotInCurrentChat, setUsersNotInCurrentChat] = React.useState<User[]>([]);
-
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const id = open ? 'contact-options-popover' : undefined;
+  
   React.useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -77,10 +81,18 @@ const OptionBarConversation: React.FC = () => {
     setWindowIsOpen(true);
   };
   
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  
   const handleCloseWindow = () => {
     setWindowIsOpen(false);
   };
-  // TODO S'assurer qu'il n'y a pas de variables superflus. Peut-être n'utiliser suelement que chatroomUsers et usersInCurrentChat
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
     
@@ -352,11 +364,7 @@ const OptionBarConversation: React.FC = () => {
       alert(friendChat?.nickname);
       closeChat();
     }
-    else if(mode === "View Profile")
-    {
-      alert(friendChat?.nickname);
-      closeChat();
-    }
+
     setUserName('');
     handleCloseWindow();
     setMode('');
@@ -475,7 +483,7 @@ const OptionBarConversation: React.FC = () => {
         </Button>
       )}
       {mode === 'View Profile' && (
-        <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
+        <Button onClick={handleClick} className="profilePageButtons" sx={{ marginBottom: 2 }}>
           {mode}
         </Button>
       )}
@@ -538,6 +546,24 @@ const OptionBarConversation: React.FC = () => {
         </Box>
       </AppBar>)
     }
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: 'center',
+        horizontal: 'center',
+      }}
+      >
+        <Box sx={{ p: 2 }}>
+          <LimitedProfile />
+        </Box>
+      </Popover>
     </Box>
   );
 };
