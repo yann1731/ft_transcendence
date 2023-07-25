@@ -13,6 +13,7 @@ export interface User {
   gamesPlayed: number;
   userStatus: boolean;
   twoFaEnabled: boolean;
+  twoFaSecret: string | null;
   token: string;
   token_created_at: number;
   token_expires_at: number;

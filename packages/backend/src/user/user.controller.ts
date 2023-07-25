@@ -6,17 +6,6 @@ import { promises } from 'dns';
 import { ValidationPipe } from '@nestjs/common';
 import { TokenGuard } from 'src/guard/token.guard';
 
-
-// {
-//   backend   |   access_token: '00f40f4f0c636db7299e736096989fc918d4072690a83436112a3ac1b080cdc7',
-//   backend   |   token_type: 'bearer',
-//   backend   |   expires_in: 6706,
-//   backend   |   refresh_token: '006fcf20b9c6c28c9b0cadb30bbcfb472e71e05bced0b4b7bf7feff21ce3e18c',
-//   backend   |   scope: 'public',
-//   backend   |   created_at: 1687800695,
-//   backend   |   secret_valid_until: 1689348030
-//   backend   |
-// }
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

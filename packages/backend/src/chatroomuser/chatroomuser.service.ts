@@ -57,10 +57,14 @@ export class ChatroomuserService {
     const chatroomusers = await this.prisma.chatroomUser.findMany({where: {
       userId: id
     }});
-    if (!chatroomusers)
+    if (!chatroomusers) {
+      console.error('Error in chatroomuser/user/id');
       throw new BadRequestException;
-    else
+    }
+    else {
+      console.log('success in chatroomuser/user/id');
       return chatroomusers;
+    }
   }
 
   async update(id: string, updateChatroomuserDto: UpdateChatroomuserDto) { //updates a chatroomuser to change permission, ban, length of ban and mute. all those are optional
@@ -69,8 +73,8 @@ export class ChatroomuserService {
       data: {
         permission: updateChatroomuserDto.permission,
         banStatus: updateChatroomuserDto.banStatus,
-        banUntil: updateChatroomuserDto.banUntil,
-        muteStatus: updateChatroomuserDto.muteStatus
+        muteStatus: updateChatroomuserDto.muteStatus,
+        muteUntil: updateChatroomuserDto.muteUntil
       }
     });
     if (!chatroomuser)

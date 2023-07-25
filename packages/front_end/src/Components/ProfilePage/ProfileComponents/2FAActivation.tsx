@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Button } from '@mui/material';
 import { UserContext, User } from "Contexts/userContext";
-import { useContext } from "react";
 import axios from 'axios';
 
 type ToggleActive = () => void;
@@ -30,11 +29,20 @@ const Handler2FA = () => {
   const handleToggleActive = async () => {
     
     if (user) {
-      const updatedUser = { ...user, twoFaEnabled: !isActive };
+      let updatedUser = { ...user, twoFaEnabled: !isActive };
       updateUser(updatedUser);
       try {
-        await updateUser2FA(updatedUser);
-        toggleActive();
+        if (user.twoFaEnabled === false) {
+          window.location.assign('http://localhost:3000/Enable2Fa');
+          updatedUser = { ...user, twoFaEnabled: true};
+          await updateUser2FA(updatedUser);
+          toggleActive();
+        }
+        else if (user.twoFaEnabled === true) { //updates the user to remove twoFa. destroys secret, sets twoFaEnabled to false
+          updatedUser = { ...user, twoFaEnabled: false, twoFaSecret: null};
+          await updateUser2FA(updatedUser);
+          toggleActive();
+        }
       } catch (err) {
         console.error(err);
       }
@@ -46,11 +54,7 @@ const Handler2FA = () => {
       const response = await axios.patch('http://localhost:4242/user/' + user?.id, updatedUser, {headers: {
         'Authorization': user?.token,
         'userId': user?.id
-      }})
-      if (response.status === 200)
-      {
-        console.log("2FA updated");
-      }
+      }});
     } catch (error){
       console.error('Erreur lors de la mise à jour de twoFaEnabled' + error)
     }
