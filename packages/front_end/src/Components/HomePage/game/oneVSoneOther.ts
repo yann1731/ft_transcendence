@@ -170,12 +170,19 @@ export default class oneVSoneOther extends Phaser.Scene{
     text_init() {
         this.menu = this.add.text(
             this.physics.world.bounds.width / 2,
-            this.physics.world.bounds.height / 2,
+            this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8,
             'Return to Menu',
             {
                 fontFamily: 'pong',
-                fontSize: '50px',
+                fontSize: '25px',
+                color: '#ffffff',
+                backgroundColor: '#000000',
+                padding: {
+                    x: 10,
+                    y: 6
+                }
             }
+            
         );
         this.menu.setOrigin(0.5);
         this.menu.setVisible(false);
@@ -189,7 +196,7 @@ export default class oneVSoneOther extends Phaser.Scene{
 			this.menu.setStyle({ backgroundColor: '#000000' });
 		});
 		this.menu.on('pointerdown', () => {
-			this.scene.start("menu", {name: this.name})
+			this.scene.start("menu", {name: this.name, socket: this.socket})
 		})
 
         this.disconnect = this.add.text(
@@ -340,7 +347,6 @@ export default class oneVSoneOther extends Phaser.Scene{
         })
 
         this.socket.on("update", (data: any) => {
-            alert("nice");
             if (this.ball.body){
                 this.ball.setX(data.x + this.ball.body.width / 2)
                 this.ball.setY(data.y + this.ball.body.height / 2)
@@ -463,6 +469,8 @@ export default class oneVSoneOther extends Phaser.Scene{
         })
 
         this.socket.on("point", (which: number) => {
+            let end = false;
+
             this.smash.setVisible(false);
             this.bigBall.setVisible(false);
             this.bigPaddle.setVisible(false);
@@ -483,17 +491,22 @@ export default class oneVSoneOther extends Phaser.Scene{
             this.score.setText(`${this.points2}          ${this.points1}`);
             if (this.points2 === 5){
                 this.player1VictoryText.setVisible(true);
-                this.scene.pause()
+                this.menu.setVisible(true);
+                this.ball.disableBody(true);
+                end = true;
             }
             else if (this.points1 === 5){
                 this.player2VictoryText.setVisible(true);
-                this.scene.pause()
+                this.menu.setVisible(true);
+                this.ball.disableBody(true);
+                end = true;
             }
             else if (which === 1)
                 this.player1Score.setVisible(true);
             else
                 this.player2Score.setVisible(true);
             this.rotation = 0;
+            if (end !== true){
             this.time.delayedCall(1500, () => {
                 if (this.multi === true)
                         this.multiball.destroy();
@@ -519,6 +532,7 @@ export default class oneVSoneOther extends Phaser.Scene{
                     this.wall3.setVisible(true);
                 }
             }, [], this);
+        }
         })
 
         this.socket.on("disconnected", () => {

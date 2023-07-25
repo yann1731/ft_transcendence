@@ -134,12 +134,12 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					this.x = Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1;
 					this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
 					if (Math.floor(Math.random() * 2) === 0)
-						this.y *= -1;            
+					this.y *= -1;            
 				} else{
 					this.x = Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2;
 					this.y = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
 					if (Math.floor(Math.random() * 2) === 0)
-						this.y *= -1;
+					this.y *= -1;
 				}
 				this.server.in(host[0]).emit("start", {ballX: this.x, ballY: this.y, wall: host[1], random: host[2], power: host[3], face: host[4]});
 			}

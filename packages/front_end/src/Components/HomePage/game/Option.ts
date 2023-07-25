@@ -1,4 +1,5 @@
 
+import { GamesRounded } from "@mui/icons-material";
 import Phaser from "phaser";
 import { Socket } from "socket.io-client";
 import '../../../App.css';
@@ -148,7 +149,35 @@ export default class option extends Phaser.Scene{
 					}
 				  });
 				  game.setOrigin(0.5);
-	
+				const position = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8, 'You are positionned right', {
+					fontFamily: 'pong',
+					fontSize: '25px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				  });
+				  position.setOrigin(0.5);
+				  
+				if (this.multiple === true){
+					if (this.player === 2)
+						position.setText("You are positionned right")
+					if (this.player === 3)
+				  		position.setText("You are positionned top")
+					if (this.player === 4)
+				  		position.setText("You are positionned left")
+				}
+				if (this.two === true){
+					if (this.player === 2)
+						position.setText("You are positionned top right")
+					if (this.player === 3)
+				  		position.setText("You are positionned bottom left")
+					if (this.player === 4)
+				  		position.setText("You are positionned bottom right")
+				}
+
 			  	this.time.delayedCall(1000, () => {
 					  game.setText('game starting in 2');
 			  	}, [], this);
@@ -243,7 +272,24 @@ export default class option extends Phaser.Scene{
 					}
 				  });
 				  game.setOrigin(0.5);
-	
+
+				  const position = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8, 'You are positionned left', {
+					fontFamily: 'pong',
+					fontSize: '25px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				  });
+				  position.setOrigin(0.5);
+
+				if (this.multiple === true)
+				  position.setText("You are positionned bottom")
+				else if (this.two === true)
+				  position.setText("You are positionned top left")
+
 			  	this.time.delayedCall(1000, () => {
 					  game.setText('game starting in 2');
 			  	}, [], this);
@@ -624,6 +670,21 @@ export default class option extends Phaser.Scene{
 				  });
 				  game.setOrigin(0.5);
 	
+				  const position = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8, 'You are positionned left', {
+					fontFamily: 'pong',
+					fontSize: '25px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				  });
+				  position.setOrigin(0.5);
+
+				if (this.two === true)
+				  position.setText("You are positionned top left")
+
 				this.time.delayedCall(1000, () => {
 					  game.setText('game starting in 2');
 			  	}, [], this);
@@ -827,6 +888,19 @@ export default class option extends Phaser.Scene{
 				}
 				});
 				game.setOrigin(0.5);
+
+				const position = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8, 'You are positionned bottom', {
+					fontFamily: 'pong',
+					fontSize: '25px',
+					color: '#ffffff',
+					backgroundColor: '#000000',
+					padding: {
+					  x: 10,
+					  y: 6
+					}
+				  });
+				  position.setOrigin(0.5);
+
 				this.time.delayedCall(1000, () => {
 					game.setText('game starting in 2');
 				}, [], this);
