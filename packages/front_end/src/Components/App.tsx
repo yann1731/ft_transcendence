@@ -5,6 +5,8 @@ import Profile from './ProfilePage/Profile';
 import FatCat from './FatCat';
 import Login from './Login/Login';
 import Wait from './WaitingPage/Wait';
+import Enable2Fa from './QRcode/Enable2Fa';
+import Otp from './Otp/Verify'
 import { useSelector } from "react-redux";
 import { useState, useMemo } from "react";
 import { createTheme, ThemeProvider, PaletteMode } from '@mui/material/';
@@ -35,6 +37,8 @@ function App() {
 					<Route path='/Chat' element={ <Chat /> } />
 					<Route path='/FatCat' element={ <FatCat /> } />
 					<Route path='/wait' element={<Wait /> } />
+					<Route path='/Enable2Fa' element={ <Enable2Fa />} />
+					<Route path='/otp' element={ <Otp /> } />
 				</Routes>
 			</ThemeProvider>
 		</UserProvider>

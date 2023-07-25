@@ -13,6 +13,7 @@ export class ChatroomService { //specifically to create a password protected cha
   constructor(private prisma: PrismaService) { }
 
   async createWithPass(createPasswordChatroomDto: CreatePasswordChatroomDto) {
+    console.log('Enter createwithpass chatroom endpoint');
     const hashedPass = await argon2.hash(createPasswordChatroomDto.password);
     const defaultPicture = 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg';
     const chatroom = await this.prisma.chatroom.create({
@@ -37,6 +38,7 @@ export class ChatroomService { //specifically to create a password protected cha
   }
   
   async create(createChatroomDto: CreateChatroomDto) { //creates either a public or private chatroom. Associates ownerId to the user who created it
+    console.log('Enter create chatroom endpoint');
     const defaultPicture = 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg';
 
     const { name } = createChatroomDto;
@@ -68,11 +70,12 @@ export class ChatroomService { //specifically to create a password protected cha
   }
 
   async findAll() { //returns all currently created chatrooms
+    console.log('enter findall endpoint');
     return await this.prisma.chatroom.findMany();
   }
 
   async findOne(id: string) { //returns a single chatroom using id
-    
+    console.log('enter findone endpoint');
     const chatroom = await this.prisma.chatroom.findUnique({where: { id }});
     if (!chatroom)
       throw new BadRequestException;
@@ -81,6 +84,7 @@ export class ChatroomService { //specifically to create a password protected cha
   }
 
   async findAllUsers(chatroomId: string) {
+    console.log('enter findallusers endpoint');
     const users = await this.prisma.chatroom.findUnique({
       where: { id: chatroomId },
       include: { users: { include: { user: true } } },
@@ -92,7 +96,7 @@ export class ChatroomService { //specifically to create a password protected cha
   }
 
 
-  async update(name: string, updateChatroomDto: UpdateChatroomDto) { 
+  async update(name: string, updateChatroomDto: UpdateChatroomDto) {
     const { state, picture, password } = updateChatroomDto;
     const encodedName = encodeURIComponent(name);
     let updatedPicture = picture; 

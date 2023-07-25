@@ -5,6 +5,6 @@ import { userPermission } from '@prisma/client';
 export class UpdateChatroomuserDto {
     permission?: userPermission;
     banStatus?: boolean;
-    banUntil?: Date | null;
+    muteUntil?: number | null;
     muteStatus?: boolean;
 }
