@@ -43,3 +43,27 @@ const MyStats = () => {
 };
 
 export default MyStats;
+
+export function LimitedStats() {
+    const { user } = useContext(UserContext);
+    const winRatio = user && user.gamesPlayed > 0 ? (user.win / user.gamesPlayed) * 100 : 0;
+    
+    return (
+        <Box sx={{ width: '95%', marginTop: '15px', marginBottom: '15px' }} className="profileButtonBox">
+            <Grid container rowSpacing={3}>
+                <Grid item sx={{width: '99%' }}>
+                    <Item>Nb Games Played: {user?.gamesPlayed} </Item>
+                </Grid>
+                <Grid item sx={{width: '99%'}}>
+                    <Item>Wins: {user?.win}</Item>
+                </Grid>
+                <Grid item sx={{width: '99%'}}>
+                    <Item>Losses: {user?.loss}</Item>
+                </Grid>
+                <Grid item sx={{width: '99%'}}>
+                    <Item>Win Ratio: {winRatio.toFixed(2)}</Item>
+                </Grid>
+            </Grid>
+        </Box>
+    )
+}
