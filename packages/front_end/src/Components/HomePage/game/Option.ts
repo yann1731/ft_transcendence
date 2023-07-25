@@ -1,12 +1,13 @@
 
-import io from 'socket.io-client';
 import Phaser from "phaser";
+import { Socket } from "socket.io-client";
 import '../../../App.css';
 
 
 
 interface gameData {
 	name: string;
+	socket: Socket
 }
 
 export default class option extends Phaser.Scene{
@@ -50,6 +51,7 @@ export default class option extends Phaser.Scene{
 
 	init(data: gameData) {
 		this.name = data.name;
+		this.socket = data.socket;
 	}
 
 	preload() {
@@ -155,11 +157,11 @@ export default class option extends Phaser.Scene{
 			  	}, [], this);
 			  	this.time.delayedCall(2950, () => {
 						if (this.single === true)
-					  		this.scene.start('oneVSoneOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket});
+					  		this.scene.start('oneVSoneOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket, name: this.name});
 						else if (this.multiple === true)
-							this.scene.start('threeVSoneOther', {power: data.powerUp, scaleRate: data.scale, socket: this.socket, player: this.player})
+							this.scene.start('threeVSoneOther', {power: data.powerUp, scaleRate: data.scale, socket: this.socket, player: this.player, name: this.name})
 						else
-					  		this.scene.start('twoVStwoOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket, player: this.player});
+					  		this.scene.start('twoVStwoOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket, player: this.player, name: this.name});
 					}, [], this);
 				});
 			})
@@ -250,11 +252,11 @@ export default class option extends Phaser.Scene{
 			  	}, [], this);
 			  	this.time.delayedCall(3050, () => {
 						if (this.single === true)
-					  		this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY});
+					  		this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
 						else if (this.multiple === true)
-							this.scene.start('threeVSoneHost', {power: this.powerUp, scaleRate: this.rateSpeed, socket: this.socket, ballX: data.ballX, ballY: data.ballY})
+							this.scene.start('threeVSoneHost', {power: this.powerUp, scaleRate: this.rateSpeed, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name})
 						else
-					  		this.scene.start('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY});
+					  		this.scene.start('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
 					}, [], this);
 				});
 			})
@@ -630,9 +632,9 @@ export default class option extends Phaser.Scene{
 			  	}, [], this);
 					this.time.delayedCall(3050, () => {
 						  if (this.single === true)
-								this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY});
+								this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
 							else
-								this.scene.start('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, face: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY});
+								this.scene.start('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, face: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
 					}, [], this);
 				});
 			});
@@ -832,7 +834,7 @@ export default class option extends Phaser.Scene{
 					game.setText('game starting in 1');
 				}, [], this);
 				this.time.delayedCall(3050, () => {
-					this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed, socket: this.socket, ballX: data.ballX, ballY: data.ballY})
+					this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name})
 				}, [], this);
 				});
 			})
@@ -840,7 +842,6 @@ export default class option extends Phaser.Scene{
 
 	create() {
 		this.load.on('complete', this.all, this);
-		this.socket = io("http://localhost:4242/game")
 		this.all();
 		this.onevsthree();
 		this.onevsone();

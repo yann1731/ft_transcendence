@@ -9,9 +9,11 @@ import twoVStwoHost from './game/twoVStwoHost';
 import twoVStwoOther from './game/twoVStwoOther'
 import Box from '@mui/material/Box';
 import { UserContext } from 'Contexts/userContext';
+import io from "socket.io-client"
 
 export default function PongGame() {
     const {user} = React.useContext(UserContext);
+    const socket = io("http://localhost:4242/game")
 
     React.useEffect(() => {
       const config: Phaser.Types.Core.GameConfig = {
@@ -40,8 +42,9 @@ export default function PongGame() {
       };
       
       const pong = new Phaser.Game(config);
-      pong.scene.start('menu', {name: user?.id});
+      pong.scene.start('menu', {name: user?.id, socket: socket});
       return () => {
+        socket.disconnect();
         pong.destroy(true);
       }
     }, [user]);

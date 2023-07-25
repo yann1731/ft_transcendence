@@ -10,7 +10,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	x: number;
 	y: number;
 
-	oneHost: [string, boolean, boolean, boolean, boolean][] = []
+	oneHost: [string, boolean, boolean, boolean, boolean, Socket][] = []
 	oneWaiting: Socket[] = []
 	twoHost: [Socket, string, boolean, boolean, boolean, boolean][] = []
 	twoWaiting: Socket[] = []
@@ -28,8 +28,30 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 		console.log('New client connected to gameSocket');
 	}
 	 
-	handleDisconnect() {
+	handleDisconnect(client: Socket) {
 		console.log('Client disconnected from gameSocket');
+
+		client.broadcast.to(client.id).emit("disconnected");
+
+		for (let i = 0; i < this.oneHost.length; i++)
+			if (this.oneHost[i][5] === client)
+				this.oneHost.splice(i, 1);
+		for (let i = 0; i < this.twoHost.length; i++)
+			if (this.twoHost[i][0] === client)
+				this.twoHost.splice(i, 1);
+		for (let i = 0; i < this.threeHost.length; i++)
+			if (this.threeHost[i][0] === client)
+				this.threeHost.splice(i, 1);
+
+		for (let i = 0; i < this.oneWaiting.length; i++)
+			if (this.oneWaiting[i] === client)
+				this.oneWaiting.splice(i, 1);
+		for (let i = 0; i < this.twoWaiting.length; i++)
+			if (this.twoWaiting[i] === client)
+				this.twoWaiting.splice(i, 1);
+		for (let i = 0; i < this.threeWaiting.length; i++)
+			if (this.threeWaiting[i] === client)
+				this.threeWaiting.splice(i, 1);
 	}
 
 	@SubscribeMessage("movement")
@@ -101,12 +123,12 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 				this.server.in(data.name).emit("start", {ballX: this.x, ballY: this.y, wall: data.wall, random: data.random, power: data.power, face: data.face});
 			}
 			else {
-				this.oneHost.push([data.name, data.wall, data.random, data.power, data.face])
+				this.oneHost.push([data.name, data.wall, data.random, data.power, data.face, client])
 			}
 		}
 		else{
 			if (this.oneHost.length >= 1){
-				let host: [string, boolean, boolean, boolean, boolean] = this.oneHost.shift();
+				let host: [string, boolean, boolean, boolean, boolean, Socket] = this.oneHost.shift();
 				client.join(host[0]);
 				if (Math.floor(Math.random() * 2) === 0){
 					this.x = Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1;

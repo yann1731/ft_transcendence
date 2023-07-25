@@ -8,6 +8,7 @@ interface gameData {
     wall: boolean;
     face: boolean;
     socket: any;
+    name: string;
 }
 
 export default class oneVSoneOther extends Phaser.Scene{
@@ -26,6 +27,7 @@ export default class oneVSoneOther extends Phaser.Scene{
     keys: any = {};
 
     socket!: any;
+    name!: string;
 
     points1: number = 0;
     points2: number = 0;
@@ -42,6 +44,8 @@ export default class oneVSoneOther extends Phaser.Scene{
     smash!: Phaser.GameObjects.Text;
     inverse!: Phaser.GameObjects.Text;
     multiBall!: Phaser.GameObjects.Text;
+    menu!: Phaser.GameObjects.Text;
+    disconnect!: Phaser.GameObjects.Text;
     
     paddlespeed: number = 450;
     modifier: number = 1;
@@ -63,6 +67,7 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.wall = data.wall;
         this.face = data.face; 
         this.socket = data.socket
+        this.name = data.name
     }
 
 	preload() {
@@ -139,30 +144,16 @@ export default class oneVSoneOther extends Phaser.Scene{
     }
 
     paddle_init() {
-        if (this.face === true){
-            this.paddle1 = this.physics.add.sprite(
-                (this.ball.width * 0.2) / 2 + 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-            this.paddle2 = this.physics.add.sprite(
-                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-        }
-        else{
-            this.paddle1 = this.physics.add.sprite(
-                (this.ball.width * 0.2) / 2 + 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-            this.paddle2 = this.physics.add.sprite(
-                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-        }
+        this.paddle1 = this.physics.add.sprite(
+            (this.ball.width * 0.2) / 2 + 1,
+            this.physics.world.bounds.height / 2,
+            "paddle"
+        )
+        this.paddle2 = this.physics.add.sprite(
+            this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
+            this.physics.world.bounds.height / 2,
+            "paddle"
+        )
         this.oldPosition = this.physics.world.bounds.height / 2;
 
         this.paddle1.setImmovable(true);
@@ -177,6 +168,43 @@ export default class oneVSoneOther extends Phaser.Scene{
 
     
     text_init() {
+        this.menu = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2,
+            'Return to Menu',
+            {
+                fontFamily: 'pong',
+                fontSize: '50px',
+            }
+        );
+        this.menu.setOrigin(0.5);
+        this.menu.setVisible(false);
+        this.menu.setInteractive();
+		this.menu.on('pointerover', () => {
+			this.menu.setColor('#000000');
+			this.menu.setStyle({ backgroundColor: '#ffffff' });
+		});
+		this.menu.on('pointerout', () => {
+			this.menu.setColor('#ffffff');
+			this.menu.setStyle({ backgroundColor: '#000000' });
+		});
+		this.menu.on('pointerdown', () => {
+			this.scene.start("menu", {name: this.name})
+		})
+
+        this.disconnect = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2,
+            'Return to Menu',
+            {
+                fontFamily: 'pong',
+                fontSize: '50px',
+            }
+        );
+        this.disconnect.setOrigin(0.5);
+        this.disconnect.setVisible(false);
+
+
         this.player1VictoryText = this.add.text(
             this.physics.world.bounds.width / 2,
             this.physics.world.bounds.height / 2,
@@ -312,6 +340,7 @@ export default class oneVSoneOther extends Phaser.Scene{
         })
 
         this.socket.on("update", (data: any) => {
+            alert("nice");
             if (this.ball.body){
                 this.ball.setX(data.x + this.ball.body.width / 2)
                 this.ball.setY(data.y + this.ball.body.height / 2)
@@ -491,6 +520,14 @@ export default class oneVSoneOther extends Phaser.Scene{
                 }
             }, [], this);
         })
+
+        this.socket.on("disconnected", () => {
+            alert("fuck yes")
+            this.menu.setVisible(true);
+            this.disconnect.setVisible(true);
+            this.scene.pause();
+        })
+
 
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        
