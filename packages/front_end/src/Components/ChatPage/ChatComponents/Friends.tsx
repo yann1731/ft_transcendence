@@ -1,7 +1,7 @@
 import { Avatar, List, ListItemIcon, ListItemText, ListItemButton } from '@mui/material';
 import { UserContext, User } from 'Contexts/userContext';
 import { useContext } from 'react';
-import { Chatroom, ChatInUse, chatroomType, UserFriendship } from 'Components/Interfaces';
+import { Chatroom, ChatInUse, chatroomType, UserFriendship, UserBlocks } from 'Components/Interfaces';
 import React from 'react'
 import axios from 'axios'
 interface MyFriendsProps {
@@ -12,6 +12,7 @@ interface MyFriendsProps {
 const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   const [Users, setUsers] = React.useState<User[]>([]);
   const [FriendUsers, setFriendUsers] = React.useState<User[]>([]);
+  const [BlockedUsers, setBlockedUsers] = React.useState<User[]>([]);
   const {user, updateUser} = useContext(UserContext);
   
   React.useEffect(() => {
@@ -30,6 +31,43 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
         console.error('Error fetching users', error);
       }
       try {
+        const response = await axios.get('http://localhost:4242/userblocks', {headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }});
+        
+        if (response.status === 200) {
+          const BlockedUsersData: UserBlocks[] = response.data;
+          let tempBlockedUsers: User[] = [];
+          BlockedUsersData.forEach((users: UserBlocks) => {
+            if (user?.id === users.blockerId)
+            {
+              const isBlocked = Users.find((blockedUser: User) => {
+                return users.blockedUserId === blockedUser.id;
+              })
+              if (isBlocked !== undefined)
+              {
+                tempBlockedUsers.push(isBlocked);
+              }
+              
+            }
+            else if (user?.id === users.blockedUserId)
+            {
+              const isBlocked = Users.find((blockedUser: User) => {
+                return users.blockerId === blockedUser.id;
+              })
+              if (isBlocked !== undefined)
+              {
+                tempBlockedUsers.push(isBlocked);
+              }
+            }
+          });
+          setBlockedUsers(tempBlockedUsers);
+        }
+      } catch (error) {
+        console.error('Error fetching blocked users', error);
+      }
+      try {
         const response = await axios.get(`http://localhost:4242/userfriendship/`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
@@ -37,10 +75,10 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
         
         if (response.status === 200) {
           const FriendshipData: UserFriendship[] = response.data;
-          const tempFriends: User[] = [];
+          let tempFriends: User[] = [];
           if (FriendshipData.length !== 0)
           {
-            FriendshipData.forEach(friend => {
+            FriendshipData.forEach((friend: UserFriendship) => {
               if (user !== null && user.id === friend.userAId)
               {
                 const isFriend = Users.find((users: User) => {
@@ -48,7 +86,12 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
                 })
                 if (isFriend !== undefined)
                 {
-                  tempFriends.push(isFriend);
+                  let isBlocked = BlockedUsers.find((friend: User) => {
+                    return friend.id === isFriend.id;})
+                  if (isBlocked === undefined)
+                  {
+                    tempFriends.push(isFriend);
+                  }
                 }
               }
               else if (user !== null && user.id === friend.userBId)
@@ -58,13 +101,18 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
                 })
                 if (isFriend !== undefined)
                 {
-                  tempFriends.push(isFriend);
+                  let isBlocked = BlockedUsers.find((friend: User) => {
+                    return friend.id === isFriend.id;})
+                    if (isBlocked === undefined)
+                    {
+                      tempFriends.push(isFriend);
+                    }
+                  }
                 }
-              }
-            })
-          }
-          setFriendUsers(tempFriends);
-        }
+              })
+            }
+            setFriendUsers(tempFriends);
+          };
       } catch (error) {
           console.error('Error getting Friends: ', error);
           alert('Error: could not get Friends: ' + error);
