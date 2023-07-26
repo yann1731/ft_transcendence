@@ -1,56 +1,42 @@
-import { Grid, Typography } from '@mui/material';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-//TODO BEFORE THE SWITCH, PULL MAIN !!!!!!
-//TODO switch to drop down menu
+import * as React from 'react';
+import { Grid, useTheme, Box } from '@mui/material';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+
 export default function MatchHistory() {
+    const [matchType, setMatch] = React.useState('');
+    
+    const handleChange = (event: SelectChangeEvent) => {
+        setMatch(event.target.value);
+    }
+    const theme = useTheme();
+    const labelColor = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
+    //const labelColor = 'green';
     return (
-                <Grid item sx={{ width: '99%', textAlign: 'center' }}>
-                    MATCH HISTORY
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel1a-content"
-                            id="panel1a-header"
-                        >
-                            <Typography>1 vs 1</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                MATCH HISTORY 1 vs 1 GOES HERE
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel2a-content"
-                            id="panel2a-header"
-                        >
-                            <Typography>2 vs 2</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                MATCH HISTORY 2 vs 2 GOES HERE
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel3a-content"
-                            id="panel3a-header"
-                            >
-                            <Typography>1 vs 3</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                MATCH HISTORY 1 vs 3 GOES HERE
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
-                </Grid>
-    )
+        <Box sx={{ width: '99%', textAlign: 'center'}}>
+            
+            <FormControl fullWidth className="matchHistoryCombo" sx={{ marginTop: '20px' }}>
+                <InputLabel 
+                    id="match-history" 
+                    sx={{ color: labelColor, '&.Mui-focused': { color: labelColor, borderColor: labelColor } }}
+                >
+                    Match History</InputLabel>
+                <Select
+                    labelId="match-history"
+                    id="match-history-label"
+                    value={matchType}
+                    label="Match History"
+                    onChange={handleChange}
+                    
+                >
+                    <MenuItem value=""><em>None</em></MenuItem>
+                    <MenuItem value={'1v1'}>1 vs 1</MenuItem>
+                    <MenuItem value={'2v2'}>2 vs 2</MenuItem>
+                    <MenuItem value={'1v3'}>1 vs 3</MenuItem>
+                </Select>
+            </FormControl>
+        </Box>
+    );
 }

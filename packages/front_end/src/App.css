@@ -231,6 +231,22 @@
   right: 0;
 }
 
+.matchHistoryCombo .MuiInputLabel-root {
+  color: var(--textfield-color);
+}
+
+.matchHistoryCombo .MuiOutlinedInput-root fieldset {
+  border-color: var(--textfield-color);
+}
+
+.matchHistoryCombo .MuiOutlinedInput-root:hover fieldset {
+  border-color: var(--textfield-color);
+}
+
+.matchHistoryCombo .MuiOutlinedInput-root.Mui-focused fieldset {
+  border-color: var(--textfield-color);
+}
+
 .newChannelTextField .MuiOutlinedInput-root.Mui-focused fieldset {
   border-color: var(--textfield-color);
   border-width: 1px;
