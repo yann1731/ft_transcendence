@@ -15,7 +15,6 @@ export default class oneVSoneOther extends Phaser.Scene{
 
 	ball!: Phaser.Physics.Arcade.Sprite;
     multiball!: Phaser.Physics.Arcade.Sprite;
-    paddle!: Phaser.Physics.Arcade.Sprite;
     paddle1!: Phaser.Physics.Arcade.Sprite;
     paddle2!: Phaser.Physics.Arcade.Sprite;
 
@@ -31,7 +30,7 @@ export default class oneVSoneOther extends Phaser.Scene{
 
     points1: number = 0;
     points2: number = 0;
-    win: number = 5;
+    win: number = 1;
     rotation: number = 1;
 
     player1VictoryText!: Phaser.GameObjects.Text;
@@ -71,6 +70,8 @@ export default class oneVSoneOther extends Phaser.Scene{
     }
 
 	preload() {
+        if (this.face)
+            this.load.image("background", "https://cdn.intra.42.fr/users/02bd0e2e6838f9e0f6d36bd7968465d6/yst-laur.jpg");
         if (this.face === true){
             this.load.image("ball", String(require('../../../images/anhebert.png')));
             this.load.image("bigBall", String(require('../../../images/jrossign.png')));
@@ -95,8 +96,6 @@ export default class oneVSoneOther extends Phaser.Scene{
         else
             this.load.image("power", String(require("../../../images/power.png")));
 
-        if (this.face)
-            this.load.image("background", "https://cdn.intra.42.fr/users/02bd0e2e6838f9e0f6d36bd7968465d6/yst-laur.jpg");
     }
 
     map_init() {
@@ -166,7 +165,6 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.paddle2.setCollideWorldBounds(true)
     }
 
-    
     text_init() {
         this.menu = this.add.text(
             this.physics.world.bounds.width / 2,
@@ -181,8 +179,7 @@ export default class oneVSoneOther extends Phaser.Scene{
                     x: 10,
                     y: 6
                 }
-            }
-            
+            }    
         );
         this.menu.setOrigin(0.5);
         this.menu.setVisible(false);
@@ -196,7 +193,9 @@ export default class oneVSoneOther extends Phaser.Scene{
 			this.menu.setStyle({ backgroundColor: '#000000' });
 		});
 		this.menu.on('pointerdown', () => {
-			this.scene.start("menu", {name: this.name, socket: this.socket})
+            this.scene.stop();
+            this.shutdown();
+            this.scene.run("menu", { name: this.name, socket: this.socket });
 		})
 
         this.disconnect = this.add.text(
@@ -485,17 +484,17 @@ export default class oneVSoneOther extends Phaser.Scene{
             }
             this.paddle2.disableBody();
             if (which === 1)
-                this.points2++;
+            this.points2++;
             else
-                this.points1++;
+            this.points1++;
             this.score.setText(`${this.points2}          ${this.points1}`);
-            if (this.points2 === 5){
+            if (this.points2 === this.win){
                 this.player1VictoryText.setVisible(true);
                 this.menu.setVisible(true);
                 this.ball.disableBody(true);
                 end = true;
             }
-            else if (this.points1 === 5){
+            else if (this.points1 === this.win){
                 this.player2VictoryText.setVisible(true);
                 this.menu.setVisible(true);
                 this.ball.disableBody(true);
@@ -547,8 +546,6 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        
     }
 
-   
-
     update() { 
         this.ball.angle += this.rotation
         this.paddle2.setVelocityY(0);
@@ -567,5 +564,45 @@ export default class oneVSoneOther extends Phaser.Scene{
         
         if (this.paddlespeed < 625)
             this.paddlespeed += 0.5;
+    }
+
+    shutdown() {
+        this.socket.off("movement");
+        this.socket.off("update");
+        this.socket.off("random");
+        this.socket.off("newPower");
+        this.socket.off("multi");
+        this.socket.off("power");
+        this.socket.off("point");
+        this.socket.off("disconnected");
+
+        this.player1VictoryText.destroy()
+        this.player1Score.destroy()
+        this.player2VictoryText.destroy()
+        this.player2Score.destroy()
+        this.score.destroy()
+        this.bigPaddle.destroy()
+        this.bigBall.destroy()
+        this.smash.destroy()
+        this.inverse.destroy()
+        this.multiBall.destroy()
+        this.menu.destroy()
+        this.disconnect.destroy()
+        this.paddle1.destroy()
+        this.paddle2.destroy()
+        this.ball.destroy()
+
+        if (this.multi === true)
+            this.multiball.destroy();
+
+        if (this.wall === true || this.random === true){
+            this.wall1.destroy()
+            this.wall2.destroy()
+            this.wall3.destroy()
+        }
+
+        this.points1 = 0;
+        this.points2 = 0;
+        this.paddlespeed = 450;
     }
 }

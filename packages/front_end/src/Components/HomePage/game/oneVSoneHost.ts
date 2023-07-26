@@ -39,7 +39,7 @@ export default class oneVSoneHost extends Phaser.Scene{
 
     points1: number = 0;
     points2: number = 0;
-    win: number = 5;
+    win: number = 1;
 
     player1VictoryText!: Phaser.GameObjects.Text;
     player1Score!: Phaser.GameObjects.Text;
