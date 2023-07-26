@@ -17,7 +17,6 @@ const OptionBarFriends: React.FC = () => {
     const [UserName, setUserName] = React.useState('');
     const [Users, setUsers] = React.useState<User[]>([]);
     const [NonFriendUsers, setNonFriendUsers] = React.useState<User[]>([]);
-    const [FriendUsers, setFriendUsers] = React.useState<User[]>([]);
     const {user, updateUser} = React.useContext(UserContext);
     const [refresh, setRefresh] = React.useState<Boolean>(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -42,63 +41,34 @@ const OptionBarFriends: React.FC = () => {
               }
             })
             setUsers(otherUsers);
+            try {
+              const response = await axios.get(`http://localhost:4242/userfriendship/user/${user?.id}`, {headers: {
+                'Authorization': user?.token,
+                'userId': user?.id
+              }});
+              if (response.status === 200) {
+                const FriendshipData: UserFriendship[] = response.data;
+                const tempIsNotFriend: User[] = [];
+                otherUsers.forEach((users: User) => {
+                  const notFriend = FriendshipData.find((friend: UserFriendship) => {
+                    return (users?.id === friend?.userAId || users?.id === friend?.userBId)
+                  })
+                  if (notFriend === undefined)
+                  {
+                    tempIsNotFriend.push(users);
+                  }
+                });
+                setNonFriendUsers(tempIsNotFriend);
+              }
+            } catch (error) {
+              alert(error)
+              console.error('Error fetching friendships', error);
+            }
           }
         } catch (error) {
           console.error('Error fetching users', error);
         }
-        try {
-          const response = await axios.get(`http://localhost:4242/userfriendship/`, {headers: {
-            'Authorization': user?.token,
-            'userId': user?.id
-          }});
-          
-          if (response.status === 200) {
-            const FriendshipData: UserFriendship[] = response.data;
-            let tempFriends: User[] = [];
-            if (FriendshipData.length !== 0)
-            {
-              FriendshipData.forEach((friend: UserFriendship) => {
-                if (user !== null && user.id === friend.userAId)
-                {
-                  const isFriend = Users.find((users: User) => {
-                    return (users.id === friend.userBId)
-                  })
-                  if (isFriend !== undefined)
-                  {
-                    tempFriends.push(isFriend);
-                  }
-                }
-                else if (user !== null && user.id === friend.userBId)
-                {
-                  const isFriend = Users.find((users: User) => {
-                    return (users.id === friend.userAId)
-                  })
-                  if (isFriend !== undefined)
-                  {
-                    tempFriends.push(isFriend);
-                  }
-                }
-              })
-            }
-            setFriendUsers(tempFriends);
-            
-            const tempIsNotFriend: User[] = [];
-            Users.forEach((users: User) => {
-              const notFriend = FriendUsers.find((friend: User) => {
-                return users?.id === friend?.id;
-              })
-              if (notFriend === undefined && users?.id !== user?.id)
-              {
-                tempIsNotFriend.push(users);
-              }
-            });
-            setNonFriendUsers(tempIsNotFriend);
-          }
-        } catch (error) {
-          console.error('Error fetching frienships', error);
-        }
-      };
-      
+      }
       fetchUsers();
     }, [setRefresh]);
     

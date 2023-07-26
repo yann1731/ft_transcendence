@@ -1,12 +1,15 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, OnGatewayConnection, OnGatewayDisconnect, WebSocketServer } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { ChatroomService } from 'src/chatroom/chatroom.service';
+import { CreateChatroomDto } from 'src/chatroom/dto/create-chatroom.dto';
+import { UpdateChatroomDto } from 'src/chatroom/dto/update-chatroom.dto';
 
 @WebSocketGateway({ cors: true, namespace: 'chatsocket' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private readonly chatService: ChatService) {};
+  constructor(private chatService: ChatService, private chatroomService: ChatroomService) {};
   @WebSocketServer()
   server: Server;
 
@@ -34,5 +37,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("privateMessage")
   createPrivateMessage(message: any): void {
     this.chatService.createPrivateMessage(message);
+  }
+
+  @SubscribeMessage("create chatroom")
+  createChatroom(client: Socket, data: any): void {
+    const chatroom = this.chatroomService.create(data);
+    client.broadcast.emit("create chatroom", chatroom);
+    if (chatroom)
+      this.server.to(client.id).emit("creation success", chatroom);
+    else
+      this.server.to(client.id).emit("creation failure", chatroom);
   }
 }

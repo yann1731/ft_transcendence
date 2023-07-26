@@ -26,7 +26,9 @@ const OptionBarConversation: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const id = open ? 'contact-options-popover' : undefined;
-  
+
+  //TODO Fetch les infos un chat trop tard
+
   React.useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -73,18 +75,13 @@ const OptionBarConversation: React.FC = () => {
       }
     };
     fetchUsers();
-  }, [mode]);
+  }, [user?.chatInUse?.chat?.id]);
   
   const handleMode = (mode: string) => {
     setMode(mode);
-    
     setWindowIsOpen(true);
   };
-  
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -92,7 +89,11 @@ const OptionBarConversation: React.FC = () => {
   const handleCloseWindow = () => {
     setWindowIsOpen(false);
   };
-
+  
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
     

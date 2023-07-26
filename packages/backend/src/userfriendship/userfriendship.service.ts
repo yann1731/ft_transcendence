@@ -44,8 +44,7 @@ export class UserfriendshipService {
         ]
       }
     });
-    if (!userfriendships)
-      throw new BadRequestException;
+    return userfriendships;
   }
 
   async findOne(id: string) { //returns a friendship pair by id
