@@ -36,10 +36,16 @@ export class UserfriendshipService {
   }
 
   async findAllUF(id: string) {
-    const userfriendships = await this.prisma.userFriendship.findMany({where: 
-    {
-      
-    }})
+    const userfriendships = await this.prisma.userFriendship.findMany({
+      where: {
+        OR: [
+          { userAId: id },
+          { userBId: id }
+        ]
+      }
+    });
+    if (!userfriendships)
+      throw new BadRequestException;
   }
 
   async findOne(id: string) { //returns a friendship pair by id

@@ -30,7 +30,8 @@ export class UserService { //creates a new user
           avatar: response.data.image.link,
           token: code,
           token_expires_in: expires_in,
-          token_created_at: created_at
+          token_created_at: created_at,
+          token_expires_at: created_at + expires_in
         }
       });
       if (!user) {
@@ -81,7 +82,8 @@ export class UserService { //creates a new user
         gamesPlayed: updateUserDto.gamesPlayed,
         userStatus: updateUserDto.userStatus,
         twoFaEnabled: updateUserDto.twoFaEnabled,
-        refresh_token: updateUserDto.refresh_token,
+        twoFaSecret: updateUserDto.twoFaSecret,
+        refresh_token: updateUserDto.refresh_token
       }
     });
     if (!user)
