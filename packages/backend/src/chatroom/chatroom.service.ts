@@ -34,11 +34,12 @@ export class ChatroomService { //specifically to create a password protected cha
     if (!chatroom || !chatroomuser)
       throw new BadRequestException;
     else
-    return chatroom;
+      return chatroom;
   }
   
   async create(createChatroomDto: CreateChatroomDto) { //creates either a public or private chatroom. Associates ownerId to the user who created it
     console.log('Enter create chatroom endpoint');
+    console.log(createChatroomDto.name);
     const defaultPicture = 'https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg';
 
     const { name } = createChatroomDto;

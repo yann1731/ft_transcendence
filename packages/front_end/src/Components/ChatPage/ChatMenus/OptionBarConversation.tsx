@@ -160,8 +160,8 @@ const OptionBarConversation: React.FC = () => {
           chatroom: user?.chatInUse?.chat,
           permission: userPermission.regular,
           banStatus: false,
-          banUntil: null,
           muteStatus: false,
+          muteUntil: null,
         }
         const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
           'Authorization': user?.token,
