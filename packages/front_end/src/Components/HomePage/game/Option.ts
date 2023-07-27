@@ -322,7 +322,7 @@ all() {
 		this.socket.emit("2v2", {start: false});
 		else
 		this.socket.emit("3v1", {start: false})
-		this.socket.on("start", (data: any) =>{
+		this.socket.on("start", (data: any) => {
 			waiting.setVisible(false);
 			const game = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
 				fontFamily: 'pong',
@@ -382,6 +382,10 @@ all() {
 					this.start.setVisible(true);
 					this.powerButton.setVisible(true);
 					this.settingOneButton.setVisible(true);
+					this.mode.setVisible(true);
+					this.wallText.setVisible(true);
+					this.wallButton.setVisible(true);
+					this.randomButton.setVisible(true);
 				}
 				else if (this.multiple === true){
 					this.scene.sleep();

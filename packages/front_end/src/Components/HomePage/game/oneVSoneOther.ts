@@ -30,7 +30,7 @@ export default class oneVSoneOther extends Phaser.Scene{
 
     points1: number = 0;
     points2: number = 0;
-    win: number = 1;
+    win: number = 5;
     rotation: number = 1;
 
     player1VictoryText!: Phaser.GameObjects.Text;
@@ -193,9 +193,7 @@ export default class oneVSoneOther extends Phaser.Scene{
 			this.menu.setStyle({ backgroundColor: '#000000' });
 		});
 		this.menu.on('pointerdown', () => {
-            this.scene.stop();
             this.shutdown();
-            this.scene.run("menu", { name: this.name, socket: this.socket });
 		})
 
         this.disconnect = this.add.text(
@@ -604,5 +602,8 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.points1 = 0;
         this.points2 = 0;
         this.paddlespeed = 450;
+
+        this.scene.sleep();
+        this.scene.run("menu", { name: this.name, socket: this.socket });
     }
 }
