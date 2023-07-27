@@ -536,7 +536,6 @@ export default class oneVSoneOther extends Phaser.Scene{
             alert("fuck yes")
             this.menu.setVisible(true);
             this.disconnect.setVisible(true);
-            this.scene.pause();
         })
 
 

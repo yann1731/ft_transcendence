@@ -19,6 +19,7 @@ interface gameData {
     socket: any;
     ballX: number;
     ballY: number;
+    name: string;
 }
 
 export default class oneVSoneHost extends Phaser.Scene{
@@ -70,6 +71,7 @@ export default class oneVSoneHost extends Phaser.Scene{
     multi: boolean = false;
     ballX!: number;
     ballY!: number;
+    name!: string;
 
     bigPaddle!: Phaser.GameObjects.Text;
     bigBall!: Phaser.GameObjects.Text;
@@ -90,6 +92,7 @@ export default class oneVSoneHost extends Phaser.Scene{
         this.socket = data.socket
         this.ballX = data.ballX;
         this.ballY = data.ballY;
+        this.name = data.name;
     }
 
 	preload() {
@@ -416,6 +419,10 @@ export default class oneVSoneHost extends Phaser.Scene{
                 this.paddle2.setY(newPos + this.paddle2.body.height / 2);
         })
         
+        this.socket.on("disconnected", () => {
+            alert("fuck yes");
+        })
+
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);   
 
@@ -498,6 +505,7 @@ export default class oneVSoneHost extends Phaser.Scene{
     }
 
     end(player: number) {
+        this.socket.emit("end", {which: 1, name: this.name})
         if (this.power)
             this.power.setVisible(false);
         if (this.random === true || this.wall === true){

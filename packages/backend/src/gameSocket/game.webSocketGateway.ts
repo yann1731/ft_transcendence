@@ -17,6 +17,10 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	threeHost: [Socket, string, boolean, number][] = []
 	threeWaiting: Socket[] = []
 
+	oneGame: [string, string, string][] = []
+	twoGame: [string, string, string, string, string][] = []
+	threeGame: [string, string, string, string, string][] = []
+
 	XVelocityMin1: number = 350;
     XVelocityMax1: number = 400;
     XVelocityMin2: number = -350;
@@ -31,8 +35,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	handleDisconnect(client: Socket) {
 		console.log('Client disconnected from gameSocket');
 
-		client.broadcast.to(client.id).emit("disconnected");
-
 		for (let i = 0; i < this.oneHost.length; i++)
 			if (this.oneHost[i][5] === client)
 				this.oneHost.splice(i, 1);
@@ -43,6 +45,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 			if (this.threeHost[i][0] === client)
 				this.threeHost.splice(i, 1);
 
+
 		for (let i = 0; i < this.oneWaiting.length; i++)
 			if (this.oneWaiting[i] === client)
 				this.oneWaiting.splice(i, 1);
@@ -52,6 +55,28 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 		for (let i = 0; i < this.threeWaiting.length; i++)
 			if (this.threeWaiting[i] === client)
 				this.threeWaiting.splice(i, 1);
+
+		for (let i = 0; i < this.oneGame.length; i++)
+			for (let j = 1; j < 3; j++)
+				if (this.oneGame[i][j] === client.id){
+					this.server.to(this.oneGame[i][0]).emit("disconnected")
+					this.oneGame.splice(i, 1);
+					break;
+				}
+		for (let i = 0; i < this.twoGame.length; i++)
+			for (let j = 1; j < 5; j++)
+				if (this.twoGame[i][j] === client.id){
+					this.server.to(this.twoGame[i][0]).emit("disconnected")
+					this.twoGame.splice(i, 1);
+					break;
+				}
+		for (let i = 0; i < this.threeGame.length; i++)
+			for (let j = 1; j < 5; j++)
+				if (this.threeGame[i][j] === client.id){
+					this.server.to(this.threeGame[i][0]).emit("disconnected")
+					this.threeGame.splice(i, 1);
+					break;
+				}
 	}
 
 	@SubscribeMessage("movement")
@@ -70,6 +95,31 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	handlePoint(client: Socket, which: number){
 		const room = Array.from(client.rooms).filter(room => room !== client.id)
 		client.broadcast.to(String(room[0])).emit("point", which);
+	}
+
+	@SubscribeMessage("end")
+	handleEnd(client: Socket, data: any){
+		if (data.which === 1){
+			for (let i = 0; i < this.oneGame.length; i++)
+				if (this.oneGame[i][0] === data.name){
+					this.oneGame.splice(i, 1);
+					break;
+				}
+		}
+		if (data.which === 2){
+			for (let i = 0; i < this.twoGame.length; i++)
+				if (this.twoGame[i][0] === data.name){
+					this.twoGame.splice(i, 1);
+					break;
+				}
+		}
+		if (data.which === 3){
+			for (let i = 0; i < this.threeGame.length; i++)
+				if (this.threeGame[i][0] === data.name){
+					this.threeGame.splice(i, 1);
+					break;
+				}
+		}
 	}
 
 	@SubscribeMessage("update")
@@ -120,6 +170,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					if (Math.floor(Math.random() * 2) === 0)
 						this.y *= -1;
 				}
+				this.oneGame.push([data.name, client.id, opponent.id]);
 				this.server.in(data.name).emit("start", {ballX: this.x, ballY: this.y, wall: data.wall, random: data.random, power: data.power, face: data.face});
 			}
 			else {
@@ -141,6 +192,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					if (Math.floor(Math.random() * 2) === 0)
 					this.y *= -1;
 				}
+				this.oneGame.push([host[0], host[5].id, client.id]);
 				this.server.in(host[0]).emit("start", {ballX: this.x, ballY: this.y, wall: host[1], random: host[2], power: host[3], face: host[4]});
 			}
 			else
@@ -174,6 +226,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 				this.server.to(opponent1.id).emit("player", 2)
 				this.server.to(opponent2.id).emit("player", 3)
 				this.server.to(opponent3.id).emit("player", 4)
+				this.twoGame.push([data.name, client.id, opponent1.id, opponent2.id, opponent3.id]);
 				this.server.in(data.name).emit("start", {ballX: this.x, ballY: this.y, wall: data.wall, random: data.random, power: data.power, face: data.face});
 			}
 			else {
@@ -203,6 +256,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 				this.server.to(client.id).emit("player", 2)
 				this.server.to(opponent1.id).emit("player", 3)
 				this.server.to(opponent2.id).emit("player", 4)
+				this.twoGame.push([host[1], host[0].id, client.id, opponent1.id, opponent2.id]);
 				this.server.in(host[1]).emit("start", {ballX: this.x, ballY: this.y, wall: host[2], random: host[3], power: host[4], face: host[5]});
 			}
 			else
@@ -236,6 +290,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 				this.server.to(opponent1.id).emit("player", 2)
 				this.server.to(opponent2.id).emit("player", 3)
 				this.server.to(opponent3.id).emit("player", 4)
+				this.twoGame.push([data.name, client.id, opponent1.id, opponent2.id, opponent3.id]);
 				this.server.in(data.name).emit("start", {ballX: this.x, ballY: this.y, power: data.power, scale: data.scale});
 			}
 			else {
@@ -265,6 +320,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 				this.server.to(client.id).emit("player", 2)
 				this.server.to(opponent1.id).emit("player", 3)
 				this.server.to(opponent2.id).emit("player", 4)
+				this.twoGame.push([host[1], host[0].id, client.id, opponent1.id, opponent2.id]);
 				this.server.in(host[1]).emit("start", {ballX: this.x, ballY: this.y, power: host[2], scale: host[3]});
 			}
 			else
