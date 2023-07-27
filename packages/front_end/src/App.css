@@ -231,6 +231,10 @@
   right: 0;
 }
 
+.matchHistoryCombo {
+  margin-top: 20px !important;
+}
+
 .matchHistoryCombo .MuiInputLabel-root {
   color: var(--textfield-color);
 }
@@ -245,6 +249,15 @@
 
 .matchHistoryCombo .MuiOutlinedInput-root.Mui-focused fieldset {
   border-color: var(--textfield-color);
+}
+
+.matchHistoryInputLabel {
+  color: var(--textfield-color);
+}
+
+.matchHistoryInputLabel.Mui-focused {
+  color: var(--textfield-color) !important;
+  border-color: var(--textfield-color) !important;
 }
 
 .newChannelTextField .MuiOutlinedInput-root.Mui-focused fieldset {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid, useTheme, Box } from '@mui/material';
+import { Box } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -11,16 +11,13 @@ export default function MatchHistory() {
     const handleChange = (event: SelectChangeEvent) => {
         setMatch(event.target.value);
     }
-    const theme = useTheme();
-    const labelColor = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
-    //const labelColor = 'green';
     return (
         <Box sx={{ width: '99%', textAlign: 'center'}}>
             
-            <FormControl fullWidth className="matchHistoryCombo" sx={{ marginTop: '20px' }}>
+            <FormControl fullWidth className="matchHistoryCombo">
                 <InputLabel 
                     id="match-history" 
-                    sx={{ color: labelColor, '&.Mui-focused': { color: labelColor, borderColor: labelColor } }}
+                    className="matchHistoryInputLabel"
                 >
                     Match History</InputLabel>
                 <Select
