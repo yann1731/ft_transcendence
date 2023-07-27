@@ -1,13 +1,9 @@
-import { Grid, Box, Paper, Typography } from "@mui/material";
+import { Grid, Box, Paper } from "@mui/material";
 import { experimentalStyled as styled } from '@mui/material/styles';
 import Handler2FA from "./2FAActivation";
 import UserNameHandler from "./UsernameHandler";
 import { useContext } from "react";
 import { UserContext } from "Contexts/userContext";
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui//icons-material/ExpandMore';
 import MatchHistory from './MatchHistory';
 
 const Item = styled(Paper)(({ theme }) => ({

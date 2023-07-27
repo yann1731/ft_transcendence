@@ -83,7 +83,6 @@ export default function ProfileContainer() {
 }
 
 export function ReadOnlyProfile() {
-	const [open, setOpen] = useState(false);
  	const {user} = useContext(UserContext);
 	
 	return (
