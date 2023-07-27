@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Popover, Grid, Paper } from '@mui/material';
+import { Box, Popover, Grid, Paper, Typography } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -14,7 +14,7 @@ export default function MatchHistory() {
         setMatch(event.target.value);
     }
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    const handleHover = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     }
     const handleClose = () => {
@@ -32,35 +32,60 @@ export default function MatchHistory() {
     const id = open ? 'match-history-popover' : undefined;
 
     return (
-        <Box sx={{ width: '99%', textAlign: 'center'}}>
-            <FormControl fullWidth className="matchHistoryCombo">
-                <InputLabel 
-                    id="match-history" 
-                    className="matchHistoryInputLabel"
-                >
-                    Match History</InputLabel>
-                <Select
-                    labelId="match-history"
-                    id="match-history-label"
-                    value={matchType}
-                    label="Match History"
-                    onChange={handleChange}
-                >
-                    <MenuItem value=""><em>None</em></MenuItem>
-                    <MenuItem value={'1v1'} onClick={handleClick}>1 vs 1</MenuItem>
-                    <MenuItem value={'2v2'} onClick={handleClick}>2 vs 2</MenuItem>
-                    <MenuItem value={'1v3'} onClick={handleClick}>1 vs 3</MenuItem>
-                </Select>
-            </FormControl>
+        <Box sx={{ width: '99%', textAlign: 'center', marginTop: '15px' }}>
+            <Item>MATCH HISTORY</Item>
+        <Box sx={{ width: '99%', textAlign: 'center', marginTop: '15px', display: 'flex' }}>
+            <Box sx={{ width: '33%', marginRight: '5px' }}>
+            <Item>
+                <Typography
+                    aria-owns={open ? 'mouse-over-popover' : undefined }
+                    aria-haspopup="true"
+                    onMouseEnter={handleHover}
+                    onMouseLeave={handleClose}
+                    >
+                    1 vs 1
+                </Typography>
+            </Item>
+            </Box>
+            <Box sx={{ width: '33%', marginRight: '5px' }}>
+            <Item>
+                <Typography
+                    aria-owns={open ? 'mouse-over-popover' : undefined }
+                    aria-haspopup="true"
+                    onMouseEnter={handleHover}
+                    onMouseLeave={handleClose}
+                    >
+                    2 vs 2
+                </Typography>
+            </Item>
+            </Box>
+            <Box sx={{ width: '33%' }}>
+            <Item>
+                <Typography
+                    aria-owns={open ? 'mouse-over-popover' : undefined }
+                    aria-haspopup="true"
+                    onMouseEnter={handleHover}
+                    onMouseLeave={handleClose}
+                    >
+                    1 vs 3
+                </Typography>
+            </Item>
+            </Box>
             <Popover
-                id={id}
+                id="mouse-over-popover"
+                sx={{ pointerEvents: 'none', }}
                 open={open}
                 anchorEl={anchorEl}
-                onClose={handleClose}
                 anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
+                    vertical: 'bottom',
+                    horizontal: 'left',
                 }}
+                transformOrigin={{ 
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                onClose={handleClose}
+                disableRestoreFocus
                 >
                 <Box sx={{ p: 2 }}>
                     <div>
@@ -81,6 +106,7 @@ export default function MatchHistory() {
                     </div>
                 </Box>
             </Popover>
+        </Box>
         </Box>
     );
 }
