@@ -18,6 +18,7 @@ interface gameData {
     socket: any;
     ballX: number;
     ballY: number;
+    name: string;
 }
 
 export default class oneVSone extends Phaser.Scene{
@@ -29,25 +30,25 @@ export default class oneVSone extends Phaser.Scene{
     paddle2!: Phaser.Physics.Arcade.Sprite;
     paddle3!: Phaser.Physics.Arcade.Sprite;
     paddle4!: Phaser.Physics.Arcade.Sprite;
-
     wall1!: Phaser.Physics.Arcade.Sprite;
     wall2!: Phaser.Physics.Arcade.Sprite;
     wall3!: Phaser.Physics.Arcade.Sprite;
-
-    keys: any = {};
-
-    socket!: any;
-
-    points1: number = 0;
-    points2: number = 0;
-    win: number = 5;
-
     player1VictoryText!: Phaser.GameObjects.Text;
     player1Score!: Phaser.GameObjects.Text;
     player2VictoryText!: Phaser.GameObjects.Text;
     player2Score!: Phaser.GameObjects.Text;
     score!: Phaser.GameObjects.Text;
-    
+    menu!: Phaser.GameObjects.Text;
+    disconnect!: Phaser.GameObjects.Text;
+    bigPaddle!: Phaser.GameObjects.Text;
+    bigBall!: Phaser.GameObjects.Text;
+    smash!: Phaser.GameObjects.Text;
+    inverse!: Phaser.GameObjects.Text;
+    multiBall!: Phaser.GameObjects.Text;
+    power!: PowerUp;
+    points1: number = 0;
+    points2: number = 0;
+    win: number = 5;
     paddlespeed: number = 450;
     modifier1: number = 1;
     modifier2: number = 1;
@@ -61,23 +62,18 @@ export default class oneVSone extends Phaser.Scene{
     newOldVelocityX: number = 0;
     rotation: number = 1;
     oldPosition!: number;
-    power!: PowerUp;
-    
+    ballX!: number;
+    ballY!: number;
     face: boolean = false;
     wall: boolean = false;
     random: boolean = false;
     powerup: boolean = false;
     multi: boolean = false;
-    ballX!: number;
-    ballY!: number;
+    name!: string;
+    keys: any = {};
+    socket!: any;
 
-    bigPaddle!: Phaser.GameObjects.Text;
-    bigBall!: Phaser.GameObjects.Text;
-    smash!: Phaser.GameObjects.Text;
-    inverse!: Phaser.GameObjects.Text;
-    multiBall!: Phaser.GameObjects.Text;
-
-
+    
     constructor() {
         super('twoVStwoHost');
     }
@@ -90,6 +86,7 @@ export default class oneVSone extends Phaser.Scene{
         this.socket = data.socket
         this.ballX = data.ballX;
         this.ballY = data.ballY;
+        this.name = data.name;
     }
 
 	preload() {
@@ -305,6 +302,48 @@ export default class oneVSone extends Phaser.Scene{
     }
 
     text_init() {
+        this.menu = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8,
+            'Return to Menu',
+            {
+                fontFamily: 'pong',
+                fontSize: '25px',
+                color: '#ffffff',
+                backgroundColor: '#000000',
+                padding: {
+                    x: 10,
+                    y: 6
+                }
+            }    
+        );
+        this.menu.setOrigin(0.5);
+        this.menu.setVisible(false);
+        this.menu.setInteractive();
+		this.menu.on('pointerover', () => {
+			this.menu.setColor('#000000');
+			this.menu.setStyle({ backgroundColor: '#ffffff' });
+		});
+		this.menu.on('pointerout', () => {
+			this.menu.setColor('#ffffff');
+			this.menu.setStyle({ backgroundColor: '#000000' });
+		});
+		this.menu.on('pointerdown', () => {
+            this.shutdown();
+		})
+
+        this.disconnect = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2,
+            'A player has disconnected',
+            {
+                fontFamily: 'pong',
+                fontSize: '40px',
+            }
+        );
+        this.disconnect.setOrigin(0.5);
+        this.disconnect.setVisible(false);
+
         this.player1VictoryText = this.add.text(
             this.physics.world.bounds.width / 2,
             this.physics.world.bounds.height / 2,
@@ -450,6 +489,11 @@ export default class oneVSone extends Phaser.Scene{
                     this.paddle4.setY(data.newPos + this.paddle4.body.height / 2);
         })
 
+        this.socket.on("disconnected", () => {
+            this.menu.setVisible(true);
+            this.disconnect.setVisible(true);
+        })
+
         if (this.powerup){
             let x: number = Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10)
             let y: number = Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1);
@@ -537,20 +581,21 @@ export default class oneVSone extends Phaser.Scene{
     }
 
     end(player: number) {
+        this.socket.emit("end", {which: 1, name: this.name})
         if (this.power)
             this.power.setVisible(false);
-        if (player === 1)
-            this.player2VictoryText.setVisible(true);
-        else
-            this.player1VictoryText.setVisible(true);
         if (this.random === true || this.wall === true){
             this.wall1.setVisible(false);
             this.wall2.setVisible(false);
             this.wall3.setVisible(false);
         }
+        if (player === 1)
+            this.player2VictoryText.setVisible(true);
+        else
+            this.player1VictoryText.setVisible(true);
         this.paddle1.disableBody();
-        this.scene.pause();
-        return;
+        this.ball.destroy()
+        this.menu.setVisible(true);
     }
     
     update() {
@@ -808,5 +853,13 @@ export default class oneVSone extends Phaser.Scene{
         }, [], this);
 
         this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
+    }
+
+    shutdown() {
+        this.socket.off("movement");
+        this.socket.off("disconnected");
+
+        this.socket.emit("new");
+        this.game.destroy(true, false);
     }
 }

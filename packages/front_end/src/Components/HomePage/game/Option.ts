@@ -54,9 +54,7 @@ export default class option extends Phaser.Scene{
 	init(data: gameData) {
 		this.name = data.name;
 		this.socket = data.socket;
-	}
 
-	preload() {
 		this.load.bitmapFont('pong', '../../fonts/pong.ttf');
 
 		this.title = this.add.text(this.physics.world.bounds.width / 2, 100, 'PONG', {
@@ -269,6 +267,10 @@ export default class option extends Phaser.Scene{
 		this.settingThreeButton.setOrigin(0.5);
 		this.settingThreeButton.setVisible(false);
 	}
+
+	preload() {
+		
+	}
  
 	all() {
 		this.join.setInteractive();
@@ -394,27 +396,12 @@ export default class option extends Phaser.Scene{
 					this.starting.destroy()
 					this.position.destroy()
 
-					if (this.single === true){
-						this.scene.sleep();
-						this.scene.run('oneVSoneOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket, name: this.name});
-						this.title.setVisible(true);
-						this.join.setVisible(true);
-						this.start.setVisible(true);
-						this.powerButton.setVisible(true);
-						this.settingOneButton.setVisible(true);
-						this.mode.setVisible(true);
-						this.wallText.setVisible(true);
-						this.wallButton.setVisible(true);
-						this.randomButton.setVisible(true);
-					}
-					else if (this.multiple === true){
-						this.scene.sleep();
-						this.scene.run('threeVSoneOther', {power: data.powerUp, scaleRate: data.scale, socket: this.socket, player: this.player, name: this.name})
-					}
-					else{
-						this.scene.sleep();
-						this.scene.run('twoVStwoOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket, player: this.player, name: this.name});
-					}
+					if (this.single === true)
+						this.scene.start('oneVSoneOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket, name: this.name})
+					else if (this.multiple === true)
+						this.scene.start('threeVSoneOther', {power: data.powerUp, scaleRate: data.scale, socket: this.socket, player: this.player, name: this.name})
+					else
+						this.scene.start('twoVStwoOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket, player: this.player, name: this.name});
 				}, [], this);
 			});
 		})
@@ -473,6 +460,7 @@ export default class option extends Phaser.Scene{
 				this.socket.emit("3v1", {scale: this.rateSpeed, power: this.powerUp, name: this.name, start: true});
 			else 
 				this.socket.emit("2v2", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, name: this.name, start: true});
+			
 			this.socket.on("start", (data: any) =>{
 				waiting.setVisible(false);
 				this.starting = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
@@ -511,12 +499,15 @@ export default class option extends Phaser.Scene{
 					this.starting.setText('game starting in 1');
 				}, [], this);
 				this.event3 = this.time.delayedCall(3050, () => {
+					this.starting.destroy()
+					this.position.destroy()
+
 					if (this.single === true)
-					this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
+						this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
 					else if (this.multiple === true)
-					this.scene.start('threeVSoneHost', {power: this.powerUp, scaleRate: this.rateSpeed, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name})
+						this.scene.start('threeVSoneHost', {power: this.powerUp, scaleRate: this.rateSpeed, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name})
 					else
-					this.scene.start('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
+						this.scene.start('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
 				}, [], this);
 			});
 		})
@@ -734,7 +725,7 @@ export default class option extends Phaser.Scene{
 			this.slow.setInteractive(false);
 			
 			if (Phaser.Math.RND.between(1, 69) === 69)
-			this.faces = true;
+				this.faces = true;
 			
 			this.powerUp = Phaser.Math.RND.frac() ? true : false;
 			
@@ -791,9 +782,9 @@ export default class option extends Phaser.Scene{
 				}, [], this);
 				this.event3 = this.time.delayedCall(3050, () => {
 					if (this.single === true)
-						this.scene.run('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
+						this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
 					else
-						this.scene.run('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, face: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
+						this.scene.start('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, face: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
 				}, [], this);
 			});
 		});
@@ -948,7 +939,7 @@ export default class option extends Phaser.Scene{
 					this.starting.setText('game starting in 1');
 				}, [], this);
 				this.event3 = this.time.delayedCall(3050, () => {
-					this.scene.run('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name})
+					this.scene.start('threeVSone', {power: this.powerUp, scaleRate: this.rateSpeed, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name})
 				}, [], this);
 			});
 		})

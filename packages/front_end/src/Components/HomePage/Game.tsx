@@ -9,13 +9,15 @@ import twoVStwoHost from './game/twoVStwoHost';
 import twoVStwoOther from './game/twoVStwoOther'
 import Box from '@mui/material/Box';
 import { UserContext } from 'Contexts/userContext';
-import io from "socket.io-client"
+
+import { gamesocket } from 'Contexts/socketContext';
 
 export default function PongGame() {
     const {user} = React.useContext(UserContext);
-    const socket = io("http://localhost:4242/game")
+    const [test, setTest] = React.useState(1);
 
     React.useEffect(() => {
+      console.log("fuck yes")
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         parent: 'PONG',
@@ -42,13 +44,19 @@ export default function PongGame() {
       };
       
       const pong = new Phaser.Game(config);
-      pong.scene.start('menu', {name: user?.id, socket: socket});
+      pong.scene.start('menu', {name: user?.id, socket: gamesocket});
       return () => {
-        socket.disconnect();
         pong.destroy(true);
       }
-    }, [user]);
+    }, [test]);
 
+    gamesocket.on("new", () => {
+        console.log(test) 
+        setTest(test => test + 1);
+        console.log(test)
+    })
+
+    
     return (
         <Box id="PONG" style={{ maxHeight: '82.7vh' }}></Box>
     );

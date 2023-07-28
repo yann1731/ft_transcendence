@@ -8,6 +8,7 @@ import HomeGameBar from './HomeGameBar';
 import { UserContext } from 'Contexts/userContext';
 import SignIn from 'Components/Login/LoginPage';
 import LoginToolBar from 'Components/Login/LoginToolBar';
+import { gamesocket, SocketContext } from 'Contexts/socketContext';
 
 export default function Home() {
 	const { user } = useContext(UserContext);
@@ -24,21 +25,23 @@ export default function Home() {
 	}
 	return (
 		  <React.Fragment>
+			<SocketContext.Provider value={gamesocket}>
 				<CssBaseline />
-				<BackgroundContainer>
-					<div className="homeDashboard">
-						<div className="homeDashboardBoxes">
-							<DashboardAppBar />
-							<DashboardContainer/>
-						</div>
-						<div className="homeGameNChat">
-							<HomeGameBar />
-							<div className="font-face-gm">
-								<PongGame />
+					<BackgroundContainer>
+						<div className="homeDashboard">
+							<div className="homeDashboardBoxes">
+								<DashboardAppBar />
+								<DashboardContainer/>
+							</div>
+							<div className="homeGameNChat">
+								<HomeGameBar />
+								<div className="font-face-gm">
+									<PongGame />
+								</div>
 							</div>
 						</div>
-					</div>
-				</BackgroundContainer>	
+					</BackgroundContainer>	
+				</SocketContext.Provider>
 			</React.Fragment>
 	)
 }
