@@ -45,6 +45,10 @@ export class UpdateUserDto {
 
     @IsOptional()
     @IsString()
+    twoFaSecret?: string | null;
+
+    @IsOptional()
+    @IsString()
     refresh_token?: string;
 
     @IsOptional()

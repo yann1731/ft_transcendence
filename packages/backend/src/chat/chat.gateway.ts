@@ -11,16 +11,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   handleConnection() {
-    console.log("New client connected to chatSocket");
+    // console.log("New client connected to chatSocket");
   }
 
   handleDisconnect() {
-		console.log('Client disconnected from chatSocket');
+		// console.log('Client disconnected from chatSocket');
 	}
 
   @SubscribeMessage("test")
   handleTest(): void {
-    console.log("Routing Successful!");
+    // console.log("Routing Successful!");
   }
 
   @SubscribeMessage("chatroom")

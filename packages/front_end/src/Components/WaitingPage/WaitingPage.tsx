@@ -33,10 +33,15 @@ export default function GetToken() {
         console.log(newUser);
 
         setUser(newUser.data);
-        window.location.assign("http://localhost:3000/home");
+        if (newUser.data.twoFaEnabled === true) {
+          window.location.assign("http://localhost:3000/otp"); //changetoip
+        }
+        else
+          window.location.assign("http://localhost:3000/home"); //changetoip
       } catch (error) {
-        console.log("hit error");
+        alert('Something went wrong, please try again later');
         console.error(error);
+        window.location.assign("http://localhost:3000/"); //changetoip
       }
     };
 

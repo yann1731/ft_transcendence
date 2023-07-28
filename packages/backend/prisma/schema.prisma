@@ -37,6 +37,7 @@ model User {
   token                String            @unique
   token_created_at     Int
   token_expires_in     Int
+  token_expires_at     Int
   refresh_token        String            @unique
   email                String            @unique
   win                  Int               @default(0)
@@ -44,6 +45,7 @@ model User {
   gamesPlayed          Int               @default(0)
   userStatus           onlineStatus      @default(offline)
   twoFaEnabled         Boolean           @default(false)
+  twoFaSecret          String?
   friendListA          UserFriendship[]  @relation("userA")
   friendListB          UserFriendship[]  @relation("userB")
   blockedUsers         UserBlocks[]      @relation("blocker")
@@ -68,21 +70,18 @@ model Chatroom {
   @@map("Chatrooms")
 }
 
-  model ChatroomUser {
-    id String @id @default(uuid())
-
-    userId     String
-    user       User     @relation(fields: [userId], references: [id])
-    chatroomId String
-    chatroom   Chatroom @relation(fields: [chatroomId], references: [id], onDelete: Cascade)
-
-    permission userPermission @default(regular)
-    banStatus  Boolean @default(false)
-    banUntil   DateTime?
-    muteStatus Boolean @default(false)
-
-    @@map("ChatroomUsers")
-  }
+model ChatroomUser {
+  id String @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  chatroomId String
+  chatroom   Chatroom @relation(fields: [chatroomId], references: [id], onDelete: Cascade)
+  permission userPermission @default(regular)
+  banStatus  Boolean @default(false)
+  muteStatus Boolean @default(false)
+  muteUntil   Int?
+  @@map("ChatroomUsers")
+}
 
 model PrivateMessage {
   id String @id @default(uuid())
