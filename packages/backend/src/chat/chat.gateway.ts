@@ -10,6 +10,7 @@ import { CreatePasswordChatroomDto } from 'src/chatroom/dto/create-passwordChatr
 import { CreateChatroomuserDto } from 'src/chatroomuser/dto/create-chatroomuser.dto';
 import { UpdateChatroomuserDto } from 'src/chatroomuser/dto/update-chatroomuser.dto';
 import { ChatroomuserService } from 'src/chatroomuser/chatroomuser.service';
+import { Chatroom, ChatroomUser } from '@prisma/client';
 
 @WebSocketGateway({ cors: true, namespace: 'chatsocket' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -44,62 +45,33 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("create chatroom")
-  async createChatroom(client: Socket, data: CreateChatroomDto) {
-    const chatroom = await this.chatroomService.create(data);
-    if (chatroom)
-    {
-      this.server.to(client.id).emit("creation success", chatroom);
-      client.broadcast.emit("chatroom created", chatroom);
-    }
-    else
-      this.server.to(client.id).emit("creation failure", chatroom);
-  }
-  
-  @SubscribeMessage("create password chatroom")
-  async createPasswordChatroom(client: Socket, data: CreatePasswordChatroomDto) {
-    const chatroom = await this.chatroomService.createWithPass(data);
-    if (chatroom)
-    {
-      this.server.to(client.id).emit("creation success", chatroom);
-      client.broadcast.emit("chatroom created", chatroom);
-    }
-    else
-    this.server.to(client.id).emit("creation failure", chatroom);
+    createChatroom(client: Socket, data: Chatroom) {
+    console.log(data.name + " haaaaaaaaa")
+    client.broadcast.emit("chatroom created", data);
   }
   
   @SubscribeMessage("delete chatroom")
-  async deleteChatroom(client: Socket, data: string) {
-    const chatroom = await this.chatroomService.remove(data);
-    if (chatroom)
-    {
-      this.server.to(client.id).emit("deletion success", chatroom);
-      client.broadcast.emit("chatroom deleted", chatroom);
-    }
-    else
-    this.server.to(client.id).emit("deletion failure", chatroom);
+  deleteChatroom(client: Socket, data: Chatroom) {
+    this.server.emit("chatroom deleted", data);
   }
   
   @SubscribeMessage("update chatroom")
-  async updateChatroom(client: Socket, name: string, data: UpdateChatroomDto) {
-    const chatroom = await this.chatroomService.update(name, data);
-    if (chatroom)
-    {
-      this.server.to(client.id).emit("update success", chatroom);
-      client.broadcast.emit("chatroom updated", chatroom);
-    }
-    else
-    this.server.to(client.id).emit("update failure", chatroom);
+  updateChatroom(client: Socket, data: Chatroom) {
+    this.server.emit("chatroom updated", data);
   }
   
-  @SubscribeMessage("create chatroomuser")
-  async createChatroomUser(client: Socket, data: CreateChatroomuserDto) {
-    const chatroomUser = await this.chatroomUserService.create(data);
-    if (chatroomUser)
-    {
-      this.server.to(client.id).emit("chatroom joined", chatroomUser);
-      client.broadcast.emit("user joined", chatroomUser);
-    }
-    else
-      this.server.to(client.id).emit("joining failure", chatroomUser);
+  @SubscribeMessage("join chatroom")
+  createChatroomUser(client: Socket, data: ChatroomUser, chat: Chatroom) {
+    client.broadcast.emit("user joined", data, chat);
+  }
+  
+  @SubscribeMessage("delete chatroomuser")
+  removeChatroomUser(client: Socket, data: ChatroomUser) {
+    client.broadcast.emit("user removed", data);
+  }
+
+  @SubscribeMessage("update chatroomuser")
+  updateChatroomUser(client: Socket, data: ChatroomUser) {
+    client.broadcast.emit("user updated", data);
   }
 }
