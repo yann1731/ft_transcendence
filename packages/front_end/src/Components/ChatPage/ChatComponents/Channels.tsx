@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Chatroom, ChatroomUser, ChatInUse, chatroomType } from 'Components/Interfaces';
 import axios from 'axios';
 import { UserContext, User } from 'Contexts/userContext';
+import { socket } from 'Contexts/socketContext';
   
 interface MyChannelsProps {
     searchText: string;
@@ -13,7 +14,7 @@ interface MyChannelsProps {
     const [joinedChannels, setJoinedChannels] = useState<Chatroom[]>([]);
     const {updateUser, user} = useContext(UserContext);
     
-    useEffect(() => {
+    /*useEffect(() => {
       const fetchChannels = async () => {
         try {
           const response = await axios.get('http://localhost:4242/chatroom', {headers: {
@@ -24,48 +25,54 @@ interface MyChannelsProps {
           if (response.status === 200) {
             setChannels(response.data);
           }
+          try {
+            const response = await axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }})
+            
+            if (response.status === 200) {
+              const chatroomUsersData: ChatroomUser[] = response.data;
+              const chans: Chatroom[] = [];
+              
+              channels.forEach((channel: Chatroom) => {
+                chatroomUsersData.forEach((users: ChatroomUser) => {
+                  if (channel?.id === users?.chatroomId && users.banStatus !== true)
+                  chans.push(channel);
+                })
+              });
+              setJoinedChannels(chans)
+              console.log('ChatroomUsers fetched: ', response.data);
+            }
+          } catch (error) {
+            console.error('Error getting ChatroomUsers: ', error);
+            alert('Error: could not get ChatroomUsers: ' + error);
+          }
         } catch (error) {
           console.error('Error getting chatrooms:', error);
           alert('Error: could not get chatrooms: ' + error);
         }
       };
       fetchChannels();
-    }, [user]);
+    }, []); */
     
-    useEffect(() => {
+/*     useEffect(() => {
       const fetchJoinedChannels = async () => {
-        try {
-          const response = await axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
-            'Authorization': user?.token,
-            'userId': user?.id
-          }})
-          
-          if (response.status === 200) {
-            const chatroomUsersData: ChatroomUser[] = response.data;
-            const chans: Chatroom[] = [];
-
-            channels.forEach((channel: Chatroom) => {
-              chatroomUsersData.forEach((users: ChatroomUser) => {
-                if (channel?.id === users?.chatroomId && users.banStatus !== true)
-                  chans.push(channel);
-              })
-            });
-            setJoinedChannels(chans)
-            console.log('ChatroomUsers fetched: ', response.data);
-          }
-        } catch (error) {
-          console.error('Error getting ChatroomUsers: ', error);
-          alert('Error: could not get ChatroomUsers: ' + error);
-        }
-      };
       fetchJoinedChannels();
-    }, [channels]);
+    }, []); */
     
+/*     useEffect(() => {
+      socket.on("creation success", (data: Chatroom) => {
+        setChannels((prevChat: Chatroom[]) => [...prevChat, data]);
+        setJoinedChannels((prevChat: Chatroom[]) => [...prevChat, data]);
+      });
+    }, []) */
+
     const SetChatInUse = (name: string) => {
       const decodedName = decodeURIComponent(name);
       if (user !== null)
       {
-        const chatroom = joinedChannels.find((chat: Chatroom) => {
+        const chatroom = user?.Chatroom?.find((chat: Chatroom) => {
           return chat.name === decodedName;
         });
         if (chatroom !== undefined)
@@ -83,13 +90,13 @@ interface MyChannelsProps {
       }
     };
 
-    const filteredChannels = joinedChannels.filter((channel: Chatroom) =>
+    const filteredChannels = user?.Chatroom?.filter((channel: Chatroom) =>
       channel.name.toLowerCase().includes(searchText.toLowerCase())
     );
     
     return (
       <List>
-        {filteredChannels.map((channel: Chatroom) => {
+        {filteredChannels?.map((channel: Chatroom) => {
           const decodedName = decodeURIComponent(channel.name);
           const encodedName = encodeURIComponent(channel.name);
           return (

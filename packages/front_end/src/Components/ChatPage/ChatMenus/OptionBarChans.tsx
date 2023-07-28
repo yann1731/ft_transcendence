@@ -26,6 +26,7 @@ const OptionBarChans: React.FC = () => {
   const [ownChatroom, setOwnChatroom] = useState<Chatroom[]>([]);
   const [adminChatroom, setAdminChatroom] = useState<Chatroom[]>([]);
   const [joinChatroom, setJoinChatroom] = useState<Chatroom[]>([]);
+  const [userChatroom, setUserChatroom] = useState<Chatroom[]>([]);
   const {user, updateUser} = useContext(UserContext);
   const theme = useTheme();
   const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
@@ -60,13 +61,18 @@ const OptionBarChans: React.FC = () => {
               const adminChatroom: Chatroom[] = [];
               const ownChatroom: Chatroom[] = [];
               const joinChatroom: Chatroom[] = [];
+              const userChatroom: Chatroom[] = [];
               chatroomData.forEach((chat: Chatroom) => {
                 const isJoined = chatroomUsersData.find(user => user.chatroomId === chat.id);
-                if (isJoined?.permission === "admin")
+                if (isJoined?.permission === userPermission.regular || isJoined?.permission === userPermission.owner || isJoined?.permission === userPermission.admin)
+                {
+                  userChatroom.push(chat);
+                }
+                if (isJoined?.permission === userPermission.admin)
                 {
                   adminChatroom.push(chat);
                 }
-                else if (isJoined?.permission === "owner")
+                else if (isJoined?.permission === userPermission.owner)
                 {
                   adminChatroom.push(chat);
                   ownChatroom.push(chat);
@@ -82,6 +88,9 @@ const OptionBarChans: React.FC = () => {
               setAdminChatroom(adminChatroom);
               setOwnChatroom(ownChatroom);
               setJoinChatroom(joinChatroom);
+              setUserChatroom(userChatroom);
+              const updatedUser: Partial<User> = { ...user, Chatroom:  userChatroom};
+              updateUser(updatedUser);    
             }
           } catch (error) {
             console.error('Error getting ChatroomUsers: ', error);
@@ -103,6 +112,12 @@ const OptionBarChans: React.FC = () => {
       console.log('Chatroom created successfully!');
       setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, data]);
       setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, data]);
+      setUserChatroom((prevUserChat: Chatroom[]) => [...prevUserChat, data]);
+      if (user)
+      {
+        const updatedUser: Partial<User> = { ...user, Chatroom: user.Chatroom ? [...user.Chatroom, data] : [data]};
+        updateUser(updatedUser);
+      }  
     });
     socket.on("creation failure", () => { 
       console.error('Error creating chatroom:');
@@ -112,9 +127,10 @@ const OptionBarChans: React.FC = () => {
       setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.filter((chat: Chatroom) => chat.name !== data.name));
       setAdminChatroom((prevAdminChat: Chatroom[]) => prevAdminChat.filter((chat: Chatroom) => chat.name !== data.name));
       setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== data.name));
+      setUserChatroom((prevUserChat: Chatroom[]) => prevUserChat.filter((chat: Chatroom) => chat.name !== data.name));
       if (data.id == user?.chatInUse?.chat?.id)
       {
-        const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
+        const updatedUser: Partial<User> = { ...user, chatInUse: undefined, Chatroom: userChatroom };
         updateUser(updatedUser);    
       }
     })
@@ -124,7 +140,8 @@ const OptionBarChans: React.FC = () => {
       setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.filter((chat: Chatroom) => chat.name !== data.name));
       setAdminChatroom((prevAdminChat: Chatroom[]) => prevAdminChat.filter((chat: Chatroom) => chat.name !== data.name));
       setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== data.name));
-      const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
+      setJoinChatroom((prevUserChat: Chatroom[]) => prevUserChat.filter((chat: Chatroom) => chat.name !== data.name));
+      const updatedUser: Partial<User> = { ...user, chatInUse: undefined, Chatroom: userChatroom };
       updateUser(updatedUser);
     })
     socket.on("deletion failure", () => {
@@ -132,13 +149,23 @@ const OptionBarChans: React.FC = () => {
       alert('Error deleting chatroom');
     })
     socket.on("update success", (data: Chatroom) => {
-        console.log('Chatroom modified: ', data);
-        const newChatInUse: ChatInUse = {
-          chat: data,
-          type: chatroomType.channel,
-        }
-        const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
-        updateUser(updatedUser);
+      console.log('Chatroom modified: ', data);
+      const newChatInUse: ChatInUse = {
+        chat: data,
+        type: chatroomType.channel,
+      }
+      if (data.userId === user?.id)
+      {
+        setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.filter((chat: Chatroom) => chat.name !== data.name));
+        setAdminChatroom((prevAdminChat: Chatroom[]) => prevAdminChat.filter((chat: Chatroom) => chat.name !== data.name));
+      }
+      else
+      {
+        setAdminChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== data.name));
+      }
+      setUserChatroom((prevUserChat: Chatroom[]) => prevUserChat.filter((chat: Chatroom) => chat.name !== data.name));
+      const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: userChatroom};
+      updateUser(updatedUser);
     })
     socket.on("update failure", () => {
       console.error('Error editing chatroom');
@@ -146,27 +173,33 @@ const OptionBarChans: React.FC = () => {
     })
     socket.on("chatroom updated", (data: Chatroom) => {
       setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== data.name));
+      setUserChatroom((prevUserChat: Chatroom[]) => prevUserChat.filter((chat: Chatroom) => chat.name !== data.name));
+      setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.filter((chat: Chatroom) => chat.name !== data.name));
+      setAdminChatroom((prevAdminChat: Chatroom[]) => prevAdminChat.filter((chat: Chatroom) => chat.name !== data.name));
       if (data.id !== user?.chatInUse?.chat?.id)
       {
         const newChatInUse: ChatInUse = {
           chat: data,
           type: chatroomType.channel,
         }
-        const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
+        const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: userChatroom };
         updateUser(updatedUser);
       }
     })
-    // TODO chatroom inexistant, voire coment arranger ça
     socket.on("chatroom joined", (data: ChatroomUser) => {
       console.log('User added to chatroom', data);
-      setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== data.chatroom?.name));
-      if (data?.chatroom !== undefined)
+      const newChan = joinChatroom.find((chan: Chatroom) => {
+        return chan.id === data.chatroomId;
+      })
+      if (newChan !== undefined)
       {
+        setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== newChan.name));
+        setUserChatroom((prevUserChat: Chatroom[]) => [...prevUserChat, newChan]);
         const newChatInUse: ChatInUse = {
-            chat: data?.chatroom,
-            type: chatroomType.channel,
+          chat: newChan,
+          type: chatroomType.channel,
         }
-        const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
+        const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: userChatroom };
         updateUser(updatedUser);
       }
       setDialog(false);
