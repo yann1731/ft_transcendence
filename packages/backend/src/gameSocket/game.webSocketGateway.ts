@@ -83,7 +83,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					this.threeGame.splice(i, 1);
 					break;
 				}
-<<<<<<< HEAD
 		
 		this.users.delete(client.id);
 	}
@@ -91,8 +90,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	@SubscribeMessage("connected")
 	handledConnected(client: Socket, data: any){
 		this.users.set(client.id, data.name);
-=======
->>>>>>> 717b14cb787c2dccd5cace5bc6e61ffb33c23800
 	}
 
 	@SubscribeMessage("movement")
@@ -114,7 +111,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	}
 
 	@SubscribeMessage("end")
-<<<<<<< HEAD
 	async handleEnd(client: Socket, data: any){
 		if (data.which === 1){
 			for (let i = 0; i < this.oneGame.length; i++)
@@ -158,12 +154,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 						console.error("Error updating user data");
 					}
 
-=======
-	handleEnd(client: Socket, data: any){
-		if (data.which === 1){
-			for (let i = 0; i < this.oneGame.length; i++)
-				if (this.oneGame[i][0] === data.name){
->>>>>>> 717b14cb787c2dccd5cace5bc6e61ffb33c23800
 					this.oneGame.splice(i, 1);
 					break;
 				}
@@ -171,7 +161,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 		if (data.which === 2){
 			for (let i = 0; i < this.twoGame.length; i++)
 				if (this.twoGame[i][0] === data.name){
-<<<<<<< HEAD
 					try {
 							await prisma.user.update({
 							where: {id: this.users.get(this.twoGame[i][1])},
@@ -334,15 +323,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 
 
-=======
-					this.twoGame.splice(i, 1);
-					break;
-				}
-		}
-		if (data.which === 3){
-			for (let i = 0; i < this.threeGame.length; i++)
-				if (this.threeGame[i][0] === data.name){
->>>>>>> 717b14cb787c2dccd5cace5bc6e61ffb33c23800
 					this.threeGame.splice(i, 1);
 					break;
 				}
