@@ -1,5 +1,8 @@
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { PrismaClient } from "@prisma/client";
 import { Server, Socket } from "socket.io";
+
+const prisma = new PrismaClient();
 
 @WebSocketGateway({ cors: true, namespace: 'game'})
 export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
@@ -17,6 +20,8 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	threeHost: [Socket, string, boolean, number][] = []
 	threeWaiting: Socket[] = []
 
+	users: Map<string, string> = new Map<string, string>();
+
 	oneGame: [string, string, string][] = []
 	twoGame: [string, string, string, string, string][] = []
 	threeGame: [string, string, string, string, string][] = []
@@ -28,8 +33,9 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
     YvelocityMin: number = 125;
     YvelocityMax: number = 225;
 
-	handleConnection() {
+	handleConnection(client: Socket) {
 		console.log('New client connected to gameSocket');
+		this.server.to(client.id).emit("connected");
 	}
 	 
 	handleDisconnect(client: Socket) {
@@ -77,6 +83,13 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					this.threeGame.splice(i, 1);
 					break;
 				}
+		
+		this.users.delete(client.id);
+	}
+
+	@SubscribeMessage("connected")
+	handledConnected(client: Socket, data: any){
+		this.users.set(client.id, data.name);
 	}
 
 	@SubscribeMessage("movement")
@@ -98,10 +111,49 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	}
 
 	@SubscribeMessage("end")
-	handleEnd(client: Socket, data: any){
+	async handleEnd(client: Socket, data: any){
 		if (data.which === 1){
 			for (let i = 0; i < this.oneGame.length; i++)
 				if (this.oneGame[i][0] === data.name){
+					try {
+							await prisma.user.update({
+							where: {id: this.users.get(this.oneGame[i][1])},
+							data: {
+								win: {
+									increment: data.player ? 0 : 1,
+								},
+								loss: {
+									increment: data.player ? 1 : 0,
+								},
+								gamesPlayed: {
+									increment: 1,
+								}
+							},
+						})
+					}
+					catch (error){
+						console.error("Error updating user data");
+					}
+					try {
+							await prisma.user.update({
+							where: {id: this.users.get(this.oneGame[i][2])},
+							data: {
+								win: {
+									increment: data.player ? 1 : 0,
+								},
+								loss: {
+									increment: data.player ? 0 : 1,
+								},
+								gamesPlayed: {
+									increment: 1,
+								}
+							},
+						})
+					}
+					catch (error){
+						console.error("Error updating user data");
+					}
+
 					this.oneGame.splice(i, 1);
 					break;
 				}
@@ -109,13 +161,168 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 		if (data.which === 2){
 			for (let i = 0; i < this.twoGame.length; i++)
 				if (this.twoGame[i][0] === data.name){
+					try {
+							await prisma.user.update({
+							where: {id: this.users.get(this.twoGame[i][1])},
+							data: {
+								win: {
+									increment: data.player ? 0 : 1,
+								},
+								loss: {
+									increment: data.player ? 1 : 0,
+								},
+								gamesPlayed: {
+									increment: 1,
+								}
+							},
+						})
+					}
+					catch (error){
+						console.error("Error updating user data");
+					}
+					try {
+							await prisma.user.update({
+							where: {id: this.users.get(this.twoGame[i][2])},
+							data: {
+								win: {
+									increment: data.player ? 1 : 0,
+								},
+								loss: {
+									increment: data.player ? 0 : 1,
+								},
+								gamesPlayed: {
+									increment: 1,
+								}
+							},
+						})
+					}
+					catch (error){
+						console.error("Error updating user data");
+					}
+					try {
+							await prisma.user.update({
+							where: {id: this.users.get(this.twoGame[i][3])},
+							data: {
+								win: {
+									increment: data.player ? 0 : 1,
+								},
+								loss: {
+									increment: data.player ? 1 : 0,
+								},
+								gamesPlayed: {
+									increment: 1,
+								}
+							},
+						})
+					}
+					catch (error){
+						console.error("Error updating user data");
+					}
+					try {
+							await prisma.user.update({
+							where: {id: this.users.get(this.twoGame[i][4])},
+							data: {
+								win: {
+									increment: data.player ? 1 : 0,
+								},
+								loss: {
+									increment: data.player ? 0 : 1,
+								},
+								gamesPlayed: {
+									increment: 1,
+								}
+							},
+						})
+					}
+					catch (error){
+						console.error("Error updating user data");
+					}
+
 					this.twoGame.splice(i, 1);
 					break;
 				}
-		}
+		}	
 		if (data.which === 3){
 			for (let i = 0; i < this.threeGame.length; i++)
 				if (this.threeGame[i][0] === data.name){
+					try {
+							await prisma.user.update({
+							where: {id: this.users.get(this.threeGame[i][1])},
+							data: {
+								win: {
+									increment: data.player ? 0 : 1,
+								},
+								loss: {
+									increment: data.player ? 1 : 0,
+								},
+								gamesPlayed: {
+									increment: 1,
+								}
+							},
+						})
+					}
+					catch (error){
+						console.error("Error updating user data");
+					}
+					try {
+							await prisma.user.update({
+							where: {id: this.users.get(this.threeGame[i][2])},
+							data: {
+								win: {
+									increment: data.player ? 1 : 0,
+								},
+								loss: {
+									increment: data.player ? 0 : 1,
+								},
+								gamesPlayed: {
+									increment: 1,
+								}
+							},
+						})
+					}
+					catch (error){
+						console.error("Error updating user data");
+					}
+					try {
+							await prisma.user.update({
+							where: {id: this.users.get(this.threeGame[i][3])},
+							data: {
+								win: {
+									increment: data.player ? 1 : 0,
+								},
+								loss: {
+									increment: data.player ? 0 : 1,
+								},
+								gamesPlayed: {
+									increment: 1,
+								}
+							},
+						})
+					}
+					catch (error){
+						console.error("Error updating user data");
+					}
+					try {
+							await prisma.user.update({
+							where: {id: this.users.get(this.threeGame[i][4])},
+							data: {
+								win: {
+									increment: data.player ? 1 : 0,
+								},
+								loss: {
+									increment: data.player ? 0 : 1,
+								},
+								gamesPlayed: {
+									increment: 1,
+								}
+							},
+						})
+					}
+					catch (error){
+						console.error("Error updating user data");
+					}
+
+
 					this.threeGame.splice(i, 1);
 					break;
 				}

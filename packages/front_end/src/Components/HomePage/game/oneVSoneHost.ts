@@ -541,7 +541,7 @@ export default class oneVSoneHost extends Phaser.Scene{
     }
 
     end(player: number) {
-        this.socket.emit("end", {which: 1, name: this.name})
+        this.socket.emit("end", {which: 1, name: this.name, player: player})
         if (this.power)
             this.power.setVisible(false);
         if (this.random === true || this.wall === true){

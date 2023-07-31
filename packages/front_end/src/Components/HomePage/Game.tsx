@@ -15,9 +15,8 @@ import { gamesocket } from 'Contexts/socketContext';
 export default function PongGame() {
     const {user} = React.useContext(UserContext);
     const [test, setTest] = React.useState(1);
-
+    
     React.useEffect(() => {
-      console.log("fuck yes")
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         parent: 'PONG',
@@ -49,6 +48,10 @@ export default function PongGame() {
         pong.destroy(true);
       }
     }, [test]);
+
+    gamesocket.on("connected", () => {
+      gamesocket.emit("connected", {name: user?.id})
+    })
 
     gamesocket.on("new", () => {
         console.log(test) 

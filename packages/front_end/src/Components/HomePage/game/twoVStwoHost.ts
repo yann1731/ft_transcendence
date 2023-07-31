@@ -581,7 +581,7 @@ export default class oneVSone extends Phaser.Scene{
     }
 
     end(player: number) {
-        this.socket.emit("end", {which: 1, name: this.name})
+        this.socket.emit("end", {which: 1, name: this.name, player: player})
         if (this.power)
             this.power.setVisible(false);
         if (this.random === true || this.wall === true){
@@ -618,64 +618,64 @@ export default class oneVSone extends Phaser.Scene{
                 this.new_point(1);
         }
 
-    if (this.multi)
-        if (this.multiball.body)
-            if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width) {
-                this.multiball.body.x = this.physics.world.bounds.width - 1 - this.multiball.body.width;;
-                this.socket.emit("point", 1);
-                this.smash.setVisible(false);
-                this.bigBall.setVisible(false);
-                this.bigPaddle.setVisible(false);
-                this.inverse.setVisible(false);
-                this.multiBall.setVisible(false);
-                this.points2++;
-                this.multiball.disableBody();
-                this.score.setText(`${this.points2}          ${this.points1}`);
-                if (this.points2 === this.win)
-                    this.end(2);
-                else
-                    this.new_point(1);
-            }
+        if (this.multi)
+            if (this.multiball.body)
+                if (this.multiball.body?.x + this.multiball.body.width === this.physics.world.bounds.width) {
+                    this.multiball.body.x = this.physics.world.bounds.width - 1 - this.multiball.body.width;;
+                    this.socket.emit("point", 1);
+                    this.smash.setVisible(false);
+                    this.bigBall.setVisible(false);
+                    this.bigPaddle.setVisible(false);
+                    this.inverse.setVisible(false);
+                    this.multiBall.setVisible(false);
+                    this.points2++;
+                    this.multiball.disableBody();
+                    this.score.setText(`${this.points2}          ${this.points1}`);
+                    if (this.points2 === this.win)
+                        this.end(2);
+                    else
+                        this.new_point(1);
+                }
     
-    if (this.ball.body)
-        if (this.ball.body?.x === 0) {
-            this.ball.body.x = 1;
-            this.socket.emit("point", 0);
-            this.smash.setVisible(false);
-            this.bigBall.setVisible(false);
-            this.bigPaddle.setVisible(false);
-            this.inverse.setVisible(false);
-            this.multiBall.setVisible(false);
-            if (this.multi === true)
-            this.multiball.disableBody();
-            this.points1++;
-            this.score.setText(`${this.points2}          ${this.points1}`);
-            if (this.points1 === this.win)
-            this.end(1);
-            else
-            this.new_point(2);
-        }
-        
-    if (this.multi)
-        if (this.multiball.body)
-        if (this.multiball.body?.x === 0) {
-            this.multiball.body.x = 1;
-            this.socket.emit("point", 0);
+        if (this.ball.body)
+            if (this.ball.body?.x === 0) {
+                this.ball.body.x = 1;
+                this.socket.emit("point", 0);
                 this.smash.setVisible(false);
                 this.bigBall.setVisible(false);
                 this.bigPaddle.setVisible(false);
                 this.inverse.setVisible(false);
                 this.multiBall.setVisible(false);
+                if (this.multi === true)
                 this.multiball.disableBody();
                 this.points1++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points1 === this.win)
-                    this.end(1);
+                this.end(1);
                 else
-                    this.new_point(2);
+                this.new_point(2);
             }
-        
-    this.paddle1.setVelocityY(0);
+            
+        if (this.multi)
+            if (this.multiball.body)
+            if (this.multiball.body?.x === 0) {
+                this.multiball.body.x = 1;
+                this.socket.emit("point", 0);
+                    this.smash.setVisible(false);
+                    this.bigBall.setVisible(false);
+                    this.bigPaddle.setVisible(false);
+                    this.inverse.setVisible(false);
+                    this.multiBall.setVisible(false);
+                    this.multiball.disableBody();
+                    this.points1++;
+                    this.score.setText(`${this.points2}          ${this.points1}`);
+                    if (this.points1 === this.win)
+                        this.end(1);
+                    else
+                        this.new_point(2);
+                }
+            
+        this.paddle1.setVelocityY(0);
 
         
         if (this.keys.w.isDown)
