@@ -17,6 +17,7 @@ export default function PongGame() {
     const [test, setTest] = React.useState(1);
     
     React.useEffect(() => {
+      console.log("fuck yes")
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         parent: 'PONG',
