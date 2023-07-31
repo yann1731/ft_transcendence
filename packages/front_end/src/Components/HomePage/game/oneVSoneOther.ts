@@ -8,30 +8,19 @@ interface gameData {
     wall: boolean;
     face: boolean;
     socket: any;
+    name: string;
 }
 
 export default class oneVSoneOther extends Phaser.Scene{
 
 	ball!: Phaser.Physics.Arcade.Sprite;
     multiball!: Phaser.Physics.Arcade.Sprite;
-    paddle!: Phaser.Physics.Arcade.Sprite;
     paddle1!: Phaser.Physics.Arcade.Sprite;
     paddle2!: Phaser.Physics.Arcade.Sprite;
-
     power!: Phaser.Physics.Arcade.Sprite;
     wall1!: Phaser.Physics.Arcade.Sprite;
     wall2!: Phaser.Physics.Arcade.Sprite;
     wall3!: Phaser.Physics.Arcade.Sprite;
-
-    keys: any = {};
-
-    socket!: any;
-
-    points1: number = 0;
-    points2: number = 0;
-    win: number = 5;
-    rotation: number = 1;
-
     player1VictoryText!: Phaser.GameObjects.Text;
     player1Score!: Phaser.GameObjects.Text;
     player2VictoryText!: Phaser.GameObjects.Text;
@@ -42,18 +31,25 @@ export default class oneVSoneOther extends Phaser.Scene{
     smash!: Phaser.GameObjects.Text;
     inverse!: Phaser.GameObjects.Text;
     multiBall!: Phaser.GameObjects.Text;
-    
+    menu!: Phaser.GameObjects.Text;
+    disconnect!: Phaser.GameObjects.Text;
+    points1: number = 0;
+    points2: number = 0;
+    win: number = 1;
+    rotation: number = 1;
     paddlespeed: number = 450;
     modifier: number = 1;
-    
     oldPosition!: number;
-
     face: boolean = false;
     random: boolean = false
     wall: boolean = false;
     multi: boolean = false;
     start: boolean = true;
+    name!: string;
+    keys: any = {};
+    socket!: any;
 
+    
     constructor() {
         super('oneVSoneOther');
     }
@@ -63,9 +59,12 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.wall = data.wall;
         this.face = data.face; 
         this.socket = data.socket
+        this.name = data.name
     }
 
 	preload() {
+        if (this.face)
+            this.load.image("background", "https://cdn.intra.42.fr/users/02bd0e2e6838f9e0f6d36bd7968465d6/yst-laur.jpg");
         if (this.face === true){
             this.load.image("ball", String(require('../../../images/anhebert.png')));
             this.load.image("bigBall", String(require('../../../images/jrossign.png')));
@@ -90,8 +89,6 @@ export default class oneVSoneOther extends Phaser.Scene{
         else
             this.load.image("power", String(require("../../../images/power.png")));
 
-        if (this.face)
-            this.load.image("background", "https://cdn.intra.42.fr/users/02bd0e2e6838f9e0f6d36bd7968465d6/yst-laur.jpg");
     }
 
     map_init() {
@@ -139,30 +136,16 @@ export default class oneVSoneOther extends Phaser.Scene{
     }
 
     paddle_init() {
-        if (this.face === true){
-            this.paddle1 = this.physics.add.sprite(
-                (this.ball.width * 0.2) / 2 + 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-            this.paddle2 = this.physics.add.sprite(
-                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-        }
-        else{
-            this.paddle1 = this.physics.add.sprite(
-                (this.ball.width * 0.2) / 2 + 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-            this.paddle2 = this.physics.add.sprite(
-                this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
-                this.physics.world.bounds.height / 2,
-                "paddle"
-            )
-        }
+        this.paddle1 = this.physics.add.sprite(
+            (this.ball.width * 0.2) / 2 + 1,
+            this.physics.world.bounds.height / 2,
+            "paddle"
+        )
+        this.paddle2 = this.physics.add.sprite(
+            this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
+            this.physics.world.bounds.height / 2,
+            "paddle"
+        )
         this.oldPosition = this.physics.world.bounds.height / 2;
 
         this.paddle1.setImmovable(true);
@@ -175,8 +158,50 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.paddle2.setCollideWorldBounds(true)
     }
 
-    
     text_init() {
+        this.menu = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8,
+            'Return to Menu',
+            {
+                fontFamily: 'pong',
+                fontSize: '25px',
+                color: '#ffffff',
+                backgroundColor: '#000000',
+                padding: {
+                    x: 10,
+                    y: 6
+                }
+            }    
+        );
+        this.menu.setOrigin(0.5);
+        this.menu.setVisible(false);
+        this.menu.setInteractive();
+		this.menu.on('pointerover', () => {
+			this.menu.setColor('#000000');
+			this.menu.setStyle({ backgroundColor: '#ffffff' });
+		});
+		this.menu.on('pointerout', () => {
+			this.menu.setColor('#ffffff');
+			this.menu.setStyle({ backgroundColor: '#000000' });
+		});
+		this.menu.on('pointerdown', () => {
+            this.shutdown();
+		})
+
+        this.disconnect = this.add.text(
+            this.physics.world.bounds.width / 2,
+            this.physics.world.bounds.height / 2,
+            'A player has disconnected',
+            {
+                fontFamily: 'pong',
+                fontSize: '40px',
+            }
+        );
+        this.disconnect.setOrigin(0.5);
+        this.disconnect.setVisible(false);
+
+
         this.player1VictoryText = this.add.text(
             this.physics.world.bounds.width / 2,
             this.physics.world.bounds.height / 2,
@@ -371,6 +396,12 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.socket.on("power", (data: any) => {
             this.power.setVisible(false);
             switch (data.which){
+                case 1:
+                    this.smash.setVisible(true);
+                    this.time.delayedCall(1000, () => {
+                        this.smash.setVisible(false)
+                    }, [], this);
+                    break;
                 case 2:
                     this.bigPaddle.setVisible(true);
                     this.time.delayedCall(1000, () => {
@@ -428,6 +459,8 @@ export default class oneVSoneOther extends Phaser.Scene{
         })
 
         this.socket.on("point", (which: number) => {
+            let end = false;
+
             this.smash.setVisible(false);
             this.bigBall.setVisible(false);
             this.bigPaddle.setVisible(false);
@@ -446,51 +479,61 @@ export default class oneVSoneOther extends Phaser.Scene{
             else
                 this.points1++;
             this.score.setText(`${this.points2}          ${this.points1}`);
-            if (this.points2 === 5){
+            if (this.points2 === this.win){
                 this.player1VictoryText.setVisible(true);
-                this.scene.pause()
+                this.menu.setVisible(true);
+                this.ball.disableBody(true);
+                end = true;
             }
-            else if (this.points1 === 5){
+            else if (this.points1 === this.win){
                 this.player2VictoryText.setVisible(true);
-                this.scene.pause()
+                this.menu.setVisible(true);
+                this.ball.disableBody(true);
+                end = true;
             }
             else if (which === 1)
                 this.player1Score.setVisible(true);
             else
                 this.player2Score.setVisible(true);
             this.rotation = 0;
-            this.time.delayedCall(1500, () => {
-                if (this.multi === true)
-                        this.multiball.destroy();
-                this.rotation = 1;
-                this.player1Score.setVisible(false);
-                this.player2Score.setVisible(false);
-                this.paddle2.enableBody();
-                this.ball.setX(this.physics.world.bounds.width / 2);
-                this.ball.setY(this.physics.world.bounds.height / 2);
-                this.paddle2.setY(this.physics.world.bounds.height / 2);
-                if (this.multi === true)
-                    this.multiball.destroy(true);
-                this.multi = false;
-                this.paddlespeed = 400;
-                this.modifier = 1;
-                this.paddle1.setScale(0.15, 0.25);
-                this.paddle2.setScale(0.15, 0.25);
-                this.ball.setTexture("ball")
-                this.ball.setScale(0.2);
-                if (this.random === true || this.wall === true){
-                    this.wall1.setVisible(true);
-                    this.wall2.setVisible(true);
-                    this.wall3.setVisible(true);
-                }
-            }, [], this);
+            if (end !== true){
+                this.time.delayedCall(1500, () => {
+                    if (this.multi === true)
+                            this.multiball.destroy();
+                    this.rotation = 1;
+                    this.player1Score.setVisible(false);
+                    this.player2Score.setVisible(false);
+                    this.paddle2.enableBody();
+                    this.ball.setX(this.physics.world.bounds.width / 2);
+                    this.ball.setY(this.physics.world.bounds.height / 2);
+                    this.paddle2.setY(this.physics.world.bounds.height / 2);
+                    if (this.multi === true)
+                        this.multiball.destroy(true);
+                    this.multi = false;
+                    this.paddlespeed = 400;
+                    this.modifier = 1;
+                    this.paddle1.setScale(0.15, 0.25);
+                    this.paddle2.setScale(0.15, 0.25);
+                    this.ball.setTexture("ball")
+                    this.ball.setScale(0.2);
+                    if (this.random === true || this.wall === true){
+                        this.wall1.setVisible(true);
+                        this.wall2.setVisible(true);
+                        this.wall3.setVisible(true);
+                    }
+                }, [], this);
+            }
         })
+
+        this.socket.on("disconnected", () => {
+            this.menu.setVisible(true);
+            this.disconnect.setVisible(true);
+        })
+
 
         this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        
     }
-
-   
 
     update() { 
         this.ball.angle += this.rotation
@@ -510,5 +553,19 @@ export default class oneVSoneOther extends Phaser.Scene{
         
         if (this.paddlespeed < 625)
             this.paddlespeed += 0.5;
+    }
+
+    shutdown() {
+        this.socket.off("movement");
+        this.socket.off("update");
+        this.socket.off("random");
+        this.socket.off("newPower");
+        this.socket.off("multi");
+        this.socket.off("power");
+        this.socket.off("point");
+        this.socket.off("disconnected");
+
+        this.socket.emit("new");
+        this.game.destroy(true, false);
     }
 }
