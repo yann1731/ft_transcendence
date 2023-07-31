@@ -18,8 +18,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  handleConnection() {
+  handleConnection(client: Socket) {
     // console.log("New client connected to chatSocket");
+    this.server.to(client.id).emit("connected");
   }
 
   handleDisconnect() {
@@ -73,5 +74,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("update chatroomuser")
   updateChatroomUser(client: Socket, data: ChatroomUser) {
     client.broadcast.emit("user updated", data);
+  }
+
+  @SubscribeMessage("quit chatroom")
+  quitChatroom(client: Socket, data: Chatroom) {
+    this.server.to(client.id).emit("chatroom quit", data);
   }
 }

@@ -10,8 +10,6 @@ interface MyChannelsProps {
   }
 
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
-    const [channels, setChannels] = useState<Chatroom[]>([]);
-    const [joinedChannels, setJoinedChannels] = useState<Chatroom[]>([]);
     const {updateUser, user} = useContext(UserContext);
     
     /*useEffect(() => {
@@ -56,18 +54,6 @@ interface MyChannelsProps {
       fetchChannels();
     }, []); */
     
-/*     useEffect(() => {
-      const fetchJoinedChannels = async () => {
-      fetchJoinedChannels();
-    }, []); */
-    
-/*     useEffect(() => {
-      socket.on("creation success", (data: Chatroom) => {
-        setChannels((prevChat: Chatroom[]) => [...prevChat, data]);
-        setJoinedChannels((prevChat: Chatroom[]) => [...prevChat, data]);
-      });
-    }, []) */
-
     const SetChatInUse = (name: string) => {
       const decodedName = decodeURIComponent(name);
       if (user !== null)
@@ -89,7 +75,32 @@ interface MyChannelsProps {
         }
       }
     };
+    
+    useEffect(() => {
+      socket.on("chatroom updated", (data: Chatroom) => {
+        const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.id === data.id);
 
+        if (chatroomIndexToUpdate !== -1 && chatroomIndexToUpdate !== undefined) {
+          const updatedChatrooms = user?.Chatroom ? [...user?.Chatroom] : [];
+          updatedChatrooms[chatroomIndexToUpdate] = data;
+          if (data.id !== user?.chatInUse?.chat?.id)
+          {
+            const newChatInUse: ChatInUse = {
+              chat: data,
+              type: chatroomType.channel,
+            }
+            const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: updatedChatrooms };
+            updateUser(updatedUser);
+          }
+          else
+          {
+            const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+            updateUser(updatedUser);
+          }
+        }
+      })
+    }, []);
+    
     const filteredChannels = user?.Chatroom?.filter((channel: Chatroom) =>
       channel.name.toLowerCase().includes(searchText.toLowerCase())
     );

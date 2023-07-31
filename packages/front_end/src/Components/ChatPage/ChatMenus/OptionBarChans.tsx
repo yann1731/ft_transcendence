@@ -37,7 +37,8 @@ const OptionBarChans: React.FC = () => {
   const socket = useContext(SocketContext);
   React.useEffect(() => {
     const fetchChannels = async () => {
-      try {
+      alert("je ne suis pas un carré")
+    try {
         const response = await axios.get('http://localhost:4242/chatroom', {headers: {
           'Authorization': user?.token,
           'userId': user?.id
@@ -101,7 +102,7 @@ const OptionBarChans: React.FC = () => {
     fetchChannels();
   }, []);
   
-  React.useEffect(() => {
+  socket.on("connected", () => {
     socket.on("chatroom created", (data: Chatroom) => {
       setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data]);
     })
@@ -109,53 +110,57 @@ const OptionBarChans: React.FC = () => {
       setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.filter((chat: Chatroom) => chat.name !== data.name));
       setAdminChatroom((prevAdminChat: Chatroom[]) => prevAdminChat.filter((chat: Chatroom) => chat.name !== data.name));
       setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== data.name));
-      const newChans = user?.Chatroom.filter((chat: Chatroom) => chat.name !== channelName);
-      if (data.id == user?.chatInUse?.chat?.id)
+      const newChans = user?.Chatroom?.filter((chat: Chatroom) => chat.name !== data.name);
+      const chatUserToDelete = user?.chatrooms?.filter((chatUser: ChatroomUser) => chatUser.chatroomId !== data.id);
+      alert(data.name + " this is the data id");
+      alert(user?.chatInUse?.chat?.name + " this is the chat id");
+      if (data.id === user?.chatInUse?.chat?.id)
       {
-        const updatedUser: Partial<User> = { ...user, chatInUse: undefined, Chatroom: newChans };
+        alert("QUOIII!")
+        const updatedUser: Partial<User> = { ...user, chatInUse: undefined, Chatroom: newChans, chatrooms: chatUserToDelete };
         updateUser(updatedUser);    
       }
       else
       {
-        const updatedUser: Partial<User> = { ...user, Chatroom: newChans };
+        alert("POURQUOIII!")
+        const updatedUser: Partial<User> = { ...user, Chatroom: newChans, chatrooms: chatUserToDelete };
         updateUser(updatedUser);    
       }
     })
     socket.on("chatroom updated", (data: Chatroom) => {
-      const chatroomIndexToUpdate = user.Chatroom.findIndex((chatroom: Chatroom) => chatroom.id === data.id);
+      const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.id === data.id);
 
-      if (chatroomIndexToUpdate !== -1) {
-        const updatedChatrooms = [...user.Chatroom];
+      if (chatroomIndexToUpdate !== -1 && chatroomIndexToUpdate !== undefined) {
+        const updatedChatrooms = user?.Chatroom ? [...user?.Chatroom] : [];
         updatedChatrooms[chatroomIndexToUpdate] = data;
         setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.map((chat: Chatroom) => chat.name === data.name ? data: chat));
         setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.map((chat: Chatroom) => chat.name === data.name ? data: chat));
         setAdminChatroom((prevAdminChat: Chatroom[]) => prevAdminChat.map((chat: Chatroom) => chat.name === data.name ? data: chat));
-        if (data.id !== user?.chatInUse?.chat?.id)
+      }
+    })
+    //TODO, vérifier si je dois implémenter quelque chose pour que l'utilisateur puisse voir les autres utilisateurs dans le channel
+    socket.on("user joined", (chatUser: ChatroomUser, chat: Chatroom) => {
+      if (user?.Chatroom?.find((chatroom: Chatroom) => {
+        return (chatroom.id === chat.id)
+      }) !== undefined) 
+      {
+        if (chat.id === user?.chatInUse?.chat.id)
         {
           const newChatInUse: ChatInUse = {
-            chat: data,
+            chat: chat,
             type: chatroomType.channel,
           }
-          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: updatedChatrooms };
+          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, chat] : [chat], chatrooms: user.chatrooms ? [...user.chatrooms, chatUser] : [chatUser] };
           updateUser(updatedUser);
         }
         else
         {
-          const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+          const updatedUser: Partial<User> = { ...user, Chatroom: user.Chatroom ? [...user.Chatroom, chat] : [chat], chatrooms: user.chatrooms ? [...user.chatrooms, chatUser] : [chatUser] };
           updateUser(updatedUser);
         }
       }
     })
-    //TODO, vérifier si je dois implémenter quelque chose pour que l'utilisateur puisse voir les autres utilisateurs dans le channel
-    socket.on("user joined", (data: ChatroomUser, chat: Chatroom) => {
-      if (user?.Chatroom?.find((chatroom: Chatroom) => {
-        return (chatroom.id === chat.id)
-      }) !== undefined)
-      {
-        alert("dont't forget to do this: OptionBarChan ligne 155");
-      }
-    })
-  }, []);
+  });
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -241,15 +246,17 @@ const OptionBarChans: React.FC = () => {
             console.log('Chatroom created:', response.data);
             const newChannelData = response.data;
             socket.emit("create chatroom", newChannelData);
-            
-            const newChatInUse: ChatInUse = {
-              chat: newChannelData,
-              type: chatroomType.channel,
+            if (user)
+            {
+              const newChatInUse: ChatInUse = {
+                chat: newChannelData,
+                type: chatroomType.channel,
+              }
+              const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, newChannelData] : [newChannelData]};
+              updateUser(updatedUser);
+              setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, newChannelData]);
+              setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, newChannelData]);
             }
-            const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, newChannelData] : [newChannelData]};
-            updateUser(updatedUser);
-            setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, newChannelData]);
-            setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, newChannelData]);
           }
         } catch (error) {
           console.error('Error creating chatroom:', error);
@@ -268,14 +275,18 @@ const OptionBarChans: React.FC = () => {
             const newChannelData = response.data;
             socket.emit("create chatroom", newChannelData);
             
-            const newChatInUse: ChatInUse = {
-              chat: newChannelData,
-              type: chatroomType.channel,
+            if (user)
+            {
+
+              const newChatInUse: ChatInUse = {
+                chat: newChannelData,
+                type: chatroomType.channel,
+              }
+              const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, newChannelData] : [newChannelData]};
+              updateUser(updatedUser);
+              setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, newChannelData]);
+              setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, newChannelData]);
             }
-            const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, newChannelData] : [newChannelData]};
-            updateUser(updatedUser);
-            setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, newChannelData]);
-            setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, newChannelData]);
           }
         } catch (error) {
           console.error('Error creating chatroom:', error);
@@ -347,34 +358,41 @@ const OptionBarChans: React.FC = () => {
     {
       try {
         const newChan = joinChatroom.find((chan: Chatroom) => {
-          return chan.name === channelName});
-        const newChatroomuser: Partial<ChatroomUser> = {
-          userId: user?.id,
-          user: user,
-          chatroomId: newChan?.id,
-          chatroom: newChan,
-          permission: userPermission.regular,
-          banStatus: false,
-          muteStatus: false,
-          muteUntil: null,
-        }
-        const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
-          'Authorization': user?.token,
-          'userId': user?.id
-        }});
-        const newChatroomuserData = response.data;
-        console.log('User added to chatroom ', newChatroomuserData);
-        socket.emit("join chatroom", newChatroomuserData, newChan);
-
-        setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== channelName));
-        if (newChatroomuserData !== undefined)
+        return chan.name === channelName});
+        if (newChan && user)
         {
-          const newChatInUse: ChatInUse = {
+          const newChatroomuser: Partial<ChatroomUser> = {
+            userId: user.id,
+            user: user,
+            chatroomId: newChan.id,
+            chatroom: newChan,
+            permission: userPermission.regular,
+            banStatus: false,
+            muteStatus: false,
+            muteUntil: null,
+          }
+          const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
+          const newChatroomuserData = response.data;
+          const updatedNewChan = { ...newChan };
+          updatedNewChan.users = updatedNewChan.users ? [...updatedNewChan.users, newChatroomuserData] : [newChatroomuserData];
+          console.log('User added to chatroom ', newChatroomuserData);
+          socket.emit("join chatroom", newChatroomuserData, updatedNewChan);
+          setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== channelName));
+          if (newChatroomuserData !== undefined)
+          {
+            const newChatInUse: ChatInUse = {
               chat: newChan,
               type: chatroomType.channel,
+            }
+            if (user)
+            {
+              const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, updatedNewChan] : [updatedNewChan], chatrooms: user.chatrooms ? [...user.chatrooms, newChatroomuserData] : [newChatroomuserData] };
+              updateUser(updatedUser);
+            }
           }
-          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, newChan] : [newChan] };
-          updateUser(updatedUser);
         }
         setDialog(false);
       } catch (error) {

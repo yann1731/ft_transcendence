@@ -2,12 +2,12 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useTheme, Box, List, ListItem, ListItemText, Divider, TextField, Fab } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import ContactMenu from './ChatMenus/ContactMenu';
-import '../../App.css';
+import ContactMenu from '../ChatMenus/ContactMenu';
+import '../../../App.css';
 import { UserContext } from 'Contexts/userContext';
 import { Message } from 'Components/Interfaces';
 import { Socket } from "socket.io"
-import { SocketContext } from "../../Contexts/socketContext";
+import { SocketContext } from "../../../Contexts/socketContext";
 
 const Chat = () => {
   const theme = useTheme();

@@ -4,8 +4,9 @@ import {Popover, useTheme, Avatar, Button, Modal, Autocomplete, TextField, Menu,
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import ClearIcon from '@mui/icons-material/Clear';
 import { UserContext, User } from 'Contexts/userContext';
-import { chatroomType, ChatroomUser, userPermission } from 'Components/Interfaces';
+import { chatroomType, ChatroomUser, userPermission, Chatroom } from 'Components/Interfaces';
 import { LimitedProfile } from 'Components/ProfilePage/Profile';
+import { socket } from 'Contexts/socketContext';
 
 const OptionBarConversation: React.FC = () => {
   const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
@@ -26,11 +27,69 @@ const OptionBarConversation: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const id = open ? 'contact-options-popover' : undefined;
-
-  //TODO Fetch les infos un chat trop tard
+  
+/*   const fetchUsers = async (setChatroomUsers: any, setUsers: any, setUsersInCurrentChat: any, setUsersNotInCurrentChat: any, chatroomUsers: any, Users:any, user: any) => {
+    try {
+      const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {
+        headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }
+      });
+      if (response.status === 200) {
+        const ChatroomUsersData: ChatroomUser[] = response.data;
+        setChatroomUsers(ChatroomUsersData);
+      }
+    } catch (error) {
+      console.error('Error fetching chatroom users', error);
+    }
+    try {
+      const response = await axios.get('http://localhost:4242/user', {
+        headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }
+      });
+      if (response.status === 200) {
+        const UsersData: User[] = response.data;
+        setUsers(UsersData);
+        const tempUsersInChan: User[] = [];
+        const tempUsersNotInChan: User[] = [];
+  
+        Users.forEach((userToFind: User) => {
+          const isUser = chatroomUsers.find((chatUser: ChatroomUser) => {
+            return chatUser.userId === userToFind.id;
+          });
+          if (isUser !== undefined && user?.id !== isUser?.userId && !isUser.banStatus) {
+            tempUsersInChan.push(userToFind);
+          } else if (isUser === undefined) {
+            tempUsersNotInChan.push(userToFind);
+          }
+        });
+        setUsersInCurrentChat(tempUsersInChan);
+        setUsersNotInCurrentChat(tempUsersNotInChan);
+      }
+    } catch (error) {
+      console.error('Error fetching chatroom users', error);
+    }
+  };
+  
+  
+  React.useEffect(() => {
+    fetchUsers(
+      setChatroomUsers,
+      setUsers,
+      setUsersInCurrentChat,
+      setUsersNotInCurrentChat,
+      chatroomUsers,
+      Users,
+      user
+    );
+  }, []); */
 
   React.useEffect(() => {
     const fetchUsers = async () => {
+      alert("I am jesus");
       try {
         const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
           'Authorization': user?.token,
@@ -75,8 +134,71 @@ const OptionBarConversation: React.FC = () => {
       }
     };
     fetchUsers();
-  }, [user?.chatInUse?.chat?.id]);
+  }, []);
   
+  React.useEffect(() => {
+/*     socket.on("chatroom created", (data: Chatroom) => {
+      setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data]);
+    }) */
+    socket.on("chatroom quitted", (data: Chatroom) => {
+      const newChans = user?.Chatroom?.filter((chat: Chatroom) => chat.name !== data.name);
+      const chatUserToDelete = user?.chatrooms?.filter((chatUser: ChatroomUser) => chatUser.chatroomId !== data.id);
+      alert(data.name + " data id");
+      alert(user?.chatInUse?.chat.name + " chat in use id");
+      if (data.id === user?.chatInUse?.chat.id)
+      {
+        alert("beaucoup de caca");
+        const updatedUser: Partial<User> = { ...user, chatInUse: undefined, Chatroom: newChans, chatrooms: chatUserToDelete };
+        updateUser(updatedUser);    
+      }
+      else
+      {
+        alert("beaucoup plus de caca");
+        const updatedUser: Partial<User> = { ...user, Chatroom: newChans, chatrooms: chatUserToDelete };
+        updateUser(updatedUser);    
+      }
+    })
+/*     socket.on("chatroom updated", (data: Chatroom) => {
+      const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.id === data.id);
+
+      if (chatroomIndexToUpdate !== -1 && chatroomIndexToUpdate !== undefined) {
+        const updatedChatrooms = user?.Chatroom ? [...user?.Chatroom] : [];
+        updatedChatrooms[chatroomIndexToUpdate] = data;
+        setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.map((chat: Chatroom) => chat.name === data.name ? data: chat));
+        setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.map((chat: Chatroom) => chat.name === data.name ? data: chat));
+        setAdminChatroom((prevAdminChat: Chatroom[]) => prevAdminChat.map((chat: Chatroom) => chat.name === data.name ? data: chat));
+      }
+    }) */
+    /* socket.on("user joined", (chatUser: ChatroomUser, chat: Chatroom) => {
+      if (user?.Chatroom?.find((chatroom: Chatroom) => {
+        return (chatroom.id === chat.id)
+      }) !== undefined) 
+      {
+        if (chat.id === user?.chatInUse?.chat.id)
+        {
+          const newChatInUse: ChatInUse = {
+            chat: chat,
+            type: chatroomType.channel,
+          }
+          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, chat] : [chat], chatrooms: user.chatrooms ? [...user.chatrooms, chatUser] : [chatUser] };
+          updateUser(updatedUser);
+        }
+        else
+        {
+          const updatedUser: Partial<User> = { ...user, Chatroom: user.Chatroom ? [...user.Chatroom, chat] : [chat], chatrooms: user.chatrooms ? [...user.chatrooms, chatUser] : [chatUser] };
+          updateUser(updatedUser);
+        }
+      }
+    }) */
+/*     fetchUsers(setChatroomUsers,
+      setUsers,
+      setUsersInCurrentChat,
+      setUsersNotInCurrentChat,
+      chatroomUsers,
+      Users,
+      user); */
+  }, []);
+
   const handleMode = (mode: string) => {
     setMode(mode);
     setWindowIsOpen(true);
@@ -131,6 +253,7 @@ const OptionBarConversation: React.FC = () => {
   };
   
   const handleFriends = async () => {
+    alert("ceci est le nom du chat in use " + user?.chatInUse?.chat.name);
     if (!UserName && mode !== 'Quit' && mode !== 'View Members' && mode !== 'Block' && mode !== 'Invite to Play' && mode !== 'View Profile') {
       alert('No username was given')
       return ;
@@ -318,8 +441,7 @@ const OptionBarConversation: React.FC = () => {
           }});
           if (response.status === 200) {
             console.log('Channel deleted', response.data);
-            const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
-            updateUser(updatedUser);
+            socket.emit("delete chatroom", response.data);
           } else {
             console.error('Deleting channel failed');
           }
