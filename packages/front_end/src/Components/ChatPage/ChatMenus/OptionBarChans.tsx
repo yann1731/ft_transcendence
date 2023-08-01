@@ -37,7 +37,6 @@ const OptionBarChans: React.FC = () => {
   const socket = useContext(SocketContext);
   React.useEffect(() => {
     const fetchChannels = async () => {
-      alert("je ne suis pas un carré")
     try {
         const response = await axios.get('http://localhost:4242/chatroom', {headers: {
           'Authorization': user?.token,
@@ -103,8 +102,72 @@ const OptionBarChans: React.FC = () => {
   }, []);
   
   socket.on("connected", () => {
+    socket.emit("connected", user?.id);
     socket.on("chatroom created", (data: Chatroom) => {
-      setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data]);
+      //setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data]);
+      const fetchChannels = async () => {
+        try {
+            const response = await axios.get('http://localhost:4242/chatroom', {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }});
+            if (response.status === 200) {
+              console.log('Chatrooms fetched');
+              const chatroomData: Chatroom[] = response.data;
+              
+              try {
+                const response = await axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
+                  'Authorization': user?.token,
+                  'userId': user?.id
+                }});
+                
+                if (response.status === 200) {
+                  console.log('ChatroomUsers fetched: ', response.data);
+                  
+                  const chatroomUsersData: ChatroomUser[] = response.data;
+                  const adminChatroom: Chatroom[] = [];
+                  const ownChatroom: Chatroom[] = [];
+                  const joinChatroom: Chatroom[] = [];
+                  const userChatroom: Chatroom[] = [];
+                  chatroomData.forEach((chat: Chatroom) => {
+                    const isJoined = chatroomUsersData.find(user => user.chatroomId === chat.id);
+                    if (isJoined?.permission === userPermission.regular || isJoined?.permission === userPermission.owner || isJoined?.permission === userPermission.admin)
+                    {
+                      userChatroom.push(chat);
+                    }
+                    if (isJoined?.permission === userPermission.admin)
+                    {
+                      adminChatroom.push(chat);
+                    }
+                    else if (isJoined?.permission === userPermission.owner)
+                    {
+                      adminChatroom.push(chat);
+                      ownChatroom.push(chat);
+                    }
+                    else if (isJoined === undefined)
+                    {
+                      if (chat.state !== "private")
+                      {
+                        joinChatroom.push(chat);
+                      }
+                    }
+                  })
+                  setAdminChatroom(adminChatroom);
+                  setOwnChatroom(ownChatroom);
+                  setJoinChatroom(joinChatroom);
+                  const updatedUser: Partial<User> = { ...user, Chatroom:  userChatroom};
+                  updateUser(updatedUser);    
+                }
+              } catch (error) {
+                console.error('Error getting ChatroomUsers: ', error);
+                alert('Error: could not get ChatroomUsers: ' + error);
+              }
+            }
+          } catch (error) {
+            console.error('Error fetching channels:', error);
+          }
+        };
+        fetchChannels();
     })
     socket.on("chatroom deleted", (data: Chatroom) => {
       setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.filter((chat: Chatroom) => chat.name !== data.name));

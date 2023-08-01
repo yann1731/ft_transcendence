@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import { Chatroom, ChatInUse, chatroomType, UserFriendship, UserBlocks } from 'Components/Interfaces';
 import React from 'react'
 import axios from 'axios'
+import { socket } from 'Contexts/socketContext';
 interface MyFriendsProps {
     searchText: string;
 }
@@ -154,6 +155,18 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
     }
   };
   
+  socket.on("connected", () => {
+    socket.on("blocked", (id: string) => {
+      if (user?.chatInUse?.chat.name === id){
+        const updatedUser: Partial<User> = {
+          ...user,
+          chatInUse: undefined,
+        };
+        updateUser(updatedUser);
+      }
+    })
+  })
+
     return (
       <List>
         {filteredFriends.map((friend: User) => (
