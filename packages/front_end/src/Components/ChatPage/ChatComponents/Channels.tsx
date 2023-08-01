@@ -8,52 +8,48 @@ import { socket } from 'Contexts/socketContext';
 interface MyChannelsProps {
     searchText: string;
   }
+
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
-    const [channels, setChannels] = useState<Chatroom[]>([]);
-    const [joinedChannels, setJoinedChannels] = useState<Chatroom[]>([]);
     const {updateUser, user} = useContext(UserContext);
-    const [refresh, setRefresh] = useState(1);
+    const [channels, setChannels] = useState<Chatroom[]>([]);
+    const [joinedchannels, setJoinedChannels] = useState<Chatroom[]>([]);
+    const [refresh, setRefresh] = useState(false);
     
     useEffect(() => {
       const fetchChannels = async () => {
-        try {
-          const response = await axios.get('http://localhost:4242/chatroom', {headers: {
+        await axios.get('http://localhost:4242/chatroom', {headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }})
+        .then((response:any) => {
+          setChannels(response.data);
+          axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }});
-          
-          if (response.status === 200) {
-            setChannels(response.data);
-          }
-          try {
-            const response = await axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
-              'Authorization': user?.token,
-              'userId': user?.id
-            }})
+          }})
+          .then((response: any) => {
+            const chatroomUsersData: ChatroomUser[] = response.data;
+            const chans: Chatroom[] = [];
             
-            if (response.status === 200) {
-              const chatroomUsersData: ChatroomUser[] = response.data;
-              const chans: Chatroom[] = [];
-              channels.forEach((channel: Chatroom) => {
-                chatroomUsersData.forEach((users: ChatroomUser) => {
-                  if (channel?.id === users?.chatroomId && users.banStatus !== true)
-                  {
-                  chans.push(channel);
-                  }
-                })
-              });
-              setJoinedChannels(chans)
-              console.log('ChatroomUsers fetched: ', response.data);
-            }
-          } catch (error) {
+            channels.forEach((channel: Chatroom) => {
+              chatroomUsersData.forEach((users: ChatroomUser) => {
+                if (channel?.id === users?.chatroomId && users.banStatus !== true)
+                chans.push(channel);
+              })
+            });
+            setJoinedChannels(chans)
+            console.log('ChatroomUsers fetched: ', response.data);
+          })
+          .catch((error: any) => {
             console.error('Error getting ChatroomUsers: ', error);
             alert('Error: could not get ChatroomUsers: ' + error);
-          }
-        } catch (error) {
+          })
+        })
+       .catch((error: any) => {
           console.error('Error getting chatrooms:', error);
           alert('Error: could not get chatrooms: ' + error);
-        }
-      };
+        })
+      }
       fetchChannels();
     }, [refresh]);
     
@@ -61,7 +57,7 @@ interface MyChannelsProps {
       const decodedName = decodeURIComponent(name);
       if (user !== null)
       {
-        const chatroom = joinedChannels.find((chat: Chatroom) => {
+        const chatroom = user?.Chatroom?.find((chat: Chatroom) => {
           return chat.name === decodedName;
         });
         if (chatroom !== undefined)
@@ -77,22 +73,44 @@ interface MyChannelsProps {
           updateUser(updatedUser);
         }
       }
-      setRefresh(refresh + 1);
     };
     
     socket.on("connected", () => {
-      socket.on("chatroom created", (name: string) => {
-        SetChatInUse(name);
+      socket.on("chat created", (data: any) => {
+        SetChatInUse(data.newChatroom.name)
+        setRefresh(!refresh);
+      })
+      socket.on("chatroom deleted", (data: any) => {
+        setRefresh(!refresh);
+      })
+      socket.on("chatroom updated", (data: any) => {
+        SetChatInUse(data.chatroomUpdated.name)
+        const chatroomIndexToUpdate = joinedchannels.findIndex((chatroom: Chatroom) => chatroom.name === data.chatroomUpdated.name);
+
+        if (chatroomIndexToUpdate !== -1 && chatroomIndexToUpdate !== undefined) {
+          const updatedChatrooms = joinedchannels ? [...joinedchannels] : [];
+          updatedChatrooms[chatroomIndexToUpdate] = data.chatroomUpdated;
+          if (data.chatroomUpdated.name === user?.chatInUse?.chat?.name)
+          {
+            const newChatInUse: ChatInUse = {
+              chat: data.chatroomUpdated,
+              type: chatroomType.channel,
+            }
+            const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: updatedChatrooms };
+            updateUser(updatedUser);
+          }
+          else
+          {
+            const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+            updateUser(updatedUser);
+          }
+          setJoinedChannels(updatedChatrooms);
+        }
+        setRefresh(!refresh)
+      })
     });
-      socket.on("chatroom updated", (name: string) => {
-        SetChatInUse(name);
-    });
-      socket.on("chatroom joined", (name: string) => {
-        SetChatInUse(name);
-    });
-  });
     
-    const filteredChannels = joinedChannels.filter((channel: Chatroom) =>
+    const filteredChannels = joinedchannels.filter((channel: Chatroom) =>
       channel.name.toLowerCase().includes(searchText.toLowerCase())
     );
     

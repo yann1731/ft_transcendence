@@ -46,38 +46,38 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("create chatroom")
-    createChatroom(client: Socket, data: Chatroom) {
-    this.server.emit("chatroom created", data);
+    createChatroom(client: Socket, data: any) {
+    client.broadcast.emit("chatroom created", data);
+    this.server.emit("chat created", data);
   }
   
   @SubscribeMessage("delete chatroom")
-  deleteChatroom(client: Socket, data: Chatroom) {
+  deleteChatroom(client: Socket, data: any) {
     this.server.emit("chatroom deleted", data);
   }
   
   @SubscribeMessage("update chatroom")
-  updateChatroom(client: Socket, data: string) {
+  updateChatroom(client: Socket, data: any) {
     this.server.emit("chatroom updated", data);
   }
   
   @SubscribeMessage("join chatroom")
-  createChatroomUser(client: Socket, name: string) {
-    client.broadcast.emit("user joined", name);
-    this.server.to(client.id).emit("chatroom joined", name);
+  createChatroomUser(client: Socket, data: any) {
+    client.broadcast.emit("user joined", data);
   }
   
   @SubscribeMessage("delete chatroomuser")
-  removeChatroomUser(client: Socket, data: ChatroomUser) {
+  removeChatroomUser(client: Socket, data: any) {
     client.broadcast.emit("user removed", data);
   }
 
   @SubscribeMessage("update chatroomuser")
-  updateChatroomUser(client: Socket, data: ChatroomUser) {
+  updateChatroomUser(client: Socket, data: any) {
     client.broadcast.emit("user updated", data);
   }
 
   @SubscribeMessage("quit chatroom")
-  quitChatroom(client: Socket, data: Chatroom) {
+  quitChatroom(client: Socket, data: any) {
     this.server.to(client.id).emit("chatroom quit", data);
   }
 }

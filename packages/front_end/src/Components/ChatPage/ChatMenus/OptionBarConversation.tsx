@@ -27,7 +27,6 @@ const OptionBarConversation: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const id = open ? 'contact-options-popover' : undefined;
-  const [refresh, setRefresh] = React.useState(1);
   
 /*   const fetchUsers = async (setChatroomUsers: any, setUsers: any, setUsersInCurrentChat: any, setUsersNotInCurrentChat: any, chatroomUsers: any, Users:any, user: any) => {
     try {
@@ -134,16 +133,13 @@ const OptionBarConversation: React.FC = () => {
       }
     };
     fetchUsers();
-  }, [refresh]);
+  }, []);
   
   React.useEffect(() => {
-    socket.on("user joined", () => {
-      setRefresh(refresh + 1);
-    })
 /*     socket.on("chatroom created", (data: Chatroom) => {
       setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data]);
     }) */
-    /* socket.on("chatroom quitted", (data: Chatroom) => {
+    socket.on("chatroom quitted", (data: Chatroom) => {
       const newChans = user?.Chatroom?.filter((chat: Chatroom) => chat.name !== data.name);
       const chatUserToDelete = user?.chatrooms?.filter((chatUser: ChatroomUser) => chatUser.chatroomId !== data.id);
       alert(data.name + " data id");
@@ -160,7 +156,7 @@ const OptionBarConversation: React.FC = () => {
         const updatedUser: Partial<User> = { ...user, Chatroom: newChans, chatrooms: chatUserToDelete };
         updateUser(updatedUser);    
       }
-    }) */
+    })
 /*     socket.on("chatroom updated", (data: Chatroom) => {
       const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.id === data.id);
 
