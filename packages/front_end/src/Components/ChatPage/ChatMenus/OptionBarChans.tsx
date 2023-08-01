@@ -100,6 +100,7 @@ const OptionBarChans: React.FC = () => {
   socket.on("connected", () => {
     socket.on("chatroom created", (data: any) => {
       setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data.newChatroom]);
+      socket.emit("refresh");
     })
     socket.on("chatroom deleted", (data: any) => {
       setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.filter((chat: Chatroom) => chat.name !== data.chatroomDeleted.name));
@@ -117,42 +118,37 @@ const OptionBarChans: React.FC = () => {
         const updatedUser: Partial<User> = { ...user, Chatroom: newChans, chatrooms: chatUserToDelete };
         updateUser(updatedUser);    
       }
+      socket.emit("refresh");
     })
     socket.on("chatroom updated", (data: any) => {
       const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.id === data.chatroomUpdated.id);
-
+      
       if (chatroomIndexToUpdate !== -1 && chatroomIndexToUpdate !== undefined) {
         const updatedChatrooms = user?.Chatroom ? [...user?.Chatroom] : [];
         updatedChatrooms[chatroomIndexToUpdate] = data.chatroomUpdated;
         setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.map((chat: Chatroom) => chat.name === data.chatroomUpdated.name ? data.chatroomUpdated: chat));
         setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.map((chat: Chatroom) => chat.name === data.chatroomUpdated.name ? data.chatroomUpdated: chat));
         setAdminChatroom((prevAdminChat: Chatroom[]) => prevAdminChat.map((chat: Chatroom) => chat.name === data.chatroomUpdated.name ? data.chatroomUpdated: chat));
-      }
-    })
-    //TODO, vérifier si je dois implémenter quelque chose pour que l'utilisateur puisse voir les autres utilisateurs dans le channel
-    socket.on("user joined", (data: any) => {
-      if (user?.Chatroom?.find((chatroom: Chatroom) => {
-        return (chatroom.name === data.chatroomUpdated.name)
-      }) !== undefined) 
-      {
-        if (data.chatroomUpdated.name === user?.chatInUse?.chat.name)
+        if (data.chatroomUpdated.name === user?.chatInUse?.chat?.name)
         {
           const newChatInUse: ChatInUse = {
             chat: data.chatroomUpdated,
             type: chatroomType.channel,
           }
-          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, data.chatroomUpdated] : [data.chatroomUpdated], chatrooms: user.chatrooms ? [...user.chatrooms, data.newChatUser] : [data.newChatUser] };
+          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: updatedChatrooms };
           updateUser(updatedUser);
         }
         else
         {
-          const updatedUser: Partial<User> = { ...user, Chatroom: user.Chatroom ? [...user.Chatroom, data.chatroomUpdated] : [data.chatroomUpdated], chatrooms: user.chatrooms ? [...user.chatrooms, data.newChatUser] : [data.newChatUser] };
+          const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
           updateUser(updatedUser);
         }
       }
+      socket.emit("refresh");
     })
+    //TODO, vérifier si je dois implémenter quelque chose pour que l'utilisateur puisse voir les autres utilisateurs dans le channel
   });
-
+  
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -366,7 +362,7 @@ const OptionBarChans: React.FC = () => {
           const updatedNewChan = { ...newChan };
           updatedNewChan.users = updatedNewChan.users ? [...updatedNewChan.users, newChatroomuserData] : [newChatroomuserData];
           console.log('User added to chatroom ', newChatroomuserData);
-          socket.emit("join chatroom", { newChatUser: newChatroomuserData, chatroomUpdated: updatedNewChan });
+          socket.emit("update chatroom", { chatroomUpdated: updatedNewChan });
           setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== channelName));
           if (newChatroomuserData !== undefined)
           {

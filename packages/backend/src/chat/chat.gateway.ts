@@ -48,7 +48,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("create chatroom")
     createChatroom(client: Socket, data: any) {
     client.broadcast.emit("chatroom created", data);
-    this.server.emit("chat created", data);
+    this.server.to(client.id).emit("chat created", data);
   }
   
   @SubscribeMessage("delete chatroom")
@@ -71,13 +71,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.broadcast.emit("user removed", data);
   }
 
-  @SubscribeMessage("update chatroomuser")
-  updateChatroomUser(client: Socket, data: any) {
-    client.broadcast.emit("user updated", data);
-  }
-
   @SubscribeMessage("quit chatroom")
   quitChatroom(client: Socket, data: any) {
     this.server.to(client.id).emit("chatroom quit", data);
+  }
+
+  @SubscribeMessage("refresh")
+  refreshPage(client: Socket, data: any) {
+    this.server.emit("refresh");
   }
 }
