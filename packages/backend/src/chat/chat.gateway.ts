@@ -54,43 +54,53 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("create chatroom")
-    createChatroom(client: Socket, data: Chatroom) {
+    createChatroom(client: Socket, data: any) {
     client.broadcast.emit("chatroom created", data);
+    this.server.emit("chat created", data);
   }
   
   @SubscribeMessage("delete chatroom")
-  deleteChatroom(client: Socket, data: Chatroom) {
+  deleteChatroom(client: Socket, data: any) {
     this.server.emit("chatroom deleted", data);
   }
   
   @SubscribeMessage("update chatroom")
-  updateChatroom(client: Socket, data: Chatroom) {
+  updateChatroom(client: Socket, data: any) {
     this.server.emit("chatroom updated", data);
   }
   
   @SubscribeMessage("join chatroom")
-  createChatroomUser(client: Socket, data: ChatroomUser, chat: Chatroom) {
-    client.broadcast.emit("user joined", data, chat);
+  createChatroomUser(client: Socket, data: any) {
+    client.broadcast.emit("user joined", data);
   }
   
   @SubscribeMessage("delete chatroomuser")
-  removeChatroomUser(client: Socket, data: ChatroomUser) {
+  removeChatroomUser(client: Socket, data: any) {
     client.broadcast.emit("user removed", data);
   }
 
   @SubscribeMessage("update chatroomuser")
-  updateChatroomUser(client: Socket, data: ChatroomUser) {
+  updateChatroomUser(client: Socket, data: any) {
     client.broadcast.emit("user updated", data);
   }
 
   @SubscribeMessage("quit chatroom")
-  quitChatroom(client: Socket, data: Chatroom) {
+  quitChatroom(client: Socket, data: any) {
     this.server.to(client.id).emit("chatroom quit", data);
+  }
+
+  @SubscribeMessage("user added")
+  handleAdded(client: Socket, data: any){
+    this.server.to(this.users.get(data.id)).emit("added")
   }
 
   @SubscribeMessage("blocked")
   handleBlocked(client: Socket, data: any){
-    console.log(this.users.get(data.blocked), data.id, data.blocked)
     this.server.to(this.users.get(data.blocked)).emit("blocked", data.id)
+  }
+
+  @SubscribeMessage("user left")
+  handleLeaving(client: Socket){
+    client.broadcast.emit("user left");
   }
 }
