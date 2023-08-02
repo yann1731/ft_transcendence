@@ -18,6 +18,7 @@ const OptionBarConversation: React.FC = () => {
   const theme = useTheme();
   const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
   const [UserName, setUserName] = React.useState('');
+  const [refresh, setRefresh] = React.useState(false);
   const [Users, setUsers] = React.useState<User[]>([]);
   const {user, updateUser} = React.useContext(UserContext);
   const [userRights, setUserRights] = React.useState(UserSettings);
@@ -133,12 +134,15 @@ const OptionBarConversation: React.FC = () => {
       }
     };
     fetchUsers();
-  }, []);
+  }, [user, refresh]);
   
-  React.useEffect(() => {
+  socket.on("connected",() => {
 /*     socket.on("chatroom created", (data: Chatroom) => {
       setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data]);
     }) */
+    socket.on("user left", () => {
+      setRefresh(!refresh);
+    })
     socket.on("chatroom quitted", (data: Chatroom) => {
       const newChans = user?.Chatroom?.filter((chat: Chatroom) => chat.name !== data.name);
       const chatUserToDelete = user?.chatrooms?.filter((chatUser: ChatroomUser) => chatUser.chatroomId !== data.id);
@@ -196,7 +200,7 @@ const OptionBarConversation: React.FC = () => {
       chatroomUsers,
       Users,
       user); */
-  }, []);
+  });
 
   const handleMode = (mode: string) => {
     setMode(mode);
@@ -252,7 +256,7 @@ const OptionBarConversation: React.FC = () => {
   };
   
   const handleFriends = async () => {
-    alert("ceci est le nom du chat in use " + user?.chatInUse?.chat.name);
+    //alert("ceci est le nom du chat in use " + user?.chatInUse?.chat.name);
     if (!UserName && mode !== 'Quit' && mode !== 'View Members' && mode !== 'Block' && mode !== 'Invite to Play' && mode !== 'View Profile') {
       alert('No username was given')
       return ;
@@ -265,40 +269,44 @@ const OptionBarConversation: React.FC = () => {
       return friend.nickname === UserName;
     });
     
+    const notFriend = usersNotInCurrentChat.find((friend: User) => {
+      return friend.nickname === UserName;
+    });
+
     const chatUser = chatroomUsers.find((chatUser: ChatroomUser) => {
       return chatUser.userId === Friend?.id;
     });
-    
+  
     const selfChatroomUser = chatroomUsers.find((self: ChatroomUser) => {
-      return user?.id === self?.userId;
-    });
+          return user?.id === self.userId;
+      });
+    
+    
     if (mode === 'Add')
     {
-      try {
         const newChatroomuser: Partial<ChatroomUser> = {
-          userId: Friend?.id,
-          user: Friend,
+          userId: notFriend?.id,
+          user: notFriend,
           chatroomId: user?.chatInUse?.chat?.id,
           chatroom: user?.chatInUse?.chat,
           permission: userPermission.regular,
           banStatus: false,
           muteStatus: false,
           muteUntil: null,
-        }
-        const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
+       } 
+        await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }});
-        if(response.status === 200)
+        }}).then((response: any) =>
         {
           console.log('User added to chatroom', response.data);
           const ChatroomUsersData: ChatroomUser = response.data;
+          socket.emit("user added", {id: newChatroomuser.userId});
           setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
-        }
-      } catch (error) {
+        }).catch((error: any) => {
           console.error('Error adding user to channel', error);
           alert('Error adding user to channel');
-      }
+      })
     }
     else if (mode === 'Ban')
     {
@@ -450,21 +458,17 @@ const OptionBarConversation: React.FC = () => {
       }
       else
       {
-        try {
-          const response = await axios.delete(`http://localhost:4242/chatroomuser/${selfChatroomUser?.id}`, {headers: {
+          await axios.delete(`http://localhost:4242/chatroomuser/${selfChatroomUser?.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }});
-          if (response.status === 200) {
+          }}).then((response: any) => {
+            socket.emit("user left");
             console.log('User removed from channel', response.data);
             const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
             updateUser(updatedUser);
-          } else {
-            console.error('Removing user from channel failed');
-          }
-        } catch (error) {
-          console.error('Error occurred while removing user from channel: ', error);
-        }
+          }).catch((error: any) => {
+            console.error('Error occurred while removing user from channel: ', error);
+          });
       }
     }
     else if(mode === "Block")
@@ -475,6 +479,9 @@ const OptionBarConversation: React.FC = () => {
           'userId': user?.id
         }});
         console.log('User successfuly blocked', response.data);
+        const id = user?.nickname;
+        const blocked = friendChat?.id;
+        socket.emit("blocked", {id: id, blocked: blocked});
       } catch (error) {
         console.error('Error blocking user', error);
         alert('Error adding blocking user: ' + error);
