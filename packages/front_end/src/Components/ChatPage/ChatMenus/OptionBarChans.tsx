@@ -102,6 +102,7 @@ const OptionBarChans: React.FC = () => {
     socket.emit("connected", user?.id);
     socket.on("chatroom created", (data: any) => {
       setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data.newChatroom]);
+      setRefresh(!refresh);
       socket.emit("refresh");
     })
     socket.on("chatroom deleted", (data: any) => {
@@ -120,7 +121,11 @@ const OptionBarChans: React.FC = () => {
         const updatedUser: Partial<User> = { ...user, Chatroom: newChans, chatrooms: chatUserToDelete };
         updateUser(updatedUser);    
       }
+      setRefresh(!refresh);
       socket.emit("refresh");
+    })
+    socket.on("user joined", (data: any) => {
+      setRefresh(!refresh);
     })
     socket.on("chatroom updated", (data: any) => {
       const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.id === data.chatroomUpdated.id);
@@ -160,11 +165,12 @@ const OptionBarChans: React.FC = () => {
       {
         setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data.chatroomUpdated]);
       }
-      socket.emit("refresh");
+      //socket.emit("refresh");
+      setRefresh(!refresh);
     //TODO, vérifier si je dois implémenter quelque chose pour que l'utilisateur puisse voir les autres utilisateurs dans le channel
     });
 
-    socket.on("user joined", (data: any) => {
+    /* socket.on("user joined", (data: any) => {
       setRefresh(!refresh);
        if (user?.Chatroom?.find((chatroom: Chatroom) => {
         return (chatroom.name === data.chatroomUpdated.name)
@@ -186,7 +192,7 @@ const OptionBarChans: React.FC = () => {
         }
       }
       socket.emit("refresh");
-    })
+    }) */
     //TODO, vérifier si je dois implémenter quelque chose pour que l'utilisateur puisse voir les autres utilisateurs dans le channel
   });
   
