@@ -85,7 +85,6 @@ interface MyChannelsProps {
           updateUser(updatedUser);
         }
       }
-      socket.emit("refresh");
     };
     
     let filteredChannels : any = user?.Chatroom?.filter((channel: Chatroom) =>

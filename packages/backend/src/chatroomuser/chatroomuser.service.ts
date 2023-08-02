@@ -31,6 +31,7 @@ export class ChatroomuserService {
   }
 
   async createPass(createChatroomuserpass: CreateChatroomuserPassDto) {
+    console.log(createChatroomuserpass.chatroomId)
     const chatroom = await this.prisma.chatroom.findUnique({where: { id: createChatroomuserpass.chatroomId }});
     if (!chatroom) {
       throw new BadRequestException("Chatroom not found");

@@ -99,6 +99,14 @@ const OptionBarChans: React.FC = () => {
   
   socket.on("connected", () => {
     socket.emit("connected", user?.id);
+    socket.on("chatroom deleted", (data: any) => {
+      if (user?.chatInUse?.chat?.name === data.chanName)
+      {
+        const updatedUser: Partial<User> = { ...user, chatInUse: undefined};
+        updateUser(updatedUser);
+        socket.emit("refresh")
+      }
+    })
     socket.on("refresh", () => {
       setRefresh(refresh => refresh + 1);
     })
@@ -176,6 +184,8 @@ const OptionBarChans: React.FC = () => {
     {
       if (isProtected === 'pwProtected' && pwd === "")
         alert("Error: no password given");
+      else if (isProtected === 'pwProtected' && pwd !== null && pwd.length !== 8)
+        alert("Error: Password must be 8 characters long");
       else if (isProtected === 'pwProtected')
       {
         await axios.post('http://localhost:4242/chatroom/password', newChannel, {headers: {
@@ -192,13 +202,13 @@ const OptionBarChans: React.FC = () => {
               chat: newChannelData,
               type: chatroomType.channel,
             } 
-            const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, newChannelData] : [newChannelData]};
+            const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse};
             updateUser(updatedUser);
           }
         })
         .catch((error: any) => {
           console.error('Error creating chatroom:', error);
-          alert('Error: could not create channel: ' + error);
+          alert('Error creating chatroom' );
         })
       }
       else
@@ -217,7 +227,7 @@ const OptionBarChans: React.FC = () => {
               chat: newChannelData,
               type: chatroomType.channel,
             }
-            const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, newChannelData] : [newChannelData]};
+            const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse};
             updateUser(updatedUser);
           }
         })
@@ -279,7 +289,7 @@ const OptionBarChans: React.FC = () => {
       }})
       .then((response: any) => {
         console.log('Chatroom deleted:', response.data);
-        socket.emit("refresh");
+        socket.emit("delete chatroom", { chanName: channelName });
       })
       .catch((error: any) => {
         console.error('Error deleting chatroom:', error);
@@ -290,47 +300,77 @@ const OptionBarChans: React.FC = () => {
     {
       const newChan = joinChatroom.find((chan: Chatroom) => {
         return chan.name === channelName});
-        if (newChan && user)
+      if (newChan && user)
+      {
+        const newChatroomuser: Partial<ChatroomUser> = {
+          userId: user.id,
+          user: user,
+          chatroomId: newChan.id,
+          chatroom: newChan,
+          permission: userPermission.regular,
+          banStatus: false,
+          muteStatus: false,
+          muteUntil: null,
+        }
+        if (isProtected === "pwProtected")
         {
-          const newChatroomuser: Partial<ChatroomUser> = {
-            userId: user.id,
-            user: user,
-            chatroomId: newChan.id,
-            chatroom: newChan,
-            permission: userPermission.regular,
-            banStatus: false,
-            muteStatus: false,
-            muteUntil: null,
-          }
+          await axios.post(`http://localhost:4242/chatroomuser/password`, { userId: newChatroomuser.userId, chatroomId: newChatroomuser.chatroomId, permission: userPermission.regular, password: joinPassword }, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }})
+          .then((response: any) => {
+            const newChatroomuserData = response.data;
+            console.log('User added to chatroom ', newChatroomuserData);
+            socket.emit("refresh");
+            if (newChatroomuserData !== undefined)
+            {
+              const newChatInUse: ChatInUse = {
+                chat: newChan,
+                type: chatroomType.channel,
+              }
+              if (user)
+              {
+                const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
+                updateUser(updatedUser);
+              }
+            }
+            setDialog(false);
+            setJoinPassword("")
+          })
+          .catch((error: any) => {
+            console.error('Error adding user to channel', error);
+            alert('Error: Password does not match');
+            setJoinPassword("")
+          })
+        }
+        else
+        {            
           await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }})
           .then((response: any) => {
             const newChatroomuserData = response.data;
-            const updatedNewChan = { ...newChan };
-            updatedNewChan.users = updatedNewChan.users ? [...updatedNewChan.users, newChatroomuserData] : [newChatroomuserData];
             console.log('User added to chatroom ', newChatroomuserData);
             socket.emit("refresh");
-            setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== channelName));
             if (newChatroomuserData !== undefined)
             {
-            const newChatInUse: ChatInUse = {
-              chat: newChan,
-              type: chatroomType.channel,
+              const newChatInUse: ChatInUse = {
+                chat: newChan,
+                type: chatroomType.channel,
+              }
+              if (user)
+              {
+                const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse }
+              }
             }
-            if (user)
-            {
-              const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, updatedNewChan] : [updatedNewChan], chatrooms: user.chatrooms ? [...user.chatrooms, newChatroomuserData] : [newChatroomuserData] };
-              updateUser(updatedUser);
-            }
-          }
-          setDialog(false);
-        })
-        .catch((error: any) => {
-          console.error('Error adding user to channel', error);
-          alert('Error adding user to channel');
-        })
+            setDialog(false);
+          })
+          .catch((error: any) => {
+            console.error('Error adding user to channel', error);
+            alert('Error adding user to channel');
+          })
+        }
       }
     }
     handleCloseWindow();
@@ -387,27 +427,6 @@ const OptionBarChans: React.FC = () => {
     }
     setIsProtected("public");
     handleChannel();
-  };
-  
-  // TODO vérification du mot de passe devra être fait dans backend, utiliser websocket
-  const handleJoin = () => {
-    const chat = user?.Chatroom?.find((obj: any) => {
-      return obj.name === channelName;
-    })
-    if (chat !== undefined)
-    {
-      if (joinPassword === chat?.password)
-        handleChannel();
-      else
-      {
-        setJoinPassword("");
-        alert("Password does not match, please try again")
-        return ;
-      }
-    }
-    setJoinPassword("");
-    alert("Password does not match, please try again")
-    return ;
   };
   
   const channelHandlerWindow = (
@@ -619,7 +638,7 @@ const OptionBarChans: React.FC = () => {
             </DialogContent>
             <DialogActions>
               <Button className="profilePageButtons" onClick={handleCloseWindow}>Cancel</Button>
-              <Button className="profilePageButtons" onClick={handleJoin}>Join</Button>
+              <Button className="profilePageButtons" onClick={handleChannel}>Join</Button>
             </DialogActions>
           </Dialog>
         </Box>
