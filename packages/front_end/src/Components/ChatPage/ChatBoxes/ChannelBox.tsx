@@ -1,5 +1,5 @@
 import { Box, TextField }  from '@mui/material/';
-import MyChannels from './ChatComponents/Channels';
+import MyChannels from '../ChatComponents/Channels';
 import { useState, ChangeEvent } from 'react';
   
   export default function ChannelBox() {

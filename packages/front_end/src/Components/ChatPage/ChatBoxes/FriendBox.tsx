@@ -1,5 +1,5 @@
 import { Box, TextField } from '@mui/material/';
-import MyFriends from './ChatComponents/Friends';
+import MyFriends from '../ChatComponents/Friends';
 import { useState, ChangeEvent } from 'react';
 
   export default function FriendBox() {

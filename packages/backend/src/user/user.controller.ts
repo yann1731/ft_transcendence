@@ -5,8 +5,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { promises } from 'dns';
 import { ValidationPipe } from '@nestjs/common';
 import { TokenGuard } from 'src/guard/token.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('user')
+@ApiTags('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

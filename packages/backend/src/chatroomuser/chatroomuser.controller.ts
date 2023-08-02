@@ -4,8 +4,10 @@ import { CreateChatroomuserDto } from './dto/create-chatroomuser.dto';
 import { UpdateChatroomuserDto } from './dto/update-chatroomuser.dto';
 import { CreateChatroomuserPassDto } from './dto/create-chatroomuserpass.dto';
 import { TokenGuard } from 'src/guard/token.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('chatroomuser')
+@ApiTags('chatroomuser')
 // @UseGuards(TokenGuard)
 export class ChatroomuserController {
   constructor(private readonly chatroomuserService: ChatroomuserService) {}
