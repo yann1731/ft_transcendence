@@ -17,7 +17,7 @@ interface MyChannelsProps {
     const [joinedchannels, setJoinedChannels] = useState<Chatroom[]>([]);
     const [refresh, setRefresh] = useState(false);
     
-   /*  useEffect(() => {
+     useEffect(() => {
       const fetchChannels = async () => {
         await axios.get('http://localhost:4242/chatroom', {headers: {
           'Authorization': user?.token,
@@ -54,8 +54,8 @@ interface MyChannelsProps {
         })
       }
       fetchChannels();
-    }, [refresh]);
-     */
+    }, [refresh, user]);
+    
     const SetChatInUse = (name: string) => {
       const decodedName = decodeURIComponent(name);
       if (user !== null)
@@ -86,23 +86,27 @@ interface MyChannelsProps {
         SetChatInUse(data.newChatroom.name)
         //setRefresh(!refresh);
       })
-      /*socket.on("chatroom created", (data: any) => {
+      socket.on("chatroom created", (data: any) => {
         setRefresh(!refresh);
+      })
+      socket.on("added", () => {
+        setRefresh(!refresh);
+        socket.emit("join chatroom")
       })
       socket.on("chatroom deleted", (data: any) => {
         setRefresh(!refresh);
-      }) */
-/*      socket.on("chatroom updated", (data: any) => {
-         const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.name === data.chatroomUpdated.name);
+      }) 
+      socket.on("chatroom updated", (data: any) => {
+       const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.name === data.chatroomUpdated.name);
 
         if (chatroomIndexToUpdate !== -1 && chatroomIndexToUpdate !== undefined) {
           const updatedChatrooms = user?.Chatroom ? [...user?.Chatroom] : [];
           updatedChatrooms[chatroomIndexToUpdate] = data.chatroomUpdated;
           setJoinedChannels(updatedChatrooms);
-
-        } 
-        setRefresh(!refresh)
-      })*/
+        }
+        else
+          setRefresh(!refresh)
+        })
     });
     
     const filteredChannels = user?.Chatroom?.filter((channel: Chatroom) =>

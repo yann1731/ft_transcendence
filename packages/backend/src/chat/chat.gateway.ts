@@ -14,6 +14,9 @@ import { Chatroom, ChatroomUser } from '@prisma/client';
 
 @WebSocketGateway({ cors: true, namespace: 'chatsocket' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  
+  users: Map<string, string> = new Map<string, string>();
+  
   constructor(private chatService: ChatService, private chatroomService: ChatroomService, private chatroomUserService: ChatroomuserService) {};
   @WebSocketServer()
   server: Server;
@@ -26,6 +29,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect() {
 		// console.log('Client disconnected from chatSocket');
 	}
+
+  @SubscribeMessage("connected")
+  handleConnected(client: Socket, id: string){
+    this.users.set(id, client.id);
+  }
 
   @SubscribeMessage("test")
   handleTest(): void {
@@ -82,5 +90,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("refresh")
   refreshPage(client: Socket, data: any) {
     this.server.emit("refresh");
+  }
+  
+  @SubscribeMessage("user added")
+  handleAdded(client: Socket, data: any){
+    this.server.to(this.users.get(data.id)).emit("added")
+  }
+
+  @SubscribeMessage("blocked")
+  handleBlocked(client: Socket, data: any){
+    this.server.to(this.users.get(data.blocked)).emit("blocked", data.id)
+  }
+
+  @SubscribeMessage("user left")
+  handleLeaving(client: Socket){
+    client.broadcast.emit("user left");
   }
 }

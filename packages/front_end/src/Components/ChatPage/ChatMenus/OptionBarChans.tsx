@@ -32,6 +32,7 @@ const OptionBarChans: React.FC = () => {
   const [isDialogOpen, setDialog] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [wasPwProtected, setWasPwProtected] = React.useState(false);
+  const [refresh, setRefresh] = React.useState(false);
   
   // Sockets implementation
   const socket = useContext(SocketContext);
@@ -95,11 +96,13 @@ const OptionBarChans: React.FC = () => {
       })
     };
     fetchChannels();
-  }, []);
+  }, [refresh]);
   
   socket.on("connected", () => {
+    socket.emit("connected", user?.id);
     socket.on("chatroom created", (data: any) => {
       setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data.newChatroom]);
+      setRefresh(!refresh);
       socket.emit("refresh");
     })
     socket.on("chatroom deleted", (data: any) => {
@@ -118,7 +121,11 @@ const OptionBarChans: React.FC = () => {
         const updatedUser: Partial<User> = { ...user, Chatroom: newChans, chatrooms: chatUserToDelete };
         updateUser(updatedUser);    
       }
+      setRefresh(!refresh);
       socket.emit("refresh");
+    })
+    socket.on("user joined", (data: any) => {
+      setRefresh(!refresh);
     })
     socket.on("chatroom updated", (data: any) => {
       const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.id === data.chatroomUpdated.id);
@@ -158,8 +165,34 @@ const OptionBarChans: React.FC = () => {
       {
         setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data.chatroomUpdated]);
       }
+      //socket.emit("refresh");
+      setRefresh(!refresh);
+    //TODO, vérifier si je dois implémenter quelque chose pour que l'utilisateur puisse voir les autres utilisateurs dans le channel
+    });
+
+    /* socket.on("user joined", (data: any) => {
+      setRefresh(!refresh);
+       if (user?.Chatroom?.find((chatroom: Chatroom) => {
+        return (chatroom.name === data.chatroomUpdated.name)
+      }) !== undefined) 
+      {
+        if (data.chatroomUpdated.name === user?.chatInUse?.chat.name)
+        {
+          const newChatInUse: ChatInUse = {
+            chat: data.chatroomUpdated,
+            type: chatroomType.channel,
+          }
+          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: updatedChatrooms };
+          updateUser(updatedUser);
+        }
+        else
+        {
+          const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
+          updateUser(updatedUser);
+        }
+      }
       socket.emit("refresh");
-    })
+    }) */
     //TODO, vérifier si je dois implémenter quelque chose pour que l'utilisateur puisse voir les autres utilisateurs dans le channel
   });
   
