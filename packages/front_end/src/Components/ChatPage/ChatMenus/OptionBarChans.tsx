@@ -1,7 +1,7 @@
 import * as React from 'react';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { DialogTitle, DialogContentText, DialogContent, DialogActions, useTheme, Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox, Dialog} from '@mui/material';
+import { DialogTitle, DialogContentText, DialogContent, DialogActions, useTheme, Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox, Dialog, setRef} from '@mui/material';
 import '../../../App.css';
 import ChanPictureSetter from '../ChatComponents/ChatPictureSetter';
 import axios from 'axios';
@@ -198,8 +198,7 @@ const OptionBarChans: React.FC = () => {
     })
     //TODO, vérifier si je dois implémenter quelque chose pour que l'utilisateur puisse voir les autres utilisateurs dans le channel
     socket.on("user joined", (data: any) => {
-      setRefresh(!refresh);
-      /* if (user?.Chatroom?.find((chatroom: Chatroom) => {
+      if (user?.Chatroom?.find((chatroom: Chatroom) => {
         return (chatroom.name === data.chatroomUpdated.name)
       }) !== undefined) 
       {
@@ -217,7 +216,11 @@ const OptionBarChans: React.FC = () => {
           const updatedUser: Partial<User> = { ...user, Chatroom: user.Chatroom ? [...user.Chatroom, data.chatroomUpdated] : [data.chatroomUpdated], chatrooms: user.chatrooms ? [...user.chatrooms, data.newChatUser] : [data.newChatUser] };
           updateUser(updatedUser);
         }
-      } */
+        setRefresh(!refresh);
+      }
+    })
+    socket.on("user quit", () => {
+      setRefresh(!refresh);
     })
   });
 
