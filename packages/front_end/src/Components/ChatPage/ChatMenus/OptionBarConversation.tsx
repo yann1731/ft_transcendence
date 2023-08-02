@@ -18,7 +18,7 @@ const OptionBarConversation: React.FC = () => {
   const theme = useTheme();
   const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
   const [UserName, setUserName] = React.useState('');
-  const [refresh, setRefresh] = React.useState(false);
+  const [refresh, setRefresh] = React.useState(1);
   const [Users, setUsers] = React.useState<User[]>([]);
   const {user, updateUser} = React.useContext(UserContext);
   const [userRights, setUserRights] = React.useState(UserSettings);
@@ -90,24 +90,20 @@ const OptionBarConversation: React.FC = () => {
 
   React.useEffect(() => {
     const fetchUsers = async () => {
-      try {
-        const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
+        await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }});
-        if (response.status === 200) {
+        }}).then((response) => {
           const ChatroomUsersData: ChatroomUser[] = response.data;
           setChatroomUsers(ChatroomUsersData);
-        } 
-      } catch (error) {
+        }).catch((error) => {
         console.error('Error fetching chatroom users', error);
-      }
-      try {
-        const response = await axios.get('http://localhost:4242/user', {headers: {
+      })
+
+      await axios.get('http://localhost:4242/user', {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }});
-        if (response.status === 200) {
+        }}).then((response) => {
           const UsersData: User[] = response.data;
           setUsers(UsersData);
           const tempUsersInChan: User[] = [];
@@ -128,78 +124,20 @@ const OptionBarConversation: React.FC = () => {
           });
           setUsersInCurrentChat(tempUsersInChan);
           setUsersNotInCurrentChat(tempUsersNotInChan);
-        }
-      } catch (error) {
+         /*  tempUsersNotInChan.forEach(bob => {
+            alert(bob.nickname);
+          }) */
+        }).catch((error) => {
         console.error('Error fetching chatroom users', error);
-      }
+      })
     };
     fetchUsers();
   }, [user, refresh]);
   
   socket.on("connected",() => {
-/*     socket.on("chatroom created", (data: Chatroom) => {
-      setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data]);
-    }) */
-    socket.on("user left", () => {
-      setRefresh(!refresh);
+    socket.on("refresh", () => {
+      setRefresh(refresh => refresh + 1)
     })
-    socket.on("chatroom quitted", (data: Chatroom) => {
-      const newChans = user?.Chatroom?.filter((chat: Chatroom) => chat.name !== data.name);
-      const chatUserToDelete = user?.chatrooms?.filter((chatUser: ChatroomUser) => chatUser.chatroomId !== data.id);
-      alert(data.name + " data id");
-      alert(user?.chatInUse?.chat.name + " chat in use id");
-      if (data.id === user?.chatInUse?.chat.id)
-      {
-        alert("beaucoup de caca");
-        const updatedUser: Partial<User> = { ...user, chatInUse: undefined, Chatroom: newChans, chatrooms: chatUserToDelete };
-        updateUser(updatedUser);    
-      }
-      else
-      {
-        alert("beaucoup plus de caca");
-        const updatedUser: Partial<User> = { ...user, Chatroom: newChans, chatrooms: chatUserToDelete };
-        updateUser(updatedUser);    
-      }
-    })
-/*     socket.on("chatroom updated", (data: Chatroom) => {
-      const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.id === data.id);
-
-      if (chatroomIndexToUpdate !== -1 && chatroomIndexToUpdate !== undefined) {
-        const updatedChatrooms = user?.Chatroom ? [...user?.Chatroom] : [];
-        updatedChatrooms[chatroomIndexToUpdate] = data;
-        setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.map((chat: Chatroom) => chat.name === data.name ? data: chat));
-        setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.map((chat: Chatroom) => chat.name === data.name ? data: chat));
-        setAdminChatroom((prevAdminChat: Chatroom[]) => prevAdminChat.map((chat: Chatroom) => chat.name === data.name ? data: chat));
-      }
-    }) */
-    /* socket.on("user joined", (chatUser: ChatroomUser, chat: Chatroom) => {
-      if (user?.Chatroom?.find((chatroom: Chatroom) => {
-        return (chatroom.id === chat.id)
-      }) !== undefined) 
-      {
-        if (chat.id === user?.chatInUse?.chat.id)
-        {
-          const newChatInUse: ChatInUse = {
-            chat: chat,
-            type: chatroomType.channel,
-          }
-          const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, chat] : [chat], chatrooms: user.chatrooms ? [...user.chatrooms, chatUser] : [chatUser] };
-          updateUser(updatedUser);
-        }
-        else
-        {
-          const updatedUser: Partial<User> = { ...user, Chatroom: user.Chatroom ? [...user.Chatroom, chat] : [chat], chatrooms: user.chatrooms ? [...user.chatrooms, chatUser] : [chatUser] };
-          updateUser(updatedUser);
-        }
-      }
-    }) */
-/*     fetchUsers(setChatroomUsers,
-      setUsers,
-      setUsersInCurrentChat,
-      setUsersNotInCurrentChat,
-      chatroomUsers,
-      Users,
-      user); */
   });
 
   const handleMode = (mode: string) => {
@@ -256,7 +194,6 @@ const OptionBarConversation: React.FC = () => {
   };
   
   const handleFriends = async () => {
-    //alert("ceci est le nom du chat in use " + user?.chatInUse?.chat.name);
     if (!UserName && mode !== 'Quit' && mode !== 'View Members' && mode !== 'Block' && mode !== 'Invite to Play' && mode !== 'View Profile') {
       alert('No username was given')
       return ;
@@ -272,7 +209,6 @@ const OptionBarConversation: React.FC = () => {
     const notFriend = usersNotInCurrentChat.find((friend: User) => {
       return friend.nickname === UserName;
     });
-
     const chatUser = chatroomUsers.find((chatUser: ChatroomUser) => {
       return chatUser.userId === Friend?.id;
     });
@@ -301,8 +237,8 @@ const OptionBarConversation: React.FC = () => {
         {
           console.log('User added to chatroom', response.data);
           const ChatroomUsersData: ChatroomUser = response.data;
-          socket.emit("user added", {id: newChatroomuser.userId});
           setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
+          socket.emit("refresh", {id: newChatroomuser.userId});
         }).catch((error: any) => {
           console.error('Error adding user to channel', error);
           alert('Error adding user to channel');
@@ -448,7 +384,7 @@ const OptionBarConversation: React.FC = () => {
           }});
           if (response.status === 200) {
             console.log('Channel deleted', response.data);
-            socket.emit("delete chatroom", response.data);
+            socket.emit("refresh");
           } else {
             console.error('Deleting channel failed');
           }
@@ -462,10 +398,10 @@ const OptionBarConversation: React.FC = () => {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {
-            socket.emit("user left");
             console.log('User removed from channel', response.data);
             const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
             updateUser(updatedUser);
+            socket.emit("refresh");
           }).catch((error: any) => {
             console.error('Error occurred while removing user from channel: ', error);
           });
@@ -696,4 +632,5 @@ const OptionBarConversation: React.FC = () => {
     </Box>
   );
 };
+
 export default OptionBarConversation;

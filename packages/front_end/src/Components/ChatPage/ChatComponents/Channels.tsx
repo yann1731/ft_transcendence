@@ -1,4 +1,4 @@
-import { List, ListItemButton, ListItemText, ListItemIcon, Avatar } from '@mui/material';
+import { List, ListItemButton, ListItemText, ListItemIcon, Avatar, setRef } from '@mui/material';
 import React, { useState, useEffect, useContext } from 'react';
 import { Chatroom, ChatroomUser, ChatInUse, chatroomType } from 'Components/Interfaces';
 import axios from 'axios';
@@ -85,17 +85,20 @@ interface MyChannelsProps {
           updateUser(updatedUser);
         }
       }
+      socket.emit("refresh");
     };
     
+    let filteredChannels : any = user?.Chatroom?.filter((channel: Chatroom) =>
+      channel.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+
     socket.on("connected", () => {
       socket.on("refresh", async () => {
         setRefresh(refresh => refresh + 1);
       })
     });
     
-    const filteredChannels = user?.Chatroom?.filter((channel: Chatroom) =>
-      channel.name.toLowerCase().includes(searchText.toLowerCase())
-    );
+    
     
     return (
       <List>

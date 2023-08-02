@@ -1,7 +1,7 @@
 import * as React from 'react';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { DialogTitle, DialogContentText, DialogContent, DialogActions, useTheme, Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox, Dialog} from '@mui/material';
+import { DialogTitle, DialogContentText, DialogContent, DialogActions, useTheme, Autocomplete, AccordionDetails, Accordion, AccordionSummary, Button, TextField, Modal, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, FormControlLabel, Checkbox, Dialog, setRef} from '@mui/material';
 import '../../../App.css';
 import ChanPictureSetter from '../ChatComponents/ChatPictureSetter';
 import axios from 'axios';
