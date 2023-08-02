@@ -88,7 +88,6 @@ const OptionBarChans: React.FC = () => {
         })
         .catch((error: any) => {
           console.error('Error getting ChatroomUsers: ', error);
-          alert('Error: could not get ChatroomUsers: ' + error);
         })
       })
       .catch((error: any) => {
@@ -195,13 +194,11 @@ const OptionBarChans: React.FC = () => {
             } 
             const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, newChannelData] : [newChannelData]};
             updateUser(updatedUser);
-            setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, newChannelData]);
-            setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, newChannelData]);
           }
         })
         .catch((error: any) => {
           console.error('Error creating chatroom:', error);
-          alert('Error: could not create channel: ');
+          alert('Error: could not create channel: ' + error);
         })
       }
       else
@@ -222,8 +219,6 @@ const OptionBarChans: React.FC = () => {
             }
             const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, newChannelData] : [newChannelData]};
             updateUser(updatedUser);
-            setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, newChannelData]);
-            setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, newChannelData]);
           }
         })
         .catch((error: any) => {
