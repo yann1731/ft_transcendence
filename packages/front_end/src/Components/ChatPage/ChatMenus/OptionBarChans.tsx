@@ -126,7 +126,17 @@ const OptionBarChans: React.FC = () => {
       if (chatroomIndexToUpdate !== -1 && chatroomIndexToUpdate !== undefined) {
         const updatedChatrooms = user?.Chatroom ? [...user?.Chatroom] : [];
         updatedChatrooms[chatroomIndexToUpdate] = data.chatroomUpdated;
-        setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.map((chat: Chatroom) => chat.name === data.chatroomUpdated.name ? data.chatroomUpdated: chat));
+        if (data.protectionStat === "private")
+        {
+          setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.filter((chat: Chatroom) => chat.name !== data.chatroomUpdated.name));
+        }
+        else
+        {
+          joinChatroom.forEach((element: any) => {
+            alert(element.name + " chat name " + data.chatroomUpdated.name + " updated chatroom name");
+          });
+          setJoinChatroom((prevJoinChat: Chatroom[]) => prevJoinChat.map((chat: Chatroom) => chat.name === data.chatroomUpdated.name ? data.chatroomUpdated: chat));
+        }
         setOwnChatroom((prevOwnChat: Chatroom[]) => prevOwnChat.map((chat: Chatroom) => chat.name === data.chatroomUpdated.name ? data.chatroomUpdated: chat));
         setAdminChatroom((prevAdminChat: Chatroom[]) => prevAdminChat.map((chat: Chatroom) => chat.name === data.chatroomUpdated.name ? data.chatroomUpdated: chat));
         if (data.chatroomUpdated.name === user?.chatInUse?.chat?.name)
@@ -143,6 +153,10 @@ const OptionBarChans: React.FC = () => {
           const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
           updateUser(updatedUser);
         }
+      }
+      else if (data.protectionStat !== "private")
+      {
+        setJoinChatroom((prevJoinChat: Chatroom[]) => [...prevJoinChat, data.chatroomUpdated]);
       }
       socket.emit("refresh");
     })
@@ -257,7 +271,7 @@ const OptionBarChans: React.FC = () => {
         .then((response: any) => {
           console.log('Chatroom created:', response.data);            
           const newChannelData = response.data;
-          socket.emit("create chatroom", { newChatroom: newChannelData });
+          socket.emit("create chatroom", { newChatroom: newChannelData, protectionStat: isProtected });
           if (user)
           {
             const newChatInUse: ChatInUse = {
@@ -298,7 +312,7 @@ const OptionBarChans: React.FC = () => {
         .then((response: any) => {
           console.log('Chatroom modified:', response.data);
           const ChannelData = response.data;
-          socket.emit("update chatroom", { chatroomUpdated: ChannelData });
+          socket.emit("update chatroom", { chatroomUpdated: ChannelData, protectionStat: isProtected });
         })
         .catch((error: any) => {
           console.error('Error editing chatroom:', error);
@@ -314,7 +328,7 @@ const OptionBarChans: React.FC = () => {
         .then((response: any) => {
           console.log('Chatroom modified:', response.data);
           const ChannelData = response.data;
-          socket.emit("update chatroom", { chatroomUpdated: ChannelData });
+          socket.emit("update chatroom", { chatroomUpdated: ChannelData, protectionStat: isProtected });
         })
         .catch((error: any) => {
           console.error('Error editing chatroom:', error);

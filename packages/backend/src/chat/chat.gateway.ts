@@ -47,7 +47,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("create chatroom")
     createChatroom(client: Socket, data: any) {
-    client.broadcast.emit("chatroom created", data);
+    if (data.protectionStat !== "private")
+    {
+      client.broadcast.emit("chatroom created", data);
+    }
     this.server.to(client.id).emit("chat created", data);
   }
   
