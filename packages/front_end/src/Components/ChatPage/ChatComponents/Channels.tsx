@@ -1,10 +1,12 @@
-import { List, ListItemButton, ListItemText, ListItemIcon, Avatar } from '@mui/material';
+import { List, ListItemButton, ListItemText, ListItemIcon, Avatar, setRef } from '@mui/material';
 import React, { useState, useEffect, useContext } from 'react';
 import { Chatroom, ChatroomUser, ChatInUse, chatroomType } from 'Components/Interfaces';
 import axios from 'axios';
 import { UserContext, User } from 'Contexts/userContext';
 import { socket } from 'Contexts/socketContext';
-  
+
+//TODO Quand on update un chatroom, le chatInUse du user change pour un autre, et celui des autres utilisateurs changent pour cleui qui est modifié
+//TODO Aussi retester Delete
 interface MyChannelsProps {
     searchText: string;
   }
@@ -13,9 +15,10 @@ interface MyChannelsProps {
     const {updateUser, user} = useContext(UserContext);
     const [channels, setChannels] = useState<Chatroom[]>([]);
     const [joinedchannels, setJoinedChannels] = useState<Chatroom[]>([]);
-    const [refresh, setRefresh] = useState(false);
+    const [refresh, setRefresh] = useState(1);
     
-    useEffect(() => {
+     useEffect(() => {
+      //alert("in effect");
       const fetchChannels = async () => {
         await axios.get('http://localhost:4242/chatroom', {headers: {
           'Authorization': user?.token,
@@ -23,6 +26,7 @@ interface MyChannelsProps {
         }})
         .then((response:any) => {
           setChannels(response.data);
+          const Chans = response.data;
           axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
@@ -31,7 +35,7 @@ interface MyChannelsProps {
             const chatroomUsersData: ChatroomUser[] = response.data;
             const chans: Chatroom[] = [];
             
-            channels.forEach((channel: Chatroom) => {
+            Chans.forEach((channel: Chatroom) => {
               chatroomUsersData.forEach((users: ChatroomUser) => {
                 if (channel?.id === users?.chatroomId && users.banStatus !== true)
                 chans.push(channel);
@@ -51,7 +55,7 @@ interface MyChannelsProps {
         })
       }
       fetchChannels();
-    }, [refresh, user]);
+    }, [user]);
     
     const SetChatInUse = (name: string) => {
       const decodedName = decodeURIComponent(name);
@@ -73,50 +77,47 @@ interface MyChannelsProps {
           updateUser(updatedUser);
         }
       }
+      socket.emit("refresh");
     };
     
+    let filteredChannels : any = user?.Chatroom?.filter((channel: Chatroom) =>
+      channel.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+
     socket.on("connected", () => {
-      socket.on("added", () => {
-        setRefresh(!refresh);
-        socket.emit("user added")
+      socket.on("refresh", () => {
+        setRefresh(refresh => refresh + 1);
       })
-      socket.on("chat created", (data: any) => {
+      /* socket.on("chat created", (data: any) => {
         SetChatInUse(data.newChatroom.name)
+        //setRefresh(!refresh);
+      })
+      socket.on("chatroom created", (data: any) => {
+        setRefresh(refresh + 1);
+      })
+      socket.on("added", () => {
+        setRefresh(refresh + 1);
       })
       socket.on("chatroom deleted", (data: any) => {
-        setRefresh(!refresh);
-      })
+        setRefresh(refresh + 1);
+      }) 
       socket.on("chatroom updated", (data: any) => {
-        SetChatInUse(data.chatroomUpdated.name)
-        const chatroomIndexToUpdate = joinedchannels.findIndex((chatroom: Chatroom) => chatroom.name === data.chatroomUpdated.name);
+       const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.name === data.chatroomUpdated.name);
 
         if (chatroomIndexToUpdate !== -1 && chatroomIndexToUpdate !== undefined) {
-          const updatedChatrooms = joinedchannels ? [...joinedchannels] : [];
+          const updatedChatrooms = user?.Chatroom ? [...user?.Chatroom] : [];
           updatedChatrooms[chatroomIndexToUpdate] = data.chatroomUpdated;
-          if (data.chatroomUpdated.name === user?.chatInUse?.chat?.name)
-          {
-            const newChatInUse: ChatInUse = {
-              chat: data.chatroomUpdated,
-              type: chatroomType.channel,
-            }
-            const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: updatedChatrooms };
-            updateUser(updatedUser);
-          }
-          else
-          {
-            const updatedUser: Partial<User> = { ...user, Chatroom: updatedChatrooms };
-            updateUser(updatedUser);
-          }
           setJoinedChannels(updatedChatrooms);
         }
         else
-          setRefresh(!refresh)
-      })
+          setRefresh(refresh + 1)
+        })
+        socket.on("chatroom quit", () => {
+          setRefresh(refresh + 1);
+        }) */
     });
     
-    const filteredChannels = joinedchannels.filter((channel: Chatroom) =>
-      channel.name.toLowerCase().includes(searchText.toLowerCase())
-    );
+    
     
     return (
       <List>
