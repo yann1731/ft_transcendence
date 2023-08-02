@@ -78,6 +78,7 @@ interface MyChannelsProps {
     socket.on("connected", () => {
       socket.on("added", () => {
         setRefresh(!refresh);
+        socket.emit("join chatroom")
       })
       socket.on("chat created", (data: any) => {
         SetChatInUse(data.newChatroom.name)

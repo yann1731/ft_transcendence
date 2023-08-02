@@ -32,6 +32,7 @@ const OptionBarChans: React.FC = () => {
   const [isDialogOpen, setDialog] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [wasPwProtected, setWasPwProtected] = React.useState(false);
+  const [refresh, setRefresh] = React.useState(false);
   
   // Sockets implementation
   const socket = useContext(SocketContext);
@@ -95,7 +96,7 @@ const OptionBarChans: React.FC = () => {
       })
     };
     fetchChannels();
-  }, []);
+  }, [refresh]);
   
   socket.on("connected", () => {
     socket.emit("connected", user?.id);
@@ -197,7 +198,8 @@ const OptionBarChans: React.FC = () => {
     })
     //TODO, vérifier si je dois implémenter quelque chose pour que l'utilisateur puisse voir les autres utilisateurs dans le channel
     socket.on("user joined", (data: any) => {
-      if (user?.Chatroom?.find((chatroom: Chatroom) => {
+      setRefresh(!refresh);
+      /* if (user?.Chatroom?.find((chatroom: Chatroom) => {
         return (chatroom.name === data.chatroomUpdated.name)
       }) !== undefined) 
       {
@@ -215,7 +217,7 @@ const OptionBarChans: React.FC = () => {
           const updatedUser: Partial<User> = { ...user, Chatroom: user.Chatroom ? [...user.Chatroom, data.chatroomUpdated] : [data.chatroomUpdated], chatrooms: user.chatrooms ? [...user.chatrooms, data.newChatUser] : [data.newChatUser] };
           updateUser(updatedUser);
         }
-      }
+      } */
     })
   });
 

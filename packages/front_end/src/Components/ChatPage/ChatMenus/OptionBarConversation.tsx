@@ -269,6 +269,10 @@ const OptionBarConversation: React.FC = () => {
       return friend.nickname === UserName;
     });
     
+    const notFriend = usersNotInCurrentChat.find((friend: User) => {
+      return friend.nickname === UserName;
+    });
+
     const chatUser = chatroomUsers.find((chatUser: ChatroomUser) => {
       return chatUser.userId === Friend?.id;
     });
@@ -281,8 +285,8 @@ const OptionBarConversation: React.FC = () => {
     if (mode === 'Add')
     {
         const newChatroomuser: Partial<ChatroomUser> = {
-          userId: Friend?.id,
-          user: Friend,
+          userId: notFriend?.id,
+          user: notFriend,
           chatroomId: user?.chatInUse?.chat?.id,
           chatroom: user?.chatInUse?.chat,
           permission: userPermission.regular,
