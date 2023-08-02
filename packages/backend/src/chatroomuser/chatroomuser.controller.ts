@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { ChatroomuserService } from './chatroomuser.service';
 import { CreateChatroomuserDto } from './dto/create-chatroomuser.dto';
 import { UpdateChatroomuserDto } from './dto/update-chatroomuser.dto';
+import { CreateChatroomuserPassDto } from './dto/create-chatroomuserpass.dto';
 import { TokenGuard } from 'src/guard/token.guard';
 
 @Controller('chatroomuser')
@@ -12,6 +13,11 @@ export class ChatroomuserController {
   @Post() //create chatroomuser joined to particular user id and chatroom id
   create(@Body() createChatroomuserDto: CreateChatroomuserDto) {
     return this.chatroomuserService.create(createChatroomuserDto);
+  }
+
+  @Post('/password')
+  createPass(@Body() createChatroomuserpassDto: CreateChatroomuserPassDto) {
+    return this.chatroomuserService.createPass(createChatroomuserpassDto);
   }
 
   @Get() //returns all currently created chatroomusers
