@@ -61,6 +61,14 @@ export class UserService { //creates a new user
       return user;
   }
 
+  async findUsername(username: string) {
+    const user = await this.prisma.user.findUnique({where: {username}});
+    if (!user)
+      throw new BadRequestException;
+    else
+      return user;
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) { //updates all the information of a user except the password. All the fields are optional
 
     const errors = await validate(updateUserDto);

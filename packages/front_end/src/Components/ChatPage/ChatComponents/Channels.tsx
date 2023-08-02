@@ -3,6 +3,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Chatroom, ChatroomUser, ChatInUse, chatroomType } from 'Components/Interfaces';
 import axios from 'axios';
 import { UserContext, User } from 'Contexts/userContext';
+import { SocketContext } from 'Contexts/socketContext';
+import { ChatroomMessage } from 'Components/Interfaces';
 import { socket } from 'Contexts/socketContext';
 
 interface MyChannelsProps {
@@ -11,6 +13,7 @@ interface MyChannelsProps {
 
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
     const {updateUser, user} = useContext(UserContext);
+    const socket = useContext(SocketContext);
     const [refresh, setRefresh] = useState(1);
     
      useEffect(() => {
@@ -65,8 +68,22 @@ interface MyChannelsProps {
       fetchChannels();
     }, [refresh]);
     
+    const setHistory = (id: string | undefined, chat: any) => {
+      if (id === undefined) {
+        return ;
+      }
+      let newMessage: Partial<ChatroomMessage> = {
+        content: "messageText",
+        senderId: user?.id,
+        chatroomId: id,
+        chatroom: chat,
+      };
+      socket.emit("getHistory", newMessage);
+    }
+
     const SetChatInUse = (name: string) => {
       const decodedName = decodeURIComponent(name);
+      
       if (user !== null)
       {
         const chatroom = user?.Chatroom?.find((chat: Chatroom) => {
@@ -74,6 +91,7 @@ interface MyChannelsProps {
         });
         if (chatroom !== undefined)
         {
+          // console.log("Chatroom name: " + chatroom.name);
           const newChatInUse: ChatInUse = {
             chat: chatroom,
             type: chatroomType.channel
@@ -83,9 +101,10 @@ interface MyChannelsProps {
             chatInUse: newChatInUse
           };
           updateUser(updatedUser);
+          socket.emit("refresh");
+          setHistory(updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.chat);
         }
       }
-      socket.emit("refresh");
     };
     
     let filteredChannels : any = user?.Chatroom?.filter((channel: Chatroom) =>

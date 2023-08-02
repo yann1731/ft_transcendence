@@ -90,6 +90,7 @@ const OptionBarConversation: React.FC = () => {
 
   React.useEffect(() => {
     const fetchUsers = async () => {
+      if (user?.chatInUse?.type === "channel") {
         await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
@@ -99,6 +100,7 @@ const OptionBarConversation: React.FC = () => {
         }).catch((error) => {
         console.error('Error fetching chatroom users', error);
       })
+      }
 
       await axios.get('http://localhost:4242/user', {headers: {
           'Authorization': user?.token,

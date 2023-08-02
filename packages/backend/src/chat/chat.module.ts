@@ -2,10 +2,15 @@ import { Module } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { ChatGateway } from './chat.gateway';
 import { PrismaModule } from 'src/prisma/prisma.module';
-import { ChatroomService } from 'src/chatroom/chatroom.service';
-import { ChatroomuserService } from 'src/chatroomuser/chatroomuser.service';
+import { ChatroommessageService } from 'src/chatroommessage/chatroommessage.service';
+import { ChatroommessageModule } from 'src/chatroommessage/chatroommessage.module';
+import { UserModule } from 'src/user/user.module';
+import { PrivatemessageModule } from 'src/privatemessage/privatemessage.module';
+import { ChatroomuserModule } from 'src/chatroomuser/chatroomuser.module';
+import { UserblocksModule } from 'src/userblocks/userblocks.module';
+
 @Module({
-  providers: [ChatGateway, ChatService, ChatroomService, ChatroomuserService],
-  imports: [PrismaModule]
+  providers: [ChatGateway, ChatService],
+  imports: [PrismaModule, ChatroommessageModule, UserModule, PrivatemessageModule, ChatroomuserModule, UserblocksModule],
 })
 export class ChatModule {}

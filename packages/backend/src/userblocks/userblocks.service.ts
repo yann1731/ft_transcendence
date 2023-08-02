@@ -48,4 +48,16 @@ export class UserblocksService {
     else
       return userblocks;
   }
+
+  async findBlocksByID(userID: string) {
+    const userblocks = await this.prisma.userBlocks.findMany({
+      where: {
+        blockerId: userID,
+      }
+    });
+    if (!userblocks)
+      throw new BadRequestException;
+    else
+      return userblocks;
+  }
 }
