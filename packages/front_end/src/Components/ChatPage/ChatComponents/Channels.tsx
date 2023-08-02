@@ -5,26 +5,21 @@ import axios from 'axios';
 import { UserContext, User } from 'Contexts/userContext';
 import { socket } from 'Contexts/socketContext';
 
-//TODO Quand on update un chatroom, le chatInUse du user change pour un autre, et celui des autres utilisateurs changent pour cleui qui est modifié
-//TODO Aussi retester Delete
 interface MyChannelsProps {
     searchText: string;
   }
 
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
     const {updateUser, user} = useContext(UserContext);
-    const [channels, setChannels] = useState<Chatroom[]>([]);
-    const [joinedchannels, setJoinedChannels] = useState<Chatroom[]>([]);
-    const [refresh, setRefresh] = useState(false);
+    const [refresh, setRefresh] = useState(1);
     
      useEffect(() => {
-      const fetchChannels = async () => {
+       const fetchChannels = async () => {
         await axios.get('http://localhost:4242/chatroom', {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }})
         .then((response:any) => {
-          setChannels(response.data);
           const Chans = response.data;
           axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
             'Authorization': user?.token,
@@ -33,14 +28,28 @@ interface MyChannelsProps {
           .then((response: any) => {
             const chatroomUsersData: ChatroomUser[] = response.data;
             const chans: Chatroom[] = [];
-            
+            let trigger = "off";
+            let newChatInUse = user?.chatInUse;
             Chans.forEach((channel: Chatroom) => {
               chatroomUsersData.forEach((users: ChatroomUser) => {
                 if (channel?.id === users?.chatroomId && users.banStatus !== true)
-                chans.push(channel);
+                {
+                  chans.push(channel);
+                }
+                if (channel?.id === user?.chatInUse?.chat?.id && newChatInUse !== undefined)
+                {
+                  newChatInUse.chat = channel;
+                  const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: chans };
+                  updateUser(updatedUser);
+                  trigger = "on";
+                }
               })
             });
-            setJoinedChannels(chans)
+            if (trigger === "off")
+            {
+              const updatedUser: Partial<User> = { ...user, chatInUse: undefined, Chatroom: chans };
+              updateUser(updatedUser);
+            }
             console.log('ChatroomUsers fetched: ', response.data);
           })
           .catch((error: any) => {
@@ -54,7 +63,7 @@ interface MyChannelsProps {
         })
       }
       fetchChannels();
-    }, [refresh, user]);
+    }, [refresh]);
     
     const SetChatInUse = (name: string) => {
       const decodedName = decodeURIComponent(name);
@@ -79,34 +88,9 @@ interface MyChannelsProps {
     };
     
     socket.on("connected", () => {
-      //socket.on("refresh", () => {
-        //setRefresh(!refresh);
-      //})
-      socket.on("chat created", (data: any) => {
-        SetChatInUse(data.newChatroom.name)
-        //setRefresh(!refresh);
+      socket.on("refresh", async () => {
+        setRefresh(refresh => refresh + 1);
       })
-      socket.on("chatroom created", (data: any) => {
-        setRefresh(!refresh);
-      })
-      socket.on("added", () => {
-        setRefresh(!refresh);
-        socket.emit("join chatroom")
-      })
-      socket.on("chatroom deleted", (data: any) => {
-        setRefresh(!refresh);
-      }) 
-      socket.on("chatroom updated", (data: any) => {
-       const chatroomIndexToUpdate = user?.Chatroom?.findIndex((chatroom: Chatroom) => chatroom.name === data.chatroomUpdated.name);
-
-        if (chatroomIndexToUpdate !== -1 && chatroomIndexToUpdate !== undefined) {
-          const updatedChatrooms = user?.Chatroom ? [...user?.Chatroom] : [];
-          updatedChatrooms[chatroomIndexToUpdate] = data.chatroomUpdated;
-          setJoinedChannels(updatedChatrooms);
-        }
-        else
-          setRefresh(!refresh)
-        })
     });
     
     const filteredChannels = user?.Chatroom?.filter((channel: Chatroom) =>
