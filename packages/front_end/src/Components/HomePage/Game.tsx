@@ -3,16 +3,21 @@ import '../../App.css';
 import option from './game/Option';
 import oneVSoneHost from './game/oneVSoneHost';
 import oneVSoneOther from './game/oneVSoneOther';
-import threeVSone from './game/threeVSone';
+import threeVSoneHost from './game/threeVSoneHost';
+import threeVSoneOther from './game/threeVSoneOther';
 import twoVStwoHost from './game/twoVStwoHost';
 import twoVStwoOther from './game/twoVStwoOther'
 import Box from '@mui/material/Box';
 import { UserContext } from 'Contexts/userContext';
 
+import { gamesocket } from 'Contexts/socketContext';
+
 export default function PongGame() {
     const {user} = React.useContext(UserContext);
+    const [test, setTest] = React.useState(1);
 
     React.useEffect(() => {
+      console.log("fuck yes")
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         parent: 'PONG',
@@ -31,19 +36,27 @@ export default function PongGame() {
           option,
           oneVSoneHost,
           oneVSoneOther,
-          threeVSone,
+          threeVSoneHost,
+          threeVSoneOther,
           twoVStwoHost,
           twoVStwoOther
         ]
       };
       
       const pong = new Phaser.Game(config);
-      pong.scene.start('menu', {name: user?.id});
+      pong.scene.start('menu', {name: user?.id, socket: gamesocket});
       return () => {
         pong.destroy(true);
       }
-    }, [user]);
+    }, [test]);
 
+    gamesocket.on("new", () => {
+        console.log(test) 
+        setTest(test => test + 1);
+        console.log(test)
+    })
+
+    
     return (
         <Box id="PONG" style={{ maxHeight: '82.7vh' }}></Box>
     );
