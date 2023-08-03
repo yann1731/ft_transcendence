@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { UserfriendshipService } from './userfriendship.service';
 import { CreateUserfriendshipDto } from './dto/create-userfriendship.dto';
 import { TokenGuard } from 'src/guard/token.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('userfriendship')
+@ApiTags('userfriendship')
 // @UseGuards(TokenGuard)
 export class UserfriendshipController {
   constructor(private readonly userfriendshipService: UserfriendshipService) {}

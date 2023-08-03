@@ -1,10 +1,12 @@
 import axios from 'axios';
 import * as React from 'react';
-import {useTheme, Avatar, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, List, ListItemIcon, ListItemButton, ListItemText } from '@mui/material';
+import {Popover, useTheme, Avatar, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, List, ListItemIcon, ListItemButton, ListItemText } from '@mui/material';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import ClearIcon from '@mui/icons-material/Clear';
 import { UserContext, User } from 'Contexts/userContext';
-import { chatroomType, ChatroomUser, userPermission, ChatInUse } from 'Components/Interfaces';
+import { chatroomType, ChatroomUser, userPermission, Chatroom } from 'Components/Interfaces';
+import { LimitedProfile } from 'Components/ProfilePage/Profile';
+import { socket } from 'Contexts/socketContext';
 
 const OptionBarConversation: React.FC = () => {
   const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
@@ -16,33 +18,94 @@ const OptionBarConversation: React.FC = () => {
   const theme = useTheme();
   const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
   const [UserName, setUserName] = React.useState('');
+  const [refresh, setRefresh] = React.useState(1);
   const [Users, setUsers] = React.useState<User[]>([]);
   const {user, updateUser} = React.useContext(UserContext);
   const [userRights, setUserRights] = React.useState(UserSettings);
   const [chatroomUsers, setChatroomUsers] = React.useState<ChatroomUser[]>([]);
   const [usersInCurrentChat, setUsersInCurrentChat] = React.useState<User[]>([]);
   const [usersNotInCurrentChat, setUsersNotInCurrentChat] = React.useState<User[]>([]);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const id = open ? 'contact-options-popover' : undefined;
+  
+/*   const fetchUsers = async (setChatroomUsers: any, setUsers: any, setUsersInCurrentChat: any, setUsersNotInCurrentChat: any, chatroomUsers: any, Users:any, user: any) => {
+    try {
+      const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {
+        headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }
+      });
+      if (response.status === 200) {
+        const ChatroomUsersData: ChatroomUser[] = response.data;
+        setChatroomUsers(ChatroomUsersData);
+      }
+    } catch (error) {
+      console.error('Error fetching chatroom users', error);
+    }
+    try {
+      const response = await axios.get('http://localhost:4242/user', {
+        headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }
+      });
+      if (response.status === 200) {
+        const UsersData: User[] = response.data;
+        setUsers(UsersData);
+        const tempUsersInChan: User[] = [];
+        const tempUsersNotInChan: User[] = [];
+  
+        Users.forEach((userToFind: User) => {
+          const isUser = chatroomUsers.find((chatUser: ChatroomUser) => {
+            return chatUser.userId === userToFind.id;
+          });
+          if (isUser !== undefined && user?.id !== isUser?.userId && !isUser.banStatus) {
+            tempUsersInChan.push(userToFind);
+          } else if (isUser === undefined) {
+            tempUsersNotInChan.push(userToFind);
+          }
+        });
+        setUsersInCurrentChat(tempUsersInChan);
+        setUsersNotInCurrentChat(tempUsersNotInChan);
+      }
+    } catch (error) {
+      console.error('Error fetching chatroom users', error);
+    }
+  };
+  
+  
+  React.useEffect(() => {
+    fetchUsers(
+      setChatroomUsers,
+      setUsers,
+      setUsersInCurrentChat,
+      setUsersNotInCurrentChat,
+      chatroomUsers,
+      Users,
+      user
+    );
+  }, []); */
 
   React.useEffect(() => {
     const fetchUsers = async () => {
-      try {
-        const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
+      if (user?.chatInUse?.type === "channel") {
+        await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }});
-        if (response.status === 200) {
+        }}).then((response) => {
           const ChatroomUsersData: ChatroomUser[] = response.data;
           setChatroomUsers(ChatroomUsersData);
-        } 
-      } catch (error) {
+        }).catch((error) => {
         console.error('Error fetching chatroom users', error);
+      })
       }
-      try {
-        const response = await axios.get('http://localhost:4242/user', {headers: {
+
+      await axios.get('http://localhost:4242/user', {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }});
-        if (response.status === 200) {
+        }}).then((response) => {
           const UsersData: User[] = response.data;
           setUsers(UsersData);
           const tempUsersInChan: User[] = [];
@@ -63,24 +126,39 @@ const OptionBarConversation: React.FC = () => {
           });
           setUsersInCurrentChat(tempUsersInChan);
           setUsersNotInCurrentChat(tempUsersNotInChan);
-        }
-      } catch (error) {
+         /*  tempUsersNotInChan.forEach(bob => {
+            alert(bob.nickname);
+          }) */
+        }).catch((error) => {
         console.error('Error fetching chatroom users', error);
-      }
+      })
     };
     fetchUsers();
-  }, [mode]);
+  }, [user, refresh]);
   
+  socket.on("connected",() => {
+    socket.on("refresh", () => {
+      setRefresh(refresh => refresh + 1)
+    })
+  });
+
   const handleMode = (mode: string) => {
     setMode(mode);
-    
     setWindowIsOpen(true);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
   
   const handleCloseWindow = () => {
     setWindowIsOpen(false);
   };
-  // TODO S'assurer qu'il n'y a pas de variables superflus. Peut-être n'utiliser suelement que chatroomUsers et usersInCurrentChat
+  
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
     
@@ -130,40 +208,43 @@ const OptionBarConversation: React.FC = () => {
       return friend.nickname === UserName;
     });
     
+    const notFriend = usersNotInCurrentChat.find((friend: User) => {
+      return friend.nickname === UserName;
+    });
     const chatUser = chatroomUsers.find((chatUser: ChatroomUser) => {
       return chatUser.userId === Friend?.id;
     });
-    
+  
     const selfChatroomUser = chatroomUsers.find((self: ChatroomUser) => {
-      return user?.id === self?.userId;
-    });
+          return user?.id === self.userId;
+      });
+    
+    
     if (mode === 'Add')
     {
-      try {
         const newChatroomuser: Partial<ChatroomUser> = {
-          userId: Friend?.id,
-          user: Friend,
+          userId: notFriend?.id,
+          user: notFriend,
           chatroomId: user?.chatInUse?.chat?.id,
           chatroom: user?.chatInUse?.chat,
           permission: userPermission.regular,
           banStatus: false,
-          banUntil: null,
           muteStatus: false,
-        }
-        const response = await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
+          muteUntil: null,
+       } 
+        await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }});
-        if(response.status === 200)
+        }}).then((response: any) =>
         {
           console.log('User added to chatroom', response.data);
           const ChatroomUsersData: ChatroomUser = response.data;
           setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
-        }
-      } catch (error) {
+          socket.emit("refresh", {id: newChatroomuser.userId});
+        }).catch((error: any) => {
           console.error('Error adding user to channel', error);
           alert('Error adding user to channel');
-      }
+      })
     }
     else if (mode === 'Ban')
     {
@@ -305,8 +386,7 @@ const OptionBarConversation: React.FC = () => {
           }});
           if (response.status === 200) {
             console.log('Channel deleted', response.data);
-            const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
-            updateUser(updatedUser);
+            socket.emit("refresh");
           } else {
             console.error('Deleting channel failed');
           }
@@ -316,21 +396,17 @@ const OptionBarConversation: React.FC = () => {
       }
       else
       {
-        try {
-          const response = await axios.delete(`http://localhost:4242/chatroomuser/${selfChatroomUser?.id}`, {headers: {
+          await axios.delete(`http://localhost:4242/chatroomuser/${selfChatroomUser?.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }});
-          if (response.status === 200) {
+          }}).then((response: any) => {
             console.log('User removed from channel', response.data);
             const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
             updateUser(updatedUser);
-          } else {
-            console.error('Removing user from channel failed');
-          }
-        } catch (error) {
-          console.error('Error occurred while removing user from channel: ', error);
-        }
+            socket.emit("refresh");
+          }).catch((error: any) => {
+            console.error('Error occurred while removing user from channel: ', error);
+          });
       }
     }
     else if(mode === "Block")
@@ -341,6 +417,9 @@ const OptionBarConversation: React.FC = () => {
           'userId': user?.id
         }});
         console.log('User successfuly blocked', response.data);
+        const id = user?.nickname;
+        const blocked = friendChat?.id;
+        socket.emit("blocked", {id: id, blocked: blocked});
       } catch (error) {
         console.error('Error blocking user', error);
         alert('Error adding blocking user: ' + error);
@@ -352,11 +431,7 @@ const OptionBarConversation: React.FC = () => {
       alert(friendChat?.nickname);
       closeChat();
     }
-    else if(mode === "View Profile")
-    {
-      alert(friendChat?.nickname);
-      closeChat();
-    }
+
     setUserName('');
     handleCloseWindow();
     setMode('');
@@ -475,7 +550,7 @@ const OptionBarConversation: React.FC = () => {
         </Button>
       )}
       {mode === 'View Profile' && (
-        <Button onClick={handleFriends} className="profilePageButtons" sx={{ marginBottom: 2 }}>
+        <Button onClick={handleClick} className="profilePageButtons" sx={{ marginBottom: 2 }}>
           {mode}
         </Button>
       )}
@@ -538,7 +613,26 @@ const OptionBarConversation: React.FC = () => {
         </Box>
       </AppBar>)
     }
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: 'center',
+        horizontal: 'center',
+      }}
+      >
+        <Box sx={{ p: 2 }}>
+          <LimitedProfile />
+        </Box>
+      </Popover>
     </Box>
   );
 };
+
 export default OptionBarConversation;

@@ -4,6 +4,11 @@ import { useContext } from 'react';
 import { Chatroom, ChatInUse, chatroomType, UserFriendship, UserBlocks } from 'Components/Interfaces';
 import React from 'react'
 import axios from 'axios'
+import { SocketContext } from 'Contexts/socketContext';
+import { ChatroomMessage } from 'Components/Interfaces';
+import { PrivateMessage } from 'Components/Interfaces';
+import { socket } from 'Contexts/socketContext';
+
 interface MyFriendsProps {
     searchText: string;
 }
@@ -14,6 +19,8 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   const [FriendUsers, setFriendUsers] = React.useState<User[]>([]);
   const [BlockedUsers, setBlockedUsers] = React.useState<User[]>([]);
   const {user, updateUser} = useContext(UserContext);
+
+  const socket = useContext(SocketContext);
   
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -125,6 +132,15 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   friend.username.toLowerCase().includes(searchText.toLowerCase())
   );
   
+  const setPrivateHistory = (channelName: string | undefined) => {
+    let newMessage: Partial<PrivateMessage> = {
+      content: "messageText",
+      senderId: user?.id,
+      recipientId: channelName,
+    };
+    socket.emit("getPrivateHistory", newMessage);
+  }
+
   // Éventuellement, remplacer par api get chatroom
   const SetChatInUse = (name: string, picture: string) => {
     if (user !== null)
@@ -145,15 +161,28 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
         chat: newChatroom,
         type: chatroomType.friend
       }
+
       const updatedUser: Partial<User> = {
         ...user,
         chatInUse: newChatInUse,
       };
-      
-     updateUser(updatedUser);
+    updateUser(updatedUser);
+    setPrivateHistory(updatedUser.chatInUse?.chat.name);
     }
   };
   
+  socket.on("connected", () => {
+    socket.on("blocked", (id: string) => {
+      if (user?.chatInUse?.chat.name === id){
+        const updatedUser: Partial<User> = {
+          ...user,
+          chatInUse: undefined,
+        };
+        updateUser(updatedUser);
+      }
+    })
+  })
+
     return (
       <List>
         {filteredFriends.map((friend: User) => (
@@ -170,4 +199,4 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   };
   
 export default MyFriends;
-  
+
