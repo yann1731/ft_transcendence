@@ -57,6 +57,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   
   @SubscribeMessage("delete chatroom")
   deleteChatroom(client: Socket, data: any) {
+    console.log(data.chanName)
     this.server.emit("chatroom deleted", data);
   }
   
