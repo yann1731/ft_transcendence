@@ -290,6 +290,7 @@ const OptionBarChans: React.FC = () => {
       .then((response: any) => {
         console.log('Chatroom deleted:', response.data);
         socket.emit("delete chatroom", { chanName: channelName });
+        socket.emit("refresh");
       })
       .catch((error: any) => {
         console.error('Error deleting chatroom:', error);

@@ -65,7 +65,7 @@ interface MyChannelsProps {
       fetchChannels();
     }, [refresh]);
     
-    const SetChatInUse = (name: string) => {
+    const SetChatInUse = async (name: string) => {
       const decodedName = decodeURIComponent(name);
       if (user !== null)
       {
@@ -82,7 +82,7 @@ interface MyChannelsProps {
             ...user,
             chatInUse: newChatInUse
           };
-          updateUser(updatedUser);
+          await updateUser(updatedUser);
         }
       }
     };

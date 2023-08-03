@@ -29,64 +29,6 @@ const OptionBarConversation: React.FC = () => {
   const open = Boolean(anchorEl);
   const id = open ? 'contact-options-popover' : undefined;
   
-/*   const fetchUsers = async (setChatroomUsers: any, setUsers: any, setUsersInCurrentChat: any, setUsersNotInCurrentChat: any, chatroomUsers: any, Users:any, user: any) => {
-    try {
-      const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {
-        headers: {
-          'Authorization': user?.token,
-          'userId': user?.id
-        }
-      });
-      if (response.status === 200) {
-        const ChatroomUsersData: ChatroomUser[] = response.data;
-        setChatroomUsers(ChatroomUsersData);
-      }
-    } catch (error) {
-      console.error('Error fetching chatroom users', error);
-    }
-    try {
-      const response = await axios.get('http://localhost:4242/user', {
-        headers: {
-          'Authorization': user?.token,
-          'userId': user?.id
-        }
-      });
-      if (response.status === 200) {
-        const UsersData: User[] = response.data;
-        setUsers(UsersData);
-        const tempUsersInChan: User[] = [];
-        const tempUsersNotInChan: User[] = [];
-  
-        Users.forEach((userToFind: User) => {
-          const isUser = chatroomUsers.find((chatUser: ChatroomUser) => {
-            return chatUser.userId === userToFind.id;
-          });
-          if (isUser !== undefined && user?.id !== isUser?.userId && !isUser.banStatus) {
-            tempUsersInChan.push(userToFind);
-          } else if (isUser === undefined) {
-            tempUsersNotInChan.push(userToFind);
-          }
-        });
-        setUsersInCurrentChat(tempUsersInChan);
-        setUsersNotInCurrentChat(tempUsersNotInChan);
-      }
-    } catch (error) {
-      console.error('Error fetching chatroom users', error);
-    }
-  };
-  
-  
-  React.useEffect(() => {
-    fetchUsers(
-      setChatroomUsers,
-      setUsers,
-      setUsersInCurrentChat,
-      setUsersNotInCurrentChat,
-      chatroomUsers,
-      Users,
-      user
-    );
-  }, []); */
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -96,40 +38,36 @@ const OptionBarConversation: React.FC = () => {
         }}).then((response) => {
           const ChatroomUsersData: ChatroomUser[] = response.data;
           setChatroomUsers(ChatroomUsersData);
-        }).catch((error) => {
+          axios.get('http://localhost:4242/user', {headers: {
+              'Authorization': user?.token,
+              'userId': user?.id
+            }}).then((response) => {
+              const UsersData: User[] = response.data;
+              setUsers(UsersData);
+              const tempUsersInChan: User[] = [];
+              const tempUsersNotInChan: User[] = [];
+              
+              UsersData.forEach((userToFind: User) => {
+                const isUser = ChatroomUsersData.find((chatUser: ChatroomUser) => {
+                  return chatUser.userId === userToFind.id;
+                })
+                if (isUser !== undefined && user?.id !== isUser?.userId && isUser.banStatus !== true)
+                {
+                  tempUsersInChan.push(userToFind);
+                }
+                else if (isUser === undefined)
+                {
+                  tempUsersNotInChan.push(userToFind);
+                }
+              });
+              setUsersInCurrentChat(tempUsersInChan);
+              setUsersNotInCurrentChat(tempUsersNotInChan);
+            }).catch((error) => {
+            console.error('Error fetching chatroom users', error);
+        })
+      }).catch((error) => {
         console.error('Error fetching chatroom users', error);
-      })
-
-      await axios.get('http://localhost:4242/user', {headers: {
-          'Authorization': user?.token,
-          'userId': user?.id
-        }}).then((response) => {
-          const UsersData: User[] = response.data;
-          setUsers(UsersData);
-          const tempUsersInChan: User[] = [];
-          const tempUsersNotInChan: User[] = [];
-          
-          Users.forEach((userToFind: User) => {
-            const isUser = chatroomUsers.find((chatUser: ChatroomUser) => {
-              return chatUser.userId === userToFind.id;
-            })
-            if (isUser !== undefined && user?.id !== isUser?.userId && isUser.banStatus !== true)
-            {
-              tempUsersInChan.push(userToFind);
-            }
-            else if (isUser === undefined)
-            {
-              tempUsersNotInChan.push(userToFind);
-            }
-          });
-          setUsersInCurrentChat(tempUsersInChan);
-          setUsersNotInCurrentChat(tempUsersNotInChan);
-         /*  tempUsersNotInChan.forEach(bob => {
-            alert(bob.nickname);
-          }) */
-        }).catch((error) => {
-        console.error('Error fetching chatroom users', error);
-      })
+        })
     };
     fetchUsers();
   }, [user, refresh]);
@@ -137,6 +75,16 @@ const OptionBarConversation: React.FC = () => {
   socket.on("connected",() => {
     socket.on("refresh", () => {
       setRefresh(refresh => refresh + 1)
+    })
+
+    socket.on("chatroom deleted", (data: any) => {
+      alert("hello guys");
+      alert(user?.chatInUse?.chat?.name);
+      alert(data.chanName);
+      if (user?.chatInUse?.chat?.name === data.chanName){
+        const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
+        updateUser(updatedUser);
+      }
     })
   });
 
@@ -384,6 +332,9 @@ const OptionBarConversation: React.FC = () => {
           }});
           if (response.status === 200) {
             console.log('Channel deleted', response.data);
+            socket.emit("delete chatroom", {chanName: user?.chatInUse?.chat?.name});
+            const updatedUser: Partial<User> = { ...user, chatInUse: undefined};
+            updateUser(updatedUser);
             socket.emit("refresh");
           } else {
             console.error('Deleting channel failed');

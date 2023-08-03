@@ -15,29 +15,24 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   const [FriendUsers, setFriendUsers] = React.useState<User[]>([]);
   const [BlockedUsers, setBlockedUsers] = React.useState<User[]>([]);
   const {user, updateUser} = useContext(UserContext);
+  const [refresh, setRefresh] = React.useState(1);
   
   React.useEffect(() => {
     const fetchUsers = async () => {
-      try {
-        const response = await axios.get('http://localhost:4242/user', {headers: {
+      axios.get('http://localhost:4242/user', {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }});
-        
-        if (response.status === 200) {
+        }}).then((response: any) => {
           const UsersData: User[] = response.data;
           setUsers(UsersData);
-        }
-      } catch (error) {
+        }).catch((error: any) => {
         console.error('Error fetching users', error);
-      }
-      try {
-        const response = await axios.get('http://localhost:4242/userblocks', {headers: {
+      })
+
+      axios.get('http://localhost:4242/userblocks', {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }});
-        
-        if (response.status === 200) {
+      }}).then((response: any) => {
           const BlockedUsersData: UserBlocks[] = response.data;
           let tempBlockedUsers: User[] = [];
           BlockedUsersData.forEach((users: UserBlocks) => {
@@ -64,17 +59,14 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
             }
           });
           setBlockedUsers(tempBlockedUsers);
-        }
-      } catch (error) {
+      }).catch((error: any) => {
         console.error('Error fetching blocked users', error);
-      }
-      try {
-        const response = await axios.get(`http://localhost:4242/userfriendship/`, {headers: {
+      })
+
+      axios.get(`http://localhost:4242/userfriendship`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }});
-        
-        if (response.status === 200) {
+      }}).then((response: any) => {
           const FriendshipData: UserFriendship[] = response.data;
           let tempFriends: User[] = [];
           if (FriendshipData.length !== 0)
@@ -113,14 +105,13 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
               })
             }
             setFriendUsers(tempFriends);
-          };
-      } catch (error) {
+      }).catch((error: any) => {
           console.error('Error getting Friends: ', error);
-          alert('Error: could not get Friends: ' + error);
-      }
+
+      })
     };
     fetchUsers();
-  }, [Users, user]);
+  }, [user, refresh]);
 
   const filteredFriends = FriendUsers.filter((friend: User) =>
   friend.username.toLowerCase().includes(searchText.toLowerCase())
@@ -164,6 +155,9 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
         };
         updateUser(updatedUser);
       }
+    })
+    socket.on("refresh", () => {
+      setRefresh(refresh => refresh + 1)
     })
   })
 

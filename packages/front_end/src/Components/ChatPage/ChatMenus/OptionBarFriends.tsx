@@ -1,11 +1,12 @@
 import axios from 'axios';
 import * as React from 'react';
-import { Popover, useTheme, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar } from '@mui/material';
+import { Popover, useTheme, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, setRef } from '@mui/material';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import '../../../App.css';
 import { UserContext, User } from 'Contexts/userContext';
 import { UserFriendship, Chatroom, chatroomType, ChatInUse, UserBlocks } from 'Components/Interfaces';
 import { LimitedProfile } from 'Components/ProfilePage/Profile';
+import { socket } from "../../../Contexts/socketContext"
 
 const OptionBarFriends: React.FC = () => {
     const settings = ['Add Friend', 'View Profile'];
@@ -18,20 +19,17 @@ const OptionBarFriends: React.FC = () => {
     const [Users, setUsers] = React.useState<User[]>([]);
     const [NonFriendUsers, setNonFriendUsers] = React.useState<User[]>([]);
     const {user, updateUser} = React.useContext(UserContext);
-    const [refresh, setRefresh] = React.useState<Boolean>(false);
+    const [refresh, setRefresh] = React.useState(1);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const id = open ? 'contact-options-popover' : undefined;
     
     React.useEffect(() => {
       const fetchUsers = async () => {
-        try {
-          const response = await axios.get('http://localhost:4242/user', {headers: {
+      axios.get('http://localhost:4242/user', {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }});
-          
-          if (response.status === 200) {
+          }}).then((response: any) => {
             const UsersData: User[] = response.data;
             let otherUsers: User[] = [];
             UsersData.forEach((users: User) => {
@@ -41,12 +39,10 @@ const OptionBarFriends: React.FC = () => {
               }
             })
             setUsers(otherUsers);
-            try {
-              const response = await axios.get(`http://localhost:4242/userfriendship/user/${user?.id}`, {headers: {
+            axios.get(`http://localhost:4242/userfriendship/user/${user?.id}`, {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
-              }});
-              if (response.status === 200) {
+              }}).then((response: any) => {
                 const FriendshipData: UserFriendship[] = response.data;
                 const tempIsNotFriend: User[] = [];
                 otherUsers.forEach((users: User) => {
@@ -59,22 +55,26 @@ const OptionBarFriends: React.FC = () => {
                   }
                 });
                 setNonFriendUsers(tempIsNotFriend);
-              }
-            } catch (error) {
+              }).catch((error: any) => {
               alert(error)
               console.error('Error fetching friendships', error);
-            }
-          }
-        } catch (error) {
+            });
+          }).catch((error: any) => {
           console.error('Error fetching users', error);
-        }
+          });
       }
       fetchUsers();
-    }, [setRefresh]);
+    }, [refresh]);
     
+    socket.on("connected", () => {
+      socket.on("refresh", () => {
+        setRefresh(refresh => refresh + 1);
+      })
+    })
+        
     const handleMode = (mode: string) => {
       setMode(mode);
-      setRefresh(!refresh);
+      setRefresh(refresh => refresh + 1);
       setWindowIsOpen(true);
     };
     
@@ -120,11 +120,10 @@ const OptionBarFriends: React.FC = () => {
       });
       if (mode === 'Add Friend')
       {
-        try {
           const response = await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: friendToModify?.id}, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }});
+          }}).then((response: any) => {
           console.log('Friend successfuly added', response.data);
           const username = friendToModify?.username === undefined ? "pouet" : friendToModify?.username;
           const newChannel: Chatroom = {
@@ -141,10 +140,11 @@ const OptionBarFriends: React.FC = () => {
         }
           const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
           updateUser(updatedUser);
-        } catch (error) {
+          socket.emit("refresh")
+        }).catch((error) => {
           console.error('Error adding new friend', error);
           alert('Error adding new friend: ' + error);
-        }
+        })
       }
       setUserName('');
       handleCloseWindow();
