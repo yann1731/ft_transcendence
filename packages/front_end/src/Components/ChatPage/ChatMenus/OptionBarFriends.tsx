@@ -67,7 +67,7 @@ const OptionBarFriends: React.FC = () => {
     }, [refresh]);
     
     socket.on("connected", () => {
-      socket.on("refresh", () => {
+      socket.on("refresh2", () => {
         setRefresh(refresh => refresh + 1);
       })
     })
@@ -120,7 +120,7 @@ const OptionBarFriends: React.FC = () => {
       });
       if (mode === 'Add Friend')
       {
-          const response = await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: friendToModify?.id}, {headers: {
+          await axios.post(`http://localhost:4242/userfriendship`, {userAId: user?.id, userBId: friendToModify?.id}, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {
@@ -140,7 +140,7 @@ const OptionBarFriends: React.FC = () => {
         }
           const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
           updateUser(updatedUser);
-          socket.emit("refresh")
+          socket.emit("refresh2")
         }).catch((error) => {
           console.error('Error adding new friend', error);
           alert('Error adding new friend: ' + error);

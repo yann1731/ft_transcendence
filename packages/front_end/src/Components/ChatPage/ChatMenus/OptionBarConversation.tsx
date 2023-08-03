@@ -32,16 +32,17 @@ const OptionBarConversation: React.FC = () => {
 
   React.useEffect(() => {
     const fetchUsers = async () => {
+      if (user?.chatInUse?.type === "channel") {
         await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }}).then((response) => {
+        }}).then((response: any) => {
           const ChatroomUsersData: ChatroomUser[] = response.data;
           setChatroomUsers(ChatroomUsersData);
           axios.get('http://localhost:4242/user', {headers: {
               'Authorization': user?.token,
               'userId': user?.id
-            }}).then((response) => {
+            }}).then((response: any) => {
               const UsersData: User[] = response.data;
               setUsers(UsersData);
               const tempUsersInChan: User[] = [];
@@ -62,13 +63,13 @@ const OptionBarConversation: React.FC = () => {
               });
               setUsersInCurrentChat(tempUsersInChan);
               setUsersNotInCurrentChat(tempUsersNotInChan);
-            }).catch((error) => {
+            }).catch((error: any) => {
             console.error('Error fetching chatroom users', error);
         })
-      }).catch((error) => {
+      }).catch((error: any) => {
         console.error('Error fetching chatroom users', error);
         })
-    };
+    }};
     fetchUsers();
   }, [user, refresh]);
   

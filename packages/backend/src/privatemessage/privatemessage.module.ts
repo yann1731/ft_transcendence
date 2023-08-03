@@ -6,6 +6,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 @Module({
   controllers: [PrivatemessageController],
   providers: [PrivatemessageService],
-  imports: [PrismaModule]
+  imports: [PrismaModule],
+  exports: [PrivatemessageService]
 })
 export class PrivatemessageModule {}

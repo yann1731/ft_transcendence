@@ -4,7 +4,11 @@ import { useContext } from 'react';
 import { Chatroom, ChatInUse, chatroomType, UserFriendship, UserBlocks } from 'Components/Interfaces';
 import React from 'react'
 import axios from 'axios'
+import { SocketContext } from 'Contexts/socketContext';
+import { ChatroomMessage } from 'Components/Interfaces';
+import { PrivateMessage } from 'Components/Interfaces';
 import { socket } from 'Contexts/socketContext';
+
 interface MyFriendsProps {
     searchText: string;
 }
@@ -117,6 +121,15 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   friend.username.toLowerCase().includes(searchText.toLowerCase())
   );
   
+  const setPrivateHistory = (channelName: string | undefined) => {
+    let newMessage: Partial<PrivateMessage> = {
+      content: "messageText",
+      senderId: user?.id,
+      recipientId: channelName,
+    };
+    socket.emit("getPrivateHistory", newMessage);
+  }
+
   // Éventuellement, remplacer par api get chatroom
   const SetChatInUse = (name: string, picture: string) => {
     if (user !== null)
@@ -137,12 +150,13 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
         chat: newChatroom,
         type: chatroomType.friend
       }
+
       const updatedUser: Partial<User> = {
         ...user,
         chatInUse: newChatInUse,
       };
-      
-     updateUser(updatedUser);
+    updateUser(updatedUser);
+    setPrivateHistory(updatedUser.chatInUse?.chat.name);
     }
   };
   
@@ -156,7 +170,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
         updateUser(updatedUser);
       }
     })
-    socket.on("refresh", () => {
+    socket.on("refresh2", () => {
       setRefresh(refresh => refresh + 1)
     })
   })

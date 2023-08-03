@@ -115,16 +115,6 @@ const DashboardContainer: React.FC = () => {
               <Box className="dashboardContents">[WIN RATIO]<br></br>{user?.win}</Box>
             </Box>
           </Box>
-          <Box className={"homeScoreBox"}>
-            <Box sx={{ textAlign: 'center',}}>
-              <Box sx={{mt: 1, color: 'white', fontSize: '20px'}}>Opponent's Stats</Box>
-              <Divider style={{ marginBottom: '10px' }} />
-              <Box className="dashboardContents">[GAMES PLAYED]<br></br></Box>
-              <Box className="dashboardContents">[WINS]<br></br></Box>
-              <Box className="dashboardContents">[LOSSES]<br></br></Box>
-              <Box className="dashboardContents">[WIN RATIO]<br></br></Box>
-            </Box>
-          </Box>
         </Box>
       </Box>
     </React.Fragment>
