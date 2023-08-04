@@ -79,7 +79,6 @@ const OptionBarConversation: React.FC = () => {
     })
 
     socket.on("chatroom deleted", (data: any) => {
-      alert("hello guys");
       alert(user?.chatInUse?.chat?.name);
       alert(data.chanName);
       if (user?.chatInUse?.chat?.name === data.chanName){
@@ -205,18 +204,16 @@ const OptionBarConversation: React.FC = () => {
         const newChatUser: Partial<ChatroomUser> = {
           banStatus: true,
         }
-        try {
-          const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
+          await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }});
-          if (response.status === 200) {
+          }}).then((response: any) => {
             const ChatroomUsersData: ChatroomUser = response.data;
             setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
-          } 
-        } catch (error) {
-          console.error('Error fetching chatroom users', error);
-        }
+            socket.emit("refresh"); // checker ici pour changer le chat in use
+          }).catch((error : any) => {
+            console.error('Error fetching chatroom users', error);
+          })
       };
     }
     else if (mode === 'Kick')
@@ -228,19 +225,19 @@ const OptionBarConversation: React.FC = () => {
           alert("Cannot kick owner or Admin");
           return ;
         }
-        try {
-          const response = await axios.delete(`http://localhost:4242/chatroomuser/${chatUser.id}`, {headers: {
+          await axios.delete(`http://localhost:4242/chatroomuser/${chatUser.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }});
-          if (response.status === 200) {
+          }}).then((response: any) => {
+          if (response.status === 200){
             console.log('User removed from channel', response.data);
+            socket.emit("refresh");
           } else {
             console.error('Removing user from channel failed');
           }
-        } catch (error) {
+        }).catch((error: any) => {
           console.error('Error occurred while removing user from channel: ', error);
-        }
+        })
       }
     }
     else if (mode === 'Make Admin')
@@ -255,18 +252,16 @@ const OptionBarConversation: React.FC = () => {
         const newChatUser: Partial<ChatroomUser> = {
           permission: userPermission.admin,
         }
-        try {
-          const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
+        await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }});
-          if (response.status === 200) {
+          }}).then((response: any) => {
             const ChatroomUsersData: ChatroomUser = response.data;
             setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
-          } 
-        } catch (error) {
+            socket.emit("refresh");
+          }).catch((error: any) => {
           console.error('Error fetching chatroom users', error);
-        }
+        })
       }        
     }
     else if (mode === 'Mute')
@@ -284,18 +279,16 @@ const OptionBarConversation: React.FC = () => {
           return ;
         }
         chatUser.muteStatus = true;
-        try {
-          const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+        await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }});
-          if (response.status === 200) {
+          }}).then((response: any) => {
             const ChatroomUsersData: ChatroomUser = response.data;
             setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
-          } 
-        } catch (error) {
+            socket.emit("refresh")
+          }).catch((error: any) => {
           console.error('Error fetching chatroom users', error);
-        }
+        })
       }                
     }
     else if (mode === 'UnMute')
@@ -308,41 +301,38 @@ const OptionBarConversation: React.FC = () => {
           return ;
         }
         chatUser.muteStatus = false;
-        try {
-          const response = await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+        await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }});
-          if (response.status === 200) {
+          }}).then((response: any) => {
             const ChatroomUsersData: ChatroomUser = response.data;
             setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
-          } 
-        } catch (error) {
+            socket.emit("refresh")
+          }).catch((error: any) => {
           console.error('Error fetching chatroom users', error);
-        }
+        })
       }                
     }
     else if (mode === 'Quit')
     {     
       if (user?.id === user?.chatInUse?.chat?.userId)
       {
-        try {
-          const response = await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.name}`, {headers: {
+        await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.name}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }});
-          if (response.status === 200) {
-            console.log('Channel deleted', response.data);
-            socket.emit("delete chatroom", {chanName: user?.chatInUse?.chat?.name});
-            const updatedUser: Partial<User> = { ...user, chatInUse: undefined};
-            updateUser(updatedUser);
-            socket.emit("refresh");
-          } else {
-            console.error('Deleting channel failed');
-          }
-        } catch (error) {
-          console.error('Error occurred while deleting channel: ', error);
-        }
+          }}).then((response: any) => {
+            if (response.status){
+              console.log('Channel deleted', response.data);
+              socket.emit("delete chatroom", {chanName: user?.chatInUse?.chat?.name});
+              const updatedUser: Partial<User> = { ...user, chatInUse: undefined};
+              updateUser(updatedUser);
+              socket.emit("refresh");
+            } else {
+             console.error('Deleting channel failed');
+            }
+          }).catch((error: any) => {
+            console.error('Error occurred while deleting channel: ', error);
+          })
       }
       else
       {
@@ -361,19 +351,18 @@ const OptionBarConversation: React.FC = () => {
     }
     else if(mode === "Block")
     {
-      try {
-        const response = await axios.post(`http://localhost:4242/userblocks`, {blockerId: user?.id, blockedUserId: friendChat?.id}, {headers: {
+      await axios.post(`http://localhost:4242/userblocks`, {blockerId: user?.id, blockedUserId: friendChat?.id}, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }});
+        }}).then((response: any) => {
         console.log('User successfuly blocked', response.data);
         const id = user?.nickname;
         const blocked = friendChat?.id;
         socket.emit("blocked", {id: id, blocked: blocked});
-      } catch (error) {
+      }).catch((error: any) => {
         console.error('Error blocking user', error);
         alert('Error adding blocking user: ' + error);
-      }
+      })
       closeChat();
     }
     else if(mode === "Invite to Play")

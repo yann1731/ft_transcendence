@@ -171,6 +171,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
       }
     })
     socket.on("refresh2", () => {
+      alert("test");
       setRefresh(refresh => refresh + 1)
     })
   })
