@@ -11,12 +11,14 @@ import { SocketContext } from "../../../Contexts/socketContext";
 import { ChatroomMessage } from 'Components/Interfaces';
 import axios from 'axios';
 import { UserBlocks } from 'Components/Interfaces';
+import { Chatroom, ChatInUse, chatroomType } from 'Components/Interfaces';
+import { User } from 'Contexts/userContext';
 
 const Chat = () => {
   const theme = useTheme();
   const buttonColor = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1'
 
-  const {user} = useContext(UserContext);
+  const {updateUser, user} = useContext(UserContext);
   const socket = useContext(SocketContext);
   const [messages, setMessages] = useState<Message[]>([]);
   const [userBlocks, setUserBlocks] = useState<UserBlocks[]>([]);
@@ -33,7 +35,7 @@ const Chat = () => {
   useEffect(() => {
     socket.on('messageResponse', (data: any) => displayMessage(data));
     socket.on("sendHistory", (data: any) => makeHistory(data));
-    socket.on("receiveBlocks", (data: any) => makeBlocks(data));
+    // socket.on("receiveBlocks", (data: any) => makeBlocks(data));
     return () => {
       socket.off("messageResponse");
     }
@@ -68,39 +70,43 @@ const Chat = () => {
     setMessages(msgHistory);
   };
 
-  const displayMessage = async (message: any) => {
-    if (user?.chatInUse?.type === "channel") {
-      if (message.channelID === user?.chatInUse?.chat.id) {
-        const newMessage: Message = {
-          text: message.text,
-          timestamp: message.timestamp,
-          nickname: message.nickname,
-          UserAvatar: message.avatar
-        };
-        setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
-        // endif
-      }
-    } else {
-      if (message.nickname === user?.chatInUse?.chat.name || message.nickname === user?.nickname) {
-        const newMessage: Message = {
-          text: message.text,
-          timestamp: message.timestamp,
-          nickname: message.nickname,
-          UserAvatar: message.avatar
-        };
-        setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
-        // endif
+
+  // _chatInfo: chatName, chatID, chatType, username
+  const displayMessage = (message: any) => {
+    if (user?.username) {
+      const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
+      if (message.type === "channel") {
+        if (message.channelID === _chatInfo[1]) {
+          const newMessage: Message = {
+            text: message.text,
+            timestamp: message.timestamp,
+            nickname: message.nickname,
+            UserAvatar: message.avatar
+          };
+          setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
+          // endif
+        }
+      } else if (message.type === "friend") {
+        if ((_chatInfo[0] === message.recipient && message.nickname === user?.username) || (_chatInfo[0] === message.nickname && message.recipient === user?.username)) {
+          const newMessage: Message = {
+            text: message.text,
+            timestamp: message.timestamp,
+            nickname: message.nickname,
+            UserAvatar: message.avatar
+          };
+          setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
+          // endif
+        }
       }
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
+      // console.log("keydown: " + user?.chatInUse?.chat.name);
       const messageInput = event.target as HTMLInputElement;
       const messageText = messageInput.value.trim();
       if (user?.chatInUse?.type === "friend") {
-        console.log("Sending Private Message!");
-        console.log("FriendChat: " + user?.chatInUse?.chat.name);
         if (messageText !== '') {
           let newMessage: Partial<PrivateMessage> = {
             content: messageText,
@@ -118,9 +124,8 @@ const Chat = () => {
             chatroomId: user?.chatInUse?.chat.id,
             chatroom: user?.chatInUse?.chat,
           };
-          socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
+          // socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
           socket.emit("sendMessage", newMessage);
-          console.log(userBlocks);
           messageInput.value = '';
         }
       }

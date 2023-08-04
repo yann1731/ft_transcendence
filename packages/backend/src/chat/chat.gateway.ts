@@ -13,6 +13,7 @@ import { CreatePrivateMessageDto } from 'src/privatemessage/dto/createprivatemes
 import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserblocksService } from 'src/userblocks/userblocks.service';
+import { ChatroomService } from 'src/chatroom/chatroom.service';
 
 
 
@@ -22,6 +23,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(private readonly chatService: ChatService,
     private readonly chatroomMessageService: ChatroommessageService,
+    private readonly chatroomService: ChatroomService,
     private readonly privateMessageService: PrivatemessageService,
     private readonly chatroomUserService: ChatroomuserService,
     private readonly userblocksService: UserblocksService,
@@ -69,6 +71,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async SendPrivateMessage(client: Socket, createPrivateMessageDto: CreatePrivateMessageDto) {
     const _msg = await this.privateMessageService.createPrivateMessage(createPrivateMessageDto);
     const _user = await this.userService.findOne(createPrivateMessageDto.senderId);
+    const _recipient = await this.userService.findUsername(createPrivateMessageDto.recipientId);
     // emits back so that the frontend can catch. Basic usage working.
     let date_time = new Date(_msg.createdAt);
     let time = date_time.getHours().toString() + ":" + date_time.getMinutes().toString() + ":" + date_time.getSeconds().toString();
@@ -82,6 +85,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       timestamp: time,
       nickname: _user.username,
       avatar: _user.avatar,
+      type: "friend",
+      recipient: _recipient.username,
       // channelID: createPrivateMessageDto.chatroomId
     };
     this.server.emit("messageResponse", _msgInfo);
@@ -109,6 +114,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // if time > muteTime; unMute; continue;
       return ;
     }
+    const _chat = await this.chatroomService.findOne(createChatroomMessageDto.chatroomId);
     const _msg = await this.chatroomMessageService.createChatroomMessage(createChatroomMessageDto);
     const _user = await this.userService.findOne(createChatroomMessageDto.senderId);
     // emits back so that the frontend can catch. Basic usage working.
@@ -119,6 +125,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       nickname: _user.username,
       avatar: _user.avatar,
       channelID: createChatroomMessageDto.chatroomId,
+      chatName: _chat.name,
+      type: "channel",
     };
     this.server.emit("messageResponse", _msgInfo);
   }
