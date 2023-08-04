@@ -55,6 +55,7 @@ const UsernameHandler = () => {
         <DialogTitle>Change Nickname</DialogTitle>
         <DialogContent>
           <TextField
+            className="nicknameTextField"
             autoFocus
             margin="dense"
             label="New Username"
@@ -66,8 +67,8 @@ const UsernameHandler = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleChangeUsername}>Save</Button>
+          <Button className="profilePageButtons" onClick={handleClose}>Cancel</Button>
+          <Button className="profilePageButtons" onClick={handleChangeUsername}>Save</Button>
         </DialogActions>
       </Dialog>
     </div>
