@@ -101,6 +101,12 @@ interface MyChannelsProps {
             chatInUse: newChatInUse
           };
           updateUser(updatedUser);
+
+          let _chats: Array<string>;
+          if (updatedUser.username && updatedUser.chatInUse?.chat.id && updatedUser.chatInUse?.type) {
+            _chats = [updatedUser.chatInUse?.chat.name, updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.type, updatedUser.username]
+            localStorage.setItem(updatedUser.username, JSON.stringify(_chats));
+          }
           socket.emit("refresh");
           setHistory(updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.chat);
         }
