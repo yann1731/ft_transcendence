@@ -11,6 +11,7 @@ import { SocketContext } from "../../../Contexts/socketContext";
 import { userPermission, ChatInUse, chatroomType, Chatroom, ChatroomUser } from 'Components/Interfaces';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { ChatroomMessage } from 'Components/Interfaces';
 
 const OptionBarChans: React.FC = () => {
 
@@ -172,7 +173,6 @@ const OptionBarChans: React.FC = () => {
       userId: user?.id,
       password: isProtected === 'pwProtected' ? pwd : null,
     };
-    console.log(newChannel);
     if (mode === 'Create')
     {
       if (isProtected === 'pwProtected' && pwd === "")
@@ -197,6 +197,18 @@ const OptionBarChans: React.FC = () => {
             updateUser(updatedUser);
             setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, newChannelData]);
             setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, newChannelData]);
+            let _chat: Array<string>;
+            if (updatedUser.username && updatedUser.chatInUse?.chat.id && updatedUser.chatInUse?.type) {
+              _chat = [updatedUser.chatInUse?.chat.name, updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.type, updatedUser.username]
+              localStorage.setItem(updatedUser.username, JSON.stringify(_chat));
+            }
+            let newMessage: Partial<ChatroomMessage> = {
+              content: "messageText",
+              senderId: user?.id,
+              chatroomId: newChatInUse.chat.id,
+              chatroom: newChatInUse.chat,
+            };
+            socket.emit("getHistory", newMessage);
           }
         })
         .catch((error: any) => {
@@ -224,6 +236,18 @@ const OptionBarChans: React.FC = () => {
             updateUser(updatedUser);
             setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, newChannelData]);
             setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, newChannelData]);
+            let _chat: Array<string>;
+            if (updatedUser.username && updatedUser.chatInUse?.chat.id && updatedUser.chatInUse?.type) {
+              _chat = [updatedUser.chatInUse?.chat.name, updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.type, updatedUser.username]
+              localStorage.setItem(updatedUser.username, JSON.stringify(_chat));
+            }
+            let newMessage: Partial<ChatroomMessage> = {
+              content: "messageText",
+              senderId: user?.id,
+              chatroomId: newChatInUse.chat.id,
+              chatroom: newChatInUse.chat,
+            };
+            socket.emit("getHistory", newMessage);
           }
         })
         .catch((error: any) => {
@@ -283,8 +307,23 @@ const OptionBarChans: React.FC = () => {
         'userId': user?.id
       }})
       .then((response: any) => {
+        if (user?.username) {
+          const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
+          alert(_chatInfo);
+        }
         console.log('Chatroom deleted:', response.data);
         socket.emit("refresh");
+        // Change ChatInUse to NULL
+        let _chat: Array<string>;
+        if (user?.username) {
+          _chat = ["null", "null", "null", user?.username]
+          localStorage.setItem(user?.username, JSON.stringify(_chat));
+          socket.emit("clearHistory");
+        }
+        if (user?.username) {
+          const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
+          alert(_chatInfo);
+        }
       })
       .catch((error: any) => {
         console.error('Error deleting chatroom:', error);
@@ -328,6 +367,18 @@ const OptionBarChans: React.FC = () => {
             {
               const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: user.Chatroom ? [...user.Chatroom, updatedNewChan] : [updatedNewChan], chatrooms: user.chatrooms ? [...user.chatrooms, newChatroomuserData] : [newChatroomuserData] };
               updateUser(updatedUser);
+              let _chat: Array<string>;
+              if (updatedUser.username && updatedUser.chatInUse?.chat.id && updatedUser.chatInUse?.type) {
+                _chat = [updatedUser.chatInUse?.chat.name, updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.type, updatedUser.username]
+                localStorage.setItem(updatedUser.username, JSON.stringify(_chat));
+              }
+              let newMessage: Partial<ChatroomMessage> = {
+                content: "messageText",
+                senderId: user?.id,
+                chatroomId: newChatInUse.chat.id,
+                chatroom: newChatInUse.chat,
+              };
+              socket.emit("getHistory", newMessage);
             }
           }
           setDialog(false);

@@ -21,7 +21,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   const {user, updateUser} = useContext(UserContext);
 
   const socket = useContext(SocketContext);
-  
+
   React.useEffect(() => {
     const fetchUsers = async () => {
       try {

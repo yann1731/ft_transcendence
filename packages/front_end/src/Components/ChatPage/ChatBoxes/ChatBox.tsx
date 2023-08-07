@@ -32,14 +32,25 @@ const Chat = () => {
     }
   }, [messages]);
 
+  // socket.on("Testing", () => alert("Wuddup!"));
   useEffect(() => {
     socket.on('messageResponse', (data: any) => displayMessage(data));
     socket.on("sendHistory", (data: any) => makeHistory(data));
+    socket.on("connected", () => socket.emit("registerUser", { username: user?.username }));
+    socket.on("clearHistory", () => clearHistory());
     // socket.on("receiveBlocks", (data: any) => makeBlocks(data));
+    // return () => {
+    //   socket.off("messageResponse");
+    // }
     return () => {
       socket.off("messageResponse");
     }
   }, []);
+
+  const clearHistory = () => {
+    const _cleared: Message[] = [];
+    setMessages(_cleared);
+  }
 
   const makeBlocks = (data: any) => {
     const _blocks = data.blocks;

@@ -6,6 +6,9 @@ import '../../../App.css';
 import { UserContext, User } from 'Contexts/userContext';
 import { UserFriendship, Chatroom, chatroomType, ChatInUse, UserBlocks } from 'Components/Interfaces';
 import { LimitedProfile } from 'Components/ProfilePage/Profile';
+import { PrivateMessage } from 'Components/Interfaces';
+import { SocketContext } from 'Contexts/socketContext';
+import { useContext } from 'react';
 
 const OptionBarFriends: React.FC = () => {
     const settings = ['Add Friend', 'View Profile'];
@@ -22,7 +25,8 @@ const OptionBarFriends: React.FC = () => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const id = open ? 'contact-options-popover' : undefined;
-    
+    const socket = useContext(SocketContext);
+
     React.useEffect(() => {
       const fetchUsers = async () => {
         try {
@@ -141,6 +145,17 @@ const OptionBarFriends: React.FC = () => {
         }
           const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
           updateUser(updatedUser);
+          let _chat: Array<string>;
+          if (updatedUser.username && updatedUser.chatInUse?.chat.id && updatedUser.chatInUse?.type) {
+            _chat = [updatedUser.chatInUse?.chat.name, updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.type, updatedUser.username]
+            localStorage.setItem(updatedUser.username, JSON.stringify(_chat));
+          }
+          let newMessage: Partial<PrivateMessage> = {
+            content: "messageText",
+            senderId: user?.id,
+            recipientId: username,
+          };
+          socket.emit("getPrivateHistory", newMessage);
         } catch (error) {
           console.error('Error adding new friend', error);
           alert('Error adding new friend: ' + error);
