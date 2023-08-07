@@ -32,14 +32,25 @@ const Chat = () => {
     }
   }, [messages]);
 
+  // socket.on("Testing", () => alert("Wuddup!"));
   useEffect(() => {
     socket.on('messageResponse', (data: any) => displayMessage(data));
     socket.on("sendHistory", (data: any) => makeHistory(data));
+    socket.on("connected", () => socket.emit("registerUser", { username: user?.username }));
+    socket.on("clearHistory", () => clearHistory());
     // socket.on("receiveBlocks", (data: any) => makeBlocks(data));
+    // return () => {
+    //   socket.off("messageResponse");
+    // }
     return () => {
       socket.off("messageResponse");
     }
   }, []);
+
+  const clearHistory = () => {
+    const _cleared: Message[] = [];
+    setMessages(_cleared);
+  }
 
   const makeBlocks = (data: any) => {
     const _blocks = data.blocks;
@@ -87,6 +98,7 @@ const Chat = () => {
           // endif
         }
       } else if (message.type === "friend") {
+        
         if ((_chatInfo[0] === message.recipient && message.nickname === user?.username) || (_chatInfo[0] === message.nickname && message.recipient === user?.username)) {
           const newMessage: Message = {
             text: message.text,
@@ -103,30 +115,32 @@ const Chat = () => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      // console.log("keydown: " + user?.chatInUse?.chat.name);
-      const messageInput = event.target as HTMLInputElement;
-      const messageText = messageInput.value.trim();
-      if (user?.chatInUse?.type === "friend") {
-        if (messageText !== '') {
-          let newMessage: Partial<PrivateMessage> = {
-            content: messageText,
-            senderId: user?.id,
-            recipientId: user?.chatInUse?.chat.name,
-          };
-          socket.emit("sendPrivateMessage", newMessage);
-          messageInput.value = '';
-        }
-      } else {
-        if (messageText !== '') {
-          let newMessage: Partial<ChatroomMessage> = {
-            content: messageText,
-            senderId: user?.id,
-            chatroomId: user?.chatInUse?.chat.id,
-            chatroom: user?.chatInUse?.chat,
-          };
-          // socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
-          socket.emit("sendMessage", newMessage);
-          messageInput.value = '';
+      if (user?.username) {
+        // console.log("keydown: " + user?.chatInUse?.chat.name);
+        const messageInput = event.target as HTMLInputElement;
+        const messageText = messageInput.value.trim();
+        if (user?.chatInUse?.type === "friend") {
+          if (messageText !== '') {
+            let newMessage: Partial<PrivateMessage> = {
+              content: messageText,
+              senderId: user?.id,
+              recipientId: user?.chatInUse?.chat.name,
+            };
+            socket.emit("sendPrivateMessage", newMessage);
+            messageInput.value = '';
+          }
+        } else {
+          if (messageText !== '') {
+            let newMessage: Partial<ChatroomMessage> = {
+              content: messageText,
+              senderId: user?.id,
+              chatroomId: user?.chatInUse?.chat.id,
+              chatroom: user?.chatInUse?.chat,
+            };
+            // socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
+            socket.emit("sendMessage", newMessage);
+            messageInput.value = '';
+          }
         }
       }
     }
@@ -154,21 +168,25 @@ const Chat = () => {
     <Box className={"chatSection"}>
       <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
         <List>
-          {messages.map((message: Message, index: number) => (
-            <ListItem key={index}>
-              <Box sx={{ marginLeft: 'auto' }}>
-                <Box sx={{ textAlign: 'right' }}>
-                  <ContactMenu {...{Useravatar: message.UserAvatar}} />
-                  <ListItemText primary={message.text} />
+        {messages.map((message: Message, index: number) => {
+            const shouldAlignLeft = message.nickname === user?.username;
+
+            return (
+              <ListItem key={index}>
+                <Box sx={{ marginLeft: shouldAlignLeft ? '0' : 'auto' }}>
+                  <Box sx={{ textAlign: shouldAlignLeft ? 'left' : 'right' }}>
+                    <ContactMenu {...{ Useravatar: message.UserAvatar }} />
+                    <ListItemText primary={message.text} />
+                  </Box>
+                  <Box sx={{ textAlign: shouldAlignLeft ? 'left' : 'right' }}>
+                    <ListItemText
+                      secondary={`${message.nickname}, ${message.timestamp}`}
+                    />
+                  </Box>
                 </Box>
-                <Box sx={{ textAlign: 'right' }}>
-                  <ListItemText
-                    secondary={`${message.nickname}, ${message.timestamp}`}
-                  />
-                </Box> 
-              </Box>
-            </ListItem>
-          ))}
+              </ListItem>
+            );
+          })}
         </List>
       </Box>
       <Box sx={{ marginTop: 'auto' }}>

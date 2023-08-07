@@ -4,6 +4,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { validate } from 'class-validator';
 import axios from 'axios';
+import { Prisma } from '@prisma/client';
+import { DefaultArgs } from '@prisma/client/runtime';
 
 @Injectable()
 export class UserService { //creates a new user
@@ -115,6 +117,18 @@ export class UserService { //creates a new user
 		console.log(error);
 		throw error;
 	}
+  }
+
+  async updateSocketID(_socketID: string, _username: string) {
+    const _updatedUser = await this.prisma.user.update({
+      where: {
+        username: _username,
+      },
+      data: {
+        socketID: _socketID,
+      }
+    })
+    console.log("socketID: " + _updatedUser.socketID);
   }
 
   async remove(id: string) { //removes a specific user by id
