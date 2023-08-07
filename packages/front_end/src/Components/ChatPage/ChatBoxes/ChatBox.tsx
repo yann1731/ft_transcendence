@@ -98,6 +98,7 @@ const Chat = () => {
           // endif
         }
       } else if (message.type === "friend") {
+        
         if ((_chatInfo[0] === message.recipient && message.nickname === user?.username) || (_chatInfo[0] === message.nickname && message.recipient === user?.username)) {
           const newMessage: Message = {
             text: message.text,
@@ -114,30 +115,32 @@ const Chat = () => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      // console.log("keydown: " + user?.chatInUse?.chat.name);
-      const messageInput = event.target as HTMLInputElement;
-      const messageText = messageInput.value.trim();
-      if (user?.chatInUse?.type === "friend") {
-        if (messageText !== '') {
-          let newMessage: Partial<PrivateMessage> = {
-            content: messageText,
-            senderId: user?.id,
-            recipientId: user?.chatInUse?.chat.name,
-          };
-          socket.emit("sendPrivateMessage", newMessage);
-          messageInput.value = '';
-        }
-      } else {
-        if (messageText !== '') {
-          let newMessage: Partial<ChatroomMessage> = {
-            content: messageText,
-            senderId: user?.id,
-            chatroomId: user?.chatInUse?.chat.id,
-            chatroom: user?.chatInUse?.chat,
-          };
-          // socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
-          socket.emit("sendMessage", newMessage);
-          messageInput.value = '';
+      if (user?.username) {
+        // console.log("keydown: " + user?.chatInUse?.chat.name);
+        const messageInput = event.target as HTMLInputElement;
+        const messageText = messageInput.value.trim();
+        if (user?.chatInUse?.type === "friend") {
+          if (messageText !== '') {
+            let newMessage: Partial<PrivateMessage> = {
+              content: messageText,
+              senderId: user?.id,
+              recipientId: user?.chatInUse?.chat.name,
+            };
+            socket.emit("sendPrivateMessage", newMessage);
+            messageInput.value = '';
+          }
+        } else {
+          if (messageText !== '') {
+            let newMessage: Partial<ChatroomMessage> = {
+              content: messageText,
+              senderId: user?.id,
+              chatroomId: user?.chatInUse?.chat.id,
+              chatroom: user?.chatInUse?.chat,
+            };
+            // socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
+            socket.emit("sendMessage", newMessage);
+            messageInput.value = '';
+          }
         }
       }
     }

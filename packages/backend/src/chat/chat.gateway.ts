@@ -83,7 +83,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       recipient: _recipient.username,
       // channelID: createPrivateMessageDto.chatroomId
     };
-    // this.server.emit("messageResponse", _msgInfo);
+    this.server.emit("messageResponse", _msgInfo);
   }
 
   @SubscribeMessage("clearHistory")
