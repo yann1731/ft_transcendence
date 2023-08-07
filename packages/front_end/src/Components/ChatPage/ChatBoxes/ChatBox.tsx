@@ -165,21 +165,25 @@ const Chat = () => {
     <Box className={"chatSection"}>
       <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
         <List>
-          {messages.map((message: Message, index: number) => (
-            <ListItem key={index}>
-              <Box sx={{ marginLeft: 'auto' }}>
-                <Box sx={{ textAlign: 'right' }}>
-                  <ContactMenu {...{Useravatar: message.UserAvatar}} />
-                  <ListItemText primary={message.text} />
+        {messages.map((message: Message, index: number) => {
+            const shouldAlignLeft = message.nickname === user?.username;
+
+            return (
+              <ListItem key={index}>
+                <Box sx={{ marginLeft: shouldAlignLeft ? '0' : 'auto' }}>
+                  <Box sx={{ textAlign: shouldAlignLeft ? 'left' : 'right' }}>
+                    <ContactMenu {...{ Useravatar: message.UserAvatar }} />
+                    <ListItemText primary={message.text} />
+                  </Box>
+                  <Box sx={{ textAlign: shouldAlignLeft ? 'left' : 'right' }}>
+                    <ListItemText
+                      secondary={`${message.nickname}, ${message.timestamp}`}
+                    />
+                  </Box>
                 </Box>
-                <Box sx={{ textAlign: 'right' }}>
-                  <ListItemText
-                    secondary={`${message.nickname}, ${message.timestamp}`}
-                  />
-                </Box> 
-              </Box>
-            </ListItem>
-          ))}
+              </ListItem>
+            );
+          })}
         </List>
       </Box>
       <Box sx={{ marginTop: 'auto' }}>
