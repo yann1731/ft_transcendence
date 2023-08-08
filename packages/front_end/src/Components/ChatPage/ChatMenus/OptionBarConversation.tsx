@@ -6,7 +6,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { UserContext, User } from 'Contexts/userContext';
 import { chatroomType, ChatroomUser, userPermission, Chatroom } from 'Components/Interfaces';
 import { LimitedProfile } from 'Components/ProfilePage/Profile';
-import { socket } from 'Contexts/socketContext';
+import { SocketContext } from 'Contexts/socketContext';
+
 
 const OptionBarConversation: React.FC = () => {
   const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
@@ -28,6 +29,7 @@ const OptionBarConversation: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const id = open ? 'contact-options-popover' : undefined;
+  const socket = React.useContext(SocketContext);
   
 
   React.useEffect(() => {
@@ -90,9 +92,16 @@ const OptionBarConversation: React.FC = () => {
     })
 
     socket.on("chatroom deleted", (data: any) => {
-      alert(user?.chatInUse?.chat?.name);
-      alert(data.chanName);
+      alert(data.chanName)
+      alert(user?.chatInUse?.chat?.name)
       if (user?.chatInUse?.chat?.name === data.chanName){
+        const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
+        updateUser(updatedUser);
+      }
+    })
+
+    socket.on("blocked", (data: any) => {
+      if (user?.chatInUse?.chat?.name === data.id){
         const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
         updateUser(updatedUser);
       }
@@ -157,10 +166,8 @@ const OptionBarConversation: React.FC = () => {
       alert('No username was given')
       return ;
     }
-    alert(user?.chatInUse?.chat?.name);
-    alert(Users);
+
     const friendChat = Users.find((friend: User) => {
-      alert(friend.nickname);
       return friend.nickname === user?.chatInUse?.chat?.name;
     })
 
@@ -225,7 +232,8 @@ const OptionBarConversation: React.FC = () => {
           }}).then((response: any) => {
             const ChatroomUsersData: ChatroomUser = response.data;
             setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
-            socket.emit("refresh"); // checker ici pour changer le chat in use
+            socket.emit("refresh");
+            socket.emit("blocked", {id: user?.chatInUse?.chat?.name, blocked: Friend?.id})
           }).catch((error : any) => {
             console.error('Error fetching chatroom users', error);
           })
@@ -247,6 +255,7 @@ const OptionBarConversation: React.FC = () => {
           if (response.status === 200){
             console.log('User removed from channel', response.data);
             socket.emit("refresh");
+            socket.emit("blocked", {id: user?.chatInUse?.chat?.name, blocked: Friend?.id})
           } else {
             console.error('Removing user from channel failed');
           }
@@ -373,13 +382,13 @@ const OptionBarConversation: React.FC = () => {
         console.log('User successfuly blocked', response.data);
         const id = user?.nickname;
         const blocked = friendChat?.id;
-        socket.emit("blocked", {id: id, blocked: blocked});
         socket.emit("refresh2")
+        socket.emit("blocked", {id: id, blocked: blocked});
+        closeChat();
       }).catch((error: any) => {
         console.error('Error blocking user', error);
         alert('Error adding blocking user: ' + error);
       })
-      closeChat();
     }
     else if(mode === "Invite to Play")
     {

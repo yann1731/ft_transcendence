@@ -100,10 +100,13 @@ interface MyChannelsProps {
             ...user,
             chatInUse: newChatInUse
           };
-          alert(user.chatInUse?.chat.name)
-          alert(newChatInUse.chat.name);
           updateUser(updatedUser);
-          socket.emit("refresh");
+
+          let _chat: Array<string>;
+          if (updatedUser.username && updatedUser.chatInUse?.chat.id && updatedUser.chatInUse?.type) {
+            _chat = [updatedUser.chatInUse?.chat.name, updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.type, updatedUser.username]
+            localStorage.setItem(updatedUser.username, JSON.stringify(_chat));
+          }
           setHistory(updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.chat);
         }
       }
@@ -118,8 +121,6 @@ interface MyChannelsProps {
         setRefresh(refresh => refresh + 1);
       })
     });
-    
-    
     
     return (
       <List>
