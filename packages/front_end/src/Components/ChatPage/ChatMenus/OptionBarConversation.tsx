@@ -92,8 +92,6 @@ const OptionBarConversation: React.FC = () => {
     })
 
     socket.on("chatroom deleted", (data: any) => {
-      alert(data.chanName)
-      alert(user?.chatInUse?.chat?.name)
       if (user?.chatInUse?.chat?.name === data.chanName){
         const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
         updateUser(updatedUser);

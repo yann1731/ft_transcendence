@@ -143,7 +143,6 @@ const OptionBarFriends: React.FC = () => {
         }
           const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
           updateUser(updatedUser);
-          socket.emit("refresh2")
           let _chat: Array<string>;
           if (updatedUser.username && updatedUser.chatInUse?.chat.id && updatedUser.chatInUse?.type) {
             _chat = [updatedUser.chatInUse?.chat.name, updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.type, updatedUser.username]
@@ -155,6 +154,7 @@ const OptionBarFriends: React.FC = () => {
             recipientId: username,
           };
           socket.emit("getPrivateHistory", newMessage);
+          socket.emit("refresh2")
         }).catch((error) => {
           console.error('Error adding new friend', error);
           alert('Error adding new friend: ' + error);
