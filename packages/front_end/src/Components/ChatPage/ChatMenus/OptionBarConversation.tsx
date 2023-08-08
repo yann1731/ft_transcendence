@@ -420,6 +420,12 @@ const OptionBarConversation: React.FC = () => {
         const id = user?.nickname;
         const blocked = friendChat?.id;
         socket.emit("blocked", {id: id, blocked: blocked});
+        let _chat: Array<string>;
+        if (user?.username) {
+          _chat = ["null", "null", "channel", user?.username];
+          localStorage.setItem(user?.username, JSON.stringify(_chat));
+        }
+        socket.emit("clearHistory");
       } catch (error) {
         console.error('Error blocking user', error);
         alert('Error adding blocking user: ' + error);
