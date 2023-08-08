@@ -38,7 +38,7 @@ const Chat = () => {
     socket.on("sendHistory", (data: any) => makeHistory(data));
     socket.on("connected", () => socket.emit("registerUser", { username: user?.username }));
     socket.on("clearHistory", () => clearHistory());
-    // socket.on("receiveBlocks", (data: any) => makeBlocks(data));
+    socket.on("receiveBlocks", (data: any) => makeBlocks(data));
     // return () => {
     //   socket.off("messageResponse");
     // }
@@ -58,8 +58,8 @@ const Chat = () => {
     _blocks.forEach((element: any) => {
       const b: UserBlocks = {
         id: element.id,
-        blockerId: element.blockerId,
-        blockedUserId: element.blockedUserId,
+        blockerId: element.blockerID,
+        blockedUserId: element.blockedUserID,
       };
       _userBlocks.push(b);
     });
@@ -67,6 +67,7 @@ const Chat = () => {
   }
 
   const makeHistory = (data: any) => {
+    socket.emit("getUserBlocks");
     const history = data.history;
     const msgHistory: Message[] = [];
     history.forEach((element: any) => {
@@ -76,7 +77,17 @@ const Chat = () => {
         nickname: element.nickname,
         UserAvatar: element.avatar,
       };
-      msgHistory.push(msg);
+      if (element.senderID !== user?.id) {
+        for (const block of userBlocks) {
+          if (element.senderID !== block.blockerId && element.senderID !== block.blockedUserId) {
+            msgHistory.push(msg);
+          } else {
+            continue ;
+          }
+        }
+      } else {
+        msgHistory.push(msg);
+      }
     });
     setMessages(msgHistory);
   };
@@ -87,6 +98,16 @@ const Chat = () => {
     if (user?.username) {
       const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
       if (message.type === "channel") {
+        // check if user is blocked
+        socket.emit("getUserBlocks");
+        if (message.senderID !== user?.id) {
+          for (const block of userBlocks) {
+            if (message.senderID === block.blockerId || message.senderID === block.blockedUserId) {
+              return ;
+            }
+          }
+        }
+
         if (message.channelID === _chatInfo[1]) {
           const newMessage: Message = {
             text: message.text,
@@ -137,7 +158,6 @@ const Chat = () => {
               chatroomId: user?.chatInUse?.chat.id,
               chatroom: user?.chatInUse?.chat,
             };
-            // socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
             socket.emit("sendMessage", newMessage);
             messageInput.value = '';
           }

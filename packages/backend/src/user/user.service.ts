@@ -103,15 +103,15 @@ export class UserService { //creates a new user
   }
 
   async updateSocketID(_socketID: string, _username: string) {
-    const _updatedUser = await this.prisma.user.update({
-      where: {
-        username: _username,
-      },
-      data: {
-        socketID: _socketID,
-      }
-    })
-    console.log("socketID: " + _updatedUser.socketID);
+    // const _updatedUser = await this.prisma.user.update({
+    //   where: {
+    //     username: _username,
+    //   },
+    //   data: {
+    //     socketID: _socketID,
+    //   }
+    // })
+    // console.log("socketID: " + _updatedUser.socketID);
   }
 
   async remove(id: string) { //removes a specific user by id

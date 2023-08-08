@@ -43,9 +43,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("getUserBlocks")
   async getUser(client: Socket, data: any) {
-    console.log("UserID: " + data.userID);
-    console.log("Username: " + data.name);
-    const _users = await this.userblocksService.findBlocksByID(data.userID);
+    // userID, senderID
+    const _users = await this.userblocksService.findAll();
+    console.log(_users);
     const _blocks: any[] = [];
     for (const element of _users) {
       const _block: any = {
@@ -55,7 +55,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       };
       _blocks.push(_block);
     };
-    this.server.to(client.id).emit("receiveBlocks", {blocks: _blocks});
+    this.server.emit("receiveBlocks", {blocks: _blocks});
   }
   
   @SubscribeMessage("getChatroomUsers")
@@ -118,6 +118,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       channelID: createChatroomMessageDto.chatroomId,
       chatName: _chat.name,
       type: "channel",
+      senderID: _user.id,
     };
     this.server.emit("messageResponse", _msgInfo);
   }
@@ -135,7 +136,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
           text: element.content,
           timestamp: time,
           nickname: _user.nickname,
-          avatar: _user.avatar
+          avatar: _user.avatar,
+          senderID: _user.id,
         };
         msgHistory.push(msg);
       };
@@ -155,7 +157,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       let msgHistory: any[] = [];
       const chatHistory = await this.privateMessageService.findAll(_user.id, _recipient.id);
-      console.log(chatHistory);
       for (const element of chatHistory ){
         const time = this.formatDate(new Date(element.createdAt));
         const _sender = await this.userService.findOne(element.senderId);
