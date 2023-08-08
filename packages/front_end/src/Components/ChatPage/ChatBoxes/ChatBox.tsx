@@ -150,16 +150,28 @@ const Chat = () => {
     const messageInput = document.getElementById('message-input') as HTMLInputElement | null;
     if (messageInput) {
       const messageText = messageInput.value.trim();
-      if (messageText !== '') {
-        let newMessage: Partial<ChatroomMessage> = {
-          content: messageText,
-          senderId: user?.id,
-          chatroomId: user?.chatInUse?.chat.id,
-          chatroom: user?.chatInUse?.chat,
-        };
-        socket.emit("sendMessage", newMessage);
-        //sendMessage(messageText);
-        messageInput.value = '';
+      if (user?.chatInUse?.type === "friend") {
+        if (messageText !== '') {
+          let newMessage: Partial<PrivateMessage> = {
+            content: messageText,
+            senderId: user?.id,
+            recipientId: user?.chatInUse?.chat.name,
+          };
+          socket.emit("sendPrivateMessage", newMessage);
+          messageInput.value = '';
+        }
+      } else {
+        if (messageText !== '') {
+          let newMessage: Partial<ChatroomMessage> = {
+            content: messageText,
+            senderId: user?.id,
+            chatroomId: user?.chatInUse?.chat.id,
+            chatroom: user?.chatInUse?.chat,
+          };
+          // socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
+          socket.emit("sendMessage", newMessage);
+          messageInput.value = '';
+        }
       }
     }
   };

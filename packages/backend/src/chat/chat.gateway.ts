@@ -92,16 +92,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   formatDate(date: Date): string {
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-
-    let time = hours.toString() + ":" + minutes.toString() + ":" + seconds.toString();
-    if (hours < 12) {
-      time = time + " AM";
-    } else {
-      time = time + " PM";
-    }
+    date.setHours(date.getHours() - 4);
+    const time = date.toLocaleTimeString("en-CA", {hour12: false});
     return (time);
   }
 
