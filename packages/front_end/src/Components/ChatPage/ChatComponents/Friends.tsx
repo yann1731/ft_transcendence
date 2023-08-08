@@ -4,8 +4,6 @@ import { useContext } from 'react';
 import { Chatroom, ChatInUse, chatroomType, UserFriendship, UserBlocks } from 'Components/Interfaces';
 import React from 'react'
 import axios from 'axios'
-import { SocketContext } from 'Contexts/socketContext';
-import { ChatroomMessage } from 'Components/Interfaces';
 import { PrivateMessage } from 'Components/Interfaces';
 import { socket } from 'Contexts/socketContext';
 
@@ -23,17 +21,14 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   
   React.useEffect(() => {
     const fetchUsers = async () => {
+      
       axios.get('http://localhost:4242/user', {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }}).then((response: any) => {
           const UsersData: User[] = response.data;
           setUsers(UsersData);
-        }).catch((error: any) => {
-        console.error('Error fetching users', error);
-      })
-
-      axios.get('http://localhost:4242/userblocks', {headers: {
+          axios.get('http://localhost:4242/userblocks', {headers: {
           'Authorization': user?.token,
           'userId': user?.id
       }}).then((response: any) => {
@@ -42,7 +37,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
           BlockedUsersData.forEach((users: UserBlocks) => {
             if (user?.id === users.blockerId)
             {
-              const isBlocked = Users.find((blockedUser: User) => {
+              const isBlocked = UsersData.find((blockedUser: User) => {
                 return users.blockedUserId === blockedUser.id;
               })
               if (isBlocked !== undefined)
@@ -53,7 +48,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
             }
             else if (user?.id === users.blockedUserId)
             {
-              const isBlocked = Users.find((blockedUser: User) => {
+              const isBlocked = UsersData.find((blockedUser: User) => {
                 return users.blockerId === blockedUser.id;
               })
               if (isBlocked !== undefined)
@@ -63,56 +58,57 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
             }
           });
           setBlockedUsers(tempBlockedUsers);
-      }).catch((error: any) => {
-        console.error('Error fetching blocked users', error);
-      })
-
-      axios.get(`http://localhost:4242/userfriendship`, {headers: {
-          'Authorization': user?.token,
-          'userId': user?.id
-      }}).then((response: any) => {
-          const FriendshipData: UserFriendship[] = response.data;
-          let tempFriends: User[] = [];
-          if (FriendshipData.length !== 0)
-          {
-            FriendshipData.forEach((friend: UserFriendship) => {
-              if (user !== null && user.id === friend.userAId)
-              {
-                const isFriend = Users.find((users: User) => {
-                  return (users.id === friend.userBId)
-                })
-                if (isFriend !== undefined)
+          axios.get(`http://localhost:4242/userfriendship`, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }}).then((response: any) => {
+            const FriendshipData: UserFriendship[] = response.data;
+            let tempFriends: User[] = [];
+            if (FriendshipData.length !== 0)
+            {
+              FriendshipData.forEach((friend: UserFriendship) => {
+                if (user !== null && user.id === friend.userAId)
                 {
-                  let isBlocked = BlockedUsers.find((friend: User) => {
-                    return friend.id === isFriend.id;})
-                  if (isBlocked === undefined)
+                  const isFriend = UsersData.find((users: User) => {
+                    return (users.id === friend.userBId)
+                  })
+                  if (isFriend !== undefined)
                   {
-                    tempFriends.push(isFriend);
-                  }
-                }
-              }
-              else if (user !== null && user.id === friend.userBId)
-              {
-                const isFriend = Users.find((users: User) => {
-                  return (users.id === friend.userAId)
-                })
-                if (isFriend !== undefined)
-                {
-                  let isBlocked = BlockedUsers.find((friend: User) => {
-                    return friend.id === isFriend.id;})
+                    let isBlocked = tempBlockedUsers.find((friend: User) => {
+                      return friend.id === isFriend.id;})
                     if (isBlocked === undefined)
                     {
                       tempFriends.push(isFriend);
                     }
                   }
                 }
-              })
-            }
-            setFriendUsers(tempFriends);
-      }).catch((error: any) => {
+                else if (user !== null && user.id === friend.userBId)
+                {
+                  const isFriend = UsersData.find((users: User) => {
+                    return (users.id === friend.userAId)
+                  })
+                  if (isFriend !== undefined)
+                  {
+                    let isBlocked = tempBlockedUsers.find((friend: User) => {
+                      return friend.id === isFriend.id;})
+                      if (isBlocked === undefined)
+                      {
+                        tempFriends.push(isFriend);
+                      }
+                    }
+                  }
+                })
+              }
+              setFriendUsers(tempFriends);
+          }).catch((error: any) => {
           console.error('Error getting Friends: ', error);
-
       })
+      }).catch((error: any) => {
+        console.error('Error fetching blocked users', error);
+      })
+        }).catch((error: any) => {
+        console.error('Error fetching users', error);
+      })    
     };
     fetchUsers();
   }, [user, refresh]);
@@ -130,7 +126,6 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
     socket.emit("getPrivateHistory", newMessage);
   }
 
-  // Éventuellement, remplacer par api get chatroom
   const SetChatInUse = (name: string, picture: string) => {
     if (user !== null)
     {
@@ -162,6 +157,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   
   socket.on("connected", () => {
     socket.on("blocked", (id: string) => {
+      alert("allo")
       if (user?.chatInUse?.chat.name === id){
         const updatedUser: Partial<User> = {
           ...user,
@@ -171,7 +167,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
       }
     })
     socket.on("refresh2", () => {
-      alert("test");
+      alert("allo");
       setRefresh(refresh => refresh + 1)
     })
   })

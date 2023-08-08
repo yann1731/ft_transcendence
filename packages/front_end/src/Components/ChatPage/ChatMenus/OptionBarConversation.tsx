@@ -69,6 +69,17 @@ const OptionBarConversation: React.FC = () => {
       }).catch((error: any) => {
         console.error('Error fetching chatroom users', error);
         })
+    }
+    else{
+      axios.get('http://localhost:4242/user', {headers: {
+        'Authorization': user?.token,
+        'userId': user?.id
+      }}).then((response: any) => {
+        const UsersData: User[] = response.data;
+        setUsers(UsersData);
+      }).catch((error: any) => {
+        console.error('Error fetching chatroom users', error);
+      })
     }};
     fetchUsers();
   }, [user, refresh]);
@@ -146,9 +157,13 @@ const OptionBarConversation: React.FC = () => {
       alert('No username was given')
       return ;
     }
+    alert(user?.chatInUse?.chat?.name);
+    alert(Users);
     const friendChat = Users.find((friend: User) => {
+      alert(friend.nickname);
       return friend.nickname === user?.chatInUse?.chat?.name;
     })
+
 
     const Friend = Users.find((friend: User) => {
       return friend.nickname === UserName;
@@ -359,6 +374,7 @@ const OptionBarConversation: React.FC = () => {
         const id = user?.nickname;
         const blocked = friendChat?.id;
         socket.emit("blocked", {id: id, blocked: blocked});
+        socket.emit("refresh2")
       }).catch((error: any) => {
         console.error('Error blocking user', error);
         alert('Error adding blocking user: ' + error);
