@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { UserblocksService } from './userblocks.service';
 import { CreateUserblockDto } from './dto/create-userblock.dto';
 import { TokenGuard } from 'src/guard/token.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('userblocks')
+@ApiTags('userblocks')
 // @UseGuards(TokenGuard)
 export class UserblocksController {
   constructor(private readonly userblocksService: UserblocksService) {}

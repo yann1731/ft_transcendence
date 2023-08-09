@@ -176,7 +176,7 @@
 
 .homeScoreBox {
   background-color: var(--secondary-color);
-  height: 27vh;
+  height: 41vh;
   box-shadow: 4;
   border-radius: 10px;
   margin-bottom: 10px;
@@ -231,6 +231,35 @@
   right: 0;
 }
 
+.matchHistoryCombo {
+  margin-top: 20px !important;
+}
+
+.matchHistoryCombo .MuiInputLabel-root {
+  color: var(--textfield-color);
+}
+
+.matchHistoryCombo .MuiOutlinedInput-root fieldset {
+  border-color: var(--textfield-color);
+}
+
+.matchHistoryCombo .MuiOutlinedInput-root:hover fieldset {
+  border-color: var(--textfield-color);
+}
+
+.matchHistoryCombo .MuiOutlinedInput-root.Mui-focused fieldset {
+  border-color: var(--textfield-color);
+}
+
+.matchHistoryInputLabel {
+  color: var(--textfield-color);
+}
+
+.matchHistoryInputLabel.Mui-focused {
+  color: var(--textfield-color) !important;
+  border-color: var(--textfield-color) !important;
+}
+
 .newChannelTextField .MuiOutlinedInput-root.Mui-focused fieldset {
   border-color: var(--textfield-color);
   border-width: 1px;
@@ -238,6 +267,14 @@
 
 .newChannelTextField .Mui-InputLabel-root.Mui-focused fieldset {
   color: var(--textfield-color);
+}
+
+.nicknameTextField .MuiInputLabel-root.Mui-focused {
+  color: var(--textfield-color);
+}
+
+.nicknameTextField .MuiOutlinedInput-root.Mui-focused fieldset {
+  border-color: var(--textfield-color);
 }
 
 .pokeball {

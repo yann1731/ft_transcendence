@@ -13,55 +13,49 @@ import { UserContext } from 'Contexts/userContext';
 import { gamesocket } from 'Contexts/socketContext';
 
 export default function PongGame() {
-    const {user} = React.useContext(UserContext);
-    const [test, setTest] = React.useState(1);
-    
-    React.useEffect(() => {
-      console.log("fuck yes")
-      const config: Phaser.Types.Core.GameConfig = {
-        type: Phaser.AUTO,
-        parent: 'PONG',
-        backgroundColor: '#000000',
-        scale: {
-          mode: Phaser.Scale.FIT,
-          autoCenter: Phaser.Scale.CENTER_BOTH,
+  const {user} = React.useContext(UserContext);
+  const [refresh, setRefresh] = React.useState(1);
+
+  React.useEffect(() => {
+    console.log("fuck yes")
+    const config: Phaser.Types.Core.GameConfig = {
+      type: Phaser.AUTO,
+      parent: 'PONG',
+      backgroundColor: '#000000',
+      scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+      },
+      physics: {
+        default: 'arcade',
+        arcade: {
+          gravity: { y: 0 },
         },
-        physics: {
-          default: 'arcade',
-          arcade: {
-            gravity: { y: 0 },
-          },
-        },
-        scene: [
-          option,
-          oneVSoneHost,
-          oneVSoneOther,
-          threeVSoneHost,
-          threeVSoneOther,
-          twoVStwoHost,
-          twoVStwoOther
-        ]
-      };
-      
-      const pong = new Phaser.Game(config);
-      pong.scene.start('menu', {name: user?.id, socket: gamesocket});
-      return () => {
-        pong.destroy(true);
-      }
-    }, [test]);
+      },
+      scene: [
+        option,
+        oneVSoneHost,
+        oneVSoneOther,
+        threeVSoneHost,
+        threeVSoneOther,
+        twoVStwoHost,
+        twoVStwoOther
+      ]
+    };
+  
 
-    gamesocket.on("connected", () => {
-      gamesocket.emit("connected", {name: user?.id})
-    })
+    const pong = new Phaser.Game(config);
+    pong.scene.start('menu', {name: user?.id, socket: gamesocket});
+    return () => {
+      pong.destroy(true);
+    }
+  }, [refresh]);
 
-    gamesocket.on("new", () => {
-        console.log(test) 
-        setTest(test => test + 1);
-        console.log(test)
-    })
-
-    
-    return (
-        <Box id="PONG" style={{ maxHeight: '82.7vh' }}></Box>
-    );
+  gamesocket.on("new", () => {
+      setRefresh(refresh => refresh + 1);
+  })
+  
+  return (
+    <Box id="PONG" style={{ maxHeight: '82.7vh' }}></Box>
+  ); 
 }

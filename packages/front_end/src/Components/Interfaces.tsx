@@ -68,8 +68,8 @@ export interface ChatroomUser {
 	chatroom?: Chatroom ;
 	permission: userPermission ;
 	banStatus: boolean ;
-	banUntil: Date  | null;
 	muteStatus: boolean ;
+	muteUntil: number  | null;
 }
 
 // Variables utiles ChatRoom
@@ -135,3 +135,9 @@ export enum chatroomType {
     friend = "friend",
     channel = "channel",
 }
+
+export enum chatRoomState {
+	public = 'public',
+	private = 'private',
+	pwProtected = 'pwProtected'
+};

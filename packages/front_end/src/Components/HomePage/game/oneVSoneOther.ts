@@ -70,7 +70,8 @@ export default class oneVSoneOther extends Phaser.Scene{
             this.load.image("bigBall", String(require('../../../images/jrossign.png')));
         }
         else{
-            this.textures.addBase64('ball', String(require("../../../images/ball.png")));
+            this.load.image("ball", String(require('../../../images/anhebert.png')));
+            //this.textures.addBase64('ball', String(require("../../../images/ball.png")));
             this.textures.addBase64('bigBall', String(require("../../../images/bigBall.png")));
         }
 

@@ -17,7 +17,6 @@ export class TokenGuard implements CanActivate {
 async function validateRequest(request, prisma): Promise<boolean> { //validates token and user id for request to endpoints
     const userId: string = request.headers.userid;
     const token: string = request.headers.authorization;
-    console.log('validating token')
     if (!userId || !token) {
         console.log('bad userid or token');
         return false;
@@ -36,9 +35,8 @@ async function validateRequest(request, prisma): Promise<boolean> { //validates 
     if ((Date.now() / 1000) > user.token_expires_at) {
         try {
             const refresh = axios.post('http://localhost:4242/refreshToken' + userId);
-            console.log('succesfully refreshed token');
         } catch (error) {
-            console.log('error refreshing token');
+            console.log(error, 'error refreshing token');
             return false;
         }
     }
