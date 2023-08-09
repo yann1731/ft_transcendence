@@ -250,6 +250,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   
   @SubscribeMessage("refresh2")
   refreshPage2(client: Socket, data: any) {
+    console.log("allo");
     this.server.emit("refresh2");
   }
   

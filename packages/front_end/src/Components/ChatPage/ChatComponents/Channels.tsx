@@ -33,26 +33,32 @@ interface MyChannelsProps {
             const chans: Chatroom[] = [];
             let trigger = "off";
             let newChatInUse = user?.chatInUse;
+
             Chans.forEach((channel: Chatroom) => {
               chatroomUsersData.forEach((users: ChatroomUser) => {
+
                 if (channel?.id === users?.chatroomId && users.banStatus !== true)
-                {
                   chans.push(channel);
-                }
+    
                 if (channel?.id === user?.chatInUse?.chat?.id && newChatInUse !== undefined)
                 {
                   newChatInUse.chat = channel;
-                  const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: chans };
-                  updateUser(updatedUser);
                   trigger = "on";
                 }
               })
             });
+
+            if (trigger === 'on'){
+                const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: chans };
+                updateUser(updatedUser);
+            }
+
             if (trigger === "off")
             {
               const updatedUser: Partial<User> = { ...user, chatInUse: undefined, Chatroom: chans };
               updateUser(updatedUser);
             }
+
             console.log('ChatroomUsers fetched: ', response.data);
           })
           .catch((error: any) => {
@@ -81,7 +87,7 @@ interface MyChannelsProps {
       socket.emit("getHistory", newMessage);
     }
 
-    const SetChatInUse = (name: string) => {
+    const SetChatInUse = async (name: string) => {
       const decodedName = decodeURIComponent(name);
       
       if (user !== null)
@@ -100,31 +106,39 @@ interface MyChannelsProps {
             ...user,
             chatInUse: newChatInUse
           };
-          updateUser(updatedUser);
+          await updateUser(updatedUser);
 
           let _chat: Array<string>;
           if (updatedUser.username && updatedUser.chatInUse?.chat.id && updatedUser.chatInUse?.type) {
             _chat = [updatedUser.chatInUse?.chat.name, updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.type, updatedUser.username]
             localStorage.setItem(updatedUser.username, JSON.stringify(_chat));
           }
-          setHistory(updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.chat);
+          await setHistory(updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.chat);
         }
       }
     };
     
-    let filteredChannels : any = user?.Chatroom?.filter((channel: Chatroom) =>
+/*     user?.Chatroom?.forEach((channel: Chatroom) => {
+      alert(channel.name)
+    }) */
+
+/*     let filteredChannels : any = user?.Chatroom?.filter((channel: Chatroom) =>
       channel.name.toLowerCase().includes(searchText.toLowerCase())
-    );
+    ); */
+
+/*     filteredChannels.forEach((channel: Chatroom) => {
+      alert(channel.name)
+    }) */
 
     socket.on("connected", () => {
-      socket.on("refresh", async () => {
+      socket.on("refresh", () => {
         setRefresh(refresh => refresh + 1);
       })
     });
     
     return (
       <List>
-        {filteredChannels?.map((channel: Chatroom) => {
+        {user?.Chatroom?.map((channel: Chatroom) => {
           const decodedName = decodeURIComponent(channel.name);
           const encodedName = encodeURIComponent(channel.name);
           return (
