@@ -41,6 +41,11 @@ export interface chatUser {
     userStatus: string
 }
 
+export interface limitedProfile {
+	username: string,
+	avatar: string,
+}
+
 // Variables private message pour messages privés
 export interface PrivateMessage {
     id: string ;

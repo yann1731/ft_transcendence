@@ -81,6 +81,7 @@ const Chat = () => {
         // endif
       }
     } else {
+      console.log("chatinUse on DISPLAY = " + user?.chatInUse?.chat.name)
       if (message.nickname === user?.chatInUse?.chat.name || message.nickname === user?.nickname) {
         const newMessage: Message = {
           text: message.text,
@@ -120,7 +121,7 @@ const Chat = () => {
           };
           socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
           socket.emit("sendMessage", newMessage);
-          console.log(userBlocks);
+          //console.log(userBlocks);
           messageInput.value = '';
         }
       }

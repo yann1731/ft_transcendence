@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { Box, IconButton, Menu, Typography, Avatar, Modal, Tooltip, MenuItem } from '@mui/material';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import MyStats from './ProfileComponents/UserStats';
 import PictureHandler from './ProfileComponents/PictureHandler';
-import { UserContext } from 'Contexts/userContext';
-import { LimitedProfile } from './Profile';
 import { LimitedStats } from '../ProfilePage/ProfileComponents/UserStats';
+import axios, { AxiosResponse } from 'axios';
+import { useRouteLoaderData } from 'react-router-dom';
+import { UserContext, User } from '../../Contexts/userContext';
 
 export default function ProfileContainer() {
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -83,23 +84,46 @@ export default function ProfileContainer() {
 }
 
 export function ReadOnlyProfile() {
- 	const {user} = useContext(UserContext);
-	
+	const [users, setUsers] = useState<User[]>([]);
+	const { user, updateUser } = useContext(UserContext);
+  
+	useEffect(() => {
+	  const fetchUserProfile = async () => {
+		try {
+		  const response = await axios.get('http://localhost:4242/user', {
+			headers: {
+			  'Authorization': user?.token,
+			  'userId': user?.id
+			}
+		  });
+  
+		  if (response.status === 200) {
+			const userProfile: User[] = response.data;
+			setUsers(userProfile);
+		  }
+		} catch (error) {
+		  console.error('Error while fetching user data: ', error);
+		}
+	  };
+	  fetchUserProfile();
+	}, [user, setUsers]);
+  
+	// Retrieve the user profile from the local users state
+	const userProfile = users.find(u => u.id === user?.id);
+  
 	return (
-	<div>
-		<Avatar alt={user?.nickname} src={user?.avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}} />
-		<Box sx={{textAlign: 'center', mt: 1}}>Nickname: {user?.nickname}</Box>
+	  <div>
+		<Avatar alt={userProfile?.nickname} src={userProfile?.avatar} sx={{ mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto' }} />
+		<Box sx={{ textAlign: 'center', mt: 1 }}>Nickname: {userProfile?.nickname}</Box>
 		<Box className="profileSection" sx={{
-			borderRadius: 2.5,
-			mt: 3,
-			display: 'flex',
-			flexDirection: "column",
-			alignItems: 'center',
+		  borderRadius: 2.5,
+		  mt: 3,
+		  display: 'flex',
+		  flexDirection: "column",
+		  alignItems: 'center',
 		}}>
-		<LimitedStats />
+		  <LimitedStats />
 		</Box>
-	</div>	
-	)
-}
-
-
+	  </div>
+	);
+  }

@@ -87,11 +87,12 @@ interface MyChannelsProps {
       if (user !== null)
       {
         const chatroom = user?.Chatroom?.find((chat: Chatroom) => {
+          console.log("chatInUse onClick = " + decodedName);
           return chat.name === decodedName;
         });
         if (chatroom !== undefined)
         {
-          // console.log("Chatroom name: " + chatroom.name);
+           console.log("Chatroom name: " + chatroom.name);
           const newChatInUse: ChatInUse = {
             chat: chatroom,
             type: chatroomType.channel
