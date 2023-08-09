@@ -269,6 +269,14 @@
   color: var(--textfield-color);
 }
 
+.nicknameTextField .MuiInputLabel-root.Mui-focused {
+  color: var(--textfield-color);
+}
+
+.nicknameTextField .MuiOutlinedInput-root.Mui-focused fieldset {
+  border-color: var(--textfield-color);
+}
+
 .pokeball {
   position: fixed;
   left: 15px;

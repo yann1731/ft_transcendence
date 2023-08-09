@@ -3,7 +3,7 @@ import { ChatroommessageService } from './chatroommessage.service';
 import { TokenGuard } from 'src/guard/token.guard';
 
 @Controller('chatroommessage')
-// @UseGuards(TokenGuard)
+@UseGuards(TokenGuard)
 export class ChatroommessageController {
   constructor(private readonly chatroommessageService: ChatroommessageService) {}
   

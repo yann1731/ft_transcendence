@@ -34,6 +34,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(client: Socket) {
     // console.log("New client connected to chatSocket");
     this.server.to(client.id).emit("connected");
+    this.server.emit("refresh2")
+  }
+
+  @SubscribeMessage("connected")
+  handleConnected(client: Socket, id: string){
+    this.users.set(id, client.id)
   }
 
   handleDisconnect(client: Socket) {
@@ -212,6 +218,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   
   @SubscribeMessage("delete chatroom")
   deleteChatroom(client: Socket, data: any) {
+    console.log(data.chanName)
     this.server.emit("chatroom deleted", data);
   }
   
@@ -241,6 +248,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit("refresh");
   }
   
+  @SubscribeMessage("refresh2")
+  refreshPage2(client: Socket, data: any) {
+    console.log("allo");
+    this.server.emit("refresh2");
+  }
+  
   @SubscribeMessage("user added")
   handleAdded(client: Socket, data: any){
     this.server.to(this.users.get(data.id)).emit("added")
@@ -248,6 +261,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("blocked")
   handleBlocked(client: Socket, data: any){
+    console.log(data.id, data.blocked, this.users.get(data.blocked));
     this.server.to(this.users.get(data.blocked)).emit("blocked", data.id)
   }
 
