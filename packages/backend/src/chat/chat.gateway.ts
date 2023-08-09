@@ -39,7 +39,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(client: Socket) {
     console.log('Client disconnected from chatSocket');
     console.log("ClientDisconn: " + client.id);
+    this.server.to(client.id).emit("disconnected");
 	}
+
+  @SubscribeMessage("registerDisconnect")
+  async registerDisconnect(client: Socket, data: any) {
+    this.userService.updateStatus("offline", data.username);
+  }
 
   @SubscribeMessage("getUserBlocks")
   async getUser(client: Socket, data: any) {
@@ -179,6 +185,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async registerUser(client: Socket, data: any) {
     console.log("Registering: " + data.username + " (" + client.id + ")");
     this.userService.updateSocketID(client.id, data.username);
+    this.userService.updateStatus("online", data.username);
   }
 
   @SubscribeMessage("chatroom")

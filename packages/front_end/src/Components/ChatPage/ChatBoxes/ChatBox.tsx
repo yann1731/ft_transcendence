@@ -36,7 +36,8 @@ const Chat = () => {
   useEffect(() => {
     socket.on('messageResponse', (data: any) => displayMessage(data));
     socket.on("sendHistory", (data: any) => makeHistory(data));
-    socket.on("connected", () => socket.emit("registerUser", { username: user?.username }));
+    socket.on("connected", () => makeConnection());
+    socket.on("disconnected", () => socket.emit("registerDisconnect", {username: user?.username}));
     socket.on("clearHistory", () => clearHistory());
     socket.on("receiveBlocks", (data: any) => makeBlocks(data));
     // return () => {
@@ -46,6 +47,12 @@ const Chat = () => {
       socket.off("messageResponse");
     }
   }, []);
+
+  const makeConnection = () => {
+    const updatedUser: Partial<User> = {...user, userStatus: true};
+    updateUser(updatedUser);
+    socket.emit("registerUser", { username: user?.username })
+  }
 
   const clearHistory = () => {
     const _cleared: Message[] = [];
