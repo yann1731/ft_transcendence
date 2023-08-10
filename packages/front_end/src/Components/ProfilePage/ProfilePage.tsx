@@ -83,9 +83,8 @@ export default function ProfileContainer() {
 	)
 }
 
-export function ReadOnlyProfile() {
-	const [users, setUsers] = useState<User[]>([]);
-	const { user, updateUser } = useContext(UserContext);
+export function ReadOnlyProfile({ Useravatar }: { Useravatar: string | undefined }) {
+	const [userProfile, setUserProfile] = useState<User | null>(null);
   
 	useEffect(() => {
 	  const fetchUserProfile = async () => {
@@ -98,32 +97,36 @@ export function ReadOnlyProfile() {
 		  });
   
 		  if (response.status === 200) {
-			const userProfile: User[] = response.data;
-			setUsers(userProfile);
+			const userProfileData: User[] = response.data;
+			const clickedUserProfile = userProfileData.find(u => u.avatar === Useravatar);
+			setUserProfile(clickedUserProfile);
 		  }
 		} catch (error) {
 		  console.error('Error while fetching user data: ', error);
 		}
 	  };
-	  fetchUserProfile();
-	}, [user, setUsers]);
   
-	// Retrieve the user profile from the local users state
-	const userProfile = users.find(u => u.id === user?.id);
+	  fetchUserProfile();
+	}, [user, Useravatar]); // Update when user or Useravatar changes
   
 	return (
 	  <div>
-		<Avatar alt={userProfile?.nickname} src={userProfile?.avatar} sx={{ mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto' }} />
-		<Box sx={{ textAlign: 'center', mt: 1 }}>Nickname: {userProfile?.nickname}</Box>
-		<Box className="profileSection" sx={{
-		  borderRadius: 2.5,
-		  mt: 3,
-		  display: 'flex',
-		  flexDirection: "column",
-		  alignItems: 'center',
-		}}>
-		  <LimitedStats />
-		</Box>
+		{userProfile && (
+		  <div>
+			<Avatar alt={userProfile.nickname} src={userProfile.avatar} sx={{ mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto' }} />
+			<Box sx={{ textAlign: 'center', mt: 1 }}>Nickname: {userProfile.nickname}</Box>
+			<Box className="profileSection" sx={{
+			  borderRadius: 2.5,
+			  mt: 3,
+			  display: 'flex',
+			  flexDirection: "column",
+			  alignItems: 'center',
+			}}>
+			  <LimitedStats />
+			</Box>
+		  </div>
+		)}
 	  </div>
 	);
   }
+  
