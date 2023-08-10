@@ -46,14 +46,15 @@ export default function PongGame() {
 
     const pong = new Phaser.Game(config);
     pong.scene.start('menu', {name: user?.id, socket: gamesocket});
-    return () => {
-      pong.destroy(true);
-    }
+    gamesocket.on("new", () => {
+      gamesocket.off("new");
+      console.log("yeah")
+      pong.destroy(true, false);
+      setTimeout(() => {setRefresh(refresh => refresh + 1);}, 500)
+      
+      })
   }, [refresh]);
 
-  gamesocket.on("new", () => {
-      setRefresh(refresh => refresh + 1);
-  })
   
   return (
     <Box id="PONG" style={{ maxHeight: '82.7vh' }}></Box>

@@ -566,7 +566,7 @@ export default class oneVSoneOther extends Phaser.Scene{
         this.socket.off("point");
         this.socket.off("disconnected");
 
-        this.socket.emit("new");
-        this.game.destroy(true, false);
+       this.socket.emit("new");
+      //  this.game.destroy(false, false);
     }
 }

@@ -799,6 +799,6 @@ export default class oneVSoneHost extends Phaser.Scene{
         this.socket.off("disconnected");
 
         this.socket.emit("new");
-        this.game.destroy(true, false);
+       // this.game.destroy(false, false);
     }
 }
