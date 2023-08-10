@@ -33,6 +33,10 @@ export default class oneVSoneOther extends Phaser.Scene{
     multiBall!: Phaser.GameObjects.Text;
     menu!: Phaser.GameObjects.Text;
     disconnect!: Phaser.GameObjects.Text;
+
+
+
+    
     points1: number = 0;
     points2: number = 0;
     win: number = 1;
