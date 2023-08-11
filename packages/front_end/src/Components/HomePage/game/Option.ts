@@ -8,6 +8,15 @@ interface gameData {
 	socket: Socket
 }
 
+class PowerUp extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene: Phaser.Scene, x: number, y: number) {
+      super(scene, x, y, "power");
+      this.setScale(0.1, 0.1);
+      scene.add.existing(this);
+      scene.physics.add.existing(this);
+    }
+}
+
 export default class option extends Phaser.Scene{
 	start!: Phaser.GameObjects.Text;
 	join!: Phaser.GameObjects.Text;
@@ -50,8 +59,8 @@ export default class option extends Phaser.Scene{
 	powerUp: boolean = false;
 	wall: boolean = false;
 	random: boolean = false;
-	first: boolean = false;
-	first2: boolean = false;
+	first: boolean = true;
+	first2: boolean = true;
 	multi: boolean = false;
 	rateSpeed: number = 0.0006;
 	powerup: boolean = false;
@@ -1380,6 +1389,34 @@ export default class option extends Phaser.Scene{
 			this.paddle2.setOrigin(0.5);
 			this.paddle2.setScale(0.15, 0.25);
 			this.physics.add.collider(this.ball, this.paddle2);
+
+			this.socket.on("movement", (newPos: number) => {
+				if (this.paddle2.body)
+					this.paddle2.setY(newPos + this.paddle2.body.height / 2);
+			})
+			
+			this.socket.on("disconnected", () => {
+				this.menu.setVisible(true);
+				this.disconnect.setVisible(true);
+			})
+	
+			this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+			this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);   
+	
+			if (this.powerup){
+				let x: number = Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10)
+				let y: number = Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1);
+				this.power = new PowerUp(this, x, y);
+				this.socket.emit("newPower", {x: x, y: y});
+				this.physics.add.overlap(this.ball, this.power, this.power_up, undefined, this);
+				if (this.wall === true || this.random === true)
+					this.physics.add.overlap(this.power, [this.wall1, this.wall2, this.wall3], () => {
+						let x: number = Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10)
+						let y: number = Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1);
+						this.power.setPosition(x, y)
+						this.socket.emit("newPower", {x: x, y: y});
+					}, undefined, this)
+			}
 		}
 		if (this.ball.body)
 		if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
@@ -2104,6 +2141,8 @@ export default class option extends Phaser.Scene{
 		this.twoOther = false
 		this.threeHost = false
 		this.threeOther = false
+		this.first = true;
+		this.first2 = true;
 		this.title.setVisible(true);
 		this.join.setVisible(true);
 		this.start.setVisible(true);
