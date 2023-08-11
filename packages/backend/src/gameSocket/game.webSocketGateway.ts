@@ -534,9 +534,4 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 				this.threeWaiting.push(client);
 		}
 	}
-
-	@SubscribeMessage("new")
-	handleNew(client: Socket){
-		this.server.to(client.id).emit("new");
-	}
 }
