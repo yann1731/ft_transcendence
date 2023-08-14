@@ -13,4 +13,5 @@ export class Chatroom {
 	userId: string ;
 	password: string  | null;
 	users?: ChatroomUser[] ;
+	bannedUsers?: string[] ;
 }

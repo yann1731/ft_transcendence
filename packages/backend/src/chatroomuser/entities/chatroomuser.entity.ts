@@ -9,7 +9,6 @@ export class ChatroomUser {
 	chatroomId: string ;
 	chatroom?: Chatroom ;
 	permission: userPermission ;
-	banStatus: boolean ;
-	banUntil: Date  | null;
 	muteStatus: boolean ;
+	muteUntil: number | null ;
 }
