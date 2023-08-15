@@ -125,7 +125,6 @@ export class ChatroomuserService {
 			{ id },
 			data: {
 			  permission: updateChatroomuserDto.permission,
-			  banStatus: updateChatroomuserDto.banStatus,
 			  muteStatus: updateChatroomuserDto.muteStatus,
 			  muteUntil: updateChatroomuserDto.muteUntil
 		}
