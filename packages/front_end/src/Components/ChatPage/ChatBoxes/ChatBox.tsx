@@ -62,6 +62,7 @@ const Chat = () => {
         timestamp: element.timestamp,
         nickname: element.nickname,
         UserAvatar: element.avatar,
+        userId: element.userId
       };
       msgHistory.push(msg);
     });
@@ -75,7 +76,8 @@ const Chat = () => {
           text: message.text,
           timestamp: message.timestamp,
           nickname: message.nickname,
-          UserAvatar: message.avatar
+          UserAvatar: message.avatar,
+          userId: message.userId
         };
         setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
         // endif
@@ -87,7 +89,8 @@ const Chat = () => {
           text: message.text,
           timestamp: message.timestamp,
           nickname: message.nickname,
-          UserAvatar: message.avatar
+          UserAvatar: message.avatar,
+          userId: message.userId
         };
         setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
         // endif
@@ -154,7 +157,7 @@ const Chat = () => {
             <ListItem key={index}>
               <Box sx={{ marginLeft: 'auto' }}>
                 <Box sx={{ textAlign: 'right' }}>
-                  <ContactMenu {...{Useravatar: message.UserAvatar}} />
+                  <ContactMenu {...message} />
                   <ListItemText primary={message.text} />
                 </Box>
                 <Box sx={{ textAlign: 'right' }}>

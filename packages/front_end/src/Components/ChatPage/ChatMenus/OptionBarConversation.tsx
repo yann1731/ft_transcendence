@@ -7,6 +7,11 @@ import { UserContext, User } from 'Contexts/userContext';
 import { chatroomType, ChatroomUser, userPermission, Chatroom } from 'Components/Interfaces';
 import { LimitedProfile } from 'Components/ProfilePage/Profile';
 import { socket } from 'Contexts/socketContext';
+import { Message } from '../../Interfaces';
+
+interface OptionBarConversationProps { 
+  message: Message;
+}
 
 const OptionBarConversation: React.FC = () => {
   const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
@@ -628,7 +633,7 @@ const OptionBarConversation: React.FC = () => {
       }}
       >
         <Box sx={{ p: 2 }}>
-          <LimitedProfile />
+          {/*<LimitedProfile />*/}
         </Box>
       </Popover>
     </Box>

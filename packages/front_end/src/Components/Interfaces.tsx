@@ -60,8 +60,9 @@ export interface PrivateMessage {
 export interface Message {
     text: string;
     timestamp: string;
-    nickname: string | undefined;
-    UserAvatar: string | undefined;
+    nickname: string;
+    UserAvatar: string;
+	userId: string;
   }
 
 // Variables user utiles pour chatRoom

@@ -278,7 +278,7 @@ const OptionBarFriends: React.FC = () => {
         }}
       >
         <Box sx={{ p: 2 }}>
-          <LimitedProfile />
+          {/*<LimitedProfile />*/}
         </Box>
       </Popover>
     </AppBar>
