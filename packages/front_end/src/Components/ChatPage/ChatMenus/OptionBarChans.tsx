@@ -347,6 +347,7 @@ const OptionBarChans: React.FC = () => {
       if (newChan && user)
       {
         const newChatroomuser: Partial<ChatroomUser> = {
+          userName: user?.username,
           userId: user.id,
           user: user,
           chatroomId: newChan.id,

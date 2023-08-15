@@ -169,7 +169,6 @@ const OptionBarConversation: React.FC = () => {
       return friend.nickname === user?.chatInUse?.chat?.name;
     })
 
-
     const Friend = Users.find((friend: User) => {
       return friend.nickname === UserName;
     });
@@ -177,6 +176,7 @@ const OptionBarConversation: React.FC = () => {
     const notFriend = usersNotInCurrentChat.find((friend: User) => {
       return friend.nickname === UserName;
     });
+
     const chatUser = chatroomUsers.find((chatUser: ChatroomUser) => {
       return chatUser.userId === Friend?.id;
     });
@@ -222,19 +222,20 @@ const OptionBarConversation: React.FC = () => {
           return ;
         }
         const newChatUser: Partial<ChatroomUser> = {
-          banStatus: true,
+          userId: chatUser.user?.username,
+          chatroomId: user?.chatInUse?.chat?.id
         }
-          await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
-            'Authorization': user?.token,
-            'userId': user?.id
-          }}).then((response: any) => {
-            const ChatroomUsersData: ChatroomUser = response.data;
-            setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
+        axios.post(`http://localhost:4242/chatroomuser/ban/${chatUser.id}`, newChatUser, {headers: {
+          'Authorization': user?.token,
+          'userId': user?.id
+        }}).then((response: any) => {
+            console.log('User removed from channel', response.data);
             socket.emit("refresh");
             socket.emit("blocked", {id: user?.chatInUse?.chat?.name, blocked: Friend?.id})
-          }).catch((error : any) => {
-            console.error('Error fetching chatroom users', error);
-          })
+        }).catch((error: any) => {
+          console.error('Error occurred while removing user from channel: ', error);
+        })
+
       };
     }
     else if (mode === 'Kick')

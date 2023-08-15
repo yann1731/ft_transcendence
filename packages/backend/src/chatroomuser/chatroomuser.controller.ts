@@ -3,6 +3,7 @@ import { ChatroomuserService } from './chatroomuser.service';
 import { CreateChatroomuserDto } from './dto/create-chatroomuser.dto';
 import { UpdateChatroomuserDto } from './dto/update-chatroomuser.dto';
 import { CreateChatroomuserPassDto } from './dto/create-chatroomuserpass.dto';
+import { BanChatroomuserDto } from './dto/ban-chatroomuser.dto';
 import { TokenGuard } from 'src/guard/token.guard';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -50,5 +51,10 @@ export class ChatroomuserController {
   @Delete(':id') //deletes single chatroomuser by id provided
   remove(@Param('id') id: string) {
     return this.chatroomuserService.remove(id);
+  }
+
+  @Post('ban/:id') //ban and deletes single chatroomuser by id provided
+  ban(@Param('id') id: string, @Body() banChatroomuserDto: BanChatroomuserDto) {
+    return this.chatroomuserService.ban(id, banChatroomuserDto);
   }
 }
