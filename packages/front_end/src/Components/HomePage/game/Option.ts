@@ -268,9 +268,7 @@ export default class option extends Phaser.Scene{
 		this.settingThreeButton.setVisible(false);
 	}
 
-	preload() {
-		
-	}
+	preload() {}
  
 	all() {
 		this.join.setInteractive();

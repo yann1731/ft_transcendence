@@ -154,7 +154,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 
 	@SubscribeMessage("1v1")
 	handle1v1(client: Socket, data: any){
-		console.log("allo");
 		if (data.start){
 			client.join(data.name);
 			if (this.oneWaiting.length >= 1){
