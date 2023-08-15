@@ -307,6 +307,7 @@ const OptionBarConversation: React.FC = () => {
           }}).then((response: any) => {
             const ChatroomUsersData: ChatroomUser = response.data;
             setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
+            socket.emit("muteUser", {mute: chatUser});
             socket.emit("refresh")
           }).catch((error: any) => {
           console.error('Error fetching chatroom users', error);
@@ -329,6 +330,7 @@ const OptionBarConversation: React.FC = () => {
           }}).then((response: any) => {
             const ChatroomUsersData: ChatroomUser = response.data;
             setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
+            socket.emit("unmuteUser", {mute: chatUser});
             socket.emit("refresh")
           }).catch((error: any) => {
           console.error('Error fetching chatroom users', error);
@@ -348,6 +350,7 @@ const OptionBarConversation: React.FC = () => {
               socket.emit("delete chatroom", {chanName: user?.chatInUse?.chat?.name});
               const updatedUser: Partial<User> = { ...user, chatInUse: undefined};
               updateUser(updatedUser);
+              socket.emit("clearHistory");
               socket.emit("refresh");
             } else {
              console.error('Deleting channel failed');
@@ -365,6 +368,7 @@ const OptionBarConversation: React.FC = () => {
             console.log('User removed from channel', response.data);
             const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
             updateUser(updatedUser);
+            socket.emit("clearHistory");
             socket.emit("refresh");
           }).catch((error: any) => {
             console.error('Error occurred while removing user from channel: ', error);
@@ -373,28 +377,29 @@ const OptionBarConversation: React.FC = () => {
     }
     else if(mode === "Block")
     {
-      await axios.post(`http://localhost:4242/userblocks`, {blockerId: user?.id, blockedUserId: friendChat?.id}, {headers: {
+      try {
+        const response = await axios.post(`http://localhost:4242/userblocks`, {blockerId: user?.id, blockedUserId: friendChat?.id}, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }}).then((response: any) => {
+        }});
         console.log('User successfuly blocked', response.data);
         const id = user?.nickname;
         const blocked = friendChat?.id;
-        socket.emit("refresh2")
         socket.emit("blocked", {id: id, blocked: blocked});
         let _chat: Array<string>;
         if (user?.username) {
-          _chat = ["null", "null", "channel", user?.username];
+          _chat = ["null", "null", "friend", user?.username];
           localStorage.setItem(user?.username, JSON.stringify(_chat));
         }
         socket.emit("clearHistory");
-      }).catch((error: any) => {
-        closeChat();
+        socket.emit("refresh2");
+      } catch (error) {
         console.error('Error blocking user', error);
         alert('Error adding blocking user: ' + error);
-      })
+      }
+      closeChat();
     }
-    else if(mode === "Invite to Play")
+    else if (mode === "Invite to Play")
     {
       alert(friendChat?.nickname);
       closeChat();

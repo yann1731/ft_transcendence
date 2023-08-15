@@ -139,7 +139,7 @@ const OptionBarFriends: React.FC = () => {
           };
           const newChatInUse: ChatInUse = {
             chat: newChannel,
-            type: chatroomType.channel,
+            type: chatroomType.friend,
         }
           const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse };
           updateUser(updatedUser);

@@ -243,6 +243,7 @@ const OptionBarChans: React.FC = () => {
             }
             const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse};
             updateUser(updatedUser);
+            console.log("chatInUse: " + user?.chatInUse?.chat.name);
             setOwnChatroom((prevOwnChat: Chatroom[]) => [...prevOwnChat, newChannelData]);
             setAdminChatroom((prevAdminChat: Chatroom[]) => [...prevAdminChat, newChannelData]);
             let _chat: Array<string>;
@@ -316,8 +317,10 @@ const OptionBarChans: React.FC = () => {
         'userId': user?.id
       }})
       .then((response: any) => {
+        let _prevChannelID = undefined;
         if (user?.username) {
           const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
+          _prevChannelID = _chatInfo[1];
           //alert(_chatInfo);
         }
         console.log('Chatroom deleted:', response.data);
@@ -328,6 +331,9 @@ const OptionBarChans: React.FC = () => {
           _chat = ["null", "null", "null", user?.username]
           localStorage.setItem(user?.username, JSON.stringify(_chat));
           socket.emit("clearHistory");
+          if (_prevChannelID !== undefined) {
+            socket.emit("deleteHistory", {channel: _prevChannelID});
+          }
         }
         if (user?.username) {
           const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");

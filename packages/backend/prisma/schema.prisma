@@ -80,6 +80,7 @@ model ChatroomUser {
   permission userPermission @default(regular)
   banStatus  Boolean @default(false)
   muteStatus Boolean @default(false)
+  mutedAt     DateTime  @default(now())
   muteUntil   Int?
   @@map("ChatroomUsers")
 }

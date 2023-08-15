@@ -120,15 +120,14 @@ export class UserService { //creates a new user
   }
 
   async updateSocketID(_socketID: string, _username: string) {
-    // const _updatedUser = await this.prisma.user.update({
-    //   where: {
-    //     username: _username,
-    //   },
-    //   data: {
-    //     socketID: _socketID,
-    //   }
-    // })
-    // console.log("socketID: " + _updatedUser.socketID);
+    const _updatedUser = await this.prisma.user.update({
+      where: {
+        username: _username,
+      },
+      data: {
+        socketID: _socketID,
+      }
+    })
   }
 
   async updateStatus(_status: onlineStatus, _username: string) {

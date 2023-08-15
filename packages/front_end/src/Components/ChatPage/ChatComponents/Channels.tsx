@@ -113,7 +113,7 @@ interface MyChannelsProps {
             _chat = [updatedUser.chatInUse?.chat.name, updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.type, updatedUser.username]
             localStorage.setItem(updatedUser.username, JSON.stringify(_chat));
           }
-          await setHistory(updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.chat);
+          setHistory(updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.chat);
         }
       }
     };

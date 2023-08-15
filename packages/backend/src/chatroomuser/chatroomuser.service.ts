@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2'
 import internal from 'stream';
 import { ENTRY_PROVIDER_WATERMARK } from '@nestjs/common/constants';
+import { ChatroomUser } from './entities/chatroomuser.entity';
 
 @Injectable()
 export class ChatroomuserService {
@@ -92,9 +93,14 @@ export class ChatroomuserService {
 
   async findAllChatroomUsersByChatroomId(id: string) { //returns all chatroomusers associated with the particular chatroomid
 	try {
-		const chatroomusers = await this.prisma.chatroomUser.findMany({where: {
-			chatroomId: id
-		}});
+		const chatroomusers = await this.prisma.chatroomUser.findMany({
+			where: {
+				chatroomId: id
+			},
+			include: {
+				user: true
+			}
+		});
 		if (!chatroomusers)
 			throw new BadRequestException('Failed to find users with that chatroom id');
 		return chatroomusers;
@@ -136,6 +142,34 @@ export class ChatroomuserService {
 	} catch (error) {
 		console.log(error);
 		throw error;
+	}
+  }
+
+  async updateMuteStatus(id: string, status: boolean) {
+	try {
+		const _user = await this.prisma.chatroomUser.findUnique({
+			where: {id}
+		});
+		const _updatedChatUser = await this.prisma.chatroomUser.update({
+			where: {
+				id: id
+			},
+			data: {
+				muteStatus: status,
+				mutedAt: new Date(),
+				permission: _user.permission,
+				banStatus: _user.banStatus,
+				muteUntil: _user.muteUntil
+			},
+		});
+		console.log(_updatedChatUser);
+		if (!_updatedChatUser) {
+			throw new BadRequestException("Could not update user status");
+		}
+		return _updatedChatUser;
+	} catch (error) {
+		console.log(error);
+		throw (error);
 	}
   }
 

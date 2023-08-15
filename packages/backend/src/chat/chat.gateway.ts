@@ -10,10 +10,11 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { CreateChatroomMessageDto } from 'src/chatroommessage/dto/createmessage.dto';
 import { CreatePrivateMessageDto } from 'src/privatemessage/dto/createprivatemessage.dto';
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, BadRequestException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserblocksService } from 'src/userblocks/userblocks.service';
 import { ChatroomService } from 'src/chatroom/chatroom.service';
+import { subscribe } from 'diagnostics_channel';
 
 
 
@@ -22,6 +23,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   users: Map<string, string> = new Map<string, string>();
 
   constructor(private readonly chatService: ChatService,
+    private prisma: PrismaService,
     private readonly chatroomMessageService: ChatroommessageService,
     private readonly chatroomService: ChatroomService,
     private readonly privateMessageService: PrivatemessageService,
@@ -50,25 +52,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("registerDisconnect")
   async registerDisconnect(client: Socket, data: any) {
-    this.userService.updateStatus("offline", data.username);
+    await this.userService.updateStatus("offline", data.username);
   }
 
-  @SubscribeMessage("getUserBlocks")
-  async getUser(client: Socket, data: any) {
-    // userID, senderID
-    const _users = await this.userblocksService.findAll();
-    console.log(_users);
-    const _blocks: any[] = [];
-    for (const element of _users) {
-      const _block: any = {
-        id: element.id,
-        blockerID: element.blockerId,
-        blockedUserID: element.blockedUserId
-      };
-      _blocks.push(_block);
-    };
-    this.server.emit("receiveBlocks", {blocks: _blocks});
-  }
+
   
   @SubscribeMessage("getChatroomUsers")
   async getChatroomUsers(client: Socket, data: any) {
@@ -113,14 +100,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async SendChatMessage(client: Socket, createChatroomMessageDto: CreateChatroomMessageDto) {
     const _chatUsers = await this.chatroomUserService.findAllChatroomUsersByChatroomId(createChatroomMessageDto.chatroomId);
     const _chatUser = _chatUsers.find(element => element.userId === createChatroomMessageDto.senderId);
+    console.log("muteStatus: " + _chatUser.muteStatus);
     if (_chatUser.muteStatus === true) {
-      // if time > muteTime; unMute; continue;
-      return ;
+      const _now = new Date();
+      if (_now.getMinutes() - _chatUser.mutedAt.getMinutes() >= 5) {
+        // if time > muteTime; unMute; continue;
+        const _updatedUser = await this.chatroomUserService.updateMuteStatus(_chatUser.id, false);
+        console.log("muteStatus: " + _updatedUser.muteStatus);
+      } else {
+        return ;
+      }
     }
     const _chat = await this.chatroomService.findOne(createChatroomMessageDto.chatroomId);
     const _msg = await this.chatroomMessageService.createChatroomMessage(createChatroomMessageDto);
     const _user = await this.userService.findOne(createChatroomMessageDto.senderId);
-    // emits back so that the frontend can catch. Basic usage working.
     const time = this.formatDate(new Date(_msg.createdAt));
     const _msgInfo = {
       text: createChatroomMessageDto.content,
@@ -132,26 +125,91 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       type: "channel",
       senderID: _user.id,
     };
-    this.server.emit("messageResponse", _msgInfo);
+    for (const user of _chat.users) {
+      if (await this.blockExists(_user.id, user.user.id) === false) {
+        this.server.to(user.user.socketID).emit("messageResponse", _msgInfo);
+      }
+    }
+  }
+
+  async blockExists(userID: string, senderID: string) {
+    const _user = await this.prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+      include: {
+        blockedUsers: true,
+        blockedBy: true
+      }
+    });
+    for (const b of _user.blockedUsers) {
+      if (b.blockedUserId === senderID) {
+        return (true);
+      }
+    }
+    for (const b of _user.blockedBy) {
+      if (b.blockerId === senderID) {
+        return (true);
+      }
+    }
+    return (false);
+  }
+
+  @SubscribeMessage("muteUser")
+  async muteUser(client: Socket, data: any) {
+    console.log(data);
+    const _updatedUser = await this.chatroomUserService.updateMuteStatus(data.mute.id, true);
+  }
+
+  @SubscribeMessage("unmuteUser")
+  async unmuteUser(client: Socket, data: any) {
+    const _updatedUser = await this.chatroomUserService.updateMuteStatus(data.mute.id, false);
+  }
+
+  @SubscribeMessage("getUserBlocks")
+  async getUserBlocks(client: Socket, data: any) {
+    // userID, senderID
+    const _users = await this.userblocksService.findAll();
+    const _blocks: any[] = [];
+    for (const element of _users) {
+      const _block: any = {
+        id: element.id,
+        blockerID: element.blockerId,
+        blockedUserID: element.blockedUserId
+      };
+      _blocks.push(_block);
+    };
+    this.server.emit("receiveBlocks", {blocks: _blocks});
   }
 
   @SubscribeMessage("getHistory")
   async getChatHistory(client: Socket, createChatroomMessageDto: CreateChatroomMessageDto) {
-    const channelID = createChatroomMessageDto.chatroomId;
+    const channelID: string = createChatroomMessageDto.chatroomId;
+    console.log("Getting Chat History");
+    const userID: string = createChatroomMessageDto.senderId;
+
+    // senderID is actually the userID
     try {
       let msgHistory: any[] = [];
       const chatHistory = await this.chatroomMessageService.findAll(channelID);
       for (const element of chatHistory ) {
         const time = this.formatDate(new Date(element.createdAt));
-        const _user = await this.userService.findOne(element.senderId);
+        const _sender = await this.userService.findOne(element.senderId);
         const msg: any = {
           text: element.content,
           timestamp: time,
-          nickname: _user.nickname,
-          avatar: _user.avatar,
-          senderID: _user.id,
+          nickname: _sender.nickname,
+          avatar: _sender.avatar,
+          senderID: _sender.id,
+          channelID: channelID,
         };
-        msgHistory.push(msg);
+        // if User has blocked, or is blocked, by senderID, don't push the msg
+        if (await this.blockExists(userID, msg.senderID) === true) {
+          console.log("Block Exists: " + userID, msg.senderID);
+          continue ;
+        } else {
+          msgHistory.push(msg);
+        }
       };
       this.server.to(client.id).emit("sendHistory", { history: msgHistory });
     } catch (error) {
@@ -187,11 +245,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  @SubscribeMessage("deleteHistory")
+  async deleteHistory(client: Socket, data: any) {
+    this.server.emit("clearOtherHistory", { chat: data.channel});
+  }
+
   @SubscribeMessage("registerUser")
   async registerUser(client: Socket, data: any) {
     console.log("Registering: " + data.username + " (" + client.id + ")");
-    this.userService.updateSocketID(client.id, data.username);
-    this.userService.updateStatus("online", data.username);
+    await this.userService.updateSocketID(client.id, data.username);
+    // await this.userService.updateStatus("online", data.username);
   }
 
   @SubscribeMessage("chatroom")
@@ -220,6 +283,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   deleteChatroom(client: Socket, data: any) {
     console.log(data.chanName)
     this.server.emit("chatroom deleted", data);
+
   }
   
   @SubscribeMessage("update chatroom")
@@ -262,7 +326,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("blocked")
   handleBlocked(client: Socket, data: any){
     console.log(data.id, data.blocked, this.users.get(data.blocked));
-    this.server.to(this.users.get(data.blocked)).emit("blocked", data.id)
+    this.server.to(this.users.get(data.blocked)).emit("blocked", data.id);
+    this.server.to(this.users.get(data.blocked)).emit("clearOtherHistory", { chat: data.id});
   }
 
   @SubscribeMessage("user left")

@@ -66,16 +66,14 @@ export class UserblocksService {
 	}
   }
 
-  async findBlocksByID(userID: string, senderID) {
+  async findBlocksByID(userID: string) {
     const userblocks = await this.prisma.userBlocks.findMany({
       where: {
         blockerId: userID,
-        blockedUserId: senderID,
       }
     });
     const _userblocks = await this.prisma.userBlocks.findMany({
       where: {
-        blockerId: senderID,
         blockedUserId: userID,
       }
     });

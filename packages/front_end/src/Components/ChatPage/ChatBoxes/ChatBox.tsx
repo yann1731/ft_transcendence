@@ -23,6 +23,7 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userBlocks, setUserBlocks] = useState<UserBlocks[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [isBlocked, setIsBlocked] = useState<boolean>(false);
 
   // Handles the scrollbar to the bottom on scrolling chat messages
   useEffect(() => {
@@ -39,10 +40,7 @@ const Chat = () => {
     socket.on("connected", () => makeConnection());
     socket.on("disconnected", () => socket.emit("registerDisconnect", {username: user?.username}));
     socket.on("clearHistory", () => clearHistory());
-    socket.on("receiveBlocks", (data: any) => makeBlocks(data));
-    // return () => {
-    //   socket.off("messageResponse");
-    // }
+    socket.on("clearOtherHistory", (data: any) => clearOtherHistory(data));
     return () => {
       socket.off("messageResponse");
     }
@@ -52,29 +50,50 @@ const Chat = () => {
     const updatedUser: Partial<User> = {...user, userStatus: true};
     updateUser(updatedUser);
     socket.emit("registerUser", { username: user?.username })
+    socket.emit("refresh2");
   }
 
   const clearHistory = () => {
     const _cleared: Message[] = [];
     setMessages(_cleared);
+    const updatedUser: Partial<User> = {
+      ...user,
+      chatInUse: undefined,
+    }
+    updateUser(updatedUser);
   }
 
-  const makeBlocks = (data: any) => {
-    const _blocks = data.blocks;
-    const _userBlocks: UserBlocks[] = [];
-    _blocks.forEach((element: any) => {
-      const b: UserBlocks = {
-        id: element.id,
-        blockerId: element.blockerID,
-        blockedUserId: element.blockedUserID,
-      };
-      _userBlocks.push(b);
-    });
-    setUserBlocks(_userBlocks);
+  const clearOtherHistory = (data: any) => {
+    if (user?.username) {
+      console.log("Catching here!");
+      const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
+      if (_chatInfo[0] === data.chat) {
+        const _cleared: Message[] = [];
+        setMessages(_cleared);
+        const updatedUser: Partial<User> = {
+          ...user,
+          chatInUse: undefined,
+        }
+        updateUser(updatedUser);
+        let _chat: Array<string>;
+        if (user?.username) {
+          _chat = ["null", "null", "channel", user?.username];
+          localStorage.setItem(user?.username, JSON.stringify(_chat));
+        }
+        socket.emit("refresh");
+      } else {
+        let newMessage: Partial<ChatroomMessage> = {
+          content: "messageText",
+          senderId: user?.id,
+          chatroomId: _chatInfo[1],
+          chatroom: undefined,
+        };
+        socket.emit("getHistory", newMessage);
+      }
+    }
   }
 
   const makeHistory = (data: any) => {
-    socket.emit("getUserBlocks");
     const history = data.history;
     const msgHistory: Message[] = [];
     history.forEach((element: any) => {
@@ -84,37 +103,25 @@ const Chat = () => {
         nickname: element.nickname,
         UserAvatar: element.avatar,
       };
-      if (element.senderID !== user?.id) {
-        for (const block of userBlocks) {
-          if (element.senderID !== block.blockerId && element.senderID !== block.blockedUserId) {
-            msgHistory.push(msg);
-          } else {
-            continue ;
-          }
-        }
-      } else {
-        msgHistory.push(msg);
-      }
+      msgHistory.push(msg);
     });
     setMessages(msgHistory);
   };
-
+  
+  const blockExists = (userID: string, senderID: string): boolean => {
+    for (const block of userBlocks) {
+      if (block.blockedUserId === senderID) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   // _chatInfo: chatName, chatID, chatType, username
   const displayMessage = (message: any) => {
     if (user?.username) {
       const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
       if (message.type === "channel") {
-        // check if user is blocked
-        socket.emit("getUserBlocks");
-        if (message.senderID !== user?.id) {
-          for (const block of userBlocks) {
-            if (message.senderID === block.blockerId || message.senderID === block.blockedUserId) {
-              return ;
-            }
-          }
-        }
-
         if (message.channelID === _chatInfo[1]) {
           const newMessage: Message = {
             text: message.text,
@@ -126,7 +133,6 @@ const Chat = () => {
           // endif
         }
       } else if (message.type === "friend") {
-        
         if ((_chatInfo[0] === message.recipient && message.nickname === user?.username) || (_chatInfo[0] === message.nickname && message.recipient === user?.username)) {
           const newMessage: Message = {
             text: message.text,
@@ -165,7 +171,11 @@ const Chat = () => {
               chatroomId: user?.chatInUse?.chat.id,
               chatroom: user?.chatInUse?.chat,
             };
-            socket.emit("sendMessage", newMessage);
+            try {
+              socket.emit("sendMessage", newMessage);
+            } catch (error) {
+              alert("You are muted. Mute Time is 5 minutes. Come back later!");
+            }
             messageInput.value = '';
           }
         }
@@ -212,12 +222,12 @@ const Chat = () => {
 
             return (
               <ListItem key={index}>
-                <Box sx={{ marginLeft: shouldAlignLeft ? '0' : 'auto' }}>
-                  <Box sx={{ textAlign: shouldAlignLeft ? 'left' : 'right' }}>
+                <Box sx={{ marginLeft: shouldAlignLeft ? 'auto' : '0' }}>
+                  <Box sx={{ textAlign: shouldAlignLeft ? 'right' : 'left' }}>
                     <ContactMenu {...{ Useravatar: message.UserAvatar }} />
-                    <ListItemText primary={message.text} />
+                    <ListItemText sx={{ overflowWrap: 'break-word', wordBreak: 'break-all' }} primary={message.text} />
                   </Box>
-                  <Box sx={{ textAlign: shouldAlignLeft ? 'left' : 'right' }}>
+                  <Box sx={{ textAlign: shouldAlignLeft ? 'right' : 'left' }}>
                     <ListItemText
                       secondary={`${message.nickname}, ${message.timestamp}`}
                     />
