@@ -1,5 +1,6 @@
 
 export class BanChatroomuserDto {
-    userId: string
+    id: string
 	chatroomId: string
+	userName: string
 }

@@ -221,11 +221,15 @@ const OptionBarConversation: React.FC = () => {
           alert("Cannot ban owner or Admin");
           return ;
         }
+
         const newChatUser: Partial<ChatroomUser> = {
-          userId: chatUser.user?.username,
-          chatroomId: user?.chatInUse?.chat?.id
+          userId: chatUser.user?.id,
+          chatroomId: user?.chatInUse?.chat?.id,
+          userName: chatUser.userName
         }
-        axios.post(`http://localhost:4242/chatroomuser/ban/${chatUser.id}`, newChatUser, {headers: {
+        console.log(newChatUser.userName, newChatUser.user?.username, chatUser.userName, chatUser.user?.username)
+        
+        axios.post(`http://localhost:4242/chatroomuser/ban/${chatUser.id}`, chatUser, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }}).then((response: any) => {

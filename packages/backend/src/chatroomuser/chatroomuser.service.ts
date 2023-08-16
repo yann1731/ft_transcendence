@@ -18,10 +18,13 @@ export class ChatroomuserService {
 		if (!chatroom) {
 	  		throw new BadRequestException("Chatroom not found");
 		}
-		console.log("allo", chatroom.bannedUsers, createChatroomuserDto.userId)
+		console.log("allo", chatroom.bannedUsers,  createChatroomuserDto.userId)
 		chatroom.bannedUsers.forEach((user: string) => {
-			if (user === createChatroomuserDto.userName)
+			console.log("here")
+			if (user === createChatroomuserDto.userName){
+				console.log("yesy")
 				throw new BadRequestException("User is banned")
+			}
 		}) 
 		try {
 			const chatroomuser = await this.prisma.chatroomUser.create({data: {
@@ -178,11 +181,12 @@ export class ChatroomuserService {
 			if (!chatroom) 
 			throw new BadRequestException("Chatroom not found");
 			
-    	    const updatedBannedUsers = [...chatroom.bannedUsers, banChatroomuserDto.userId];
+    	    const updatedBannedUsers = [...chatroom.bannedUsers, banChatroomuserDto.userName];
 			
-			console.log("hehehehe", updatedBannedUsers)
+			console.log("hajksfhjkvbas", banChatroomuserDto.userName)
+			//console.log("hehehehe", updatedBannedUsers)
 
-    	   /*  const updatedChatroom = await this.prisma.chatroom.update({
+    	    /* await this.prisma.chatroom.update({
 				where: { id: banChatroomuserDto.chatroomId },
     	        data: {
 					bannedUsers: {
@@ -194,11 +198,10 @@ export class ChatroomuserService {
 				where: { id },
 			});
 			
-    	    if (!chatroomuser) {
+    	    if (!chatroomuser)
     	        throw new BadRequestException('Could not ban user');
-    	    }
 		
-			console.log("fuck yes");
+			//console.log("fuck yes");
     	} catch (error) {
     	    console.error(error);
     	    throw error;
