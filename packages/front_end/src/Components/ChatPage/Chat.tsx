@@ -13,11 +13,9 @@ import { SocketContext, socket} from "../../Contexts/socketContext";
 import { UserContext } from 'Contexts/userContext';
 import SignIn from 'Components/Login/LoginPage';
 import LoginToolBar from 'Components/Login/LoginToolBar';
+import { Message } from '../Interfaces';
 
 function ChatPage() {
-
-
-	
 	const { user } = useContext(UserContext);
 	if (!user) {
 		return (

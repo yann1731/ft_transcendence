@@ -6,6 +6,11 @@ import { useContext } from 'react';
 import SignIn from 'Components/Login/LoginPage';
 import LoginToolBar from 'Components/Login/LoginToolBar';
 import { ReadOnlyProfile } from './ProfilePage';
+export interface LimitedProfileProps { 
+    userId: string;
+    userAvatar: string | undefined;
+    nickname: string;
+}
 
 export default function DividerProfile() {
     const { user } = useContext(UserContext);
@@ -32,10 +37,10 @@ export default function DividerProfile() {
     )
 }
 
-export function LimitedProfile() {
+export function LimitedProfile({ userAvatar, userId, nickname }: LimitedProfileProps) {
     return (
         <div>
-            <ReadOnlyProfile />
+            <ReadOnlyProfile userAvatar={userAvatar} userId={userId} nickname={nickname}/>
         </div>
     )
 }
