@@ -13,6 +13,7 @@ import { CreatePrivateMessageDto } from 'src/privatemessage/dto/createprivatemes
 import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserblocksService } from 'src/userblocks/userblocks.service';
+import { ChatroomService } from 'src/chatroom/chatroom.service';
 
 
 
@@ -22,6 +23,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(private readonly chatService: ChatService,
     private readonly chatroomMessageService: ChatroommessageService,
+    private readonly chatroomService: ChatroomService,
     private readonly privateMessageService: PrivatemessageService,
     private readonly chatroomUserService: ChatroomuserService,
     private readonly userblocksService: UserblocksService,
@@ -32,6 +34,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(client: Socket) {
     // console.log("New client connected to chatSocket");
     this.server.to(client.id).emit("connected");
+    this.server.emit("refresh2")
+  }
+
+  @SubscribeMessage("connected")
+  handleConnected(client: Socket, id: string){
+    this.users.set(id, client.id)
   }
 
   handleDisconnect(client: Socket) {
@@ -69,22 +77,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async SendPrivateMessage(client: Socket, createPrivateMessageDto: CreatePrivateMessageDto) {
     const _msg = await this.privateMessageService.createPrivateMessage(createPrivateMessageDto);
     const _user = await this.userService.findOne(createPrivateMessageDto.senderId);
+    const _recipient = await this.userService.findUsername(createPrivateMessageDto.recipientId);
     // emits back so that the frontend can catch. Basic usage working.
-    let date_time = new Date(_msg.createdAt);
-    let time = date_time.getHours().toString() + ":" + date_time.getMinutes().toString() + ":" + date_time.getSeconds().toString();
-    if (date_time.getHours() < 12) {
-      time = time + " AM";
-    } else {
-      time = time + " PM";
-    }
+    const time = this.formatDate(new Date(_msg.createdAt));
     const _msgInfo = {
       text: createPrivateMessageDto.content,
       timestamp: time,
       nickname: _user.username,
       avatar: _user.avatar,
+      type: "friend",
+      recipient: _recipient.username,
       // channelID: createPrivateMessageDto.chatroomId
     };
     this.server.emit("messageResponse", _msgInfo);
+  }
+
+  @SubscribeMessage("clearHistory")
+  async clearHistory(client: Socket) {
+    this.server.to(client.id).emit("clearHistory");
   }
 
   formatDate(date: Date): string {
@@ -109,6 +119,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // if time > muteTime; unMute; continue;
       return ;
     }
+    const _chat = await this.chatroomService.findOne(createChatroomMessageDto.chatroomId);
     const _msg = await this.chatroomMessageService.createChatroomMessage(createChatroomMessageDto);
     const _user = await this.userService.findOne(createChatroomMessageDto.senderId);
     // emits back so that the frontend can catch. Basic usage working.
@@ -119,6 +130,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       nickname: _user.username,
       avatar: _user.avatar,
       channelID: createChatroomMessageDto.chatroomId,
+      chatName: _chat.name,
+      type: "channel",
     };
     this.server.emit("messageResponse", _msgInfo);
   }
@@ -151,19 +164,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async getPrivateHistory(client: Socket, createPrivateMessageDto: CreatePrivateMessageDto) {
     const _recipient = await this.userService.findUsername(createPrivateMessageDto.recipientId);
     const _user = await this.userService.findOne(createPrivateMessageDto.senderId);
+    // console.log("" + _user.socketID);
     console.log("Getting Private History!");
     try {
       let msgHistory: any[] = [];
       const chatHistory = await this.privateMessageService.findAll(_user.id, _recipient.id);
       //console.log(chatHistory);
       for (const element of chatHistory ){
-        let date_time = new Date(element.createdAt);
-        let time = date_time.getHours().toString() + ":" + date_time.getMinutes().toString() + ":" + date_time.getSeconds().toString();
-        if (date_time.getHours() < 12) {
-          time = time + " AM";
-        } else {
-          time = time + " PM";
-        }
+        const time = this.formatDate(new Date(element.createdAt));
         const _sender = await this.userService.findOne(element.senderId);
         const msg: any = {
           text: element.content,
@@ -178,6 +186,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.error("Error fetching chatroom history:", error);
       // Handle the error, emit an error event, or take appropriate action.
     }
+  }
+
+  @SubscribeMessage("registerUser")
+  async registerUser(client: Socket, data: any) {
+    console.log("Registering: " + data.username + " (" + client.id + ")");
+    this.userService.updateSocketID(client.id, data.username);
   }
 
   @SubscribeMessage("chatroom")
@@ -204,6 +218,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   
   @SubscribeMessage("delete chatroom")
   deleteChatroom(client: Socket, data: any) {
+    console.log(data.chanName)
     this.server.emit("chatroom deleted", data);
   }
   
@@ -233,6 +248,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit("refresh");
   }
   
+  @SubscribeMessage("refresh2")
+  refreshPage2(client: Socket, data: any) {
+    console.log("allo");
+    this.server.emit("refresh2");
+  }
+  
   @SubscribeMessage("user added")
   handleAdded(client: Socket, data: any){
     this.server.to(this.users.get(data.id)).emit("added")
@@ -240,6 +261,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("blocked")
   handleBlocked(client: Socket, data: any){
+    console.log(data.id, data.blocked, this.users.get(data.blocked));
     this.server.to(this.users.get(data.blocked)).emit("blocked", data.id)
   }
 

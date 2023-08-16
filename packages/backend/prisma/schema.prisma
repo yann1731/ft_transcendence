@@ -30,7 +30,7 @@ enum onlineStatus {
 
 model User {
   id                   String            @id @default(uuid())
-  
+  socketID             String            @default("null")
   avatar               String            @default("default.png")
   username             String            @unique
   nickname             String            @unique
@@ -60,6 +60,7 @@ model User {
 model Chatroom {
   name          String            @unique
   id            String            @id @default(uuid())
+  socketID      String            @default("null")
   picture       String            @default("https://www.zooplus.be/magazine/wp-content/uploads/2019/07/AdobeStock_144559561-768x511.jpeg")
   messages      ChatroomMessage[]
   state         chatRoomState     @default(public)

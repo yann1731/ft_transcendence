@@ -11,12 +11,14 @@ import { SocketContext } from "../../../Contexts/socketContext";
 import { ChatroomMessage } from 'Components/Interfaces';
 import axios from 'axios';
 import { UserBlocks } from 'Components/Interfaces';
+import { Chatroom, ChatInUse, chatroomType } from 'Components/Interfaces';
+import { User } from 'Contexts/userContext';
 
 const Chat = () => {
   const theme = useTheme();
   const buttonColor = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1'
 
-  const {user} = useContext(UserContext);
+  const {updateUser, user} = useContext(UserContext);
   const socket = useContext(SocketContext);
   const [messages, setMessages] = useState<Message[]>([]);
   const [userBlocks, setUserBlocks] = useState<UserBlocks[]>([]);
@@ -30,14 +32,25 @@ const Chat = () => {
     }
   }, [messages]);
 
+  // socket.on("Testing", () => alert("Wuddup!"));
   useEffect(() => {
     socket.on('messageResponse', (data: any) => displayMessage(data));
     socket.on("sendHistory", (data: any) => makeHistory(data));
-    socket.on("receiveBlocks", (data: any) => makeBlocks(data));
+    socket.on("connected", () => socket.emit("registerUser", { username: user?.username }));
+    socket.on("clearHistory", () => clearHistory());
+    // socket.on("receiveBlocks", (data: any) => makeBlocks(data));
+    // return () => {
+    //   socket.off("messageResponse");
+    // }
     return () => {
       socket.off("messageResponse");
     }
   }, []);
+
+  const clearHistory = () => {
+    const _cleared: Message[] = [];
+    setMessages(_cleared);
+  }
 
   const makeBlocks = (data: any) => {
     const _blocks = data.blocks;
@@ -69,63 +82,69 @@ const Chat = () => {
     setMessages(msgHistory);
   };
 
-  const displayMessage = async (message: any) => {
-    if (user?.chatInUse?.type === "channel") {
-      if (message.channelID === user?.chatInUse?.chat.id) {
-        const newMessage: Message = {
-          text: message.text,
-          timestamp: message.timestamp,
-          nickname: message.nickname,
-          UserAvatar: message.avatar,
+
+  // _chatInfo: chatName, chatID, chatType, username
+  const displayMessage = (message: any) => {
+    if (user?.username) {
+      const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
+      if (message.type === "channel") {
+        if (message.channelID === _chatInfo[1]) {
+          const newMessage: Message = {
+            text: message.text,
+            timestamp: message.timestamp,
+            nickname: message.nickname,
+            UserAvatar: message.avatar,
           userId: message.userId
-        };
-        setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
-        // endif
-      }
-    } else {
-      console.log("chatinUse on DISPLAY = " + user?.chatInUse?.chat.name)
-      if (message.nickname === user?.chatInUse?.chat.name || message.nickname === user?.nickname) {
-        const newMessage: Message = {
-          text: message.text,
-          timestamp: message.timestamp,
-          nickname: message.nickname,
-          UserAvatar: message.avatar,
+          };
+          setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
+          // endif
+        }
+      } else if (message.type === "friend") {
+        
+        console.log("chatinUse on DISPLAY = " + user?.chatInUse?.chat.name)
+      if ((_chatInfo[0] === message.recipient && message.nickname === user?.username) || (_chatInfo[0] === message.nickname && message.recipient === user?.username)) {
+          const newMessage: Message = {
+            text: message.text,
+            timestamp: message.timestamp,
+            nickname: message.nickname,
+            UserAvatar: message.avatar,
           userId: message.userId
-        };
-        setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
-        // endif
+          };
+          setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
+          // endif
+        }
       }
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      const messageInput = event.target as HTMLInputElement;
-      const messageText = messageInput.value.trim();
-      if (user?.chatInUse?.type === "friend") {
-        console.log("Sending Private Message!");
-        console.log("FriendChat: " + user?.chatInUse?.chat.name);
-        if (messageText !== '') {
-          let newMessage: Partial<PrivateMessage> = {
-            content: messageText,
-            senderId: user?.id,
-            recipientId: user?.chatInUse?.chat.name,
-          };
-          socket.emit("sendPrivateMessage", newMessage);
-          messageInput.value = '';
-        }
-      } else {
-        if (messageText !== '') {
-          let newMessage: Partial<ChatroomMessage> = {
-            content: messageText,
-            senderId: user?.id,
-            chatroomId: user?.chatInUse?.chat.id,
-            chatroom: user?.chatInUse?.chat,
-          };
-          socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
-          socket.emit("sendMessage", newMessage);
-          //console.log(userBlocks);
-          messageInput.value = '';
+      if (user?.username) {
+        // console.log("keydown: " + user?.chatInUse?.chat.name);
+        const messageInput = event.target as HTMLInputElement;
+        const messageText = messageInput.value.trim();
+        if (user?.chatInUse?.type === "friend") {
+          if (messageText !== '') {
+            let newMessage: Partial<PrivateMessage> = {
+              content: messageText,
+              senderId: user?.id,
+              recipientId: user?.chatInUse?.chat.name,
+            };
+            socket.emit("sendPrivateMessage", newMessage);
+            messageInput.value = '';
+          }
+        } else {
+          if (messageText !== '') {
+            let newMessage: Partial<ChatroomMessage> = {
+              content: messageText,
+              senderId: user?.id,
+              chatroomId: user?.chatInUse?.chat.id,
+              chatroom: user?.chatInUse?.chat,
+            };
+            // socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
+            socket.emit("sendMessage", newMessage);
+            messageInput.value = '';
+          }
         }
       }
     }
@@ -153,21 +172,25 @@ const Chat = () => {
     <Box className={"chatSection"}>
       <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
         <List>
-          {messages.map((message: Message, index: number) => (
-            <ListItem key={index}>
-              <Box sx={{ marginLeft: 'auto' }}>
-                <Box sx={{ textAlign: 'right' }}>
-                  <ContactMenu {...message} />
-                  <ListItemText primary={message.text} />
+        {messages.map((message: Message, index: number) => {
+            const shouldAlignLeft = message.nickname === user?.username;
+
+            return (
+              <ListItem key={index}>
+                <Box sx={{ marginLeft: shouldAlignLeft ? '0' : 'auto' }}>
+                  <Box sx={{ textAlign: shouldAlignLeft ? 'left' : 'right' }}>
+                    <ContactMenu {...{ Useravatar: message.UserAvatar }} />
+                    <ListItemText primary={message.text} />
+                  </Box>
+                  <Box sx={{ textAlign: shouldAlignLeft ? 'left' : 'right' }}>
+                    <ListItemText
+                      secondary={`${message.nickname}, ${message.timestamp}`}
+                    />
+                  </Box>
                 </Box>
-                <Box sx={{ textAlign: 'right' }}>
-                  <ListItemText
-                    secondary={`${message.nickname}, ${message.timestamp}`}
-                  />
-                </Box> 
-              </Box>
-            </ListItem>
-          ))}
+              </ListItem>
+            );
+          })}
         </List>
       </Box>
       <Box sx={{ marginTop: 'auto' }}>
