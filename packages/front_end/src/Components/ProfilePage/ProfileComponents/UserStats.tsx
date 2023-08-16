@@ -10,7 +10,6 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import MatchHistory from './MatchHistory';
 import axios, { AxiosResponse } from 'axios';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -19,12 +18,6 @@ const Item = styled(Paper)(({ theme }) => ({
 	textAlign: 'center',
     backgroundColor: theme.palette.mode === 'dark' ? '#2B375E' : '#D4DEFF',
   }));
-
-  const MyStats = () => {
-      const { user } = useContext(UserContext);
-      const winRatio = user && user.gamesPlayed > 0 ? (user.win / user.gamesPlayed) * 100 : 0;
-      
-    
 
   const MyStats = () => {
       const { user } = useContext(UserContext);

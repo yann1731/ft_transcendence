@@ -179,7 +179,7 @@ const Chat = () => {
               <ListItem key={index}>
                 <Box sx={{ marginLeft: shouldAlignLeft ? '0' : 'auto' }}>
                   <Box sx={{ textAlign: shouldAlignLeft ? 'left' : 'right' }}>
-                    <ContactMenu {...{ Useravatar: message.UserAvatar }} />
+                    <ContactMenu {...message} />
                     <ListItemText primary={message.text} />
                   </Box>
                   <Box sx={{ textAlign: shouldAlignLeft ? 'left' : 'right' }}>
