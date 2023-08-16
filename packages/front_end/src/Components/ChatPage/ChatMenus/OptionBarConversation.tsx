@@ -33,65 +33,6 @@ const OptionBarConversation: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const id = open ? 'contact-options-popover' : undefined;
-  
-/*   const fetchUsers = async (setChatroomUsers: any, setUsers: any, setUsersInCurrentChat: any, setUsersNotInCurrentChat: any, chatroomUsers: any, Users:any, user: any) => {
-    try {
-      const response = await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {
-        headers: {
-          'Authorization': user?.token,
-          'userId': user?.id
-        }
-      });
-      if (response.status === 200) {
-        const ChatroomUsersData: ChatroomUser[] = response.data;
-        setChatroomUsers(ChatroomUsersData);
-      }
-    } catch (error) {
-      console.error('Error fetching chatroom users', error);
-    }
-    try {
-      const response = await axios.get('http://localhost:4242/user', {
-        headers: {
-          'Authorization': user?.token,
-          'userId': user?.id
-        }
-      });
-      if (response.status === 200) {
-        const UsersData: User[] = response.data;
-        setUsers(UsersData);
-        const tempUsersInChan: User[] = [];
-        const tempUsersNotInChan: User[] = [];
-  
-        Users.forEach((userToFind: User) => {
-          const isUser = chatroomUsers.find((chatUser: ChatroomUser) => {
-            return chatUser.userId === userToFind.id;
-          });
-          if (isUser !== undefined && user?.id !== isUser?.userId && !isUser.banStatus) {
-            tempUsersInChan.push(userToFind);
-          } else if (isUser === undefined) {
-            tempUsersNotInChan.push(userToFind);
-          }
-        });
-        setUsersInCurrentChat(tempUsersInChan);
-        setUsersNotInCurrentChat(tempUsersNotInChan);
-      }
-    } catch (error) {
-      console.error('Error fetching chatroom users', error);
-    }
-  };
-  
-  
-  React.useEffect(() => {
-    fetchUsers(
-      setChatroomUsers,
-      setUsers,
-      setUsersInCurrentChat,
-      setUsersNotInCurrentChat,
-      chatroomUsers,
-      Users,
-      user
-    );
-  }, []); */
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -131,9 +72,6 @@ const OptionBarConversation: React.FC = () => {
           });
           setUsersInCurrentChat(tempUsersInChan);
           setUsersNotInCurrentChat(tempUsersNotInChan);
-         /*  tempUsersNotInChan.forEach(bob => {
-            alert(bob.nickname);
-          }) */
         }).catch((error) => {
         console.error('Error fetching chatroom users', error);
       })
@@ -199,6 +137,18 @@ const OptionBarConversation: React.FC = () => {
     handleMode(option);
     handleCloseUserMenu();
   };
+
+  const getNickname = Users.find((friend: User) => {
+    return friend.nickname === user?.chatInUse?.chat?.name;
+  })
+
+  const getId = Users.find((friend: User) => {
+    return friend.id;
+  })
+
+  const getAvatar = Users.find((friend: User) => {
+    return friend.avatar === user?.chatInUse?.chat?.picture;
+  })
   
   const handleFriends = async () => {
     if (!UserName && mode !== 'Quit' && mode !== 'View Members' && mode !== 'Block' && mode !== 'Invite to Play' && mode !== 'View Profile') {
@@ -633,7 +583,7 @@ const OptionBarConversation: React.FC = () => {
       }}
       >
         <Box sx={{ p: 2 }}>
-          {/*<LimitedProfile />*/}
+          <LimitedProfile userAvatar={getAvatar?.avatar || 'default'} userId={getId?.id || 'default'} nickname={getNickname?.nickname || 'default'} />
         </Box>
       </Popover>
     </Box>

@@ -17,13 +17,6 @@ import { Message } from '../Interfaces';
 
 function ChatPage() {
 	const { user } = useContext(UserContext);
-	const messageData: Message = {
-		UserAvatar: 'avatar-url',
-		userId: 'user-id',
-		nickname: 'pouel',
-		text: 'user-text',
-		timestamp: 'user-timestamp',
-	};
 	if (!user) {
 		return (
 			<div>

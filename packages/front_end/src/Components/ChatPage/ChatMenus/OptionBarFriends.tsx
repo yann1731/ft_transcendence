@@ -77,6 +77,18 @@ const OptionBarFriends: React.FC = () => {
       setRefresh(!refresh);
       setWindowIsOpen(true);
     };
+
+    const getNickname = Users.find((friend: User) => {
+      return friend.nickname === user?.chatInUse?.chat?.name;
+    })
+
+    const getId = Users.find((friend: User) => {
+      return friend.id;
+    })
+
+    const getAvatar = Users.find((friend: User) => {
+      return friend.avatar === user?.chatInUse?.chat?.picture;
+    })
     
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
       if (mode === "View Profile")
@@ -278,7 +290,7 @@ const OptionBarFriends: React.FC = () => {
         }}
       >
         <Box sx={{ p: 2 }}>
-          {/*<LimitedProfile />*/}
+          <LimitedProfile userAvatar={getAvatar?.avatar || 'default'} userId={getId?.id || 'default'} nickname={getNickname?.nickname || 'default'} />
         </Box>
       </Popover>
     </AppBar>
