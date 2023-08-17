@@ -10,6 +10,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import axios, { AxiosResponse } from 'axios';
 
 const Item = styled(Paper)(({ theme }) => ({
 	...theme.typography.body2,
@@ -38,6 +39,7 @@ const Item = styled(Paper)(({ theme }) => ({
                 <Grid item sx={{width: '99%'}}>
                     <Item>Win Ratio: {winRatio.toFixed(2)}</Item>
                 </Grid>
+                <MatchHistory />
                 <MatchHistory />
                 <Grid item xs={13}>
                     <Handler2FA></Handler2FA>
@@ -85,35 +87,7 @@ export function LimitedStats() {
                     <Item>Win Ratio: {winRatio.toFixed(2)}</Item>
                 </Grid>
             </Grid>
-            <Button 
-                className="profilePageButtons"
-                sx={{ marginTop: '20px' }}
-                onClick={handleClickOpen}
-                >
-                    MATCH HISTORY
-            </Button>
-            <Dialog open={open} onClose={handleClickClose}>
-                <DialogTitle>Match History</DialogTitle>
-                <DialogContent>
-                    <FormControl fullWidth>
-                        <InputLabel id="match-types">Match type</InputLabel>
-                        <Select
-                            labelId="match-types"
-                            id="match-types-select"
-                            value={matchType}
-                            label="Match Type"
-                            onChange={handleMatchType}
-                            >
-                            <MenuItem value={1}>1 vs 1</MenuItem>
-                            <MenuItem value={2}>2 vs 2</MenuItem>
-                            <MenuItem value={3}>1 vs 3</MenuItem>
-                        </Select>
-                    </FormControl>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClickClose} className="profilePageButtons">CLOSE</Button>
-                </DialogActions>
-            </Dialog>
+            <MatchHistory />
         </Box>
     )
 }
