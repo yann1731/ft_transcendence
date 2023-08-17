@@ -8,6 +8,11 @@ import { chatroomType, ChatroomUser, userPermission, Chatroom } from 'Components
 import { LimitedProfile } from 'Components/ProfilePage/Profile';
 import { SocketContext } from 'Contexts/socketContext';
 
+import { Message } from '../../Interfaces';
+
+interface OptionBarConversationProps { 
+  message: Message;
+}
 
 const OptionBarConversation: React.FC = () => {
   const AdminSettings = ['Add', 'Ban', 'Kick', 'Make Admin', 'Mute', 'Quit', 'UnMute', 'View Members'];
@@ -158,6 +163,18 @@ const OptionBarConversation: React.FC = () => {
     handleMode(option);
     handleCloseUserMenu();
   };
+
+  const getNickname = Users.find((friend: User) => {
+    return friend.nickname === user?.chatInUse?.chat?.name;
+  })
+
+  const getId = Users.find((friend: User) => {
+    return friend.id;
+  })
+
+  const getAvatar = Users.find((friend: User) => {
+    return friend.avatar === user?.chatInUse?.chat?.picture;
+  })
   
   const handleFriends = async () => {
     if (!UserName && mode !== 'Quit' && mode !== 'View Members' && mode !== 'Block' && mode !== 'Invite to Play' && mode !== 'View Profile') {
@@ -604,7 +621,7 @@ const OptionBarConversation: React.FC = () => {
       }}
       >
         <Box sx={{ p: 2 }}>
-          <LimitedProfile />
+          <LimitedProfile userAvatar={getAvatar?.avatar || 'default'} userId={getId?.id || 'default'} nickname={getNickname?.nickname || 'default'} />
         </Box>
       </Popover>
     </Box>

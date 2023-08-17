@@ -41,6 +41,11 @@ export interface chatUser {
     userStatus: string
 }
 
+export interface limitedProfile {
+	username: string,
+	avatar: string,
+}
+
 // Variables private message pour messages privés
 export interface PrivateMessage {
     id: string ;
@@ -55,8 +60,9 @@ export interface PrivateMessage {
 export interface Message {
     text: string;
     timestamp: string;
-    nickname: string | undefined;
-    UserAvatar: string | undefined;
+    nickname: string;
+    UserAvatar: string;
+	userId: string;
   }
 
 // Variables user utiles pour chatRoom
