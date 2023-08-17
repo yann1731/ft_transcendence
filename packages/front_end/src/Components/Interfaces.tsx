@@ -67,9 +67,10 @@ export interface Message {
 
 // Variables user utiles pour chatRoom
 export interface ChatroomUser {
+	userName: string;
 	id: string;
 	userId: string ;
-	user: User | null;
+	user: User;
 	chatroomId: string ;
 	chatroom?: Chatroom ;
 	permission: userPermission ;
