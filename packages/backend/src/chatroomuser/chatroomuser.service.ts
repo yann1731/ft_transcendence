@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateChatroomuserDto } from './dto/create-chatroomuser.dto';
 import { UpdateChatroomuserDto } from './dto/update-chatroomuser.dto';
+import { BanChatroomuserDto } from './dto/ban-chatroomuser.dto';
 import { CreateChatroomuserPassDto } from './dto/create-chatroomuserpass.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2'
@@ -13,26 +14,39 @@ export class ChatroomuserService {
 
   async create(createChatroomuserDto: CreateChatroomuserDto) { //creates a new chatroomuser. Associated to a chatroom by the id of the user
 	try {
-		const chatroomuser = await this.prisma.chatroomUser.create({data: {
-		user: {
-			connect: { 
-				id: createChatroomuserDto.userId
-			}
-		},
-		chatroom: {
-			connect: {
-				id: createChatroomuserDto.chatroomId
-			}
+		const chatroom = await this.prisma.chatroom.findUnique({where: { id: createChatroomuserDto.chatroomId }});
+		if (!chatroom) {
+	  		throw new BadRequestException("Chatroom not found");
 		}
+		chatroom.bannedUsers.forEach((user: string) => {
+			if (user === createChatroomuserDto.userName)
+				throw new BadRequestException("User is banned")
+		}) 
+		try {
+			const chatroomuser = await this.prisma.chatroomUser.create({data: {
+			user: {
+				connect: { 
+					id: createChatroomuserDto.userId
+				}
+			},
+			chatroom: {
+				connect: {
+					id: createChatroomuserDto.chatroomId
+				}
+			}
+			}
+			});
+			if (!chatroomuser)
+				throw new BadRequestException('Could not create chatroom user');
+			return chatroomuser;
+		} catch (error) {
+			console.log(error);
+			throw error;
 		}
-		});
-		if (!chatroomuser)
-			throw new BadRequestException('Could not create chatroom user');
-		return chatroomuser;
 	} catch (error) {
-		console.log(error);
 		throw error;
 	}
+	
   }
 
   async createPass(createChatroomuserpass: CreateChatroomuserPassDto) {
@@ -125,7 +139,6 @@ export class ChatroomuserService {
 			{ id },
 			data: {
 			  permission: updateChatroomuserDto.permission,
-			  banStatus: updateChatroomuserDto.banStatus,
 			  muteStatus: updateChatroomuserDto.muteStatus,
 			  muteUntil: updateChatroomuserDto.muteUntil
 		}
@@ -152,4 +165,37 @@ export class ChatroomuserService {
 		throw error;
 	}
   }
+
+	async ban(id: string, banChatroomuserDto: BanChatroomuserDto) {
+    	try {
+			
+			const chatroom = await this.prisma.chatroom.findUnique({
+				where: { id: banChatroomuserDto.chatroomId },
+    	        select: { bannedUsers: true },
+    	    });
+			
+			if (!chatroom) 
+				throw new BadRequestException("Chatroom not found");
+			
+    	    const updatedBannedUsers = [...chatroom.bannedUsers, banChatroomuserDto.userName];
+
+    	    await this.prisma.chatroom.update({
+				where: { id: banChatroomuserDto.chatroomId },
+    	        data: {
+					bannedUsers: {
+						set: updatedBannedUsers,
+    	            },
+    	        },
+    	    });
+			const chatroomuser = await this.prisma.chatroomUser.delete({
+				where: { id },
+			});
+			
+    	    if (!chatroomuser)
+    	        throw new BadRequestException('Could not ban user');
+    	} catch (error) {
+    	    console.error(error);
+    	    throw error;
+    	}
+	}
 }
