@@ -118,194 +118,6 @@ export default class option extends Phaser.Scene{
 
 		this.load.bitmapFont('pong', '../../fonts/pong.ttf');
 
-		this.title = this.add.text(this.physics.world.bounds.width / 2, 100, 'PONG', {
-			fontFamily: 'pong',
-			fontSize: '100px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-			  x: 10,
-			  y: 6
-			}
-		});
-
-		this.join = this.add.text(this.physics.world.bounds.width * 0.4, this.physics.world.bounds.height * 0.3, 'Join', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			  }
-		});
-
-		this.start = this.add.text(this.physics.world.bounds.width * 0.6, this.physics.world.bounds.height * 0.3, 'Start', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.mode = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.4, 'mode:', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.one = this.add.text(this.physics.world.bounds.width * 0.3, this.physics.world.bounds.height * 0.5, '1 v 1', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#000000',
-			backgroundColor: '#ffffff',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.twoButton = this.add.text(this.physics.world.bounds.width * 0.5, this.physics.world.bounds.height * 0.5, '2 v 2', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.three = this.add.text(this.physics.world.bounds.width * 0.7, this.physics.world.bounds.height * 0.5, '1 v 3', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.powerButton = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.6, 'Power Ups', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.wallText = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.7, 'walls:', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.wallButton = this.add.text(this.physics.world.bounds.width * 0.4, this.physics.world.bounds.height * 0.8, 'static', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.randomButton = this.add.text(this.physics.world.bounds.width * 0.6, this.physics.world.bounds.height * 0.8, 'random', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.settingOneButton = this.add.text(this.physics.world.bounds.width * 0.5, this.physics.world.bounds.height * 0.9, 'Random Settings', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.rate = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.7, 'reduction rate:', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.fast = this.add.text(this.physics.world.bounds.width * 0.3, this.physics.world.bounds.height * 0.8, 'fast', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-		  		y: 6
-			}
-	    });
-
-		this.medium = this.add.text(this.physics.world.bounds.width * 0.5, this.physics.world.bounds.height * 0.8, 'medium', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#000000',
-			backgroundColor: '#ffffff',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.slow = this.add.text(this.physics.world.bounds.width * 0.7, this.physics.world.bounds.height * 0.8, 'slow', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-
-		this.settingThreeButton = this.add.text(this.physics.world.bounds.width * 0.5, this.physics.world.bounds.height * 0.9, 'Random Settings', {
-			fontFamily: 'pong',
-			fontSize: '24px',
-			color: '#ffffff',
-			backgroundColor: '#000000',
-			padding: {
-				x: 10,
-				y: 6
-			}
-		});
-		
-
 		this.menu = this.add.text(
             this.physics.world.bounds.width / 2,
             this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8,
@@ -516,29 +328,6 @@ export default class option extends Phaser.Scene{
         );
         this.multiBall.setOrigin(0.5);
         this.multiBall.setVisible(false);
-
-		this.title.setOrigin(0.5);
-		this.join.setOrigin(0.5);
-		this.start.setOrigin(0.5);
-		this.one.setOrigin(0.5);
-		this.mode.setOrigin(0.5)
-		this.powerButton.setOrigin(0.5);
-		this.twoButton.setOrigin(0.5);
-		this.three.setOrigin(0.5);
-		this.wallText.setOrigin(0.5)
-		this.wallButton.setOrigin(0.5);
-		this.randomButton.setOrigin(0.5);
-		this.settingOneButton.setOrigin(0.5);
-		this.rate.setOrigin(0.5)
-		this.rate.setVisible(false);
-		this.fast.setOrigin(0.5);
-		this.fast.setVisible(false);
-		this.medium.setOrigin(0.5);
-		this.medium.setVisible(false);
-		this.slow.setOrigin(0.5);
-		this.slow.setVisible(false);
-		this.settingThreeButton.setOrigin(0.5);
-		this.settingThreeButton.setVisible(false);
 	}
 
 	preload() {
@@ -571,7 +360,6 @@ export default class option extends Phaser.Scene{
 	}
  
 	all() {
-		this.join.setInteractive();
 		this.join.on('pointerover', () => {
 			this.join.setColor('#000000');
 			this.join.setStyle({ backgroundColor: '#ffffff' });
@@ -593,30 +381,23 @@ export default class option extends Phaser.Scene{
 			})
 			waiting.setOrigin(0.5);
 
-			this.title.setVisible(false);
-			this.join.setVisible(false);
-			this.start.setVisible(false);
-			this.powerButton.setVisible(false);
-			this.settingOneButton.setVisible(false);
-			this.settingThreeButton.setVisible(false);
-			this.wallButton.setVisible(false);
-			this.randomButton.setVisible(false);
-			this.mode.setVisible(false);
-			this.wallText.setVisible(false);
-			this.rate.setVisible(false);
-			this.fast.setVisible(false);
-			this.medium.setVisible(false);
-			this.slow.setVisible(false);
-			this.join.setInteractive(false);
-			this.start.setInteractive(false);
-			this.powerButton.setInteractive(false);
-			this.settingOneButton.setInteractive(false);
-			this.settingThreeButton.setInteractive(false);
-			this.wallButton.setInteractive(false);
-			this.randomButton.setInteractive(false);
-			this.fast.setInteractive(false);
-			this.medium.setInteractive(false);
-			this.slow.setInteractive(false);
+			this.start.destroy(true)
+			this.join.destroy(true)
+			this.powerButton.destroy(true)
+			this.wallText.destroy(true)
+			this.wallButton.destroy(true)
+			this.settingOneButton.destroy(true)
+			this.settingThreeButton.destroy(true)
+			this.randomButton.destroy(true)
+			this.one.destroy(true)
+			this.twoButton.destroy(true)
+			this.three.destroy(true)
+			this.title.destroy(true)
+			this.rate.destroy(true)
+			this.fast.destroy(true)
+			this.medium.destroy(true)
+			this.slow.destroy(true)
+			this.mode.destroy(true)
 
 			if (this.single === true)
 				this.socket.emit("1v1", {start: false});
@@ -625,6 +406,7 @@ export default class option extends Phaser.Scene{
 			else
 				this.socket.emit("3v1", {start: false})
 			this.socket.on("start", (data: any) => {
+				alert("shit")
 				waiting.setVisible(false);
 				this.starting = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
 					fontFamily: 'pong',
@@ -691,7 +473,6 @@ export default class option extends Phaser.Scene{
 		})
 		
 
-		this.start.setInteractive();
 		this.start.on('pointerover', () => {
 			this.start.setColor('#000000');
 			this.start.setStyle({ backgroundColor: '#ffffff' });
@@ -713,42 +494,37 @@ export default class option extends Phaser.Scene{
 			})
 			waiting.setOrigin(0.5);
 
-			this.title.setVisible(false);
-			this.join.setVisible(false);
-			this.start.setVisible(false);
-			this.powerButton.setVisible(false);
-			this.settingOneButton.setVisible(false);
-			this.settingThreeButton.setVisible(false);
-			this.wallButton.setVisible(false);
-			this.randomButton.setVisible(false);
-			this.mode.setVisible(false);
-			this.wallText.setVisible(false);
-			this.rate.setVisible(false);
-			this.fast.setVisible(false);
-			this.medium.setVisible(false);
-			this.slow.setVisible(false);
-			this.join.setInteractive(false);
-			this.start.setInteractive(false);
-			this.powerButton.setInteractive(false);
-			this.settingOneButton.setInteractive(false);
-			this.settingThreeButton.setInteractive(false);
-			this.wallButton.setInteractive(false);
-			this.randomButton.setInteractive(false);
-			this.fast.setInteractive(false);
-			this.medium.setInteractive(false);
-			this.slow.setInteractive(false);
+			this.start.destroy(true)
+			this.join.destroy(true)
+			this.powerButton.destroy(true)
+			this.wallText.destroy(true)
+			this.wallButton.destroy(true)
+			this.settingOneButton.destroy(true)
+			this.settingThreeButton.destroy(true)
+			this.randomButton.destroy(true)
+			this.one.destroy(true)
+			this.twoButton.destroy(true)
+			this.three.destroy(true)
+			this.title.destroy(true)
+			this.rate.destroy(true)
+			this.fast.destroy(true)
+			this.medium.destroy(true)
+			this.slow.destroy(true)
+			this.mode.destroy(true)
+			
+			
 
 			if (this.single === true)
-				this.oneHost = true
-				//this.socket.emit("1v1", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, name: this.name, start: true});
-			if (this.multiple)
-				this.threeHost = true;
-				//this.socket.emit("3v1", {scale: this.rateSpeed, power: this.powerUp, name: this.name, start: true});
-			else 
-				this.twoHost = true;
-				//this.socket.emit("2v2", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, name: this.name, start: true});
-			
+				this.socket.emit("1v1", {start: true});
+			else if (this.two === true)
+				this.socket.emit("2v2", {start: true});
+			else
+				this.socket.emit("3v1", {start: true})
 			this.socket.on("start", (data: any) =>{
+
+				this.ballX = data.ballX
+				this.ballY = data.ballY
+
 				waiting.setVisible(false);
 				this.starting = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
 					fontFamily: 'pong',
@@ -790,17 +566,26 @@ export default class option extends Phaser.Scene{
 					this.position.destroy()
 
 					if (this.single === true)
-						this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
+						this.oneHost = true;
+						//this.scene.start('oneVSoneOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket, name: this.name})
+					else if (this.multiple === true)
+						this.threeHost = true;
+						//this.scene.start('threeVSoneOther', {power: data.powerUp, scaleRate: data.scale, socket: this.socket, player: this.player, name: this.name})
+					else
+						this.twoHost = true;
+						//this.scene.start('twoVStwoOther', {wall: data.wall, faces: data.faces, random: data.random, socket: this.socket, player: this.player, name: this.name});
+
+					/* if (this.single === true)
+	this.scene.start('oneVSoneHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
 					else if (this.multiple === true)
 						this.scene.start('threeVSoneHost', {power: this.powerUp, scaleRate: this.rateSpeed, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name})
 					else
-						this.scene.start('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name});
+						this.scene.start('twoVStwoHost', {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, socket: this.socket, ballX: data.ballX, ballY: data.ballY, name: this.name}); */
 				}, [], this);
 			});
 		})
 
 
-		this.one.setInteractive();
 		this.one.on('pointerdown', () => {
 			if (this.single === false){
 				this.single = true;
@@ -836,8 +621,7 @@ export default class option extends Phaser.Scene{
 			}
 		});
 	
-		
-		this.twoButton.setInteractive();
+
 		this.twoButton.on('pointerdown', () => {
 			if (this.two === false){
 				this.two = true;
@@ -873,8 +657,7 @@ export default class option extends Phaser.Scene{
 			}
 		});
 
-		
-		this.three.setInteractive();
+
 		this.three.on('pointerdown', () => {
 			if (this.multiple === false){
 				this.multiple = true;
@@ -909,9 +692,8 @@ export default class option extends Phaser.Scene{
 				this.settingThreeButton.setVisible(true);
 			}
 		});
-	
-		
-		this.powerButton.setInteractive();
+
+
 		this.powerButton.on('pointerdown', () => {
 			this.powerUp = !this.powerUp;
 			if (this.powerUp === true){
@@ -926,7 +708,6 @@ export default class option extends Phaser.Scene{
 	}
 
 	onevsone() {
-		this.wallButton.setInteractive();
 		this.wallButton.on('pointerdown', () => {
 			this.wall = !this.wall;
 			if (this.wall === true){
@@ -945,7 +726,6 @@ export default class option extends Phaser.Scene{
 		});
 		
 		
-		this.randomButton.setInteractive();
 		this.randomButton.on('pointerdown', () => {
 			this.random = !this.random;
 			if (this.random === true){
@@ -964,7 +744,6 @@ export default class option extends Phaser.Scene{
 		});
 		
 		
-		this.settingOneButton.setInteractive();
 		this.settingOneButton.on('pointerover', () => {
 			this.settingOneButton.setColor('#000000');
 			this.settingOneButton.setStyle({ backgroundColor: '#ffffff' });
@@ -1078,7 +857,6 @@ export default class option extends Phaser.Scene{
 	}
 			
 	onevsthree() {
-		this.fast.setInteractive();
 		this.fast.on('pointerdown', () => {
 			if (this.rateSpeed !== 0.0009){
 				if (this.rateSpeed === 0.0006){
@@ -1096,7 +874,6 @@ export default class option extends Phaser.Scene{
 		});
 		
 		
-		this.medium.setInteractive();
 		this.medium.on('pointerdown', () => {
 			if (this.rateSpeed !== 0.0006){
 				if (this.rateSpeed === 0.0009){
@@ -1113,8 +890,7 @@ export default class option extends Phaser.Scene{
 			}
 		});
 		
-		
-		this.slow.setInteractive();
+
 		this.slow.on('pointerdown', () => {
 			if (this.rateSpeed !== 0.0003){
 				if (this.rateSpeed === 0.0006){
@@ -1132,7 +908,6 @@ export default class option extends Phaser.Scene{
 		});
 		
 		
-		this.settingThreeButton.setInteractive();
 		this.settingThreeButton.on('pointerover', () => {
 			this.settingThreeButton.setColor('#000000');
 			this.settingThreeButton.setStyle({ backgroundColor: '#ffffff' });
@@ -1234,7 +1009,9 @@ export default class option extends Phaser.Scene{
 				
 	create() {
 		this.load.on('complete', this.all, this);
-					
+			
+		this.shutdown()
+
 		this.wall = false;
 		this.random = false;
 		this.powerUp = false;
@@ -1417,6 +1194,7 @@ export default class option extends Phaser.Scene{
 						this.socket.emit("newPower", {x: x, y: y});
 					}, undefined, this)
 			}
+			this.first = false
 		}
 		if (this.ball.body)
 		if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
@@ -2143,14 +1921,229 @@ export default class option extends Phaser.Scene{
 		this.threeOther = false
 		this.first = true;
 		this.first2 = true;
-		this.title.setVisible(true);
-		this.join.setVisible(true);
-		this.start.setVisible(true);
-		this.powerButton.setVisible(true);
-		this.settingOneButton.setVisible(true);
-		this.mode.setVisible(true);
-		this.wallText.setVisible(true);
-		this.wallButton.setVisible(true);
-		this.randomButton.setVisible(true);
+		
+		this.title = this.add.text(this.physics.world.bounds.width / 2, 100, 'PONG', {
+			fontFamily: 'pong',
+			fontSize: '100px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+			  x: 10,
+			  y: 6
+			}
+		});
+
+		this.join = this.add.text(this.physics.world.bounds.width * 0.4, this.physics.world.bounds.height * 0.3, 'Join', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			  }
+		});
+
+		this.start = this.add.text(this.physics.world.bounds.width * 0.6, this.physics.world.bounds.height * 0.3, 'Start', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.mode = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.4, 'mode:', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.one = this.add.text(this.physics.world.bounds.width * 0.3, this.physics.world.bounds.height * 0.5, '1 v 1', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#000000',
+			backgroundColor: '#ffffff',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.twoButton = this.add.text(this.physics.world.bounds.width * 0.5, this.physics.world.bounds.height * 0.5, '2 v 2', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.three = this.add.text(this.physics.world.bounds.width * 0.7, this.physics.world.bounds.height * 0.5, '1 v 3', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.powerButton = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.6, 'Power Ups', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.wallText = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.7, 'walls:', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.wallButton = this.add.text(this.physics.world.bounds.width * 0.4, this.physics.world.bounds.height * 0.8, 'static', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.randomButton = this.add.text(this.physics.world.bounds.width * 0.6, this.physics.world.bounds.height * 0.8, 'random', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.settingOneButton = this.add.text(this.physics.world.bounds.width * 0.5, this.physics.world.bounds.height * 0.9, 'Random Settings', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.rate = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height * 0.7, 'reduction rate:', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.fast = this.add.text(this.physics.world.bounds.width * 0.3, this.physics.world.bounds.height * 0.8, 'fast', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+		  		y: 6
+			}
+	    });
+
+		this.medium = this.add.text(this.physics.world.bounds.width * 0.5, this.physics.world.bounds.height * 0.8, 'medium', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#000000',
+			backgroundColor: '#ffffff',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.slow = this.add.text(this.physics.world.bounds.width * 0.7, this.physics.world.bounds.height * 0.8, 'slow', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.settingThreeButton = this.add.text(this.physics.world.bounds.width * 0.5, this.physics.world.bounds.height * 0.9, 'Random Settings', {
+			fontFamily: 'pong',
+			fontSize: '24px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+			padding: {
+				x: 10,
+				y: 6
+			}
+		});
+
+		this.title.setOrigin(0.5);
+		this.join.setOrigin(0.5);
+		this.join.setInteractive();
+		this.start.setOrigin(0.5);
+		this.start.setInteractive();
+		this.one.setOrigin(0.5);
+		this.one.setInteractive();
+		this.mode.setOrigin(0.5)
+		this.powerButton.setOrigin(0.5);
+		this.powerButton.setInteractive();
+		this.twoButton.setOrigin(0.5);
+		this.twoButton.setInteractive();
+		this.three.setOrigin(0.5);
+		this.three.setInteractive();
+		this.wallText.setOrigin(0.5)
+		this.wallButton.setOrigin(0.5);
+		this.wallButton.setInteractive();
+		this.randomButton.setOrigin(0.5);
+		this.randomButton.setInteractive();
+		this.settingOneButton.setOrigin(0.5);
+		this.settingOneButton.setInteractive();
+		this.rate.setOrigin(0.5)
+		this.slow.setInteractive();
+		this.rate.setVisible(false);
+		this.fast.setOrigin(0.5);
+		this.fast.setInteractive();
+		this.fast.setVisible(false);
+		this.medium.setOrigin(0.5);
+		this.medium.setInteractive();
+		this.medium.setVisible(false);
+		this.slow.setOrigin(0.5);
+		this.slow.setVisible(false);
+		this.settingThreeButton.setOrigin(0.5);
+		this.settingThreeButton.setInteractive();
+		this.settingThreeButton.setVisible(false);
+
 	}
 }

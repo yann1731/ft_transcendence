@@ -4,6 +4,7 @@ import { IsString, MinLength } from "class-validator";
 export class CreateChatroomuserPassDto {
     userId: string;
     chatroomId: string;
+    userName: string;
     permission: userPermission;
 
     @IsString()
