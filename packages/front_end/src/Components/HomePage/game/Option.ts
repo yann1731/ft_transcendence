@@ -1235,8 +1235,9 @@ export default class option extends Phaser.Scene{
 						else
 							this.new_point(2);
 					}
-				
-			this.paddle1.setVelocityY(0);
+			
+			if (this.paddle1.body)
+				this.paddle1.setVelocityY(0);
 				
 			if (this.keys.w.isDown)
 				this.paddle1.setVelocityY(-this.paddlespeed * this.modifier1);
