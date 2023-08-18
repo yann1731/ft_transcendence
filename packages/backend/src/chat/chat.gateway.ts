@@ -227,6 +227,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       let msgHistory: any[] = [];
       const chatHistory = await this.privateMessageService.findAll(_user.id, _recipient.id);
+      //console.log(chatHistory);
       for (const element of chatHistory ){
         const time = this.formatDate(new Date(element.createdAt));
         const _sender = await this.userService.findOne(element.senderId);

@@ -8,4 +8,5 @@ export class UpdateChatroomDto extends PartialType(CreateChatroomDto) {
     picture: string;
     password?: String;
     users?: ChatroomUser;
+    bannedUsers?: string[];
 }

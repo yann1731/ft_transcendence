@@ -67,6 +67,7 @@ model Chatroom {
   chatroomOwner User              @relation(fields: [userId], references: [id])
   userId        String
   password      String?
+  bannedUsers   String[]          @default([])
   users         ChatroomUser[]
   @@map("Chatrooms")
 }
@@ -78,7 +79,6 @@ model ChatroomUser {
   chatroomId String
   chatroom   Chatroom @relation(fields: [chatroomId], references: [id], onDelete: Cascade)
   permission userPermission @default(regular)
-  banStatus  Boolean @default(false)
   muteStatus Boolean @default(false)
   mutedAt     DateTime  @default(now())
   muteUntil   Int?

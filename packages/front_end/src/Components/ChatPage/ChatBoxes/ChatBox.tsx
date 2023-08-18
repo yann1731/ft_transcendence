@@ -102,6 +102,7 @@ const Chat = () => {
         timestamp: element.timestamp,
         nickname: element.nickname,
         UserAvatar: element.avatar,
+        userId: element.userId
       };
       msgHistory.push(msg);
     });
@@ -127,18 +128,21 @@ const Chat = () => {
             text: message.text,
             timestamp: message.timestamp,
             nickname: message.nickname,
-            UserAvatar: message.avatar
+            UserAvatar: message.avatar,
+          userId: message.userId
           };
           setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
           // endif
         }
       } else if (message.type === "friend") {
-        if ((_chatInfo[0] === message.recipient && message.nickname === user?.username) || (_chatInfo[0] === message.nickname && message.recipient === user?.username)) {
+        console.log("chatinUse on DISPLAY = " + user?.chatInUse?.chat.name)
+      if ((_chatInfo[0] === message.recipient && message.nickname === user?.username) || (_chatInfo[0] === message.nickname && message.recipient === user?.username)) {
           const newMessage: Message = {
             text: message.text,
             timestamp: message.timestamp,
             nickname: message.nickname,
-            UserAvatar: message.avatar
+            UserAvatar: message.avatar,
+          userId: message.userId
           };
           setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
           // endif

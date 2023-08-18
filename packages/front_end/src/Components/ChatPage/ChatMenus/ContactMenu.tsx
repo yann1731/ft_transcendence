@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Avatar, Tooltip, IconButton, Box, Popover } from '@mui/material';
 import { LimitedProfile } from '../../ProfilePage/Profile'
+import { Message } from '../../Interfaces';
 
-export default function ContactMenu({ Useravatar }: { Useravatar: string | undefined }) {
+export default function ContactMenu({ UserAvatar, userId, nickname }: Message) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -26,7 +27,7 @@ export default function ContactMenu({ Useravatar }: { Useravatar: string | undef
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar src={Useravatar} sx={{ width: 32, height: 32 }} />
+            <Avatar src={UserAvatar} sx={{ width: 32, height: 32 }} />
           </IconButton>
         </Tooltip>
       </Box>
@@ -45,7 +46,7 @@ export default function ContactMenu({ Useravatar }: { Useravatar: string | undef
         }}
       >
         <Box sx={{ p: 2 }}>
-          <LimitedProfile />
+          <LimitedProfile userAvatar={UserAvatar} userId={userId} nickname={nickname} />
         </Box>
       </Popover>
     </React.Fragment>

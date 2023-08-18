@@ -179,7 +179,8 @@ export class ChatroomService { //specifically to create a password protected cha
 				password: hashedPass,
 				users: {
 					create: [updateChatroomDto.users]
-				}
+				},
+				bannedUsers: { push: updateChatroomDto.bannedUsers }
 			}});
 			if (!chatroom)
 				throw new BadRequestException;
