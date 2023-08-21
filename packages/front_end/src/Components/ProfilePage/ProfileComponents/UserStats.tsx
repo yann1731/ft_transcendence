@@ -40,7 +40,6 @@ const Item = styled(Paper)(({ theme }) => ({
                     <Item>Win Ratio: {winRatio.toFixed(2)}</Item>
                 </Grid>
                 <MatchHistory />
-                <MatchHistory />
                 <Grid item xs={13}>
                     <Handler2FA></Handler2FA>
                 </Grid>
