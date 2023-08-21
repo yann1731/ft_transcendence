@@ -1,7 +1,7 @@
 
 import Phaser from "phaser";
 import { Socket } from "socket.io-client";
-import '../../../App.css';
+import '../../App.css';
 
 interface gameData {
 	name: string;
@@ -105,7 +105,7 @@ export default class pong extends Phaser.Scene{
     YvelocityMin: number = 125;
     YvelocityMax: number = 225;
 	name!: string;
-	socket!: any; 
+	socket!: Socket; 
 	event1!: any;
 	event2!: any;
 	event3!: any;
@@ -120,16 +120,15 @@ export default class pong extends Phaser.Scene{
 		this.socket = data.socket;
 
 		this.load.bitmapFont('pong', '../../fonts/pong.ttf');
+		this.textures.addBase64('ball', String(require("../../images/ball.png")));
+		this.textures.addBase64('bigBall', String(require("../../images/bigBall.png")));
+		this.textures.addBase64('paddle', String(require("../../images/paddle.png")));
+		this.textures.addBase64('sidePaddle', String(require("../../images/sidePaddle.png")));
+		this.textures.addBase64('wall', String(require("../../images/wall.png")));
+		this.load.image("power", String(require("../../images/power.png")));
 	}
-
+	
 	preload() {
-        this.textures.addBase64('ball', String(require("../../../images/ball.png")));
-        this.textures.addBase64('bigBall', String(require("../../../images/bigBall.png")));
-        this.textures.addBase64('paddle', String(require("../../../images/paddle.png")));
-        this.textures.addBase64('sidePaddle', String(require("../../../images/sidePaddle.png")));
-    	this.textures.addBase64('wall', String(require("../../../images/wall.png")));
-        this.load.image("power", String(require("../../../images/power.png")));
-
 		this.menu = this.add.text(
 			this.physics.world.bounds.width / 2,
 			this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8,
@@ -3134,6 +3133,7 @@ export default class pong extends Phaser.Scene{
 		this.first = true;
 		this.first2 = true;
 		
+		{
 		this.title = this.add.text(this.physics.world.bounds.width / 2, 100, 'PONG', {
 			fontFamily: 'pong',
 			fontSize: '100px',
@@ -3320,6 +3320,7 @@ export default class pong extends Phaser.Scene{
 				y: 6
 			}
 		});
+		}
 
 		this.title.setOrigin(0.5);
 		this.join.setOrigin(0.5);

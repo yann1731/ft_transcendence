@@ -90,6 +90,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	@SubscribeMessage("connected")
 	handledConnected(client: Socket, data: any){
 		this.users.set(client.id, data.name);
+		this.server.to(client.id).emit("connected");
 	}
 
 	@SubscribeMessage("movement")
@@ -132,7 +133,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 						})
 					}
 					catch (error){
-						console.error("Error updating user data");
+						console.error("Error updating user data:", error);
 					}
 					try {
 							await prisma.user.update({
@@ -151,10 +152,11 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 						})
 					}
 					catch (error){
-						console.error("Error updating user data");
+						console.error("Error updating user data:", error);
 					}
 
 					this.oneGame.splice(i, 1);
+					console.log("here")
 					break;
 				}
 		}
@@ -327,6 +329,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					break;
 				}
 		}
+		this.server.emit("refresh");
 	}
 
 	@SubscribeMessage("update")

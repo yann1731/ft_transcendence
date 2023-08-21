@@ -3,7 +3,6 @@ import '../../App.css';
 import pong from './Pong'
 import Box from '@mui/material/Box';
 import { UserContext } from 'Contexts/userContext';
-
 import { gamesocket } from 'Contexts/socketContext';
 
 export default function PongGame() {
@@ -31,11 +30,10 @@ export default function PongGame() {
   
 
     const game = new Phaser.Game(config);
-    game.scene.start('menu', {name: user?.id, socket: gamesocket});
+    game.scene.start('pong', {name: user?.id, socket: gamesocket});
     
   }, []);
 
-  
   return (
     <Box id="PONG" style={{ maxHeight: '82.7vh' }}></Box>
   ); 

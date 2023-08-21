@@ -6,6 +6,8 @@ import { UserContext } from 'Contexts/userContext';
 import { HallOfFame } from 'Components/Interfaces';
 import { useEffect, useState, useContext } from 'react';
 import axios, { AxiosResponse } from 'axios';
+import { gamesocket } from 'Contexts/socketContext';
+import { GamesOutlined } from '@mui/icons-material';
 
 const DashboardContainer: React.FC = () => {
   const [highestScore, setHighestScore] = useState<number>(-1);
@@ -17,7 +19,8 @@ const DashboardContainer: React.FC = () => {
   const [nicknameLowScore, setNicknameLowScore] = useState<string>('');
   const [nicknameGamesPlayed, setNicknameGamesPlayed] = useState<string>('');
   const { user } = useContext(UserContext);
-  
+  const [refresh, setRefresh] = useState(1);
+
   useEffect(() => {
     const fetchHallOfFame = async () => {
       try {
@@ -88,7 +91,13 @@ const DashboardContainer: React.FC = () => {
       }
     };
     fetchHallOfFame();
-  }, []);
+  }, [refresh]);
+
+  gamesocket.on("connected", () => {
+    gamesocket.on("refresh", () => {
+      setRefresh(refresh => refresh + 1)
+    })
+  })
 
   return (
     <React.Fragment>
