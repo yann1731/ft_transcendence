@@ -11,6 +11,7 @@ import { ChatModule } from './chat/chat.module';
 import { AuthModule } from './auth/auth.module';
 import { GameModule } from './gameSocket/game.module';
 import { ConfigModule } from '@nestjs/config';
+import { MatchHistoryModule } from './match-history/match-history.module';
 
 @Module({
   imports: [ConfigModule.forRoot(),
@@ -24,6 +25,7 @@ import { ConfigModule } from '@nestjs/config';
     UserblocksModule,
     ChatModule,
     AuthModule,
-    GameModule]
+    GameModule,
+    MatchHistoryModule]
 })
 export class AppModule {}
