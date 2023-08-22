@@ -56,6 +56,10 @@ export class ChatroomuserService {
 		if (!chatroom) {
 	  		throw new BadRequestException("Chatroom not found");
 		}
+		chatroom.bannedUsers.forEach((user: string) => {
+			if (user === createChatroomuserpass.userName)
+				throw new BadRequestException("User is banned")
+		}) 
 		const check = await argon.verify(chatroom.password, createChatroomuserpass.password);
 		if (!check) {
 	  		throw new BadRequestException('Invalid password');
