@@ -32,7 +32,6 @@ export class AuthController {
   @UseGuards(TokenGuard)
   @Post('verifyOtp')
   verifyOtp(@Headers('userid') userid: string, @Body('otp') otp: string) { //verifies otp
-    console.log('Entered verifyOtp');
     return this.authService.verifyOtp(userid, otp);
   }
 }

@@ -105,9 +105,10 @@ export class AuthService {
             });
             if (!verified)
                 throw new InternalServerErrorException('Invalid otp')
+            return verified;
         }
         catch (error) {
-            throw new InternalServerErrorException('Invalid otp');
+            throw error;
         }
     }
         
