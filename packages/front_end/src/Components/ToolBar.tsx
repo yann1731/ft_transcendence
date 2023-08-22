@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { asyncToggleTheme } from "../store/reducers/themeSlice";
 import { UserContext } from '../Contexts/userContext';
 import { useNavigate } from 'react-router-dom';
+import { gamesocket } from 'Contexts/socketContext';
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -31,6 +32,7 @@ function DashboardAppBar() {
   };
 
   const handleCloseNavMenu = () => {
+    gamesocket.emit("disconnected")
     setAnchorElNav(null);
   };
 

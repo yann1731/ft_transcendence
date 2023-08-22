@@ -87,6 +87,11 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 		this.users.delete(client.id);
 	}
 
+	@SubscribeMessage("disconnected")
+	handledDisconnected(client: Socket){
+		
+	}
+
 	@SubscribeMessage("connected")
 	handledConnected(client: Socket, data: any){
 		this.users.set(client.id, data.name);
