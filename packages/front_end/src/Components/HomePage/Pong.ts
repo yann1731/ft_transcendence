@@ -3098,7 +3098,7 @@ export default class pong extends Phaser.Scene{
 		this.end2 = true;
 		this.socket.off("movement");
 		this.socket.off("movement2");
-        this.socket.emit("end", {which: 1, name: this.name, player: player})
+        this.socket.emit("end", {which: 1, name: this.name, player: player, score1: this.points1, score2: this.points2 })
         if (this.power)
             this.power.setVisible(false);
         if (this.random === true || this.wall === true){

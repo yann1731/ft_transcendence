@@ -34,6 +34,10 @@ export default function PongGame() {
     
   }, []);
 
+  gamesocket.on("connected", () => {
+    gamesocket.emit("connected", {name: user?.id})
+  })
+
   return (
     <Box id="PONG" style={{ maxHeight: '82.7vh' }}></Box>
   ); 

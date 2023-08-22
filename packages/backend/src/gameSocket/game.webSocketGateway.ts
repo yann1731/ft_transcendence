@@ -90,7 +90,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	@SubscribeMessage("connected")
 	handledConnected(client: Socket, data: any){
 		this.users.set(client.id, data.name);
-		this.server.to(client.id).emit("connected");
 	}
 
 	@SubscribeMessage("movement")
@@ -117,6 +116,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 			for (let i = 0; i < this.oneGame.length; i++)
 				if (this.oneGame[i][0] === data.name){
 					try {
+						console.log(this.users.get(this.oneGame[i][1]), data.name, this.oneGame[i][1])
 							await prisma.user.update({
 							where: {id: this.users.get(this.oneGame[i][1])},
 							data: {
@@ -155,8 +155,21 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 						console.error("Error updating user data:", error);
 					}
 
+					
+					try {
+						await prisma.matchHistoryOne.create({
+							data: {
+								winnerId: data.player ? this.users.get((this.oneGame[i][2])) : this.users.get((this.oneGame[i][1])),
+								loserId: data.player ? this.users.get((this.oneGame[i][1])) : this.users.get((this.oneGame[i][2])),
+								winnerScore: (data.score1 > data.score2) ? data.score1 : data.score2,
+								loserScore: (data.score1 > data.score2) ? data.score2 : data.score1
+							}
+						})
+					}
+					catch(error){
+						console.log("Match history failed to create:", error)
+					}
 					this.oneGame.splice(i, 1);
-					console.log("here")
 					break;
 				}
 		}
@@ -165,7 +178,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 				if (this.twoGame[i][0] === data.name){
 					try {
 							await prisma.user.update({
-							where: {id: this.users.get(this.twoGame[i][1])},
+							where: {username: this.users.get(this.twoGame[i][1])},
 							data: {
 								win: {
 									increment: data.player ? 0 : 1,
@@ -184,7 +197,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {id: this.users.get(this.twoGame[i][2])},
+							where: {username: this.users.get(this.twoGame[i][2])},
 							data: {
 								win: {
 									increment: data.player ? 1 : 0,
@@ -203,7 +216,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {id: this.users.get(this.twoGame[i][3])},
+							where: {username: this.users.get(this.twoGame[i][3])},
 							data: {
 								win: {
 									increment: data.player ? 0 : 1,
@@ -222,7 +235,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {id: this.users.get(this.twoGame[i][4])},
+							where: {username: this.users.get(this.twoGame[i][4])},
 							data: {
 								win: {
 									increment: data.player ? 1 : 0,
@@ -238,6 +251,22 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					catch (error){
 						console.error("Error updating user data");
+					}
+
+					try {
+						await prisma.matchHistoryTwo.create({
+							data: {
+								winnerOneId: data.player ? this.users.get((this.twoGame[i][2])) : this.users.get((this.twoGame[i][1])),
+								winnerTwoId: data.player ? this.users.get((this.twoGame[i][4])) : this.users.get((this.twoGame[i][3])),
+								loserOneId: data.player ? this.users.get((this.twoGame[i][1])) : this.users.get((this.twoGame[i][2])),
+								loserTwoId: data.player ? this.users.get((this.twoGame[i][3])) : this.users.get((this.twoGame[i][4])),
+								winnerScore: (data.score1 > data.score2) ? data.score1 : data.score2,
+								loserScore: (data.score1 > data.score2) ? data.score2 : data.score1
+							}
+						})
+					}
+					catch(error){
+						console.log("Match history failed to create:", error)
 					}
 
 					this.twoGame.splice(i, 1);
@@ -249,7 +278,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 				if (this.threeGame[i][0] === data.name){
 					try {
 							await prisma.user.update({
-							where: {id: this.users.get(this.threeGame[i][1])},
+							where: {username: this.users.get(this.threeGame[i][1])},
 							data: {
 								win: {
 									increment: data.player ? 0 : 1,
@@ -268,7 +297,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {id: this.users.get(this.threeGame[i][2])},
+							where: {username: this.users.get(this.threeGame[i][2])},
 							data: {
 								win: {
 									increment: data.player ? 1 : 0,
@@ -287,7 +316,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {id: this.users.get(this.threeGame[i][3])},
+							where: {username: this.users.get(this.threeGame[i][3])},
 							data: {
 								win: {
 									increment: data.player ? 1 : 0,
@@ -306,7 +335,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {id: this.users.get(this.threeGame[i][4])},
+							where: {username: this.users.get(this.threeGame[i][4])},
 							data: {
 								win: {
 									increment: data.player ? 1 : 0,
@@ -324,6 +353,19 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 						console.error("Error updating user data");
 					}
 
+					try {
+						await prisma.matchHistoryThree.create({
+							data: {
+								winnerId: data.player ? [this.users.get((this.threeGame[i][2])), this.users.get((this.threeGame[i][3])), this.users.get((this.threeGame[i][4]))] : this.users.get((this.threeGame[i][1])),
+								loserId: data.player ? this.users.get((this.threeGame[i][1])) : [this.users.get((this.threeGame[i][2])), this.users.get((this.threeGame[i][3])), this.users.get((this.threeGame[i][4]))],
+								winnerScore: (data.score1 > data.score2) ? data.score1 : data.score2,
+								loserScore: (data.score1 > data.score2) ? data.score2 : data.score1
+							}
+						})
+					}
+					catch(error){
+						console.log("Match history failed to create:", error)
+					}
 
 					this.threeGame.splice(i, 1);
 					break;
