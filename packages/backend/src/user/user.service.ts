@@ -4,7 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { validate } from 'class-validator';
 import axios from 'axios';
-import { Prisma } from '@prisma/client';
+import { onlineStatus, Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime';
 
 @Injectable()
@@ -86,6 +86,20 @@ export class UserService { //creates a new user
 	}
   }
 
+  async findBySocketID(socketID: string) {
+	try {
+		const user = await this.prisma.user.findFirst({
+			where: {
+				socketID: socketID,
+			}
+		});
+		return (user);
+	} catch (error) {
+		console.log(error);
+		throw (BadRequestException);
+	}
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) { //updates all the information of a user except the password. All the fields are optional
 	try {
 		const errors = await validate(updateUserDto);
@@ -119,16 +133,41 @@ export class UserService { //creates a new user
 	}
   }
 
-  async updateSocketID(_socketID: string, _username: string) {
-    const _updatedUser = await this.prisma.user.update({
-      where: {
-        username: _username,
-      },
-      data: {
-        socketID: _socketID,
-      }
-    })
-    console.log("socketID: " + _updatedUser.socketID);
+  async updateSocketID(_socketID: string, id: string) {
+	if (id === undefined) {
+		return;
+	}
+	try {
+		const _updatedUser = await this.prisma.user.update({
+		  where: {
+			id: id,
+		  },
+		  data: {
+			socketID: _socketID,
+		  }
+		});
+	} catch (error) {
+		console.log(error);
+	}
+  }
+
+  async updateStatus(_status: onlineStatus, id: string) {
+	if (id === undefined) {
+		return;
+	}
+	try {
+		const _updatedUser = await this.prisma.user.update({
+		  where: {
+			id: id,
+		  },
+		  data: {
+			userStatus: _status,
+		  }
+		});
+		console.log("userStatus: " + _updatedUser.userStatus);
+	} catch (error) {
+		console.log(error);
+	}
   }
 
   async remove(id: string) { //removes a specific user by id

@@ -22,6 +22,14 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
 
   const socket = useContext(SocketContext);
 
+  socket.on("connected", () => {
+    const updatedUser: Partial<User> = {
+      ...user,
+      userStatus: true,
+    };
+  updateUser(updatedUser);
+  })
+
   React.useEffect(() => {
     const fetchUsers = async () => {
       

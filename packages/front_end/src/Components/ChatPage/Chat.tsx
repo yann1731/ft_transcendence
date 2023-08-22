@@ -17,6 +17,9 @@ import { Message } from '../Interfaces';
 
 function ChatPage() {
 	const { user } = useContext(UserContext);
+	const socket = useContext(SocketContext);
+
+	socket.connect();
 	if (!user) {
 		return (
 			<div>

@@ -80,6 +80,7 @@ model ChatroomUser {
   chatroom   Chatroom @relation(fields: [chatroomId], references: [id], onDelete: Cascade)
   permission userPermission @default(regular)
   muteStatus Boolean @default(false)
+  mutedAt     DateTime  @default(now())
   muteUntil   Int?
   @@map("ChatroomUsers")
 }
