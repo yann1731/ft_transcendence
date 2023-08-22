@@ -17,7 +17,6 @@ import { ChatroomService } from 'src/chatroom/chatroom.service';
 import { subscribe } from 'diagnostics_channel';
 
 
-
 @WebSocketGateway({ cors: true, namespace: 'chatsocket' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   users: Map<string, string> = new Map<string, string>();
@@ -30,39 +29,82 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly chatroomUserService: ChatroomuserService,
     private readonly userblocksService: UserblocksService,
     private readonly userService: UserService) {};
+
   @WebSocketServer()
   server: Server;
 
-  handleConnection(client: Socket) {
-    // console.log("New client connected to chatSocket");
+    @SubscribeMessage("clearMap")
+    async clearMap(client: Socket, id: string) {
+      // console.log("Clearing map");
+      // this.users.clear();
+      const _user = await this.userService.findBySocketID(client.id);
+      console.log(_user);
+      await this.userService.remove(id);
+    }
+
+  findIDBySocket(socketID: string) {
+    for (let [key, value] of this.users.entries()) {
+      if (value === socketID) {
+        return (key);
+      }
+    }
+    return ("null");
+  }
+
+  async handleConnection(client: Socket) {
+    console.log("Client ( " + client.id + " ) connected to chat");
     this.server.to(client.id).emit("connected");
-    this.server.emit("refresh2")
+    this.server.emit("refresh2");
   }
 
   @SubscribeMessage("connected")
-  handleConnected(client: Socket, id: string){
-    this.users.set(id, client.id)
+  async handleConnected(client: Socket, id: string) {
+    if (typeof id !== "string") {
+      console.log("ID !== string: " + id);
+      return ;
+    }
+    console.log(this.users);
+    this.users.set(id, client.id);
+    console.log("Handling connection for: " + id);
+    await this.registerUser(client, id);
+    this.server.emit("refresh2");
   }
 
-  handleDisconnect(client: Socket) {
-    console.log('Client disconnected from chatSocket');
-    console.log("ClientDisconn: " + client.id);
-    this.server.to(client.id).emit("disconnected");
+  async handleDisconnect(client: Socket) {
+    const user = await this.userService.findBySocketID(client.id);
+    if (user) {
+      this.registerDisconnect(client, user.id);
+      this.server.to(client.id).emit("closeSocket");
+      this.server.emit("refresh2");
+    } else {
+      console.log("Could not find user from socket: " + client.id);
+    }
 	}
 
   @SubscribeMessage("registerDisconnect")
-  async registerDisconnect(client: Socket, data: any) {
-    await this.userService.updateStatus("offline", data.username);
+  async registerDisconnect(client: Socket, id: string) {
+    console.log("Registering disconnect for: " + id);
+    // await this.userService.updateSocketID(client.id, id);
+    await this.userService.updateStatus("offline", id);
+    this.server.emit("refresh2");
   }
 
+  @SubscribeMessage("registerUser")
+  async registerUser(client: Socket, id: string) {
+    if (id !== undefined) {
+      console.log("Registering: " + id + " (" + client.id + ")");
+      await this.userService.updateSocketID(client.id, id);
+      await this.userService.updateStatus("online", id);
+      this.server.emit("refresh2");
+    } else {
+      console.log("username is undefined");
+    }
+  }
 
-  
   @SubscribeMessage("getChatroomUsers")
   async getChatroomUsers(client: Socket, data: any) {
     console.log("Getting chatroom users!");
     const _chatUsers = await this.chatroomUserService.findAllChatroomUsersByChatroomId(data.channelID);
-    console.log("Printing _chatUsers");
-    console.log(_chatUsers);
     return _chatUsers;
   }
 
@@ -88,6 +130,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("clearHistory")
   async clearHistory(client: Socket) {
     this.server.to(client.id).emit("clearHistory");
+  }
+
+  @SubscribeMessage("clearOtherHistory")
+  async clearOtherHistory(client: Socket, data: any) {
+    const otherSocket = this.users.get(data.otherID);
+    this.server.to(otherSocket).emit("clearHistory");
   }
 
   formatDate(date: Date): string {
@@ -251,11 +299,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit("clearOtherHistory", { chat: data.channel});
   }
 
-  @SubscribeMessage("registerUser")
-  async registerUser(client: Socket, data: any) {
-    console.log("Registering: " + data.username + " (" + client.id + ")");
-    await this.userService.updateSocketID(client.id, data.username);
-    // await this.userService.updateStatus("online", data.username);
+
+
+  @SubscribeMessage("inGame")
+  async setInGame(client: Socket, data: any) {
+    await this.userService.updateStatus("inGame", data.username);
+    this.server.emit("refresh");
+  }
+
+  @SubscribeMessage("outGame")
+  async setOutGame(client: Socket, data: any) {
+    await this.userService.updateStatus("online", data.username);
+    this.server.emit("refresh");
   }
 
   @SubscribeMessage("chatroom")

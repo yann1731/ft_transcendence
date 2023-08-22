@@ -417,6 +417,7 @@ const OptionBarConversation: React.FC = () => {
         const id = user?.nickname;
         const blocked = friendChat?.id;
         socket.emit("blocked", {id: id, blocked: blocked});
+        socket.emit("clearOtherHistory", { chat: user?.chatInUse?.chat.name, otherID: blocked });
         let _chat: Array<string>;
         if (user?.username) {
           _chat = ["null", "null", "friend", user?.username];

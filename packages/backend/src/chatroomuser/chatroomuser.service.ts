@@ -171,7 +171,7 @@ export class ChatroomuserService {
 				muteStatus: status,
 				mutedAt: new Date(),
 				permission: _user.permission,
-				banStatus: _user.banStatus,
+				// banStatus: _user.banStatus,
 				muteUntil: _user.muteUntil
 			},
 		});

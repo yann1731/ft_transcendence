@@ -37,10 +37,11 @@ const Chat = () => {
   useEffect(() => {
     socket.on('messageResponse', (data: any) => displayMessage(data));
     socket.on("sendHistory", (data: any) => makeHistory(data));
-    socket.on("connected", () => makeConnection());
-    socket.on("disconnected", () => socket.emit("registerDisconnect", {username: user?.username}));
+    socket.on("connected", () => socket.emit("connected"));
+    // socket.on("disconnected", () => socket.emit("registerDisconnect", {id: user?.id}));
     socket.on("clearHistory", () => clearHistory());
     socket.on("clearOtherHistory", (data: any) => clearOtherHistory(data));
+    socket.on("closeSocket", () => socket.close());
     return () => {
       socket.off("messageResponse");
     }
@@ -49,7 +50,7 @@ const Chat = () => {
   const makeConnection = () => {
     const updatedUser: Partial<User> = {...user, userStatus: true};
     updateUser(updatedUser);
-    socket.emit("registerUser", { username: user?.username })
+    socket.emit("connected", user?.id);
     socket.emit("refresh2");
   }
 
@@ -228,7 +229,7 @@ const Chat = () => {
               <ListItem key={index}>
                 <Box sx={{ marginLeft: shouldAlignLeft ? 'auto' : '0' }}>
                   <Box sx={{ textAlign: shouldAlignLeft ? 'right' : 'left' }}>
-                    <ContactMenu {...{ Useravatar: message.UserAvatar }} />
+                    <ContactMenu {... message } />
                     <ListItemText sx={{ overflowWrap: 'break-word', wordBreak: 'break-all' }} primary={message.text} />
                   </Box>
                   <Box sx={{ textAlign: shouldAlignLeft ? 'right' : 'left' }}>
