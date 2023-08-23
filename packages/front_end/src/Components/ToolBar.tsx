@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { asyncToggleTheme } from "../store/reducers/themeSlice";
 import { UserContext } from '../Contexts/userContext';
 import { useNavigate } from 'react-router-dom';
-import { gamesocket } from 'Contexts/socketContext';
+import { gamesocket } from 'Contexts/gameSocketContext';
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -31,8 +31,10 @@ function DashboardAppBar() {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
-    gamesocket.emit("disconnected")
+  const handleCloseNavMenu = (where: string) => {
+    
+    if (where !== "Home")
+      gamesocket.emit("disconnected")
     setAnchorElNav(null);
   };
 
@@ -142,7 +144,7 @@ function DashboardAppBar() {
             >
               {pages.map((page) => (
                   <Link style={{textDecoration: 'none'}} to={page.link}>
-                    <MenuItem key={page.label} onClick={handleCloseNavMenu}>
+                    <MenuItem key={page.label} onClick={() => handleCloseNavMenu(page.label)}>
                       <Typography textAlign="center">{page.label}</Typography>
                     </MenuItem>
                 </Link>
@@ -175,7 +177,7 @@ function DashboardAppBar() {
               <Link style={{textDecoration: 'none'}} to={page.link}>
                 <Button variant="outlined"
                   key={page.label}
-                  onClick={handleCloseNavMenu}
+                  onClick={() => handleCloseNavMenu(page.label)}
                   className="toolbarButtons"
                   sx={{ marginRight: '15px', marginTop: '14px', width: 'auto', fontWeight: 'bold', ":hover": { bgcolor: "white"} }}
                   >
