@@ -80,6 +80,7 @@ model ChatroomUser {
   chatroom   Chatroom @relation(fields: [chatroomId], references: [id], onDelete: Cascade)
   permission userPermission @default(regular)
   muteStatus Boolean @default(false)
+  mutedAt     DateTime  @default(now())
   muteUntil   Int?
   @@map("ChatroomUsers")
 }
@@ -128,4 +129,39 @@ model UserBlocks {
   blockedUser   User   @relation("blocked", fields: [blockedUserId], references: [id], onDelete: Cascade)
 
   @@unique([blockerId, blockedUserId])
+}
+
+model MatchHistoryOne {
+  id            String            @id @default(uuid())
+
+  winnerId      String
+  winnerScore   Int
+  loserId       String
+  loserScore    Int
+
+  createdAt     DateTime          @default(now())
+}
+
+model MatchHistoryTwo {
+  id            String            @id @default(uuid())
+
+  winnerOneId   String
+  winnerTwoId   String
+  winnerScore   Int
+  loserOneId    String
+  loserTwoId    String
+  loserScore    Int
+
+  createdAt     DateTime          @default(now())
+}
+
+model MatchHistoryThree {
+  id              String            @id @default(uuid())
+  
+  winnerId        String[]
+  winnerScore     Int
+  loserId         String[]
+  loserScore      Int
+
+  createdAt       DateTime          @default(now())
 }

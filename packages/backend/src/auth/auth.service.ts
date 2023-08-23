@@ -65,7 +65,7 @@ export class AuthService {
     async enable2Fa(userid: string): Promise<String> { //enbles 2fa
         let secret: any;
         try {
-            const secret = speakeasy.generateSecret({length: 20});
+            secret = speakeasy.generateSecret({length: 20});
             const storeSecret = await this.prisma.user.update({ where: { id: userid, },
                 data: {
                     twoFaSecret: secret.base32,
@@ -105,9 +105,10 @@ export class AuthService {
             });
             if (!verified)
                 throw new InternalServerErrorException('Invalid otp')
+            return verified;
         }
         catch (error) {
-            throw new InternalServerErrorException('Invalid otp');
+            throw error;
         }
     }
         

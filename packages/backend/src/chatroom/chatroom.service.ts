@@ -73,7 +73,20 @@ export class ChatroomService { //specifically to create a password protected cha
 
 	async findOne(id: string) { //returns a single chatroom using id
 		try {
-			const chatroom = await this.prisma.chatroom.findUnique({where: { id }});
+			const chatroom = await this.prisma.chatroom.findUnique({
+				where: { id },
+				include: {
+					users: {
+						include: {
+							user: {
+								include: {
+									blockedBy: true
+								}
+							}
+						}
+					}
+				}
+			});
 			return chatroom;	
 		} catch (error) {
 			throw new BadRequestException('Could not fetch chatroom');
