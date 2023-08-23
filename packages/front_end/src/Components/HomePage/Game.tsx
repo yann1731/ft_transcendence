@@ -3,7 +3,7 @@ import '../../App.css';
 import pong from './Pong'
 import Box from '@mui/material/Box';
 import { UserContext } from 'Contexts/userContext';
-import { gamesocket } from 'Contexts/socketContext';
+import { gamesocket } from 'Contexts/gameSocketContext';
 
 export default function PongGame() {
   const {user} = React.useContext(UserContext);

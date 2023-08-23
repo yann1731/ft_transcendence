@@ -6,7 +6,7 @@ import { UserContext } from 'Contexts/userContext';
 import { HallOfFame } from 'Components/Interfaces';
 import { useEffect, useState, useContext } from 'react';
 import axios, { AxiosResponse } from 'axios';
-import { gamesocket } from 'Contexts/socketContext';
+import { gamesocket } from 'Contexts/gameSocketContext';
 import { GamesOutlined } from '@mui/icons-material';
 
 const DashboardContainer: React.FC = () => {
