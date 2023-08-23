@@ -129,7 +129,6 @@ export default class pong extends Phaser.Scene{
 		this.textures.addBase64('sidePaddle', String(require("../../images/sidePaddle.png")));
 		this.textures.addBase64('wall', String(require("../../images/wall.png")));
 		this.load.image("power", String(require("../../images/power.png")));
-
 		this.menu = this.add.text(
 			this.physics.world.bounds.width / 2,
 			this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8,

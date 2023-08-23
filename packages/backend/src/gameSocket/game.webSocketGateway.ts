@@ -34,7 +34,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
     YvelocityMax: number = 225;
 
 	handleConnection(client: Socket) {
-		console.log
 		console.log('New client connected to gameSocket');
 		this.server.to(client.id).emit("connected");
 	}
