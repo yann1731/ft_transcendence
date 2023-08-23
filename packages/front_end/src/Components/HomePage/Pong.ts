@@ -119,6 +119,9 @@ export default class pong extends Phaser.Scene{
 		this.name = data.name;
 		this.socket = data.socket;
 
+	}
+	
+	preload() {
 		this.load.bitmapFont('pong', '../../fonts/pong.ttf');
 		this.textures.addBase64('ball', String(require("../../images/ball.png")));
 		this.textures.addBase64('bigBall', String(require("../../images/bigBall.png")));
@@ -126,9 +129,7 @@ export default class pong extends Phaser.Scene{
 		this.textures.addBase64('sidePaddle', String(require("../../images/sidePaddle.png")));
 		this.textures.addBase64('wall', String(require("../../images/wall.png")));
 		this.load.image("power", String(require("../../images/power.png")));
-	}
-	
-	preload() {
+
 		this.menu = this.add.text(
 			this.physics.world.bounds.width / 2,
 			this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8,

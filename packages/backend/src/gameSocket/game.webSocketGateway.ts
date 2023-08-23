@@ -34,6 +34,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
     YvelocityMax: number = 225;
 
 	handleConnection(client: Socket) {
+		console.log
 		console.log('New client connected to gameSocket');
 		this.server.to(client.id).emit("connected");
 	}
@@ -89,7 +90,48 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 
 	@SubscribeMessage("disconnected")
 	handledDisconnected(client: Socket){
-		
+		for (let i = 0; i < this.oneHost.length; i++)
+			if (this.oneHost[i][5] === client)
+				this.oneHost.splice(i, 1);
+		for (let i = 0; i < this.twoHost.length; i++)
+			if (this.twoHost[i][0] === client)
+				this.twoHost.splice(i, 1);
+		for (let i = 0; i < this.threeHost.length; i++)
+			if (this.threeHost[i][0] === client)
+				this.threeHost.splice(i, 1);
+
+
+		for (let i = 0; i < this.oneWaiting.length; i++)
+			if (this.oneWaiting[i] === client)
+				this.oneWaiting.splice(i, 1);
+		for (let i = 0; i < this.twoWaiting.length; i++)
+			if (this.twoWaiting[i] === client)
+				this.twoWaiting.splice(i, 1);
+		for (let i = 0; i < this.threeWaiting.length; i++)
+			if (this.threeWaiting[i] === client)
+				this.threeWaiting.splice(i, 1);
+
+		for (let i = 0; i < this.oneGame.length; i++)
+			for (let j = 1; j < 3; j++)
+				if (this.oneGame[i][j] === client.id){
+					this.server.to(this.oneGame[i][0]).emit("disconnected")
+					this.oneGame.splice(i, 1);
+					break;
+				}
+		for (let i = 0; i < this.twoGame.length; i++)
+			for (let j = 1; j < 5; j++)
+				if (this.twoGame[i][j] === client.id){
+					this.server.to(this.twoGame[i][0]).emit("disconnected")
+					this.twoGame.splice(i, 1);
+					break;
+				}
+		for (let i = 0; i < this.threeGame.length; i++)
+			for (let j = 1; j < 5; j++)
+				if (this.threeGame[i][j] === client.id){
+					this.server.to(this.threeGame[i][0]).emit("disconnected")
+					this.threeGame.splice(i, 1);
+					break;
+				}	
 	}
 
 	@SubscribeMessage("connected")
@@ -411,6 +453,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 
 	@SubscribeMessage("1v1")
 	handle1v1(client: Socket, data: any){
+		console.log("allo")
 		if (data.start){
 			client.join(data.name);
 			if (this.oneWaiting.length >= 1){
