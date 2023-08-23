@@ -1,6 +1,7 @@
 import * as React from 'react';
 import '../../App.css';
 import pong from './Pong'
+import invited from './Invited';
 import Box from '@mui/material/Box';
 import { UserContext } from 'Contexts/userContext';
 import { gamesocket } from 'Contexts/gameSocketContext';
@@ -9,29 +10,54 @@ export default function PongGame() {
   const {user} = React.useContext(UserContext);
 
   React.useEffect(() => {
-    const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.AUTO,
-      parent: 'PONG',
-      backgroundColor: '#000000',
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-      },
-      physics: {
-        default: 'arcade',
-        arcade: {
-          gravity: { y: 0 },
+    if (true){
+      const config: Phaser.Types.Core.GameConfig = {
+        type: Phaser.AUTO,
+        parent: 'PONG',
+        backgroundColor: '#000000',
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
         },
-      },
-      scene: [
-        pong
-      ]
-    };
-  
-
-    const game = new Phaser.Game(config);
-    game.scene.start('pong', {name: user?.id, socket: gamesocket});
+        physics: {
+          default: 'arcade',
+          arcade: {
+            gravity: { y: 0 },
+          },
+        },
+        scene: [
+          pong
+        ]
+      };
     
+
+      const game = new Phaser.Game(config);
+      game.scene.start('pong', {name: user?.id, socket: gamesocket});
+    }
+    else{
+      const config: Phaser.Types.Core.GameConfig = {
+        type: Phaser.AUTO,
+        parent: 'PONG',
+        backgroundColor: '#000000',
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+        },
+        physics: {
+          default: 'arcade',
+          arcade: {
+            gravity: { y: 0 },
+          },
+        },
+        scene: [
+          invited,
+          pong
+        ]
+      };
+
+      const game = new Phaser.Game(config);
+      game.scene.start('invited', {name: user?.id, socket: gamesocket});
+    }
   }, []);
 
   gamesocket.on("connected", () => {
