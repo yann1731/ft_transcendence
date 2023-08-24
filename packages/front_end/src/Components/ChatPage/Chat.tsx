@@ -15,11 +15,13 @@ import SignIn from 'Components/Login/LoginPage';
 import LoginToolBar from 'Components/Login/LoginToolBar';
 import { Message } from '../Interfaces';
 import { gameSocketContext } from 'Contexts/gameSocketContext';
+import { useNavigate } from 'react-router-dom';
 
 function ChatPage() {
-	const { user } = useContext(UserContext);
+	const { user, updateUser } = useContext(UserContext);
 	const socket = useContext(SocketContext);
 	const gamesocket = useContext(gameSocketContext)
+	const navigate = useNavigate()
 
 	socket.connect();
 
