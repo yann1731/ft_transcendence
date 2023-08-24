@@ -73,12 +73,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("connected")
   async handleConnected(client: Socket, id: string) {
     if (typeof id !== "string") {
-      console.log("ID !== string: " + id);
+     // console.log("ID !== string: " + id);
       return ;
     }
-    console.log(this.users);
+    //console.log(this.users);
     this.users.set(id, client.id);
-    console.log("Handling connection for: " + id);
+    //console.log("Handling connection for: " + id);
     await this.registerUser(client, id);
     this.server.emit("refresh2");
   }
@@ -105,7 +105,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("registerUser")
   async registerUser(client: Socket, id: string) {
     if (id !== undefined) {
-      console.log("Registering: " + id + " (" + client.id + ")");
+      //console.log("Registering: " + id + " (" + client.id + ")");
       await this.userService.updateSocketID(client.id, id);
       await this.userService.updateStatus("online", id);
       this.server.emit("refresh2");
@@ -161,7 +161,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async SendChatMessage(client: Socket, createChatroomMessageDto: CreateChatroomMessageDto) {
     const _chatUsers = await this.chatroomUserService.findAllChatroomUsersByChatroomId(createChatroomMessageDto.chatroomId);
     const _chatUser = _chatUsers.find(element => element.userId === createChatroomMessageDto.senderId);
-    console.log("muteStatus: " + _chatUser.muteStatus);
+    //console.log("muteStatus: " + _chatUser.muteStatus);
     if (_chatUser.muteStatus === true) {
       const _now = new Date();
       if (_now.getMinutes() - _chatUser.mutedAt.getMinutes() >= 5) {
