@@ -56,6 +56,7 @@ const Chat = () => {
   }, []);
 
   const handleInvitation = (inviterID: string, acknowledge: any) => {
+    console.log('getting invite');
     acknowledge(true);
     setShowInvitation(true);
     setInviter(inviterID);

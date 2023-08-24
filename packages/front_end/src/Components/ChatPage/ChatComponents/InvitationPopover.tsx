@@ -35,27 +35,28 @@ function InvitationPopover({ onClose, userA, userB }: any) {
         onClose();
     }
 
+    console.log("youpi")
     return (
-        <Popover
-            id={id}
-            open={open}
-            anchorEl={anchorEl}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-        >
-            <Box>
+        // <Popover
+        //     id={id}
+        //     open={open}
+        //     anchorEl={anchorEl}
+        //     onClose={handleClose}
+        //     anchorOrigin={{
+        //       vertical: 'bottom',
+        //       horizontal: 'right',
+        //     }}
+        //     transformOrigin={{
+        //       vertical: 'top',
+        //       horizontal: 'right',
+        //     }}
+        // >
+            <Box className="invitation-popover">
                 <p>{userA} You've been invited to play pong by {userB}!</p>
                 <button onClick={onClose}>Decline</button>
                 <button onClick={createInvitation}>Accept</button>
             </Box>
-        </Popover>
+        // </Popover>
     );
 }
 
