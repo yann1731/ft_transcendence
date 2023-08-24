@@ -11,6 +11,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import axios, { AxiosResponse } from 'axios';
+import { SocketContext } from 'Contexts/socketContext';
 
 const Item = styled(Paper)(({ theme }) => ({
 	...theme.typography.body2,
@@ -58,6 +59,8 @@ export function LimitedStats() {
     const { user } = useContext(UserContext);
     const winRatio = user && user.gamesPlayed > 0 ? (user.win / user.gamesPlayed) * 100 : 0;
     const [open, setOpen] = React.useState(false);
+    const socket = useContext(SocketContext);
+
     const handleClickOpen = () => {
         setOpen(true);
       }

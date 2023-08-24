@@ -13,6 +13,8 @@ import axios from 'axios';
 import { UserBlocks } from 'Components/Interfaces';
 import { Chatroom, ChatInUse, chatroomType } from 'Components/Interfaces';
 import { User } from 'Contexts/userContext';
+import { Popover } from '@mui/material';
+import InvitationPopover from "../ChatComponents/InvitationPopover"
 
 const Chat = () => {
   const theme = useTheme();
@@ -24,6 +26,8 @@ const Chat = () => {
   const [userBlocks, setUserBlocks] = useState<UserBlocks[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isBlocked, setIsBlocked] = useState<boolean>(false);
+  const [ showInvitation, setShowInvitation ] = useState(false);
+  const [ inviter, setInviter] = useState("null");
 
   // Handles the scrollbar to the bottom on scrolling chat messages
   useEffect(() => {
@@ -42,10 +46,20 @@ const Chat = () => {
     socket.on("clearHistory", () => clearHistory());
     socket.on("clearOtherHistory", (data: any) => clearOtherHistory(data));
     socket.on("closeSocket", () => socket.close());
+    socket.on("invitedToPlay", (data: any, acknowledge: any) => handleInvitation(data.inviterID, acknowledge));
+    socket.on("displayFailure", (data: any) => alert(data.msg));
     return () => {
       socket.off("messageResponse");
+      socket.off("connected");
+      socket.off("displayFailure");
     }
   }, []);
+
+  const handleInvitation = (inviterID: string, acknowledge: any) => {
+    acknowledge(true);
+    setShowInvitation(true);
+    setInviter(inviterID);
+  }
 
   const makeConnection = () => {
     const updatedUser: Partial<User> = {...user, userStatus: true};
@@ -220,6 +234,13 @@ const Chat = () => {
 
   return (
     <Box className={"chatSection"}>
+      <Box>
+        {showInvitation && <InvitationPopover
+          userA={user?.id}
+          userB={inviter}
+          open={showInvitation}
+          onClose={() => setShowInvitation(false)} />}
+      </Box>
       <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
         <List>
         {messages.map((message: Message, index: number) => {
