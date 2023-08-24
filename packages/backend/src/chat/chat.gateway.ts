@@ -33,15 +33,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-    @SubscribeMessage("clearMap")
-    async clearMap(client: Socket, id: string) {
-      // console.log("Clearing map");
-      // this.users.clear();
-      const _user = await this.userService.findBySocketID(client.id);
-      console.log(_user);
-      await this.userService.remove(id);
-    }
-
   findIDBySocket(socketID: string) {
     for (let [key, value] of this.users.entries()) {
       if (value === socketID) {
@@ -49,6 +40,28 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     }
     return ("null");
+  }
+
+  @SubscribeMessage("inviteToPlay")
+  async inviteToPlay(client: Socket, data: any) {
+    // this socket call invites another user to play pong
+    // it receives the client making the request
+    const _inviterID = this.findIDBySocket(client.id);
+    const _invitedUser = await this.userService.findUsername(data.username);
+
+    if (_inviterID !== "null") {
+      if (_inviterID === _invitedUser.id) {
+        this.server.to(client.id).emit("displayFailure", {msg: "You can't invite yourself to play, dummy!"});
+        return ;
+      }
+      this.server.timeout(15000).to(_invitedUser.socketID).emit("invitedToPlay", { inviterID: _inviterID }, (err, response) => {
+          if (err) {
+            this.server.to(client.id).emit("displayFailure", {msg: "Invitation timed out or user declined."});
+          } else {
+            console.log("Invitation was succesfull");
+          }
+        });
+    }
   }
 
   async handleConnection(client: Socket) {

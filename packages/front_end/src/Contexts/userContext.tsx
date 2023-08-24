@@ -28,6 +28,7 @@ export interface User {
 	Chatroom?: Chatroom[] ;
 	refresh_token?: string;
   chatInUse?: ChatInUse;
+  isInvited: boolean;
 }
 
 export interface MatchHistoryOne {
