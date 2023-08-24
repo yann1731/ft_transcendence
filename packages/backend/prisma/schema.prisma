@@ -33,7 +33,7 @@ model User {
   socketID             String            @default("null")
   avatar               String            @default("default.png")
   username             String            @unique
-  nickname             String            @unique
+  nickname             String            
   token                String            @unique
   token_created_at     Int
   token_expires_in     Int

@@ -34,6 +34,8 @@ export default class invited extends Phaser.Scene{
 	position!: Phaser.GameObjects.Text;
 
 	invited!: boolean;
+	end2: boolean = false;
+	start: boolean = false;
 
 	ballX!: number;
     ballY!: number;
@@ -337,81 +339,84 @@ export default class invited extends Phaser.Scene{
 			this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);   
 		}
 
+
 	}
 
 	update() {
-		if (this.invited === true){
-			this.paddle2.setVelocityY(0);
-		
-        	if (this.keys.w.isDown)
-        	    this.paddle2.setVelocityY(-this.paddlespeed);
-        	if (this.keys.s.isDown)
-        	    this.paddle2.setVelocityY(this.paddlespeed);
+		if (this.start === true){
+			if (this.invited === true){
+				this.paddle2.setVelocityY(0);
 			
-        	if (this.paddle2.body){
-        	    if (this.paddle2.body.y !== this.oldPosition)
-        	        this.socket.emit("movement", this.paddle2.body.y)
-        	    this.oldPosition = this.paddle2.body.y
-        	}
-		
-        	if (this.paddlespeed < 625)
-        	    this.paddlespeed += 0.5;
-		}
-		else{
-			if (this.ball.body)
-				if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
-					this.ball.body.x = this.physics.world.bounds.width - 1 - this.ball.body.width;
-					this.socket.emit("point", 1);
-					this.points2++;
-					this.score.setText(`${this.points2}          ${this.points1}`);
-					if (this.points2 === this.win)
-						this.end(2);
-					else
-						this.new_point(1);
-				}
+        		if (this.keys.w.isDown)
+        		    this.paddle2.setVelocityY(-this.paddlespeed);
+        		if (this.keys.s.isDown)
+        		    this.paddle2.setVelocityY(this.paddlespeed);
+				
+        		if (this.paddle2.body){
+        		    if (this.paddle2.body.y !== this.oldPosition)
+        		        this.socket.emit("movement", this.paddle2.body.y)
+        		    this.oldPosition = this.paddle2.body.y
+        		}
 			
-			if (this.ball.body)
-				if (this.ball.body?.x === 0) {
-					this.ball.body.x = 1;
-					this.socket.emit("point", 0);
-					this.points1++;
-					this.score.setText(`${this.points2}          ${this.points1}`);
-					if (this.points1 === this.win)
-					this.end(1);
-					else
-					this.new_point(2);
-				}
-			
-			if (this.paddle1.body)
-				this.paddle1.setVelocityY(0);
-
-			if (this.keys.w.isDown)
-				this.paddle1.setVelocityY(-this.paddlespeed);
-			if (this.keys.s.isDown)
-				this.paddle1.setVelocityY(this.paddlespeed);
-
-			if (this.paddle1.body){
-				if (this.paddle1.body.y !== this.oldPosition)
-					this.socket.emit("movement", this.paddle1.body.y)
-				this.oldPosition = this.paddle1.body.y
+        		if (this.paddlespeed < 625)
+        		    this.paddlespeed += 0.5;
 			}
-
-			if (this.paddlespeed < 625)
-				this.paddlespeed += 0.5;
-
-			if (this.ball.body){
-				if (this.newOldVelocityX !== 0)
-					if (this.ball.body.velocity.x !== this.newOldVelocityX){
-						this.ball.body.velocity.x = this.oldVelocityX;
-						this.oldVelocityX = 0;
-						this.newOldVelocityX = 0;
-						this.ball.setDrag(1.05)
+			else{
+				if (this.ball.body)
+					if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
+						this.ball.body.x = this.physics.world.bounds.width - 1 - this.ball.body.width;
+						this.socket.emit("point", 1);
+						this.points2++;
+						this.score.setText(`${this.points2}          ${this.points1}`);
+						if (this.points2 === this.win)
+							this.end(2);
+						else
+							this.new_point(1);
 					}
-				if(this.ball.body.velocity.x >= 1000)
-					this.ball.setDrag(1);
-			}
-
-			this.socket.emit("update", {x: this.ball.body?.x, y: this.ball.body?.y});
+				
+				if (this.ball.body)
+					if (this.ball.body?.x === 0) {
+						this.ball.body.x = 1;
+						this.socket.emit("point", 0);
+						this.points1++;
+						this.score.setText(`${this.points2}          ${this.points1}`);
+						if (this.points1 === this.win)
+						this.end(1);
+						else
+						this.new_point(2);
+					}
+				
+				if (this.paddle1.body)
+					this.paddle1.setVelocityY(0);
+				
+				if (this.keys.w.isDown)
+					this.paddle1.setVelocityY(-this.paddlespeed);
+				if (this.keys.s.isDown)
+					this.paddle1.setVelocityY(this.paddlespeed);
+				
+				if (this.paddle1.body){
+					if (this.paddle1.body.y !== this.oldPosition)
+						this.socket.emit("movement", this.paddle1.body.y)
+					this.oldPosition = this.paddle1.body.y
+				}
+			
+				if (this.paddlespeed < 625)
+					this.paddlespeed += 0.5;
+			
+				if (this.ball.body){
+					if (this.newOldVelocityX !== 0)
+						if (this.ball.body.velocity.x !== this.newOldVelocityX){
+							this.ball.body.velocity.x = this.oldVelocityX;
+							this.oldVelocityX = 0;
+							this.newOldVelocityX = 0;
+							this.ball.setDrag(1.05)
+						}
+					if(this.ball.body.velocity.x >= 1000)
+						this.ball.setDrag(1);
+				}
+			
+				this.socket.emit("update", {x: this.ball.body?.x, y: this.ball.body?.y});
+		}
 		}
 	}
 

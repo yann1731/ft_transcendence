@@ -162,7 +162,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 			for (let i = 0; i < this.oneGame.length; i++)
 				if (this.oneGame[i][0] === data.name){
 					try {
-						console.log(this.users.get(this.oneGame[i][1]), data.name, this.oneGame[i][1])
+						console.log(data.player ? 0 : 1)
 							await prisma.user.update({
 							where: {id: this.users.get(this.oneGame[i][1])},
 							data: {
