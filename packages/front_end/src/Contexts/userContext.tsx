@@ -30,6 +30,34 @@ export interface User {
   chatInUse?: ChatInUse;
 }
 
+export interface MatchHistoryOne {
+  id: string;
+  winnerId: string;
+  winnerScore: number;
+  loserId: string;
+  loserScore: number;
+  createdAt: string;
+}
+
+export interface MatchHistoryTwo {
+  id: string;
+  winnerId: string[];
+  winnerScore: number;
+  loserId: string[];
+  loserScore: number;
+
+  createdAt: string;
+}
+
+export interface MatchHistoryThree {
+  id: string;
+  winnerId: string[];
+  winnerScore: number;
+  loserId: string[];
+  loserScore: number;
+  createdAt: string;
+}
+
 export interface UserContextType {
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
