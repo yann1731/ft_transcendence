@@ -4,6 +4,7 @@ import { keyframes } from "@emotion/react";
 import axios from 'axios';
 import { UserContext } from "Contexts/userContext";
 import { useContext, useEffect } from "react";
+import { gameSocketContext } from "../../Contexts/gameSocketContext";
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
@@ -12,7 +13,9 @@ const spin = keyframes`
 
 export default function GetToken() {
   const {user, setUser} = useContext(UserContext);
-  
+  const socket = useContext(gameSocketContext);
+
+
   useEffect(() => {
     let urlParams = new URLSearchParams(window.location.search);
     let authorizationCode = urlParams.get("code");

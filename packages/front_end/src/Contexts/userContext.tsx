@@ -28,6 +28,36 @@ export interface User {
 	Chatroom?: Chatroom[] ;
 	refresh_token?: string;
   chatInUse?: ChatInUse;
+  isInvited: boolean;
+  host: boolean;
+}
+
+export interface MatchHistoryOne {
+  id: string;
+  winnerId: string;
+  winnerScore: number;
+  loserId: string;
+  loserScore: number;
+  createdAt: string;
+}
+
+export interface MatchHistoryTwo {
+  id: string;
+  winnerId: string[];
+  winnerScore: number;
+  loserId: string[];
+  loserScore: number;
+
+  createdAt: string;
+}
+
+export interface MatchHistoryThree {
+  id: string;
+  winnerId: string[];
+  winnerScore: number;
+  loserId: string[];
+  loserScore: number;
+  createdAt: string;
 }
 
 export interface UserContextType {

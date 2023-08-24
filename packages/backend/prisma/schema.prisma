@@ -33,7 +33,7 @@ model User {
   socketID             String            @default("null")
   avatar               String            @default("default.png")
   username             String            @unique
-  nickname             String            @unique
+  nickname             String            
   token                String            @unique
   token_created_at     Int
   token_expires_in     Int
@@ -145,11 +145,9 @@ model MatchHistoryOne {
 model MatchHistoryTwo {
   id            String            @id @default(uuid())
 
-  winnerOneId   String
-  winnerTwoId   String
+  winnerId      String[]
   winnerScore   Int
-  loserOneId    String
-  loserTwoId    String
+  loserId       String[]
   loserScore    Int
 
   createdAt     DateTime          @default(now())

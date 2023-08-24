@@ -8,7 +8,9 @@ import HomeGameBar from './HomeGameBar';
 import { UserContext } from 'Contexts/userContext';
 import SignIn from 'Components/Login/LoginPage';
 import LoginToolBar from 'Components/Login/LoginToolBar';
-import { gamesocket, SocketContext } from 'Contexts/socketContext';
+import { SocketContext } from 'Contexts/socketContext';
+import { gamesocket } from 'Contexts/gameSocketContext';
+
 
 export default function Home() {
 	const { user } = useContext(UserContext);

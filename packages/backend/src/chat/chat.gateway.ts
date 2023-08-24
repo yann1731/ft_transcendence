@@ -33,15 +33,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-    @SubscribeMessage("clearMap")
-    async clearMap(client: Socket, id: string) {
-      // console.log("Clearing map");
-      // this.users.clear();
-      const _user = await this.userService.findBySocketID(client.id);
-      console.log(_user);
-      await this.userService.remove(id);
-    }
-
   findIDBySocket(socketID: string) {
     for (let [key, value] of this.users.entries()) {
       if (value === socketID) {
@@ -49,6 +40,28 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     }
     return ("null");
+  }
+
+  @SubscribeMessage("inviteToPlay")
+  async inviteToPlay(client: Socket, data: any) {
+    // this socket call invites another user to play pong
+    // it receives the client making the request
+    const _inviterID = this.findIDBySocket(client.id);
+    const _invitedUser = await this.userService.findUsername(data.username);
+
+    if (_inviterID !== "null") {
+      if (_inviterID === _invitedUser.id) {
+        this.server.to(client.id).emit("displayFailure", {msg: "You can't invite yourself to play, dummy!"});
+        return ;
+      }
+      this.server.timeout(15000).to(_invitedUser.socketID).emit("invitedToPlay", { inviterID: _inviterID }, (err, response) => {
+          if (err) {
+            this.server.to(client.id).emit("displayFailure", {msg: "Invitation timed out or user declined."});
+          } else {
+            console.log("Invitation was succesfull");
+          }
+        });
+    }
   }
 
   async handleConnection(client: Socket) {
@@ -60,12 +73,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("connected")
   async handleConnected(client: Socket, id: string) {
     if (typeof id !== "string") {
-      console.log("ID !== string: " + id);
+     // console.log("ID !== string: " + id);
       return ;
     }
-    console.log(this.users);
+    //console.log(this.users);
     this.users.set(id, client.id);
-    console.log("Handling connection for: " + id);
+    //console.log("Handling connection for: " + id);
     await this.registerUser(client, id);
     this.server.emit("refresh2");
   }
@@ -92,7 +105,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("registerUser")
   async registerUser(client: Socket, id: string) {
     if (id !== undefined) {
-      console.log("Registering: " + id + " (" + client.id + ")");
+      //console.log("Registering: " + id + " (" + client.id + ")");
       await this.userService.updateSocketID(client.id, id);
       await this.userService.updateStatus("online", id);
       this.server.emit("refresh2");
@@ -148,7 +161,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async SendChatMessage(client: Socket, createChatroomMessageDto: CreateChatroomMessageDto) {
     const _chatUsers = await this.chatroomUserService.findAllChatroomUsersByChatroomId(createChatroomMessageDto.chatroomId);
     const _chatUser = _chatUsers.find(element => element.userId === createChatroomMessageDto.senderId);
-    console.log("muteStatus: " + _chatUser.muteStatus);
+    //console.log("muteStatus: " + _chatUser.muteStatus);
     if (_chatUser.muteStatus === true) {
       const _now = new Date();
       if (_now.getMinutes() - _chatUser.mutedAt.getMinutes() >= 5) {

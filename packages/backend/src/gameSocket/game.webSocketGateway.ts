@@ -33,6 +33,12 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
     YvelocityMin: number = 125;
     YvelocityMax: number = 225;
 
+	@SubscribeMessage("invite")
+	async handleInvitation(client: Socket, data: any) {
+		console.log("Handling Invitation!");
+		
+	}
+
 	handleConnection(client: Socket) {
 		console.log('New client connected to gameSocket');
 		this.server.to(client.id).emit("connected");
@@ -87,6 +93,52 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 		this.users.delete(client.id);
 	}
 
+	@SubscribeMessage("disconnected")
+	handledDisconnected(client: Socket){
+		for (let i = 0; i < this.oneHost.length; i++)
+			if (this.oneHost[i][5] === client)
+				this.oneHost.splice(i, 1);
+		for (let i = 0; i < this.twoHost.length; i++)
+			if (this.twoHost[i][0] === client)
+				this.twoHost.splice(i, 1);
+		for (let i = 0; i < this.threeHost.length; i++)
+			if (this.threeHost[i][0] === client)
+				this.threeHost.splice(i, 1);
+
+
+		for (let i = 0; i < this.oneWaiting.length; i++)
+			if (this.oneWaiting[i] === client)
+				this.oneWaiting.splice(i, 1);
+		for (let i = 0; i < this.twoWaiting.length; i++)
+			if (this.twoWaiting[i] === client)
+				this.twoWaiting.splice(i, 1);
+		for (let i = 0; i < this.threeWaiting.length; i++)
+			if (this.threeWaiting[i] === client)
+				this.threeWaiting.splice(i, 1);
+
+		for (let i = 0; i < this.oneGame.length; i++)
+			for (let j = 1; j < 3; j++)
+				if (this.oneGame[i][j] === client.id){
+					this.server.to(this.oneGame[i][0]).emit("disconnected")
+					this.oneGame.splice(i, 1);
+					break;
+				}
+		for (let i = 0; i < this.twoGame.length; i++)
+			for (let j = 1; j < 5; j++)
+				if (this.twoGame[i][j] === client.id){
+					this.server.to(this.twoGame[i][0]).emit("disconnected")
+					this.twoGame.splice(i, 1);
+					break;
+				}
+		for (let i = 0; i < this.threeGame.length; i++)
+			for (let j = 1; j < 5; j++)
+				if (this.threeGame[i][j] === client.id){
+					this.server.to(this.threeGame[i][0]).emit("disconnected")
+					this.threeGame.splice(i, 1);
+					break;
+				}	
+	}
+
 	@SubscribeMessage("connected")
 	handledConnected(client: Socket, data: any){
 		this.users.set(client.id, data.name);
@@ -116,7 +168,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 			for (let i = 0; i < this.oneGame.length; i++)
 				if (this.oneGame[i][0] === data.name){
 					try {
-						console.log(this.users.get(this.oneGame[i][1]), data.name, this.oneGame[i][1])
+						console.log(data.player ? 0 : 1)
 							await prisma.user.update({
 							where: {id: this.users.get(this.oneGame[i][1])},
 							data: {

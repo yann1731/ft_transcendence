@@ -11,6 +11,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import axios, { AxiosResponse } from 'axios';
+import { SocketContext } from 'Contexts/socketContext';
 
 const Item = styled(Paper)(({ theme }) => ({
 	...theme.typography.body2,
@@ -40,7 +41,6 @@ const Item = styled(Paper)(({ theme }) => ({
                     <Item>Win Ratio: {winRatio.toFixed(2)}</Item>
                 </Grid>
                 <MatchHistory />
-                <MatchHistory />
                 <Grid item xs={13}>
                     <Handler2FA></Handler2FA>
                 </Grid>
@@ -58,6 +58,8 @@ export function LimitedStats() {
     const { user } = useContext(UserContext);
     const winRatio = user && user.gamesPlayed > 0 ? (user.win / user.gamesPlayed) * 100 : 0;
     const [open, setOpen] = React.useState(false);
+    const socket = useContext(SocketContext);
+
     const handleClickOpen = () => {
         setOpen(true);
       }

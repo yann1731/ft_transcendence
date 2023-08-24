@@ -7,7 +7,7 @@ import { UserContext, User } from 'Contexts/userContext';
 import { chatroomType, ChatroomUser, userPermission, Chatroom } from 'Components/Interfaces';
 import { LimitedProfile } from 'Components/ProfilePage/Profile';
 import { SocketContext } from 'Contexts/socketContext';
-
+import { useNavigate } from 'react-router-dom';
 import { Message } from '../../Interfaces';
 
 interface OptionBarConversationProps { 
@@ -35,6 +35,7 @@ const OptionBarConversation: React.FC = () => {
   const open = Boolean(anchorEl);
   const id = open ? 'contact-options-popover' : undefined;
   const socket = React.useContext(SocketContext);
+  const navigate = useNavigate();
   
 
   React.useEffect(() => {
@@ -108,6 +109,16 @@ const OptionBarConversation: React.FC = () => {
         const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
         updateUser(updatedUser);
       }
+    })
+
+    socket.on("invite", (data: any) => {
+      const newUser: Partial<User> = {
+        ...user,
+        isInvited: true,
+        host: true
+      }
+      updateUser(newUser)
+      navigate("/home")
     })
   });
 
@@ -433,8 +444,8 @@ const OptionBarConversation: React.FC = () => {
     }
     else if (mode === "Invite to Play")
     {
-      alert(friendChat?.nickname);
-      closeChat();
+      
+      socket.emit("inviteToPlay", { username: friendChat?.nickname });
     }
 
     setUserName('');
