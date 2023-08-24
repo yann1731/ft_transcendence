@@ -29,6 +29,7 @@ export interface User {
 	refresh_token?: string;
   chatInUse?: ChatInUse;
   isInvited: boolean;
+  host: boolean;
 }
 
 export interface UserContextType {

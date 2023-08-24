@@ -36,7 +36,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	@SubscribeMessage("invite")
 	async handleInvitation(client: Socket, data: any) {
 		console.log("Handling Invitation!");
-		alert(data.userA + " " + data.userB);
+		
 	}
 
 	handleConnection(client: Socket) {

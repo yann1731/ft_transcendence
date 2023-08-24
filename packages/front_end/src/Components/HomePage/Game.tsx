@@ -10,7 +10,7 @@ export default function PongGame() {
   const {user} = React.useContext(UserContext);
 
   React.useEffect(() => {
-    if (true){
+    if (user?.isInvited !== true){
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         parent: 'PONG',
@@ -56,7 +56,7 @@ export default function PongGame() {
       };
 
       const game = new Phaser.Game(config);
-      game.scene.start('invited', {name: user?.id, socket: gamesocket});
+      game.scene.start('invited', {name: user?.id, socket: gamesocket, invited: user?.host});
     }
   }, []);
 
