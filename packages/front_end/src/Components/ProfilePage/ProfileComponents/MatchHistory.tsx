@@ -58,11 +58,16 @@ export default function MatchHistory() {
             const matchDataTwo: MatchHistoryTwo[] = response.data;
             setMatchDataTwo(matchDataTwo);
 
-            const winnerIds = matchDataTwo.map(match => match.winnerId);
-            const loserIds = matchDataTwo.map(match => match.loserId);
+            const winnerIds = matchDataTwo.flatMap(match => match.winnerId);
+            const loserIds = matchDataTwo.flatMap(match => match.loserId);
+            
+            for (const winnerId of winnerIds) {
+                fetchUsernames([winnerId], setWinnerUsernames);
+            }
 
-            fetchUsernames(winnerIds, setWinnerUsernames);
-            fetchUsernames(loserIds, setLoserUsernames);
+            for (const loserId of loserIds) {
+                fetchUsernames([loserId], setLoserUsernames);
+            }
         } catch (error) {
             console.error("Error fetching match data:", error);
         }
@@ -78,11 +83,17 @@ export default function MatchHistory() {
             const matchDataThree: MatchHistoryThree[] = response.data;
             setMatchDataThree(matchDataThree);
 
-            const winnerIds = matchDataThree.map(match => match.winnerId);
-            const loserIds = matchDataThree.map(match => match.loserId);
+            const winnerIds = matchDataThree.flatMap(match => match.winnerId);
+            const loserIds = matchDataThree.flatMap(match => match.loserId);
 
-            fetchUsernames(winnerIds, setWinnerUsernames);
-            fetchUsernames(loserIds, setLoserUsernames);
+            for (const winnerId of winnerIds) {
+                fetchUsernames([winnerId], setWinnerUsernames);
+            }
+
+            for (const loserId of loserIds) {
+                fetchUsernames([loserId], setLoserUsernames);
+            }
+
         } catch (error) {
             console.error("Error fetching match data:", error);
         }
@@ -118,7 +129,7 @@ export default function MatchHistory() {
                 <Dialog open={open} onClose={handleClickClose}>
                 <DialogTitle>Match History</DialogTitle>
                 <DialogContent>
-                    {Matches.map((match, index) => (
+                    {MatchesOne.map((match, index) => (
                         <div key={match.id}>
                             <Typography sx={{ color: 'green' }}>Winner: {winnerUsernames[index]}</Typography>
                             <Typography sx={{ color: 'red' }}>Loser: {loserUsernames[index]}</Typography>
