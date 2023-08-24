@@ -256,10 +256,8 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					try {
 						await prisma.matchHistoryTwo.create({
 							data: {
-								winnerOneId: data.player ? this.users.get((this.twoGame[i][2])) : this.users.get((this.twoGame[i][1])),
-								winnerTwoId: data.player ? this.users.get((this.twoGame[i][4])) : this.users.get((this.twoGame[i][3])),
-								loserOneId: data.player ? this.users.get((this.twoGame[i][1])) : this.users.get((this.twoGame[i][2])),
-								loserTwoId: data.player ? this.users.get((this.twoGame[i][3])) : this.users.get((this.twoGame[i][4])),
+								winnerId: data.player ? [this.users.get((this.twoGame[i][2])), this.users.get((this.twoGame[i][4]))] : [this.users.get((this.twoGame[i][1])), this.users.get((this.twoGame[i][3]))],
+								loserId: data.player ? [this.users.get((this.twoGame[i][1])), this.users.get((this.twoGame[i][3]))] : [this.users.get((this.twoGame[i][2])), this.users.get((this.twoGame[i][4]))],
 								winnerScore: (data.score1 > data.score2) ? data.score1 : data.score2,
 								loserScore: (data.score1 > data.score2) ? data.score2 : data.score1
 							}
