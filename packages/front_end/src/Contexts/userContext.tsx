@@ -39,6 +39,27 @@ export interface MatchHistoryOne {
   createdAt: string;
 }
 
+export interface MatchHistoryTwo {
+  id: string;
+  winnerOneId: string;
+  winnerTwoId: string;
+  winnerScore: number;
+  loserOneId: string;
+  loserTwoId: string;
+  loserScore: number;
+
+  createdAt: string;
+}
+
+export interface MatchHistoryThree {
+  id: string;
+  winnerId: string[];
+  winnerScore: number;
+  loserId: string[];
+  loserScore: number;
+  createdAt: string;
+}
+
 export interface UserContextType {
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;

@@ -1,19 +1,23 @@
 import * as React from 'react';
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import axios from 'axios';
-import { UserContext, MatchHistoryOne, User } from 'Contexts/userContext';
+import { UserContext, MatchHistoryOne, MatchHistoryTwo, MatchHistoryThree, User } from 'Contexts/userContext';
 import { useContext, useEffect } from 'react';
 
 export default function MatchHistory() {
     
     const [open, setOpen] = React.useState(false);
-    const [Matches, setMatchData] = React.useState<MatchHistoryOne[]>([]);
+    const [MatchesOne, setMatchDataOne] = React.useState<MatchHistoryOne[]>([]);
+    const [MatchesTwo, setMatchDataTwo] = React.useState<MatchHistoryTwo[]>([]);
+    const [MatchesThree, setMatchDataThree] = React.useState<MatchHistoryThree[]>([]);
     const [winnerUsernames, setWinnerUsernames] = React.useState<string[]>([]);
     const [loserUsernames, setLoserUsernames] = React.useState<string[]>([]);
     const {user, updateUser} = useContext(UserContext);
 
     useEffect(() => {
-        getMatchData();
+        getMatchDataOne();
+        getMatchDataTwo();
+        getMatchDataThree();
     })
     
     const handleClickOpen = () => {
@@ -24,18 +28,58 @@ export default function MatchHistory() {
         setOpen(false);
     }
 
-    const getMatchData = async() => {
+    const getMatchDataOne = async() => {
         try {
             const response = await axios.get('http://localhost:4242/match-history/one', {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
             }});
 
-            const matchData: MatchHistoryOne[] = response.data;
-            setMatchData(matchData);
+            const matchDataOne: MatchHistoryOne[] = response.data;
+            setMatchDataOne(matchDataOne);
 
-            const winnerIds = matchData.map(match => match.winnerId);
-            const loserIds = matchData.map(match => match.loserId);
+            const winnerIds = matchDataOne.map(match => match.winnerId);
+            const loserIds = matchDataOne.map(match => match.loserId);
+
+            fetchUsernames(winnerIds, setWinnerUsernames);
+            fetchUsernames(loserIds, setLoserUsernames);
+        } catch (error) {
+            console.error("Error fetching match data:", error);
+        }
+    }
+
+    const getMatchDataTwo = async() => {
+        try {
+            const response = await axios.get('http://localhost:4242/match-history/two', {headers: {
+                'Authorization': user?.token,
+                'userId': user?.id
+            }});
+
+            const matchDataTwo: MatchHistoryTwo[] = response.data;
+            setMatchDataTwo(matchDataTwo);
+
+            const winnerIds = matchDataTwo.map(match => match.winnerId);
+            const loserIds = matchDataTwo.map(match => match.loserId);
+
+            fetchUsernames(winnerIds, setWinnerUsernames);
+            fetchUsernames(loserIds, setLoserUsernames);
+        } catch (error) {
+            console.error("Error fetching match data:", error);
+        }
+    }
+
+    const getMatchDataThree = async() => {
+        try {
+            const response = await axios.get('http://localhost:4242/match-history/three', {headers: {
+                'Authorization': user?.token,
+                'userId': user?.id
+            }});
+
+            const matchDataThree: MatchHistoryThree[] = response.data;
+            setMatchDataThree(matchDataThree);
+
+            const winnerIds = matchDataThree.map(match => match.winnerId);
+            const loserIds = matchDataThree.map(match => match.loserId);
 
             fetchUsernames(winnerIds, setWinnerUsernames);
             fetchUsernames(loserIds, setLoserUsernames);
