@@ -1,9 +1,20 @@
 import * as React from 'react';
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import axios from 'axios';
+import { UserContext, MatchHistoryOne, User } from 'Contexts/userContext';
+import { useContext, useEffect } from 'react';
 
 export default function MatchHistory() {
     
     const [open, setOpen] = React.useState(false);
+    const [Matches, setMatchData] = React.useState<MatchHistoryOne[]>([]);
+    const [winnerUsernames, setWinnerUsernames] = React.useState<string[]>([]);
+    const [loserUsernames, setLoserUsernames] = React.useState<string[]>([]);
+    const {user, updateUser} = useContext(UserContext);
+
+    useEffect(() => {
+        getMatchData();
+    })
     
     const handleClickOpen = () => {
         setOpen(true);
@@ -11,6 +22,42 @@ export default function MatchHistory() {
 
     const handleClickClose = () => {
         setOpen(false);
+    }
+
+    const getMatchData = async() => {
+        try {
+            const response = await axios.get('http://localhost:4242/match-history/one', {headers: {
+                'Authorization': user?.token,
+                'userId': user?.id
+            }});
+
+            const matchData: MatchHistoryOne[] = response.data;
+            setMatchData(matchData);
+
+            const winnerIds = matchData.map(match => match.winnerId);
+            const loserIds = matchData.map(match => match.loserId);
+
+            fetchUsernames(winnerIds, setWinnerUsernames);
+            fetchUsernames(loserIds, setLoserUsernames);
+        } catch (error) {
+            console.error("Error fetching match data:", error);
+        }
+    }
+
+    const fetchUsernames = async (userIds: string[], setUsernameState: React.Dispatch<React.SetStateAction<string[]>>) => {
+        try {
+            const usernames: string[] = [];
+
+            for (const userId of userIds) {
+                const response = await axios.get(`http://localhost:4242/user/${userId}`);
+                const userData = response.data;
+                usernames.push(userData.username);
+            }
+
+            setUsernameState(usernames);
+        } catch (error) {
+            console.error("Error fetching usernames:", error);
+        }
     }
 
     return (
@@ -24,6 +71,21 @@ export default function MatchHistory() {
                         </Typography>
                     </Button>
                 </Box>
+                <Dialog open={open} onClose={handleClickClose}>
+                <DialogTitle>Match History</DialogTitle>
+                <DialogContent>
+                    {Matches.map((match, index) => (
+                        <div key={match.id}>
+                            <Typography sx={{ color: 'green' }}>Winner: {winnerUsernames[index]}</Typography>
+                            <Typography sx={{ color: 'red' }}>Loser: {loserUsernames[index]}</Typography>
+                            <Typography>Score: {match.winnerScore} - {match.loserScore}</Typography>
+                        </div>
+                    ))}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClickClose}>Close</Button>
+                </DialogActions>
+            </Dialog>
                 <Box sx={{ width: '33%', marginRight: '5px' }}>
                     <Button className="profilePageButtons" onClick={handleClickOpen}>
                         <Typography>
@@ -39,15 +101,6 @@ export default function MatchHistory() {
                     </Button>
                 </Box>
             </Box>
-            <Dialog open={open} onClose={handleClickClose}>
-                <DialogTitle>Match History</DialogTitle>
-                <DialogContent>
-                    MATCH HISTORY GOES HERE
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClickClose} className="profilePageButtons">OK</Button>
-                </DialogActions>
-            </Dialog>
         </Box>
     );
 }
