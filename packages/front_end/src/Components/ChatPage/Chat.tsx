@@ -10,16 +10,29 @@ import Chat from './ChatBoxes/ChatBox';
 import OptionBarConversation from './ChatMenus/OptionBarConversation';
 import { io, Socket } from "socket.io-client";
 import { SocketContext, socket} from "../../Contexts/socketContext";
-import { UserContext } from 'Contexts/userContext';
+import { User, UserContext } from 'Contexts/userContext';
 import SignIn from 'Components/Login/LoginPage';
 import LoginToolBar from 'Components/Login/LoginToolBar';
 import { Message } from '../Interfaces';
+import { gameSocketContext } from 'Contexts/gameSocketContext';
 
 function ChatPage() {
 	const { user } = useContext(UserContext);
 	const socket = useContext(SocketContext);
+	const gamesocket = useContext(gameSocketContext)
 
 	socket.connect();
+
+	gamesocket.on("invite", () => {
+		const newUser: Partial<User> = {
+		  ...user,
+		  isInvited: true,
+		  host: false
+		}
+		updateUser(newUser)
+		navigate("/home")
+	  })
+
 	if (!user) {
 		return (
 			<div>

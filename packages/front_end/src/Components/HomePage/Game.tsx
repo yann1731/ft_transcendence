@@ -3,11 +3,13 @@ import '../../App.css';
 import pong from './Pong'
 import invited from './Invited';
 import Box from '@mui/material/Box';
-import { UserContext } from 'Contexts/userContext';
+import { User, UserContext } from 'Contexts/userContext';
 import { gamesocket } from 'Contexts/gameSocketContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function PongGame() {
-  const {user} = React.useContext(UserContext);
+  const {user, updateUser} = React.useContext(UserContext);
+  const navigate = useNavigate()
 
   React.useEffect(() => {
     if (user?.isInvited !== true){
@@ -62,6 +64,16 @@ export default function PongGame() {
 
   gamesocket.on("connected", () => {
     gamesocket.emit("connected", {name: user?.id})
+
+    gamesocket.on("invite", () => {
+      const newUser: Partial<User> = {
+        ...user,
+        isInvited: true,
+        host: false
+      }
+      updateUser(newUser)
+      navigate("/home")
+    })
   })
 
   return (
