@@ -433,8 +433,8 @@ const OptionBarConversation: React.FC = () => {
     }
     else if (mode === "Invite to Play")
     {
-      alert(friendChat?.nickname);
-      closeChat();
+      // add Socket calls here
+      socket.emit("inviteToPlay", { username: friendChat?.nickname });
     }
 
     setUserName('');

@@ -99,7 +99,7 @@ export function ReadOnlyProfile({ userAvatar, userId, nickname }: LimitedProfile
 			flexDirection: "column",
 			alignItems: 'center',
 		}}>
-		<LimitedStats />
+		<LimitedStats/>
 		</Box>
 	</div>	
 	)

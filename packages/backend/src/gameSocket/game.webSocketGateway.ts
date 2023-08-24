@@ -33,6 +33,12 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
     YvelocityMin: number = 125;
     YvelocityMax: number = 225;
 
+	@SubscribeMessage("invite")
+	async handleInvitation(client: Socket, data: any) {
+		console.log("Handling Invitation!");
+		alert(data.userA + " " + data.userB);
+	}
+
 	handleConnection(client: Socket) {
 		console.log('New client connected to gameSocket');
 		this.server.to(client.id).emit("connected");
