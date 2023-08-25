@@ -25,15 +25,12 @@ function ChatPage() {
 
 	socket.connect();
 
-	gamesocket.on("invite", () => {
-		const newUser: Partial<User> = {
-		  ...user,
-		  isInvited: true,
-		  host: false
-		}
-		updateUser(newUser)
-		navigate("/home")
-	  })
+	 /*  const newUser: Partial<User> = {
+		...user,
+		isInvited: false,
+		host: false
+	}
+	updateUser(newUser) */
 
 	if (!user) {
 		return (

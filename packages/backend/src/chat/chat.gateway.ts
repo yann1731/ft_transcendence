@@ -48,7 +48,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // it receives the client making the request
     const _inviterID = this.findIDBySocket(client.id);
     const _invitedUser = await this.userService.findUsername(data.username);
-
+    console.log("try to send invite")
     if (_inviterID !== "null") {
       if (_inviterID === _invitedUser.id) {
         this.server.to(client.id).emit("displayFailure", {msg: "You can't invite yourself to play, dummy!"});
@@ -67,7 +67,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket) {
     console.log("Client ( " + client.id + " ) connected to chat");
     this.server.to(client.id).emit("connected");
-    this.server.emit("refresh2");
+    //this.server.emit("refresh2");
   }
 
   @SubscribeMessage("connected")

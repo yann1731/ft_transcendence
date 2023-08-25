@@ -1136,7 +1136,7 @@ export default class pong extends Phaser.Scene{
 					this.points2++;
 					this.score.setText(`${this.points2}          ${this.points1}`);
 					if (this.points2 === this.win)
-						this.end(false);
+						this.end(false, 1);
 					else
 						this.new_point(1);
 				}
@@ -1155,7 +1155,7 @@ export default class pong extends Phaser.Scene{
 						this.multiball.disableBody();
 						this.score.setText(`${this.points2}          ${this.points1}`);
 						if (this.points2 === this.win)
-							this.end(false);
+							this.end(false, 1);
 						else
 							this.new_point(1);
 					}
@@ -1174,7 +1174,7 @@ export default class pong extends Phaser.Scene{
 					this.points1++;
 					this.score.setText(`${this.points2}          ${this.points1}`);
 					if (this.points1 === this.win)
-					this.end(true);
+					this.end(true, 1);
 					else
 					this.new_point(2);
 				}
@@ -1193,7 +1193,7 @@ export default class pong extends Phaser.Scene{
 						this.points1++;
 						this.score.setText(`${this.points2}          ${this.points1}`);
 						if (this.points1 === this.win)
-							this.end(true);
+							this.end(true, 1);
 						else
 							this.new_point(2);
 					}
@@ -1686,7 +1686,7 @@ export default class pong extends Phaser.Scene{
                 this.points2++;
                 this.score.setText(`${this.points2}          ${this.points1}`);
                 if (this.points2 === this.win)
-                    this.end(false);
+                    this.end(false, 2);
                 else
                     this.new_point(1);
             	}
@@ -1705,7 +1705,7 @@ export default class pong extends Phaser.Scene{
         	            this.multiball.disableBody();
         	            this.score.setText(`${this.points2}          ${this.points1}`);
         	            if (this.points2 === this.win)
-        	                this.end(false);
+        	                this.end(false, 2);
         	            else
         	                this.new_point(1);
         	        }
@@ -1724,7 +1724,7 @@ export default class pong extends Phaser.Scene{
         	        this.points1++;
         	        this.score.setText(`${this.points2}          ${this.points1}`);
         	        if (this.points1 === this.win)
-        	        this.end(true);
+        	        this.end(true, 2);
         	        else
         	        this.new_point(2);
         	    }
@@ -1743,7 +1743,7 @@ export default class pong extends Phaser.Scene{
         	                this.points1++;
         	                this.score.setText(`${this.points2}          ${this.points1}`);
         	                if (this.points1 === this.win)
-        	                    this.end(true);
+        	                    this.end(true, 2);
         	                else
         	                    this.new_point(2);
         	            }
@@ -2288,7 +2288,7 @@ export default class pong extends Phaser.Scene{
         	        this.reduce = false;
         	        this.score.setText(`${this.points2}          ${this.points1}`);
         	        if (this.points2 === this.win)
-        	            this.end(2);
+        	            this.end(2, 3);
         	        else
         	            this.new_point(1);
         	    }
@@ -2316,7 +2316,7 @@ export default class pong extends Phaser.Scene{
         	            this.reduce = false;
         	            this.score.setText(`${this.points2}          ${this.points1}`);
         	            if (this.points2 === this.win)
-        	                this.end(2);
+        	                this.end(2, 3);
         	            else
         	                this.new_point(1);
         	        }
@@ -2336,7 +2336,7 @@ export default class pong extends Phaser.Scene{
         	            this.multiball.disableBody();
         	        this.score.setText(`${this.points2}          ${this.points1}`);
         	        if (this.points1 === this.win)
-        	            this.end(1);
+        	            this.end(1, 3);
         	        else
         	            this.new_point(2);
         	    }
@@ -2356,7 +2356,7 @@ export default class pong extends Phaser.Scene{
         	            this.multiball.disableBody();
         	            this.score.setText(`${this.points2}          ${this.points1}`);
         	            if (this.points1 === this.win)
-        	                this.end(1);
+        	                this.end(1, 3);
         	            else
         	                this.new_point(2);
         	        }  */
@@ -2406,7 +2406,7 @@ export default class pong extends Phaser.Scene{
 					this.points2++;
 					this.score.setText(`${this.points2}          ${this.points1}`);
 					if (this.points2 === this.win)
-						this.end(true);
+						this.end(true, 3);
 					else
 						this.new_point(1);
 				}
@@ -3094,11 +3094,11 @@ export default class pong extends Phaser.Scene{
         }, [], this);
     }
 
-    end(player:  boolean){
+    end(player:  boolean, which: number){
 		this.end2 = true;
 		this.socket.off("movement");
 		this.socket.off("movement2");
-        this.socket.emit("end", {which: 1, name: this.name, player: player, score1: this.points1, score2: this.points2 })
+        this.socket.emit("end", {which: which, name: this.name, player: player, score1: this.points1, score2: this.points2 })
         if (this.power)
             this.power.setVisible(false);
         if (this.random === true || this.wall === true){

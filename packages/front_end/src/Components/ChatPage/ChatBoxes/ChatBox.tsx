@@ -15,6 +15,9 @@ import { Chatroom, ChatInUse, chatroomType } from 'Components/Interfaces';
 import { User } from 'Contexts/userContext';
 import { Popover } from '@mui/material';
 import InvitationPopover from "../ChatComponents/InvitationPopover"
+import { allowedNodeEnvironmentFlags } from 'process';
+import { gameSocketContext } from 'Contexts/gameSocketContext';
+import { useNavigate } from 'react-router-dom';
 
 const Chat = () => {
   const theme = useTheme();
@@ -22,12 +25,16 @@ const Chat = () => {
 
   const {updateUser, user} = useContext(UserContext);
   const socket = useContext(SocketContext);
+  const gamesocket = useContext(gameSocketContext)
   const [messages, setMessages] = useState<Message[]>([]);
   const [userBlocks, setUserBlocks] = useState<UserBlocks[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isBlocked, setIsBlocked] = useState<boolean>(false);
   const [ showInvitation, setShowInvitation ] = useState(false);
   const [ inviter, setInviter] = useState("null");
+  const navigate = useNavigate();
+
+  
 
   // Handles the scrollbar to the bottom on scrolling chat messages
   useEffect(() => {
@@ -39,6 +46,7 @@ const Chat = () => {
 
   // socket.on("Testing", () => alert("Wuddup!"));
   useEffect(() => {
+
     socket.on('messageResponse', (data: any) => displayMessage(data));
     socket.on("sendHistory", (data: any) => makeHistory(data));
     socket.on("connected", () => socket.emit("connected"));
@@ -48,12 +56,22 @@ const Chat = () => {
     socket.on("closeSocket", () => socket.close());
     socket.on("invitedToPlay", (data: any, acknowledge: any) => handleInvitation(data.inviterID, acknowledge));
     socket.on("displayFailure", (data: any) => alert(data.msg));
+
+    gamesocket.on("invite", () => {
+      localStorage.setItem("host" + user?.username, "true")
+      localStorage.setItem("invite" + user?.username, "true")
+      navigate("/home")
+    })
+
+    localStorage.setItem("host" + user?.username, "false")
+    localStorage.setItem("invite" + user?.username, "false")
+
     return () => {
       socket.off("messageResponse");
       socket.off("connected");
       socket.off("displayFailure");
     }
-  }, []);
+  }, [])
 
   const handleInvitation = (inviterID: string, acknowledge: any) => {
     console.log('getting invite');

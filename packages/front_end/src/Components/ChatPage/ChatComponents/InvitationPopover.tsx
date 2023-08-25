@@ -1,16 +1,18 @@
 import React from 'react';
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { SocketContext } from 'Contexts/socketContext';
 import { gameSocketContext } from 'Contexts/gameSocketContext';
 import { useContext } from "react";
 import Popover from '@mui/material/Popover';
 import { useNavigate } from 'react-router-dom';
 import { User, UserContext } from 'Contexts/userContext';
+import { useEffect, useRef, useState } from 'react';
 
 function InvitationPopover({ onClose, userA, userB }: any) {
+    const anchorRef = useRef<HTMLDivElement | null>(null);
     const socket = useContext(SocketContext);
     const gameSocket = useContext(gameSocketContext);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     }
@@ -22,41 +24,51 @@ function InvitationPopover({ onClose, userA, userB }: any) {
     const navigate = useNavigate();
     const {user, updateUser} = useContext(UserContext)
 
+    useEffect(() => {
+        if (anchorRef.current) {
+            setAnchorEl(anchorRef.current);
+        }
+    }, []);
+
+
     const createInvitation = () => {
         gameSocket.emit("invite", { userA: userA, userB: userB });
 
-        const newUser: Partial<User> = {
-            ...user,
-            isInvited: true,
-            host: false
-        }
-        updateUser(newUser)
+        localStorage.setItem("host" + user?.username, "false")
+        localStorage.setItem("invite" + user?.username, "true")
         navigate("/home")
         onClose();
     }
 
     console.log("youpi")
     return (
-        // <Popover
-        //     id={id}
-        //     open={open}
-        //     anchorEl={anchorEl}
-        //     onClose={handleClose}
-        //     anchorOrigin={{
-        //       vertical: 'bottom',
-        //       horizontal: 'right',
-        //     }}
-        //     transformOrigin={{
-        //       vertical: 'top',
-        //       horizontal: 'right',
-        //     }}
-        // >
-            <Box className="invitation-popover">
-                <p>{userA} You've been invited to play pong by {userB}!</p>
-                <button onClick={onClose}>Decline</button>
-                <button onClick={createInvitation}>Accept</button>
+        <div>
+            <div ref={anchorRef} id="invitation-popover-anchor">
+            </div>
+            <Popover
+                id="invitation-popover"
+                open={Boolean(anchorEl)}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                style={{ top: '40%' }}
+            >
+            <Box className="invitationBox">
+                {userA} You've been invited to play pong by {userB}!
+                <Box className="invitationButtonsBox">
+                    <Button onClick={handleClose} className="profilePageButtons" sx={{ width: '150px', mt: 5 }}>Decline</Button>
+                    <Button onClick={createInvitation} className="profilePageButtons" sx={{ width: '150px' }}>Accept</Button>
+                </Box>
             </Box>
-        // </Popover>
+            </Popover>
+        </div>
     );
 }
 
