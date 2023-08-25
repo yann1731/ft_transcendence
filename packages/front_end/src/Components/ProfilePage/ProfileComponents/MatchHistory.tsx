@@ -141,7 +141,7 @@ export default function MatchHistory() {
                         ))}
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClickClose}>Close</Button>
+                        <Button onClick={handleClickClose} className="profilePageButtons">Close</Button>
                     </DialogActions>
                 </Dialog>
                 <Box sx={{ width: '33%', marginRight: '5px' }}>
@@ -154,7 +154,7 @@ export default function MatchHistory() {
                 <Dialog open={openDialog === '2vs2'} onClose={handleClickClose}>
                     <DialogTitle>2 vs. 2 History</DialogTitle>
                     <DialogContent>
-                        {MatchesOne.map((match, index) => (
+                        {MatchesTwo.map((match, index) => (
                             <div key={match.id}>
                                 <Typography sx={{ color: 'green' }}>Winner: {winnerUsernames[index]}</Typography>
                                 <Typography sx={{ color: 'red' }}>Loser: {loserUsernames[index]}</Typography>
@@ -163,7 +163,7 @@ export default function MatchHistory() {
                         ))}
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClickClose}>Close</Button>
+                        <Button onClick={handleClickClose} className="profilePageButtons">Close</Button>
                     </DialogActions>
                 </Dialog>
                 <Box sx={{ width: '33%' }}>
@@ -176,7 +176,7 @@ export default function MatchHistory() {
                 <Dialog open={openDialog === '1vs3'} onClose={handleClickClose}>
                     <DialogTitle>1 vs. 3 History</DialogTitle>
                     <DialogContent>
-                        {MatchesOne.map((match, index) => (
+                        {MatchesThree.map((match, index) => (
                             <div key={match.id}>
                                 <Typography sx={{ color: 'green' }}>Winner: {winnerUsernames[index]}</Typography>
                                 <Typography sx={{ color: 'red' }}>Loser: {loserUsernames[index]}</Typography>
@@ -185,7 +185,7 @@ export default function MatchHistory() {
                         ))}
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClickClose}>Close</Button>
+                        <Button onClick={handleClickClose} className="profilePageButtons">Close</Button>
                     </DialogActions>
                 </Dialog>
             </Box>

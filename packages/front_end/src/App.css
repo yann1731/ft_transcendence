@@ -198,6 +198,19 @@
   width: 60vw;
 }
 
+.invitationBox {
+  width: 400px;
+  height: 200px;
+}
+
+.invitationButtonsBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 60%;
+}
+
 .loginBox {
   background-color: white;
   border-radius: 10px;
