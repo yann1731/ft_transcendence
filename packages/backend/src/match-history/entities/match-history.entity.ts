@@ -11,12 +11,10 @@ export class MatchHistoryOne {
 export class MatchHistoryTwo {
     id: string;
 
-    winnerOneId: string;
-    winnerTwoId: string;
+    winnerId: string[];
     winnerScore: number;
 
-    loserOneId: string;
-    loserTwoId: string;
+    loserId: string[];
     loserScore: number;
 }
 

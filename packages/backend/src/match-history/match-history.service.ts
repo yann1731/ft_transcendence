@@ -30,11 +30,9 @@ export class MatchHistoryService {
     try {
       const matchHistoryTwo = await this.prisma.matchHistoryTwo.create({data: 
         {
-          winnerOneId: createMatchHistoryTwoDto.winnerOneId,
-          winnerTwoId: createMatchHistoryTwoDto.winnerTwoId,
+          winnerId: createMatchHistoryTwoDto.winnerId,
           winnerScore: createMatchHistoryTwoDto.winnerScore,
-          loserOneId: createMatchHistoryTwoDto.loserOneId,
-          loserTwoId: createMatchHistoryTwoDto.loserTwoId,
+          loserId: createMatchHistoryTwoDto.loserId,
           loserScore: createMatchHistoryTwoDto.loserScore
         }})
         if (!matchHistoryTwo) {
@@ -115,10 +113,8 @@ export class MatchHistoryService {
       const matchHistoryTwo = await this.prisma.matchHistoryTwo.findMany({ 
         where: {
           OR: [
-            { winnerOneId: userId },
-            { winnerTwoId: userId },
-            { loserOneId: userId },
-            { loserTwoId: userId }
+            { winnerId: { has: userId }},
+            { loserId: { has: userId }},
           ],
         },
         orderBy: {

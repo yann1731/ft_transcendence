@@ -7,12 +7,10 @@ export class CreateMatchHistoryOneDto {
 }
 
 export class CreateMatchHistoryTwoDto {
-    winnerOneId: string;
-    winnerTwoId: string;
+    winnerId: string[];
     winnerScore: number;
 
-    loserOneId: string;
-    loserTwoId: string;
+    loserId: string[];
     loserScore: number;
 }
 
