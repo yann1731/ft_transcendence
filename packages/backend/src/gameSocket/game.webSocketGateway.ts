@@ -424,6 +424,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	@SubscribeMessage("update")
 	handleUpdate(client: Socket, data: any){
 		const room = Array.from(client.rooms).filter(room => room !== client.id)
+		console.log(data.x, data.y);
 		client.broadcast.to(String(room[0])).emit("update", data);
 	}
 	
@@ -641,7 +642,12 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 
 	@SubscribeMessage("finished")
 	handleFinished(client: Socket){
+		this.server.to(client.id).emit("finished");
+	}
+
+	@SubscribeMessage("invite end")
+	handleInviteEnd(client: Socket){
 		const room = Array.from(client.rooms).filter(room => room !== client.id)
-		client.broadcast.to(String(room[0])).emit("finished");
+		this.server.to(String(room[0])).emit("invite end");
 	}
 }

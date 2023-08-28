@@ -58,6 +58,8 @@ export default class invited extends Phaser.Scene{
 	event3!: any;
     keys: any = {};
 	
+
+
 	constructor() {
         super('invited');
     }
@@ -168,6 +170,17 @@ export default class invited extends Phaser.Scene{
 		this.player2Score.setOrigin(0.5);
 		this.player2Score.setVisible(false);
 
+		this.score = this.add.text(
+			this.physics.world.bounds.width / 2,
+			this.physics.world.bounds.height / 8,
+			`${this.points2}          ${this.points1}`,
+			{
+				fontFamily: 'pong',
+				fontSize: '20px',
+			}
+		);
+		this.score.setOrigin(0.5);
+
 		this.socket.on("disconnected", () => {
 			this.menu.setVisible(true);
 			this.disconnect.setVisible(true);
@@ -205,7 +218,7 @@ export default class invited extends Phaser.Scene{
 		this.position.setOrigin(0.5);
 
 		if (this.invited === true)
-		this.position.setText("You are positionned right")
+			this.position.setText("You are positionned right")
 
 		this.event1 = this.time.delayedCall(1000, () => {
 			this.starting.setText('game starting in 2');
@@ -219,7 +232,6 @@ export default class invited extends Phaser.Scene{
 			this.start = true;
 
 			if (this.invited === false){
-				console.log("im the one invited")
 				this.socket.on("movement", (newPos: number) => {
 					if (this.paddle1.body)
 						this.paddle1.setY(newPos + this.paddle1.body.height / 2);
@@ -328,7 +340,6 @@ export default class invited extends Phaser.Scene{
 				this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 			}
 			else{
-				console.log("im the one who invites")
 				this.socket.on("movement", (newPos: number) => {
 					if (this.paddle2.body)
 						this.paddle2.setY(newPos + this.paddle2.body.height / 2);
@@ -340,6 +351,18 @@ export default class invited extends Phaser.Scene{
 					"ball"
 				)
 				
+				if (Math.floor(Math.random() * 2) === 0){
+					this.ballX = Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1;
+					this.ballY = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+					if (Math.floor(Math.random() * 2) === 0)
+						this.ballY *= -1;            
+				} else{
+					this.ballX = Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2;
+					this.ballY = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+					if (Math.floor(Math.random() * 2) === 0)
+						this.ballY *= -1;
+				}
+
 				this.ball.setVelocityX(this.ballX);
 				this.ball.setVelocityY(this.ballY);
 				this.ball.setDamping(true);
@@ -377,14 +400,15 @@ export default class invited extends Phaser.Scene{
 				this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 				this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);   
 			}
-
 		}, [], this);
 	}
 
 	update() {
 		if (this.start === true){
 			if (this.invited === false){
-				this.paddle2.setVelocityY(0);
+
+				if (this.paddle2.body)
+					this.paddle2.setVelocityY(0);
 			
         		if (this.keys.w.isDown)
         		    this.paddle2.setVelocityY(-this.paddlespeed);
@@ -501,6 +525,7 @@ export default class invited extends Phaser.Scene{
 		this.socket.off("movement");
 
         this.socket.emit("end", {which: 1, name: this.name, player: player, score1: this.points1, score2: this.points2 })
+		this.socket.emit("invite end")
 
         if (player === 1)
             this.player2VictoryText.setVisible(true);
@@ -522,6 +547,6 @@ export default class invited extends Phaser.Scene{
 		this.score.destroy()
 
 		this.scene.stop()
-		this.scene.start("pong", {name: this.name, socket: this.socket})
+		this.socket.emit("finished")
 	}
 }

@@ -63,10 +63,15 @@ export default function PongGame() {
     }
   }, []);
 
-  gamesocket.on("finished", () => {
+  gamesocket.on("invite end", () => {
     localStorage.setItem("host" + user?.username, "false")
-      localStorage.setItem("invite" + user?.username, "false")
-      navigate("/chat")
+    localStorage.setItem("invite" + user?.username, "false")
+    gamesocket.off("invite end")
+  })
+
+  gamesocket.on("finished", () => {
+    gamesocket.off("finished")
+    navigate("/chat")
   })
 
   return (
