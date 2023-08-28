@@ -80,7 +80,6 @@ export default class pong extends Phaser.Scene{
 	first2: boolean = true;
 	end2: boolean = false;
 	multi: boolean = false;
-	powerup: boolean = false;
 	player!: number;
 	ballX!: number;
     ballY!: number;
@@ -89,7 +88,7 @@ export default class pong extends Phaser.Scene{
 	rateSpeed: number = 0.0006;
 	points1: number = 0;
     points2: number = 0;
-    win: number = 1;
+    win: number = 5;
     rotation: number = 1;
     paddlespeed: number = 450;
     modifier: number = 1;
@@ -221,6 +220,11 @@ export default class pong extends Phaser.Scene{
 			this.socket.on("start", (data: any) => {
 				this.socket.off("start")
 				waiting.destroy();
+
+				this.wall = data.wall
+				this.powerUp = data.power
+				this.random = data.random
+
 				this.starting = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
 					fontFamily: 'pong',
 					fontSize: '50px',
@@ -325,15 +329,16 @@ export default class pong extends Phaser.Scene{
 			
 
 			if (this.single === true)
-				this.socket.emit("1v1", {start: true, name: this.name});
+				this.socket.emit("1v1", {start: true, name: this.name, wall: this.wall, random: this.random, power: this.powerUp});
 			else if (this.two === true)
-				this.socket.emit("2v2", {start: true, name: this.name});
+				this.socket.emit("2v2", {start: true, name: this.name, wall: this.wall, random: this.random, power: this.powerUp});
 			else
 				this.socket.emit("3v1", {start: true, name: this.name})
 			this.socket.on("start", (data: any) =>{
 				this.socket.off("start")
 				this.ballX = data.ballX
 				this.ballY = data.ballY
+
 
 				waiting.setVisible(false);
 				this.starting = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
@@ -374,6 +379,8 @@ export default class pong extends Phaser.Scene{
 				this.event3 = this.time.delayedCall(3050, () => {
 					this.starting.destroy()
 					this.position.destroy()
+
+
 
 					if (this.single === true)
 						this.oneHost = true;
@@ -817,11 +824,31 @@ export default class pong extends Phaser.Scene{
 		this.socket.on("disconnected", () => {
 			this.menu.setVisible(true);
 			this.disconnect.setVisible(true);
-			this.event1.remove(false)
-			this.event2.remove(false)
-			this.event3.remove(false)
+			if (this.event1){
+				this.event1.remove(false)
+				this.event2.remove(false)
+				this.event3.remove(false)
+			}
 			this.starting.destroy()
 			this.position.destroy()
+
+			if ((this.oneHost === true || this.oneOther === true || this.twoHost === true || this.twoOther === true || this.threeHost === true || this.threeOther === true)){
+				this.score.destroy()
+				if (this.wall || this.random){
+					this.wall1.destroy()
+					this.wall2.destroy()
+					this.wall3.destroy()
+				}
+				this.paddle1.destroy()
+				this.paddle2.destroy()
+				if (this.two || this.multiple){
+					this.paddle3.destroy()
+					this.paddle4.destroy()
+				}
+				this.ball.destroy()
+				if (this.power.body)
+					this.power.destroy()
+			}
 		})
 	}
 
@@ -1104,7 +1131,7 @@ export default class pong extends Phaser.Scene{
 				this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 				this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);   
 			
-				if (this.powerup){
+				if (this.powerUp){
 					let x: number = Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10)
 					let y: number = Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1);
 					this.power = new PowerUp(this, x, y);
@@ -1297,7 +1324,6 @@ export default class pong extends Phaser.Scene{
 			})
 	
 			this.socket.on("update", (data: any) => {
-				console.log("also here");
 				if (this.ball.body){
 					this.ball.setX(data.x + this.ball.body.width / 2)
 					this.ball.setY(data.y + this.ball.body.height / 2)
@@ -1519,7 +1545,8 @@ export default class pong extends Phaser.Scene{
 
 		if (this.end2 !== true){
 			
-        	this.paddle2.setVelocityY(0);
+			if (this.paddle2.body)
+        		this.paddle2.setVelocityY(0);
 			
         	if (this.keys.w.isDown)
         	    this.paddle2.setVelocityY(-this.paddlespeed * this.modifier);
@@ -1654,7 +1681,7 @@ export default class pong extends Phaser.Scene{
 			this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 			this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);   
 		
-			if (this.powerup){
+			if (this.powerUp){
 				let x: number = Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10)
 				let y: number = Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1);
 				this.power = new PowerUp(this, x, y);
@@ -2258,7 +2285,7 @@ export default class pong extends Phaser.Scene{
 			this.keys.a  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);  
         	this.keys.d  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);   
 		
-			if (this.powerup){
+			if (this.powerUp){
 				this.power = new PowerUp(this, Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1));
 				this.physics.add.overlap(this.ball, this.power, this.power_up, undefined, this);
 				this.socket.emit("newPower", {x: this.power.x, y: this.power.y});
@@ -3084,7 +3111,7 @@ export default class pong extends Phaser.Scene{
                 this.wall2.setVisible(true);
                 this.wall3.setVisible(true);
             }
-            if (this.powerup === true){
+            if (this.powerUp === true){
                 this.power.setPosition(Phaser.Math.RND.between(this.ball.width * 0.2 + 10, this.physics.world.bounds.width - this.ball.width * 0.2 - 10), Phaser.Math.RND.between(this.physics.world.bounds.height * 0.1, this.physics.world.bounds.height - this.physics.world.bounds.height * 0.1))
                 this.power.enableBody(true, this.power.x, this.power.y, true, true);
                 this.socket.emit("newPower", {x: this.power.x, y: this.power.y});
