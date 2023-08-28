@@ -21,6 +21,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	threeWaiting: Socket[] = []
 
 	users: Map<string, string> = new Map<string, string>();
+	users2: Map<string, Socket> = new Map<string, Socket>();
 
 	oneGame: [string, string, string][] = []
 	twoGame: [string, string, string, string, string][] = []
@@ -32,12 +33,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
     XVelocityMax2: number = -400;
     YvelocityMin: number = 125;
     YvelocityMax: number = 225;
-
-	@SubscribeMessage("invite")
-	async handleInvitation(client: Socket, data: any) {
-		console.log("Handling Invitation!");
-		
-	}
 
 	handleConnection(client: Socket) {
 		console.log('New client connected to gameSocket');
@@ -141,7 +136,9 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 
 	@SubscribeMessage("connected")
 	handledConnected(client: Socket, data: any){
-		this.users.set(client.id, data.name);
+		console.log("Adding", client.id, "to users2")
+		this.users.set(client.id, data.name)
+		this.users2.set(data.name, client)
 	}
 
 	@SubscribeMessage("movement")
@@ -164,9 +161,10 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 
 	@SubscribeMessage("end")
 	async handleEnd(client: Socket, data: any){
+		const room = Array.from(client.rooms).filter(room => room !== client.id)
 		if (data.which === 1){
 			for (let i = 0; i < this.oneGame.length; i++)
-				if (this.oneGame[i][0] === data.name){
+				if (this.oneGame[i][0] === data.name || String(room[0]) === this.oneGame[i][0]){
 					try {
 						console.log(data.player ? 0 : 1)
 							await prisma.user.update({
@@ -628,5 +626,28 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 			else
 				this.threeWaiting.push(client);
 		}
+	}
+
+	@SubscribeMessage("invite")
+	handleInvitation(client: Socket, data: any) {
+		console.log("Handling Invitation!");
+		
+		console.log(this.users2.get(data.userA).id, this.users2.get(data.userB).id)
+		this.users2.get(data.userA).join(data.userA)
+		this.users2.get(data.userB).join(data.userA)
+		this.server.to(this.users2.get(data.userB).id).emit("invite")
+		this.oneGame.push([data.userA, this.users2.get(data.userA).id, this.users2.get(data.userB).id])
+
+	}
+
+	@SubscribeMessage("finished")
+	handleFinished(client: Socket){
+		this.server.to(client.id).emit("finished");
+	}
+
+	@SubscribeMessage("invite end")
+	handleInviteEnd(client: Socket){
+		const room = Array.from(client.rooms).filter(room => room !== client.id)
+		this.server.to(String(room[0])).emit("invite end");
 	}
 }

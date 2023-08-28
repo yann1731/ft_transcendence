@@ -10,16 +10,28 @@ import Chat from './ChatBoxes/ChatBox';
 import OptionBarConversation from './ChatMenus/OptionBarConversation';
 import { io, Socket } from "socket.io-client";
 import { SocketContext, socket} from "../../Contexts/socketContext";
-import { UserContext } from 'Contexts/userContext';
+import { User, UserContext } from 'Contexts/userContext';
 import SignIn from 'Components/Login/LoginPage';
 import LoginToolBar from 'Components/Login/LoginToolBar';
 import { Message } from '../Interfaces';
+import { gameSocketContext } from 'Contexts/gameSocketContext';
+import { useNavigate } from 'react-router-dom';
 
 function ChatPage() {
-	const { user } = useContext(UserContext);
+	const { user, updateUser } = useContext(UserContext);
 	const socket = useContext(SocketContext);
+	const gamesocket = useContext(gameSocketContext)
+	const navigate = useNavigate()
 
 	socket.connect();
+
+	 /*  const newUser: Partial<User> = {
+		...user,
+		isInvited: false,
+		host: false
+	}
+	updateUser(newUser) */
+
 	if (!user) {
 		return (
 			<div>

@@ -3,14 +3,16 @@ import '../../App.css';
 import pong from './Pong'
 import invited from './Invited';
 import Box from '@mui/material/Box';
-import { UserContext } from 'Contexts/userContext';
+import { User, UserContext } from 'Contexts/userContext';
 import { gamesocket } from 'Contexts/gameSocketContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function PongGame() {
-  const {user} = React.useContext(UserContext);
+  const {user, updateUser} = React.useContext(UserContext);
+  const navigate = useNavigate()
 
   React.useEffect(() => {
-    if (user?.isInvited !== true){
+    if (localStorage.getItem("invite" + user?.username) !== "true"){
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         parent: 'PONG',
@@ -50,18 +52,26 @@ export default function PongGame() {
           },
         },
         scene: [
-          invited,
-          pong
+          invited
         ]
       };
-
       const game = new Phaser.Game(config);
-      game.scene.start('invited', {name: user?.id, socket: gamesocket, invited: user?.host});
+      if (localStorage.getItem("host" + user?.username) === "true")
+        game.scene.start('invited', {socket: gamesocket, invited: true});
+      else
+        game.scene.start('invited', {socket: gamesocket, invited: false});
     }
   }, []);
 
-  gamesocket.on("connected", () => {
-    gamesocket.emit("connected", {name: user?.id})
+  gamesocket.on("invite end", () => {
+    localStorage.setItem("host" + user?.username, "false")
+    localStorage.setItem("invite" + user?.username, "false")
+    gamesocket.off("invite end")
+  })
+
+  gamesocket.on("finished", () => {
+    gamesocket.off("finished")
+    navigate("/chat")
   })
 
   return (

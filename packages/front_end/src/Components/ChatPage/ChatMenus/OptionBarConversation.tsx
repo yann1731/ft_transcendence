@@ -110,16 +110,6 @@ const OptionBarConversation: React.FC = () => {
         updateUser(updatedUser);
       }
     })
-
-    socket.on("invite", (data: any) => {
-      const newUser: Partial<User> = {
-        ...user,
-        isInvited: true,
-        host: true
-      }
-      updateUser(newUser)
-      navigate("/home")
-    })
   });
 
   const handleMode = (mode: string) => {

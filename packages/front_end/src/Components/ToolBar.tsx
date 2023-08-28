@@ -7,9 +7,9 @@ import { Link } from 'react-router-dom';
 import { useContext } from 'react';
 import { useDispatch } from "react-redux";
 import { asyncToggleTheme } from "../store/reducers/themeSlice";
-import { UserContext } from '../Contexts/userContext';
+import { User, UserContext } from '../Contexts/userContext';
 import { useNavigate } from 'react-router-dom';
-import { gamesocket } from 'Contexts/gameSocketContext';
+import { gameSocketContext } from 'Contexts/gameSocketContext';
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -22,7 +22,8 @@ function DashboardAppBar() {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const {user, setUser} = useContext(UserContext);
+  const {user, setUser, updateUser} = useContext(UserContext);
+  const gamesocket = useContext(gameSocketContext)
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -78,6 +79,10 @@ function DashboardAppBar() {
 	}, [userStatistics]); */
   
   const dispatch = useDispatch();
+
+  gamesocket.on("connected", () => {
+    gamesocket.emit("connected", {name: user?.id})
+  })
 
   return (
     <div className="toolbar">

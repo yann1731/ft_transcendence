@@ -53,7 +53,6 @@ const DashboardContainer: React.FC = () => {
         let HighestScore: number = 0;
 
         data.forEach((score: HallOfFame) => {
-          console.log(score.win, HighestScore)
           if (score.win >= HighestScore) {
             if (score.win > HighestScore)
             {
@@ -76,7 +75,6 @@ const DashboardContainer: React.FC = () => {
             }
           }
 
-          console.log(score.loss, LowestScore)
           if (score.loss >= LowestScore)
           {
             if (score.loss > LowestScore)
@@ -100,7 +98,6 @@ const DashboardContainer: React.FC = () => {
             }
           }
 
-          console.log(score.gamesPlayed, HighestGamesPlayed)
           if (score.gamesPlayed >= HighestGamesPlayed)
           {
             if (score.gamesPlayed > HighestGamesPlayed)
