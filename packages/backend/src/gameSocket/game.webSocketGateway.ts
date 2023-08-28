@@ -161,9 +161,10 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 
 	@SubscribeMessage("end")
 	async handleEnd(client: Socket, data: any){
+		const room = Array.from(client.rooms).filter(room => room !== client.id)
 		if (data.which === 1){
 			for (let i = 0; i < this.oneGame.length; i++)
-				if (this.oneGame[i][0] === data.name){
+				if (this.oneGame[i][0] === data.name || String(room[0]) === this.oneGame[i][0]){
 					try {
 						console.log(data.player ? 0 : 1)
 							await prisma.user.update({
@@ -424,7 +425,6 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	@SubscribeMessage("update")
 	handleUpdate(client: Socket, data: any){
 		const room = Array.from(client.rooms).filter(room => room !== client.id)
-		console.log(data.x, data.y);
 		client.broadcast.to(String(room[0])).emit("update", data);
 	}
 	
@@ -629,7 +629,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	}
 
 	@SubscribeMessage("invite")
-	async handleInvitation(client: Socket, data: any) {
+	handleInvitation(client: Socket, data: any) {
 		console.log("Handling Invitation!");
 		
 		console.log(this.users2.get(data.userA).id, this.users2.get(data.userB).id)

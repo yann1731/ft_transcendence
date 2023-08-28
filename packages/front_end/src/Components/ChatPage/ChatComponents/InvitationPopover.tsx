@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { Box, Button } from "@mui/material";
 import { SocketContext } from 'Contexts/socketContext';
 import { gameSocketContext } from 'Contexts/gameSocketContext';
@@ -23,11 +24,34 @@ function InvitationPopover({ onClose, userA, userB }: any) {
     const id = open ? 'invitation-popover' : undefined;
     const navigate = useNavigate();
     const {user, updateUser} = useContext(UserContext)
+    const [userAName, setUserAName] = useState("")
+    const [userBName, setUserBName] = useState("")
 
     useEffect(() => {
         if (anchorRef.current) {
             setAnchorEl(anchorRef.current);
         }
+
+        const fetchUsers = async () => {
+              await axios.get(`http://localhost:4242/user/${userA}`, {headers: {
+                'Authorization': user?.token,
+                'userId': user?.id
+                 }}).then((response: any) => {
+                setUserAName(response.data.nickname)
+                }).catch((error: any) => {
+              console.error('Error fetching users', error);
+              })
+
+              await axios.get(`http://localhost:4242/user/${userB}`, {headers: {
+                'Authorization': user?.token,
+                'userId': user?.id
+              }}).then((response: any) => {
+                setUserBName(response.data.nickname)
+            }).catch((error: any) => {
+              console.error('Error fetching users', error);
+              })
+        }
+        fetchUsers()
     }, []);
 
 
@@ -61,7 +85,7 @@ function InvitationPopover({ onClose, userA, userB }: any) {
                 style={{ top: '40%' }}
             >
             <Box className="invitationBox">
-                {userA} You've been invited to play pong by {userB}!
+                You've been invited to play pong by {userBName}!
                 <Box className="invitationButtonsBox">
                     <Button onClick={handleClose} className="profilePageButtons" sx={{ width: '150px', mt: 5 }}>Decline</Button>
                     <Button onClick={createInvitation} className="profilePageButtons" sx={{ width: '150px' }}>Accept</Button>
