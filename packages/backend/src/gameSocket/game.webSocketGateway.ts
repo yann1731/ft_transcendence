@@ -225,10 +225,10 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 		}
 		if (data.which === 2){
 			for (let i = 0; i < this.twoGame.length; i++)
-				if (this.twoGame[i][0] === data.name){
+			if (this.twoGame[i][0] === data.name){
 					try {
 							await prisma.user.update({
-							where: {username: this.users.get(this.twoGame[i][1])},
+							where: {id: this.users.get(this.twoGame[i][1])},
 							data: {
 								win: {
 									increment: data.player ? 0 : 1,
@@ -247,7 +247,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {username: this.users.get(this.twoGame[i][2])},
+							where: {id: this.users.get(this.twoGame[i][2])},
 							data: {
 								win: {
 									increment: data.player ? 1 : 0,
@@ -266,7 +266,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {username: this.users.get(this.twoGame[i][3])},
+							where: {id: this.users.get(this.twoGame[i][3])},
 							data: {
 								win: {
 									increment: data.player ? 0 : 1,
@@ -285,7 +285,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {username: this.users.get(this.twoGame[i][4])},
+							where: {id: this.users.get(this.twoGame[i][4])},
 							data: {
 								win: {
 									increment: data.player ? 1 : 0,
@@ -322,11 +322,11 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 				}
 		}	
 		if (data.which === 3){
-			for (let i = 0; i < this.threeGame.length; i++)
-				if (this.threeGame[i][0] === data.name){
+			for (let i = 0; i < this.threeGame.length; i++){
+			if (this.threeGame[i][0] === data.name){
 					try {
 							await prisma.user.update({
-							where: {username: this.users.get(this.threeGame[i][1])},
+							where: {id: this.users.get(this.threeGame[i][1])},
 							data: {
 								win: {
 									increment: data.player ? 0 : 1,
@@ -345,7 +345,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {username: this.users.get(this.threeGame[i][2])},
+							where: {id: this.users.get(this.threeGame[i][2])},
 							data: {
 								win: {
 									increment: data.player ? 1 : 0,
@@ -364,7 +364,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {username: this.users.get(this.threeGame[i][3])},
+							where: {id: this.users.get(this.threeGame[i][3])},
 							data: {
 								win: {
 									increment: data.player ? 1 : 0,
@@ -383,7 +383,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					}
 					try {
 							await prisma.user.update({
-							where: {username: this.users.get(this.threeGame[i][4])},
+							where: {id: this.users.get(this.threeGame[i][4])},
 							data: {
 								win: {
 									increment: data.player ? 1 : 0,
@@ -418,6 +418,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 					this.threeGame.splice(i, 1);
 					break;
 				}
+			}
 		}
 		this.server.emit("refresh");
 	}
@@ -590,7 +591,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 				this.server.to(opponent1.id).emit("player", 2)
 				this.server.to(opponent2.id).emit("player", 3)
 				this.server.to(opponent3.id).emit("player", 4)
-				this.twoGame.push([data.name, client.id, opponent1.id, opponent2.id, opponent3.id]);
+				this.threeGame.push([data.name, client.id, opponent1.id, opponent2.id, opponent3.id]);
 				this.server.in(data.name).emit("start", {ballX: this.x, ballY: this.y, power: data.power, scale: data.scale});
 			}
 			else {
@@ -620,7 +621,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 				this.server.to(client.id).emit("player", 2)
 				this.server.to(opponent1.id).emit("player", 3)
 				this.server.to(opponent2.id).emit("player", 4)
-				this.twoGame.push([host[1], host[0].id, client.id, opponent1.id, opponent2.id]);
+				this.threeGame.push([host[1], host[0].id, client.id, opponent1.id, opponent2.id]);
 				this.server.in(host[1]).emit("start", {ballX: this.x, ballY: this.y, power: host[2], scale: host[3]});
 			}
 			else
