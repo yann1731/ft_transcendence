@@ -11,15 +11,19 @@ export default function MatchHistory() {
     const [MatchesOne, setMatchDataOne] = React.useState<MatchHistoryOne[]>([]);
     const [MatchesTwo, setMatchDataTwo] = React.useState<MatchHistoryTwo[]>([]);
     const [MatchesThree, setMatchDataThree] = React.useState<MatchHistoryThree[]>([]);
-    const [winnerUsernames, setWinnerUsernames] = React.useState<string[]>([]);
-    const [loserUsernames, setLoserUsernames] = React.useState<string[]>([]);
+    const [winnerUsernamesOne, setWinnerUsernamesOne] = React.useState<string[]>([]);
+    const [loserUsernamesOne, setLoserUsernamesOne] = React.useState<string[]>([]);
+    const [winnerUsernamesTwo, setWinnerUsernamesTwo] = React.useState<string[]>([]);
+    const [loserUsernamesTwo, setLoserUsernamesTwo] = React.useState<string[]>([]);
+    const [winnerUsernamesThree, setWinnerUsernamesThree] = React.useState<string[]>([]);
+    const [loserUsernamesThree, setLoserUsernamesThree] = React.useState<string[]>([]);
     const {user, updateUser} = useContext(UserContext);
 
     useEffect(() => {
         getMatchDataOne();
         getMatchDataTwo();
         getMatchDataThree();
-    })
+    }, []);
     
     const handleClickOpen = (dialogType: string) => {
         setOpenDialog(dialogType);
@@ -44,8 +48,11 @@ export default function MatchHistory() {
             const winnerIds = matchDataOne.map(match => match.winnerId);
             const loserIds = matchDataOne.map(match => match.loserId);
 
-            fetchUsernames(winnerIds, setWinnerUsernames);
-            fetchUsernames(loserIds, setLoserUsernames);
+            const winnerUsernamesOne: string[] = await fetchUsernames(winnerIds);
+            const loserUsernamesOne: string[] = await fetchUsernames(loserIds);
+
+            setWinnerUsernamesOne(winnerUsernamesOne);
+            setLoserUsernamesOne(loserUsernamesOne);
         } catch (error) {
             console.error("Error fetching match data:", error);
         }
@@ -61,16 +68,14 @@ export default function MatchHistory() {
             const matchDataTwo: MatchHistoryTwo[] = response.data;
             setMatchDataTwo(matchDataTwo);
 
-            const winnerIds = matchDataTwo.flatMap(match => match.winnerId);
-            const loserIds = matchDataTwo.flatMap(match => match.loserId);
+            const winnerIds: string[][] = matchDataTwo.map(match => match.winnerId);
+            const loserIds: string[][] = matchDataTwo.map(match => match.loserId);
             
-            for (const winnerId of winnerIds) {
-                fetchUsernames([winnerId], setWinnerUsernames);
-            }
+            const winnerUsernamesTwo: string[] = await fetchUsernames(winnerIds.flat());
+            const loserUsernamesTwo: string[] = await fetchUsernames(loserIds.flat());
 
-            for (const loserId of loserIds) {
-                fetchUsernames([loserId], setLoserUsernames);
-            }
+            setWinnerUsernamesTwo(winnerUsernamesTwo);
+            setLoserUsernamesTwo(loserUsernamesTwo);
         } catch (error) {
             console.error("Error fetching match data:", error);
         }
@@ -86,23 +91,21 @@ export default function MatchHistory() {
             const matchDataThree: MatchHistoryThree[] = response.data;
             setMatchDataThree(matchDataThree);
 
-            const winnerIds = matchDataThree.flatMap(match => match.winnerId);
-            const loserIds = matchDataThree.flatMap(match => match.loserId);
+            const winnerIds: string[][] = matchDataThree.map(match => match.winnerId);
+            const loserIds: string[][] = matchDataThree.map(match => match.loserId);
 
-            for (const winnerId of winnerIds) {
-                fetchUsernames([winnerId], setWinnerUsernames);
-            }
+            const winnerUsernamesThree: string[] = await fetchUsernames(winnerIds.flat());
+            const loserUsernamesThree: string[] = await fetchUsernames(loserIds.flat());
 
-            for (const loserId of loserIds) {
-                fetchUsernames([loserId], setLoserUsernames);
-            }
+            setWinnerUsernamesThree(winnerUsernamesThree);
+            setLoserUsernamesThree(loserUsernamesThree);
 
         } catch (error) {
             console.error("Error fetching match data:", error);
         }
     }
 
-    const fetchUsernames = async (userIds: string[], setUsernameState: React.Dispatch<React.SetStateAction<string[]>>) => {
+    const fetchUsernames = async (userIds: string[]) => {
         try {
             const usernames: string[] = [];
 
@@ -111,10 +114,11 @@ export default function MatchHistory() {
                 const userData = response.data;
                 usernames.push(userData.username);
             }
-
-            setUsernameState(usernames);
+            return usernames;
+            //setUsernameState(usernames);
         } catch (error) {
             console.error("Error fetching usernames:", error);
+            return[];
         }
     }
 
@@ -134,8 +138,8 @@ export default function MatchHistory() {
                     <DialogContent>
                         {MatchesOne.map((match, index) => (
                             <div key={match.id}>
-                                <Typography sx={{ color: 'green' }}>Winner: {winnerUsernames[index]}</Typography>
-                                <Typography sx={{ color: 'red' }}>Loser: {loserUsernames[index]}</Typography>
+                                <Typography sx={{ color: 'green' }}>Winner: {winnerUsernamesOne[index]}</Typography>
+                                <Typography sx={{ color: 'red' }}>Loser: {loserUsernamesOne[index]}</Typography>
                                 <Typography>Score: {match.winnerScore} - {match.loserScore}</Typography>
                             </div>
                         ))}
@@ -155,9 +159,9 @@ export default function MatchHistory() {
                     <DialogTitle>2 vs. 2 History</DialogTitle>
                     <DialogContent>
                         {MatchesTwo.map((match, index) => (
-                            <div key={match.id}>
-                                <Typography sx={{ color: 'green' }}>Winner: {winnerUsernames[index]}</Typography>
-                                <Typography sx={{ color: 'red' }}>Loser: {loserUsernames[index]}</Typography>
+                            <div key={match.id} style={{ marginRight: '20px' }}>                            
+                                <Typography sx={{ color: 'green' }}>Winner: {winnerUsernamesTwo[0]} and {winnerUsernamesTwo[1]}</Typography>
+                                <Typography sx={{ color: 'red' }}>Loser: {loserUsernamesTwo[0]} and {loserUsernamesTwo[1]}</Typography>
                                 <Typography>Score: {match.winnerScore} - {match.loserScore}</Typography>
                             </div>
                         ))}
@@ -178,8 +182,8 @@ export default function MatchHistory() {
                     <DialogContent>
                         {MatchesThree.map((match, index) => (
                             <div key={match.id}>
-                                <Typography sx={{ color: 'green' }}>Winner: {winnerUsernames[index]}</Typography>
-                                <Typography sx={{ color: 'red' }}>Loser: {loserUsernames[index]}</Typography>
+                                <Typography sx={{ color: 'green' }}>Winner: {winnerUsernamesThree[0]}, {winnerUsernamesThree[1]} and {winnerUsernamesThree[2]}</Typography>
+                                <Typography sx={{ color: 'red' }}>Loser: {loserUsernamesThree[0]}, {loserUsernamesThree[1]} and {loserUsernamesThree[2]}</Typography>
                                 <Typography>Score: {match.winnerScore} - {match.loserScore}</Typography>
                             </div>
                         ))}
