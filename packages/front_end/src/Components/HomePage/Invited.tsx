@@ -40,7 +40,7 @@ export default class invited extends Phaser.Scene{
     ballY!: number;
 	points1: number = 0;
     points2: number = 0;
-    win: number = 1;
+    win: number = 5;
     paddlespeed: number = 450;
     oldPosition!: number;
 	oldVelocityX!: number;
@@ -205,7 +205,7 @@ export default class invited extends Phaser.Scene{
 		});
 		this.starting.setOrigin(0.5);
 
-		this.position = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8, 'You are positionned right', {
+		this.position = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8, 'You are positionned left', {
 			fontFamily: 'pong',
 			fontSize: '25px',
 			color: '#ffffff',
