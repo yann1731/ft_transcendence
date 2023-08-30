@@ -115,7 +115,6 @@ export default function MatchHistory() {
                 usernames.push(userData.username);
             }
             return usernames;
-            //setUsernameState(usernames);
         } catch (error) {
             console.error("Error fetching usernames:", error);
             return[];
@@ -180,14 +179,35 @@ export default function MatchHistory() {
                 <Dialog open={openDialog === '1vs3'} onClose={handleClickClose}>
                     <DialogTitle>1 vs. 3 History</DialogTitle>
                     <DialogContent>
-                        {MatchesThree.map((match, index) => (
-                            <div key={match.id}>
-                                <Typography sx={{ color: 'green' }}>Winner: {winnerUsernamesThree[0]}, {winnerUsernamesThree[1]} and {winnerUsernamesThree[2]}</Typography>
-                                <Typography sx={{ color: 'red' }}>Loser: {loserUsernamesThree[0]}, {loserUsernamesThree[1]} and {loserUsernamesThree[2]}</Typography>
-                                <Typography>Score: {match.winnerScore} - {match.loserScore}</Typography>
-                            </div>
-                        ))}
-                    </DialogContent>
+    {(() => {
+        let counter = 0;
+
+        return MatchesThree.map((match, index) => {
+            const isTeamWinner = match.winnerId === winnerUsernamesThree;
+            const winnerUsernamesShow = winnerUsernamesThree;
+            const loserUsernamesShow = loserUsernamesThree;
+
+            const winnerUsernamesToShow = isTeamWinner
+                ? winnerUsernamesShow.slice(counter, counter + 3).join(', ')
+                : winnerUsernamesShow[index];
+
+            const loserUsernamesToShow = isTeamWinner
+                ? loserUsernamesShow[index]
+                : loserUsernamesShow.slice(counter, counter + 3).join(', ');
+
+            counter += 3; // Increment the counter by 3 for the next iteration
+
+            return (
+                <div key={match.id}>
+                    <Typography sx={{ color: 'green' }}>Winner: {winnerUsernamesToShow}</Typography>
+                    <Typography sx={{ color: 'red' }}>Loser: {loserUsernamesToShow}</Typography>
+                    <Typography>Score: {match.winnerScore} - {match.loserScore}</Typography>
+                </div>
+            );
+        });
+    })()}
+</DialogContent>
+
                     <DialogActions>
                         <Button onClick={handleClickClose} className="profilePageButtons">Close</Button>
                     </DialogActions>
