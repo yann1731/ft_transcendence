@@ -20,9 +20,34 @@ export default function MatchHistory() {
     const {user, updateUser} = useContext(UserContext);
 
     useEffect(() => {
-        getMatchDataOne();
-        getMatchDataTwo();
-        getMatchDataThree();
+        let cancelRequest = false;
+
+        const fetchData = async () => {
+            try {
+                const [dataOne, dataTwo, dataThree] = await Promise.all([
+                    getMatchDataOne(),
+                    getMatchDataTwo(),
+                    getMatchDataThree()
+                ]);
+
+                setMatchDataOne(dataOne.matchData);
+                setWinnerUsernamesOne(dataOne.winnerUsernames);
+                setLoserUsernamesOne(dataOne.loserUsernames);
+
+                setMatchDataTwo(dataTwo.matchData);
+                setWinnerUsernamesTwo(dataTwo.winnerUsernames);
+                setLoserUsernamesOne(dataOne.loserUsernames);
+
+                setMatchDataThree(dataThree.matchData);
+                setWinnerUsernamesThree(dataThree.winnerUsernames);
+                setLoserUsernamesThree(dataThree.loserUsernames);
+
+                
+            } catch (error) {
+                console.error("Error fetching match data:", error);
+            }
+        };
+        fetchData();
     }, []);
     
     const handleClickOpen = (dialogType: string) => {
@@ -43,18 +68,29 @@ export default function MatchHistory() {
             }});
 
             const matchDataOne: MatchHistoryOne[] = response.data;
-            setMatchDataOne(matchDataOne);
+                //setMatchDataOne(matchDataOne);
 
-            const winnerIds = matchDataOne.map(match => match.winnerId);
-            const loserIds = matchDataOne.map(match => match.loserId);
+                const winnerIds = matchDataOne.map(match => match.winnerId);
+                const loserIds = matchDataOne.map(match => match.loserId);
 
-            const winnerUsernamesOne: string[] = await fetchUsernames(winnerIds);
-            const loserUsernamesOne: string[] = await fetchUsernames(loserIds);
+                const winnerUsernamesOne: string[] = await fetchUsernames(winnerIds);
+                const loserUsernamesOne: string[] = await fetchUsernames(loserIds);
 
-            setWinnerUsernamesOne(winnerUsernamesOne);
-            setLoserUsernamesOne(loserUsernamesOne);
+                return {
+                    matchData: matchDataOne,
+                    winnerUsernames: winnerUsernamesOne,
+                    loserUsernames: loserUsernamesOne
+                };
+
+                setWinnerUsernamesOne(winnerUsernamesOne);
+                setLoserUsernamesOne(loserUsernamesOne);
         } catch (error) {
             console.error("Error fetching match data:", error);
+            return {
+                matchData: [],
+                winnerUsernames: [],
+                loserUsernames: []
+            };
         }
     }
 
@@ -66,7 +102,7 @@ export default function MatchHistory() {
             }});
 
             const matchDataTwo: MatchHistoryTwo[] = response.data;
-            setMatchDataTwo(matchDataTwo);
+            //setMatchDataTwo(matchDataTwo);
 
             const winnerIds: string[][] = matchDataTwo.map(match => match.winnerId);
             const loserIds: string[][] = matchDataTwo.map(match => match.loserId);
@@ -74,10 +110,21 @@ export default function MatchHistory() {
             const winnerUsernamesTwo: string[] = await fetchUsernames(winnerIds.flat());
             const loserUsernamesTwo: string[] = await fetchUsernames(loserIds.flat());
 
-            setWinnerUsernamesTwo(winnerUsernamesTwo);
-            setLoserUsernamesTwo(loserUsernamesTwo);
+            return {
+                matchData: matchDataTwo,
+                winnerUsernames: winnerUsernamesTwo,
+                loserUsernames: loserUsernamesTwo
+            };
+
+            //setWinnerUsernamesTwo(winnerUsernamesTwo);
+            //setLoserUsernamesTwo(loserUsernamesTwo);
         } catch (error) {
             console.error("Error fetching match data:", error);
+            return {
+                matchData:[],
+                winnerUsernames: [],
+                loserUsernames: []
+            };
         }
     }
 
@@ -89,20 +136,30 @@ export default function MatchHistory() {
             }});
 
             const matchDataThree: MatchHistoryThree[] = response.data;
-            setMatchDataThree(matchDataThree);
+            //setMatchDataThree(matchDataThree);
 
             const winnerIds: string[][] = matchDataThree.map(match => match.winnerId);
             const loserIds: string[][] = matchDataThree.map(match => match.loserId);
 
             const winnerUsernamesThree: string[] = await fetchUsernames(winnerIds.flat());
             const loserUsernamesThree: string[] = await fetchUsernames(loserIds.flat());
+            //setWinnerUsernamesThree(winnerUsernamesThree);
+            //setLoserUsernamesThree(loserUsernamesThree);
 
-            setWinnerUsernamesThree(winnerUsernamesThree);
-            setLoserUsernamesThree(loserUsernamesThree);
+            return {
+                matchData: matchDataThree,
+                winnerUsernames: winnerUsernamesThree,
+                loserUsernames: loserUsernamesThree
+            };
 
         } catch (error) {
             console.error("Error fetching match data:", error);
-        }
+            return {
+                matchData: [],
+                winnerUsernames: [],
+                loserUsernames: []
+            }
+        };
     }
 
     const fetchUsernames = async (userIds: string[]) => {
@@ -180,22 +237,36 @@ export default function MatchHistory() {
                     <DialogTitle>1 vs. 3 History</DialogTitle>
                     <DialogContent>
     {(() => {
-        let counter = 0;
+        let counterWinner = 0;
+        let counterLoser = 0;
+        let winFlag = false;
+        let loseFlag = false;
+
 
         return MatchesThree.map((match, index) => {
-            const isTeamWinner = match.winnerId === winnerUsernamesThree;
+            const isTeamWinner = match.winnerId.length > 1;
+            console.log("TEAM WINNER = " + isTeamWinner);
             const winnerUsernamesShow = winnerUsernamesThree;
             const loserUsernamesShow = loserUsernamesThree;
 
             const winnerUsernamesToShow = isTeamWinner
-                ? winnerUsernamesShow.slice(counter, counter + 3).join(', ')
+                ? (winFlag = true, winnerUsernamesShow.slice(counterWinner, counterWinner + 3).join(', '))
                 : winnerUsernamesShow[index];
 
             const loserUsernamesToShow = isTeamWinner
                 ? loserUsernamesShow[index]
-                : loserUsernamesShow.slice(counter, counter + 3).join(', ');
+                : (loseFlag = true, loserUsernamesShow.slice(counterLoser, counterLoser + 3).join(', '));
 
-            counter += 3; // Increment the counter by 3 for the next iteration
+                if (winFlag === true) {
+                    winFlag = false;
+                    counterWinner += 3;
+                }
+                
+                if (loseFlag === true) {
+                    loseFlag = false;
+                    counterLoser += 3;
+                }
+
 
             return (
                 <div key={match.id}>
