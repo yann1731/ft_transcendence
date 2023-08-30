@@ -42,6 +42,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return ("null");
   }
 
+  @SubscribeMessage("refused")
+  handleRefused(client: Socket) {
+    this.server.to(client.id).emit("refused")
+  }
+
   @SubscribeMessage("inviteToPlay")
   async inviteToPlay(client: Socket, data: any) {
     // this socket call invites another user to play pong
@@ -56,12 +61,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       this.server.timeout(15000).to(_invitedUser.socketID).emit("invitedToPlay", { inviterID: _inviterID }, (err, response) => {
           if (err) {
+            console.log("here")
             this.server.to(client.id).emit("displayFailure", {msg: "Invitation timed out or user declined."});
           } else {
             console.log("Invitation was succesfull");
           }
         });
     }
+    else 
+      console.log("inviter id is null")
   }
 
   async handleConnection(client: Socket) {

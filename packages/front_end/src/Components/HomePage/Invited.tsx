@@ -407,13 +407,14 @@ export default class invited extends Phaser.Scene{
 		if (this.start === true){
 			if (this.invited === false){
 
-				if (this.paddle2.body)
+				if (this.paddle2.body){
 					this.paddle2.setVelocityY(0);
 			
-        		if (this.keys.w.isDown)
-        		    this.paddle2.setVelocityY(-this.paddlespeed);
-        		if (this.keys.s.isDown)
-        		    this.paddle2.setVelocityY(this.paddlespeed);
+        			if (this.keys.w.isDown)
+        			    this.paddle2.setVelocityY(-this.paddlespeed);
+        			if (this.keys.s.isDown)
+        			    this.paddle2.setVelocityY(this.paddlespeed);
+				}
 				
         		if (this.paddle2.body){
         		    if (this.paddle2.body.y !== this.oldPosition)
@@ -449,13 +450,14 @@ export default class invited extends Phaser.Scene{
 						this.new_point(2);
 					}
 				
-				if (this.paddle1.body)
+				if (this.paddle1.body){
 					this.paddle1.setVelocityY(0);
 				
-				if (this.keys.w.isDown)
-					this.paddle1.setVelocityY(-this.paddlespeed);
-				if (this.keys.s.isDown)
-					this.paddle1.setVelocityY(this.paddlespeed);
+					if (this.keys.w.isDown)
+						this.paddle1.setVelocityY(-this.paddlespeed);
+					if (this.keys.s.isDown)
+						this.paddle1.setVelocityY(this.paddlespeed);
+				}
 				
 				if (this.paddle1.body){
 					if (this.paddle1.body.y !== this.oldPosition)

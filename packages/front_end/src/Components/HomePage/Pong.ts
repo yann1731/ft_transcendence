@@ -861,6 +861,14 @@ export default class pong extends Phaser.Scene{
 				if (this.power)
 					if (this.power.body)
 						this.power.destroy()
+				this.player1VictoryText.setVisible(false)
+				this.player2VictoryText.setVisible(false)
+				this.player1Score.setVisible(false)
+				this.player2Score.setVisible(false)
+				this.team1Score.setVisible(false)
+				this.team2Score.setVisible(false)
+				this.team1VictoryText.setVisible(false)
+				this.team2VictoryText.setVisible(false)
 			}
 		})
 	}
@@ -3095,16 +3103,20 @@ export default class pong extends Phaser.Scene{
             this.player2Score.setVisible(false);
             this.team1Score.setVisible(false);
             this.team2Score.setVisible(false);
-            this.paddle1.enableBody();
-            this.paddle2.enableBody();
-			if (this.two || this.multiple){
+			if (this.paddle1.body && this.paddle2.body){
+            	this.paddle1.enableBody();
+            	this.paddle2.enableBody();
+			}
+			if (this.two || this.multiple && this.paddle3.body && this.paddle4.body){
 				this.paddle3.enableBody();
 				this.paddle4.enableBody();
 			}
+			if (this.ball.body){
             this.ball.enableBody();
             this.ball.setX(this.physics.world.bounds.width / 2);
             this.ball.setY(this.physics.world.bounds.height / 2);
-			if (this.one){
+			}
+			if (this.single){
             	this.paddle1.setY(this.physics.world.bounds.height / 2);
             	this.paddle2.setY(this.physics.world.bounds.height / 2);
 			}

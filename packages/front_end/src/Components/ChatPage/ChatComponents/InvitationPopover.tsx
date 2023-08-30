@@ -19,6 +19,7 @@ function InvitationPopover({ onClose, userA, userB }: any) {
     }
     const handleClose = () => {
         setAnchorEl(null);
+        socket.emit("refused");
     }
     const open = Boolean(anchorEl);
     const id = open ? 'invitation-popover' : undefined;

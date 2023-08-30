@@ -46,7 +46,10 @@ const Chat = () => {
 
   // socket.on("Testing", () => alert("Wuddup!"));
   useEffect(() => {
-
+    socket.on("refused", () => {
+      setShowInvitation(false)
+      setInviter("null")
+    })
     socket.on('messageResponse', (data: any) => displayMessage(data));
     socket.on("sendHistory", (data: any) => makeHistory(data));
     socket.on("connected", () => socket.emit("connected"));
@@ -67,9 +70,9 @@ const Chat = () => {
     localStorage.setItem("invite" + user?.username, "false")
 
     return () => {
-      socket.off("messageResponse");
+      /* socket.off("messageResponse");
       socket.off("connected");
-      socket.off("displayFailure");
+      socket.off("displayFailure"); */
     }
   }, [])
 
@@ -258,7 +261,7 @@ const Chat = () => {
           userA={user?.id}
           userB={inviter}
           open={showInvitation}
-          onClose={() => setShowInvitation(false)} />}
+          onClose={() => setShowInvitation(false)}/>}
       </Box>
       <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
         <List>
