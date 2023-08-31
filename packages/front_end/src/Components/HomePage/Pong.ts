@@ -117,7 +117,6 @@ export default class pong extends Phaser.Scene{
 	init(data: gameData) {
 		this.name = data.name;
 		this.socket = data.socket;
-
 	}
 	
 	preload() {
@@ -178,6 +177,7 @@ export default class pong extends Phaser.Scene{
 				this.socket.emit("3v1", {start: false})
 			this.socket.on("start", (data: any) => {
 				this.socket.off("start")
+				this.socket.emit("inGame", {id: this.name})
 				waiting.destroy();
 
 				this.wall = data.wall
@@ -295,6 +295,7 @@ export default class pong extends Phaser.Scene{
 				this.socket.emit("3v1", {start: true, name: this.name})
 			this.socket.on("start", (data: any) =>{
 				this.socket.off("start")
+				this.socket.emit("inGame", {id: this.name})
 				this.ballX = data.ballX
 				this.ballY = data.ballY
 
@@ -575,6 +576,7 @@ export default class pong extends Phaser.Scene{
 				this.socket.emit("2v2", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, start: true, name: this.name});
 					
 			this.socket.on("start", (data: any) =>{
+				this.socket.emit("inGame", {id: this.name})
 				this.socket.off("start")
 				this.ballX = data.ballX
 				this.ballY = data.ballY
@@ -734,6 +736,7 @@ export default class pong extends Phaser.Scene{
 			}
 			this.socket.emit("3v1", {scale: this.rateSpeed, power: this.powerUp, name: this.name, start: true});
 			this.socket.on("start", (data: any) => {
+				this.socket.emit("inGame", {id: this.name})
 				waiting.destroy()
 				this.socket.off("start")
 				this.ballX = data.ballX
@@ -1505,6 +1508,8 @@ export default class pong extends Phaser.Scene{
         			this.socket.off("multi");
         			this.socket.off("power");
         			this.socket.off("point");
+					this.socket.emit("outGame", {id: this.name})
+					this.input.keyboard?.removeAllKeys()
 					this.end2 = true;
 				}
 				else if (this.points1 === this.win){
@@ -1527,6 +1532,8 @@ export default class pong extends Phaser.Scene{
         			this.socket.off("multi");
         			this.socket.off("power");
         			this.socket.off("point");
+					this.socket.emit("outGame", {id: this.name})
+					this.input.keyboard?.removeAllKeys()
 					this.end2 = true;
 				}
 				else if (which === 1)
@@ -2100,6 +2107,8 @@ export default class pong extends Phaser.Scene{
         			this.socket.off("newPower");
         			this.socket.off("multi");
         			this.socket.off("power");
+					this.socket.emit("outGame", {id: this.name})
+					this.input.keyboard?.removeAllKeys()
         			this.socket.off("point");
 					this.end2 = true;
 				}
@@ -2124,6 +2133,8 @@ export default class pong extends Phaser.Scene{
         			this.socket.off("newPower");
         			this.socket.off("multi");
         			this.socket.off("power");
+					this.socket.emit("outGame", {id: this.name})
+					this.input.keyboard?.removeAllKeys()
         			this.socket.off("point");
 					this.end2 = true;
 				}
@@ -2683,6 +2694,8 @@ export default class pong extends Phaser.Scene{
 				 this.socket.off("multi");
 				 this.socket.off("power");
 				 this.socket.off("point");
+				 this.input.keyboard?.removeAllKeys()
+				 this.socket.emit("outGame", {id: this.name})
 				 this.end2 = true;
 			 }
 			 else if (this.points1 === this.win){
@@ -2707,6 +2720,8 @@ export default class pong extends Phaser.Scene{
 				 this.socket.off("multi");
 				 this.socket.off("power");
 				 this.socket.off("point");
+				 this.input.keyboard?.removeAllKeys()
+				 this.socket.emit("outGame", {id: this.name})
 				 this.end2 = true;
 			 }
 			 else if (which === 1)
@@ -2746,7 +2761,7 @@ export default class pong extends Phaser.Scene{
 			 }
 		 })
  
-		 this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+		this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keys.s  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);        
         this.keys.a  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keys.d  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);  
@@ -3181,6 +3196,8 @@ export default class pong extends Phaser.Scene{
 		this.end2 = true;
 		this.socket.off("movement");
 		this.socket.off("movement2");
+		this.socket.emit("outGame", {id: this.name})
+		this.input.keyboard?.removeAllKeys()
         this.socket.emit("end", {which: which, name: this.name, player: player, score1: this.points1, score2: this.points2 })
         if (this.power)
             this.power.destroy();

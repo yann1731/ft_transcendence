@@ -8,16 +8,18 @@ import Wait from './WaitingPage/Wait';
 import Enable2Fa from './QRcode/Enable2Fa';
 import Otp from './Otp/Verify'
 import { useSelector } from "react-redux";
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { createTheme, ThemeProvider, PaletteMode } from '@mui/material/';
 import { RootState } from 'store/store';
 import { getDesignTokens } from '../Theme';
 import UserProvider from 'Contexts/userContext';
+import { SocketContext } from 'Contexts/socketContext';
 
 function App() {
 	const [mode, setMode] = useState<PaletteMode>("dark");
 	const lightMode = useSelector((state: RootState) => state.theme.lightMode);
-	
+	const socket = React.useContext(SocketContext)
+
 	useMemo(() => {
 		if (lightMode) {
 			setMode("light");
@@ -29,6 +31,7 @@ function App() {
 	const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 	return (
 		<UserProvider>
+			<SocketContext.Provider value={socket}>
 			<ThemeProvider theme={theme}>
 				<Routes>
 					<Route path='/' element={ <Login />} />
@@ -41,6 +44,7 @@ function App() {
 					<Route path='/otp' element={ <Otp /> } />
 				</Routes>
 			</ThemeProvider>
+			</SocketContext.Provider>
 		</UserProvider>
 	);
 }

@@ -6,6 +6,7 @@ import '../../App.css';
 interface gameData {
 	socket: Socket
 	invited: boolean
+	id: string
 }
 
 class PowerUp extends Phaser.Physics.Arcade.Sprite {
@@ -67,6 +68,7 @@ export default class invited extends Phaser.Scene{
 	init(data: gameData) {
 		this.socket = data.socket;
 		this.invited = data.invited
+		this.name = data.id
 	}
 	
 	preload() {
@@ -205,7 +207,7 @@ export default class invited extends Phaser.Scene{
 		});
 		this.starting.setOrigin(0.5);
 
-		this.position = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8, 'You are positionned left', {
+		this.position = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8, 'You are positionned right', {
 			fontFamily: 'pong',
 			fontSize: '25px',
 			color: '#ffffff',
@@ -218,7 +220,7 @@ export default class invited extends Phaser.Scene{
 		this.position.setOrigin(0.5);
 
 		if (this.invited === true)
-			this.position.setText("You are positionned right")
+			this.position.setText("You are positionned left")
 
 		this.event1 = this.time.delayedCall(1000, () => {
 			this.starting.setText('game starting in 2');
@@ -266,6 +268,7 @@ export default class invited extends Phaser.Scene{
 						this.socket.off("multi");
 						this.socket.off("power");
 						this.socket.off("point");
+						this.socket.emit("outGame", {id: this.name})
 						this.end2 = true;
 					}
 					else if (this.points1 === this.win){
@@ -281,6 +284,7 @@ export default class invited extends Phaser.Scene{
 						this.socket.off("multi");
 						this.socket.off("power");
 						this.socket.off("point");
+						this.socket.emit("outGame", {id: this.name})
 						this.end2 = true;
 					}
 					else if (which === 1)
@@ -425,7 +429,7 @@ export default class invited extends Phaser.Scene{
         		if (this.paddlespeed < 625)
         		    this.paddlespeed += 0.5;
 			}
-			else{
+			else {
 				if (this.ball.body)
 					if (this.ball.body?.x + this.ball.body.width === this.physics.world.bounds.width) {
 						this.ball.body.x = this.physics.world.bounds.width - 1 - this.ball.body.width;
@@ -528,6 +532,7 @@ export default class invited extends Phaser.Scene{
 
         this.socket.emit("end", {which: 1, name: this.name, player: player, score1: this.points1, score2: this.points2 })
 		this.socket.emit("invite end")
+		this.socket.emit("outGame", {id: this.name})
 
         if (player === 1)
             this.player2VictoryText.setVisible(true);

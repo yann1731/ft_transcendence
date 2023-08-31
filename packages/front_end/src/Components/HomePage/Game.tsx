@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import { User, UserContext } from 'Contexts/userContext';
 import { gamesocket } from 'Contexts/gameSocketContext';
 import { useNavigate } from 'react-router-dom';
+import { SocketContext } from 'Contexts/socketContext';
 
 export default function PongGame() {
   const {user, updateUser} = React.useContext(UserContext);
@@ -37,6 +38,7 @@ export default function PongGame() {
       game.scene.start('pong', {name: user?.id, socket: gamesocket});
     }
     else{
+      gamesocket.emit("inGame", {id: user?.id})
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         parent: 'PONG',
@@ -57,9 +59,9 @@ export default function PongGame() {
       };
       const game = new Phaser.Game(config);
       if (localStorage.getItem("host" + user?.username) === "true")
-        game.scene.start('invited', {socket: gamesocket, invited: true});
+        game.scene.start('invited', {socket: gamesocket, invited: true, id: user?.id});
       else
-        game.scene.start('invited', {socket: gamesocket, invited: false});
+        game.scene.start('invited', {socket: gamesocket, invited: false,  id: user?.id});
     }
   }, []);
 

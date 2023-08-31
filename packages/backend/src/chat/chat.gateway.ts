@@ -75,7 +75,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket) {
     console.log("Client ( " + client.id + " ) connected to chat");
     this.server.to(client.id).emit("connected");
-    //this.server.emit("refresh2");
+    this.server.emit("refresh2");
   }
 
   @SubscribeMessage("connected")
@@ -322,17 +322,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 
 
-  @SubscribeMessage("inGame")
-  async setInGame(client: Socket, data: any) {
-    await this.userService.updateStatus("inGame", data.username);
-    this.server.emit("refresh");
-  }
-
-  @SubscribeMessage("outGame")
-  async setOutGame(client: Socket, data: any) {
-    await this.userService.updateStatus("online", data.username);
-    this.server.emit("refresh");
-  }
+ 
 
   @SubscribeMessage("chatroom")
   createChatroomMessage(@MessageBody() message: any): void {
@@ -410,5 +400,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("user left")
   handleLeaving(client: Socket){
     client.broadcast.emit("user left");
+  }
+
+  @SubscribeMessage("allo")
+  handleAllo(client: Socket){
+    console.log("marche salope")
   }
 }

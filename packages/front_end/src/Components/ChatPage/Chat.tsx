@@ -23,7 +23,7 @@ function ChatPage() {
 	const gamesocket = useContext(gameSocketContext)
 	const navigate = useNavigate()
 
-	socket.connect();
+	
 
 	 /*  const newUser: Partial<User> = {
 		...user,
@@ -44,7 +44,6 @@ function ChatPage() {
 	}
 	return (
 	  	<React.Fragment>
-			<SocketContext.Provider value={socket}>
 				<CssBaseline />
 				<BackgroundContainer>
 					<div>
@@ -63,7 +62,6 @@ function ChatPage() {
 						</div>
 				  	</div>
 	  			</BackgroundContainer>
-			</SocketContext.Provider>
 		</React.Fragment>
 	);
   }
