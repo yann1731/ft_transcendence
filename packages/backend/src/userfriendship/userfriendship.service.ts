@@ -22,7 +22,7 @@ export class UserfriendshipService {
 				]
 			  }});
 	
-		if (check)
+		if (check.length !== 0)
 			  throw new InternalServerErrorException('userfriendship already created');
 
 		const userfriendship = await this.prisma.userFriendship.create({

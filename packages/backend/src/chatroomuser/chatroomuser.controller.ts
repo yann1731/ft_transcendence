@@ -36,6 +36,7 @@ export class ChatroomuserController {
   @Get('chatroom/:id') // returns all chatroomusers associated to the chatroomid
   findAllChatroomUsersByChatroomId(@Param('id') id: string) {
     return this.chatroomuserService.findAllChatroomUsersByChatroomId(id);
+    
   }
 
   @Get('user/:id') //returns all chatroomusers associated to the user id

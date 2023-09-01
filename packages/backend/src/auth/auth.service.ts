@@ -11,15 +11,17 @@ export class AuthService {
     async oauthCallback(code: string): Promise<AxiosResponse['data']> { //calls 42 api to exchange code for token
         const uid: string =  process.env.UID;
         const secret: string = process.env.SECRET;
+           
 
         try {
             const response = await axios.post('https://api.intra.42.fr/oauth/token', {
                 grant_type: 'authorization_code',
                 client_id: uid,
                 client_secret: secret,
-                redirect_uri: 'http://localhost:3000/wait',
+                redirect_uri: 'http://10.11.2.8:8080/wait',
                 code: code
             });
+
             return response.data;
         } catch (error) {
             throw new BadRequestException('Failed getting token', error);

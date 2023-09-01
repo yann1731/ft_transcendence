@@ -75,7 +75,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket) {
     console.log("Client ( " + client.id + " ) connected to chat");
     this.server.to(client.id).emit("connected");
-    //this.server.emit("refresh2");
+    this.server.emit("refresh2");
   }
 
   @SubscribeMessage("connected")

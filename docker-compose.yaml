@@ -41,6 +41,9 @@ services:
     # restart: always to be re-enabled later
     networks:
       - tr-net
+    environment:
+      - REACT_APP_HOST=localhost
+      - REACT_APP_BACKEND_PORT=8080
     volumes:
       - ./packages/front_end/src:/app/src/
     ports:
@@ -55,8 +58,7 @@ services:
     env_file:
       - ./packages/.env
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
     networks:
       - tr-net
     depends_on:
