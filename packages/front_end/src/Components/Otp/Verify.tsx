@@ -16,11 +16,11 @@ function OTPInputPage() {
 
     // do the API call to verify the OTP
     try {
-      const response = await axios.post('http://localhost:4242/verifyOtp', { otp }, { headers: {
+      const response = await axios.post('/verifyOtp', { otp }, { headers: {
         'Authorization': user?.token,
         'userId': user?.id
       }});
-      window.location.assign('http://localhost:3000/home');
+      window.location.assign('/home');
       console.log('Success');
     } catch (error) {
       // handle the error

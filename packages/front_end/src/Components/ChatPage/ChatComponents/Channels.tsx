@@ -18,13 +18,13 @@ interface MyChannelsProps {
     
      useEffect(() => {
        const fetchChannels = async () => {
-        await axios.get('http://localhost:4242/chatroom', {headers: {
+        await axios.get('/chatroom', {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }})
         .then((response:any) => {
           const Chans = response.data;
-          axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
+          axios.get(`/chatroomuser/user/${user?.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }})

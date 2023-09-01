@@ -39,14 +39,14 @@ const OptionBarChans: React.FC = () => {
   const socket = useContext(SocketContext);
   React.useEffect(() => {
     const fetchChannels = async () => {
-      await axios.get('http://localhost:4242/chatroom', {headers: {
+      await axios.get('/chatroom', {headers: {
         'Authorization': user?.token,
         'userId': user?.id
       }})
       .then( async (response: any) => {
         console.log('Chatrooms fetched');
         const chatroomData: Chatroom[] = response.data;
-        await axios.get(`http://localhost:4242/chatroomuser/user/${user?.id}`, {headers: {
+        await axios.get(`/chatroomuser/user/${user?.id}`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }})
@@ -188,7 +188,7 @@ const OptionBarChans: React.FC = () => {
         alert("Error: Password must be 8 characters long");
       else if (isProtected === 'pwProtected')
       {
-        await axios.post('http://localhost:4242/chatroom/password', newChannel, {headers: {
+        await axios.post('/chatroom/password', newChannel, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }})
@@ -227,7 +227,7 @@ const OptionBarChans: React.FC = () => {
       }
       else
       {
-        await axios.post('http://localhost:4242/chatroom/', newChannel, {headers: {
+        await axios.post('/chatroom/', newChannel, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }})
@@ -281,7 +281,7 @@ const OptionBarChans: React.FC = () => {
           state: isProtected,
           userId: user?.id,
         }
-        await axios.patch(`http://localhost:4242/chatroom/${channelName}`, newChan, {headers: {
+        await axios.patch(`/chatroom/${channelName}`, newChan, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }})
@@ -296,7 +296,7 @@ const OptionBarChans: React.FC = () => {
       }
       else
       {    
-        await axios.patch(`http://localhost:4242/chatroom/${channelName}`, newChannel, {headers: {
+        await axios.patch(`/chatroom/${channelName}`, newChannel, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }})
@@ -312,7 +312,7 @@ const OptionBarChans: React.FC = () => {
     }
     else if (mode === "Delete")
     {
-      await axios.delete(`http://localhost:4242/chatroom/${channelName}`, {headers: {
+      await axios.delete(`/chatroom/${channelName}`, {headers: {
         'Authorization': user?.token,
         'userId': user?.id
       }})
@@ -365,7 +365,7 @@ const OptionBarChans: React.FC = () => {
         }
         if (isProtected === "pwProtected")
         {
-          await axios.post(`http://localhost:4242/chatroomuser/password`, { userId: newChatroomuser.userId, chatroomId: newChatroomuser.chatroomId, permission: userPermission.regular, password: joinPassword }, {headers: {
+          await axios.post(`/chatroomuser/password`, { userId: newChatroomuser.userId, chatroomId: newChatroomuser.chatroomId, permission: userPermission.regular, password: joinPassword }, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }})
@@ -413,7 +413,7 @@ const OptionBarChans: React.FC = () => {
         }
         else
         {            
-          await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
+          await axios.post(`/chatroomuser`, newChatroomuser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }})

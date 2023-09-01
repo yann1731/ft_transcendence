@@ -21,13 +21,13 @@ export default function GetToken() {
     let authorizationCode = urlParams.get("code");
     const fetchTokenAndUser = async () => {
       try {
-        const response = await axios.post("http://localhost:4242/oauth", {
+        const response = await axios.post("/oauth", {
           code: authorizationCode,
         });
         console.log("here's the access token");
         console.log(response);
         
-        const newUser = await axios.post("http://localhost:4242/user", {
+        const newUser = await axios.post("/user", {
           code: response.data.access_token,
           refresh_token: response.data.refresh_token,
           created_at: response.data.created_at,
@@ -37,14 +37,14 @@ export default function GetToken() {
 
         setUser(newUser.data);
         if (newUser.data.twoFaEnabled === true) {
-          window.location.assign("http://localhost:3000/otp"); //changetoip
+          window.location.assign("/otp"); //changetoip
         }
         else
-          window.location.assign("http://localhost:3000/home"); //changetoip
+          window.location.assign("/home"); //changetoip
       } catch (error) {
         alert('Something went wrong, please try again later');
         console.error(error);
-        window.location.assign("http://localhost:3000/"); //changetoip
+        window.location.assign("/"); //changetoip
       }
     };
 

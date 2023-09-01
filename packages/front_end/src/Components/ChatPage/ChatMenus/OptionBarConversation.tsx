@@ -41,13 +41,13 @@ const OptionBarConversation: React.FC = () => {
   React.useEffect(() => {
     const fetchUsers = async () => {
       if (user?.chatInUse?.type === "channel") {
-        await axios.get(`http://localhost:4242/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
+        await axios.get(`/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }}).then((response: any) => {
           const ChatroomUsersData: ChatroomUser[] = response.data;
           setChatroomUsers(ChatroomUsersData);
-          axios.get('http://localhost:4242/user', {headers: {
+          axios.get('/user', {headers: {
               'Authorization': user?.token,
               'userId': user?.id
             }}).then((response: any) => {
@@ -79,7 +79,7 @@ const OptionBarConversation: React.FC = () => {
         })
     }
     else{
-      axios.get('http://localhost:4242/user', {headers: {
+      axios.get('/user', {headers: {
         'Authorization': user?.token,
         'userId': user?.id
       }}).then((response: any) => {
@@ -216,7 +216,7 @@ const OptionBarConversation: React.FC = () => {
           muteStatus: false,
           muteUntil: null,
        } 
-        await axios.post(`http://localhost:4242/chatroomuser`, newChatroomuser, {headers: {
+        await axios.post(`/chatroomuser`, newChatroomuser, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }}).then((response: any) =>
@@ -240,7 +240,7 @@ const OptionBarConversation: React.FC = () => {
           return ;
         }
 
-        axios.get(`http://localhost:4242/user/${chatUser.userId}`, {headers: {
+        axios.get(`/user/${chatUser.userId}`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }}).then((response: any) => {
@@ -253,7 +253,7 @@ const OptionBarConversation: React.FC = () => {
             userName: userData.username
           }
 
-          axios.post(`http://localhost:4242/chatroomuser/ban/${chatUser.id}`, newChatUser, {headers: {
+          axios.post(`/chatroomuser/ban/${chatUser.id}`, newChatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {
@@ -278,7 +278,7 @@ const OptionBarConversation: React.FC = () => {
           alert("Cannot kick owner or Admin");
           return ;
         }
-          await axios.delete(`http://localhost:4242/chatroomuser/${chatUser.id}`, {headers: {
+          await axios.delete(`/chatroomuser/${chatUser.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {
@@ -306,7 +306,7 @@ const OptionBarConversation: React.FC = () => {
         const newChatUser: Partial<ChatroomUser> = {
           permission: userPermission.admin,
         }
-        await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
+        await axios.patch(`/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {
@@ -333,7 +333,7 @@ const OptionBarConversation: React.FC = () => {
           return ;
         }
         chatUser.muteStatus = true;
-        await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+        await axios.patch(`/chatroomuser/${chatUser.id}`, chatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {
@@ -356,7 +356,7 @@ const OptionBarConversation: React.FC = () => {
           return ;
         }
         chatUser.muteStatus = false;
-        await axios.patch(`http://localhost:4242/chatroomuser/${chatUser.id}`, chatUser, {headers: {
+        await axios.patch(`/chatroomuser/${chatUser.id}`, chatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {
@@ -373,7 +373,7 @@ const OptionBarConversation: React.FC = () => {
     {     
       if (user?.id === user?.chatInUse?.chat?.userId)
       {
-        await axios.delete(`http://localhost:4242/chatroom/${user?.chatInUse?.chat?.name}`, {headers: {
+        await axios.delete(`/chatroom/${user?.chatInUse?.chat?.name}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {
@@ -393,7 +393,7 @@ const OptionBarConversation: React.FC = () => {
       }
       else
       {
-          await axios.delete(`http://localhost:4242/chatroomuser/${selfChatroomUser?.id}`, {headers: {
+          await axios.delete(`/chatroomuser/${selfChatroomUser?.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {
@@ -410,7 +410,7 @@ const OptionBarConversation: React.FC = () => {
     else if(mode === "Block")
     {
       try {
-        const response = await axios.post(`http://localhost:4242/userblocks`, {blockerId: user?.id, blockedUserId: friendChat?.id}, {headers: {
+        const response = await axios.post(`/userblocks`, {blockerId: user?.id, blockedUserId: friendChat?.id}, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }});
