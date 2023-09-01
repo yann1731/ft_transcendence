@@ -11,6 +11,8 @@ export class AuthService {
     async oauthCallback(code: string): Promise<AxiosResponse['data']> { //calls 42 api to exchange code for token
         const uid: string =  process.env.UID;
         const secret: string = process.env.SECRET;
+        const port: string = process.env.FRONTEND_PORT
+        const ip: string = process.env.IP
            
 
         try {
@@ -18,7 +20,7 @@ export class AuthService {
                 grant_type: 'authorization_code',
                 client_id: uid,
                 client_secret: secret,
-                redirect_uri: 'http://10.11.2.8:8080/wait',
+                redirect_uri: "http://" + ip + ":" + port + "/wait", 
                 code: code
             });
 
@@ -31,6 +33,9 @@ export class AuthService {
     async refreshCallback(id: string): Promise<AxiosResponse['data']> { //calls 42 api to exchange refresh_token for new token
         const uid: string =  process.env.UID;
         const secret: string = process.env.SECRET;
+        const port: string = process.env.FRONTEND_PORT
+        const ip: string = process.env.IP
+
         let response: AxiosResponse;
         let user
         try {
@@ -43,7 +48,7 @@ export class AuthService {
                 grant_type: 'refresh_token',
                 client_id: uid,
                 client_secret: secret,
-                redirect_uri: 'http://localhost:3000/wait',
+                redirect_uri: "http://" + ip + ":" + port + "/wait",
                 refresh_token: user.refresh_token
             });
         } catch (error) {
