@@ -25,7 +25,7 @@ const DashboardContainer: React.FC = () => {
 
   useEffect(() => {
     const fetchHallOfFame = async () => {
-      axios.get(`/user/${user?.id}`, {headers: {
+      axios.get(`/api/user/${user?.id}`, {headers: {
         'Authorization': user?.token,
         'userId': user?.id
       }}).then((response: any) => {
@@ -43,7 +43,7 @@ const DashboardContainer: React.FC = () => {
       try {
         const token = user?.token;
         const userId = user?.id;
-        const response: AxiosResponse = await axios.get(`/user/`, {headers: {
+        const response: AxiosResponse = await axios.get(`/api/user/`, {headers: {
           'Authorization': token,
           'userId': userId
         }});

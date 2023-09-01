@@ -4,7 +4,7 @@ import { CreateUserblockDto } from './dto/create-userblock.dto';
 import { TokenGuard } from 'src/guard/token.guard';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('userblocks')
+@Controller('api/userblocks')
 @ApiTags('userblocks')
 // @UseGuards(TokenGuard)
 export class UserblocksController {

@@ -51,7 +51,7 @@ const Handler2FA = () => {
 
   const updateUser2FA = async (updatedUser: User) => {
      try {
-      const response = await axios.patch('/user/' + user?.id, updatedUser, {headers: {
+      const response = await axios.patch('/api/user/' + user?.id, updatedUser, {headers: {
         'Authorization': user?.token,
         'userId': user?.id
       }});

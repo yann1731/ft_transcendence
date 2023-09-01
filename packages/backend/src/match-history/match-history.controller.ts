@@ -5,7 +5,7 @@ import { CreateMatchHistoryTwoDto } from './dto/create-match-history.dto';
 import { CreateMatchHistoryThreeDto } from './dto/create-match-history.dto';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('match-history')
+@Controller('api/match-history')
 @ApiTags('match-history')
 export class MatchHistoryController {
   constructor(private readonly matchHistoryService: MatchHistoryService) {}

@@ -21,13 +21,13 @@ export default function GetToken() {
     let authorizationCode = urlParams.get("code");
     const fetchTokenAndUser = async () => {
       try {
-        const response = await axios.post("/oauth", {
+        const response = await axios.post("/api/oauth", {
           code: authorizationCode,
         });
         console.log("here's the access token");
         console.log(response);
         
-        const newUser = await axios.post("/user", {
+        const newUser = await axios.post("/api/user", {
           code: response.data.access_token,
           refresh_token: response.data.refresh_token,
           created_at: response.data.created_at,

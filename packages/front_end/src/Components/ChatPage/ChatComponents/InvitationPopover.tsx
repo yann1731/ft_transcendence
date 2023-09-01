@@ -34,7 +34,7 @@ function InvitationPopover({ onClose, userA, userB }: any) {
         }
 
         const fetchUsers = async () => {
-              await axios.get(`/user/${userA}`, {headers: {
+              await axios.get(`/api/user/${userA}`, {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
                  }}).then((response: any) => {
@@ -43,7 +43,7 @@ function InvitationPopover({ onClose, userA, userB }: any) {
               console.error('Error fetching users', error);
               })
 
-              await axios.get(`/user/${userB}`, {headers: {
+              await axios.get(`/api/user/${userB}`, {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
               }}).then((response: any) => {

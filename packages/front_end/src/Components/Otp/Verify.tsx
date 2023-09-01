@@ -16,7 +16,7 @@ function OTPInputPage() {
 
     // do the API call to verify the OTP
     try {
-      const response = await axios.post('/verifyOtp', { otp }, { headers: {
+      const response = await axios.post('/api/verifyOtp', { otp }, { headers: {
         'Authorization': user?.token,
         'userId': user?.id
       }});

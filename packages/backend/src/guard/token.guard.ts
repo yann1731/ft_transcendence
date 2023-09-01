@@ -34,7 +34,7 @@ async function validateRequest(request, prisma): Promise<boolean> { //validates 
 
     if ((Date.now() / 1000) > user.token_expires_at) {
         try {
-            const refresh = axios.post('/refreshToken' + userId);
+            const refresh = axios.post('/api/refreshToken' + userId);
         } catch (error) {
             console.log(error, 'error refreshing token');
             return false;

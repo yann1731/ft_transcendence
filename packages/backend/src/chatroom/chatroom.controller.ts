@@ -6,7 +6,7 @@ import { CreatePasswordChatroomDto } from './dto/create-passwordChatroom.dto';
 import { TokenGuard } from 'src/guard/token.guard';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('chatroom')
+@Controller('api/chatroom')
 @ApiTags('chatroom')
 // @UseGuards(TokenGuard)
 export class ChatroomController {

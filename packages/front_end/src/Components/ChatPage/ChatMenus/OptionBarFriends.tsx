@@ -29,7 +29,7 @@ const OptionBarFriends: React.FC = () => {
 
     React.useEffect(() => {
       const fetchUsers = async () => {
-      axios.get('/user', {headers: {
+      axios.get('/api/user', {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {
@@ -42,7 +42,7 @@ const OptionBarFriends: React.FC = () => {
               }
             })
             setUsers(otherUsers);
-            axios.get(`/userfriendship/user/${user?.id}`, {headers: {
+            axios.get(`/api/userfriendship/user/${user?.id}`, {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
               }}).then((response: any) => {
@@ -135,7 +135,7 @@ const OptionBarFriends: React.FC = () => {
       });
       if (mode === 'Add Friend')
       {
-          await axios.post(`/userfriendship`, {userAId: user?.id, userBId: friendToModify?.id}, {headers: {
+          await axios.post(`/api/userfriendship`, {userAId: user?.id, userBId: friendToModify?.id}, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {

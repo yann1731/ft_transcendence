@@ -7,7 +7,7 @@ import { BanChatroomuserDto } from './dto/ban-chatroomuser.dto';
 import { TokenGuard } from 'src/guard/token.guard';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('chatroomuser')
+@Controller('api/chatroomuser')
 @ApiTags('chatroomuser')
 // @UseGuards(TokenGuard)
 export class ChatroomuserController {
