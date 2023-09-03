@@ -417,14 +417,15 @@ const OptionBarConversation: React.FC = () => {
         console.log('User successfuly blocked', response.data);
         const id = user?.nickname;
         const blocked = friendChat?.id;
-        socket.emit("blocked", {id: id, blocked: blocked});
-        socket.emit("clearOtherHistory", { chat: user?.chatInUse?.chat.name, otherID: blocked });
         let _chat: Array<string>;
         if (user?.username) {
           _chat = ["null", "null", "friend", user?.username];
           localStorage.setItem(user?.username, JSON.stringify(_chat));
         }
+        socket.emit("getFriends", { id: user?.id});
         socket.emit("clearHistory");
+        socket.emit("blocked", {id: id, blocked: blocked});
+        socket.emit("clearOtherHistory", { chat: user?.chatInUse?.chat.name, otherID: blocked });
         socket.emit("refresh2");
       } catch (error) {
         console.error('Error blocking user', error);

@@ -217,7 +217,9 @@ const OptionBarChans: React.FC = () => {
               chatroomId: newChatInUse.chat.id,
               chatroom: newChatInUse.chat,
             };
+            socket.emit("getChannels", {id: user?.id});
             socket.emit("getHistory", newMessage);
+            socket.emit("refresh2");
           }
         })
         .catch((error: any) => {
@@ -257,6 +259,7 @@ const OptionBarChans: React.FC = () => {
               chatroomId: newChatInUse.chat.id,
               chatroom: newChatInUse.chat,
             };
+            socket.emit("getChannels", {id: user?.id});
             socket.emit("getHistory", newMessage);
           }
         })
@@ -287,6 +290,7 @@ const OptionBarChans: React.FC = () => {
         }})
         .then((response: any) => {
           console.log('Chatroom modified:', response.data);
+          socket.emit("getChannels", {id: user?.id});
           socket.emit("refresh");
         })
         .catch((error: any) => {
@@ -302,6 +306,7 @@ const OptionBarChans: React.FC = () => {
         }})
         .then((response: any) => {
           console.log('Chatroom modified:', response.data);
+          socket.emit("getChannels", {id: user?.id});
           socket.emit("refresh");
         })
         .catch((error: any) => {
@@ -339,6 +344,7 @@ const OptionBarChans: React.FC = () => {
           const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
           //alert(_chatInfo);
         }
+        socket.emit("getChannels", {id: user?.id});
         socket.emit("refresh");
       })
       .catch((error: any) => {
@@ -397,6 +403,7 @@ const OptionBarChans: React.FC = () => {
                   chatroomId: newChatInUse.chat.id,
                   chatroom: newChatInUse.chat,
                 };
+                socket.emit("getChannels", {id: user?.id});
                 socket.emit("getHistory", newMessage);
               }
             }
@@ -445,6 +452,7 @@ const OptionBarChans: React.FC = () => {
                   chatroomId: newChatInUse.chat.id,
                   chatroom: newChatInUse.chat,
                 };
+                socket.emit("getChannels", {id: user?.id});
                 socket.emit("getHistory", newMessage);
               }
             }

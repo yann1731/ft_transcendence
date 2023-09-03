@@ -15,64 +15,15 @@ interface MyChannelsProps {
     const {updateUser, user} = useContext(UserContext);
     const socket = useContext(SocketContext);
     const [refresh, setRefresh] = useState(1);
+    const [channels, setChannels] = useState<Chatroom[]>([]);
+
+    socket.on("updateChannels", (data: any) => {
+      setChannels(data.channels);
+    });
     
-     useEffect(() => {
-       const fetchChannels = async () => {
-        await axios.get('/api/chatroom', {headers: {
-          'Authorization': user?.token,
-          'userId': user?.id
-        }})
-        .then((response:any) => {
-          const Chans = response.data;
-          axios.get(`/api/chatroomuser/user/${user?.id}`, {headers: {
-            'Authorization': user?.token,
-            'userId': user?.id
-          }})
-          .then((response: any) => {
-            const chatroomUsersData: ChatroomUser[] = response.data;
-            const chans: Chatroom[] = [];
-            let trigger = "off";
-            let newChatInUse = user?.chatInUse;
-
-            Chans.forEach((channel: Chatroom) => {
-              chatroomUsersData.forEach((users: ChatroomUser) => {
-
-                if (channel?.id === users?.chatroomId && users.banStatus !== true)
-                  chans.push(channel);
-    
-                if (channel?.id === user?.chatInUse?.chat?.id && newChatInUse !== undefined)
-                {
-                  newChatInUse.chat = channel;
-                  trigger = "on";
-                }
-              })
-            });
-
-            if (trigger === 'on'){
-                const updatedUser: Partial<User> = { ...user, chatInUse: newChatInUse, Chatroom: chans };
-                updateUser(updatedUser);
-            }
-
-            if (trigger === "off")
-            {
-              const updatedUser: Partial<User> = { ...user, chatInUse: undefined, Chatroom: chans };
-              updateUser(updatedUser);
-            }
-
-            console.log('ChatroomUsers fetched: ', response.data);
-          })
-          .catch((error: any) => {
-            console.error('Error getting ChatroomUsers: ', error);
-            alert('Error: could not get ChatroomUsers: ' + error);
-          })
-        })
-       .catch((error: any) => {
-          console.error('Error getting chatrooms:', error);
-          alert('Error: could not get chatrooms: ' + error);
-        })
-      }
-      fetchChannels();
-    }, [refresh]);
+    useEffect(() => {
+      socket.emit("getChannels", {id: user?.id});
+    }, []);
     
     const setHistory = (id: string | undefined, chat: any) => {
       if (id === undefined) {
@@ -119,27 +70,9 @@ interface MyChannelsProps {
       }
     };
     
-/*     user?.Chatroom?.forEach((channel: Chatroom) => {
-      alert(channel.name)
-    }) */
-
-/*     let filteredChannels : any = user?.Chatroom?.filter((channel: Chatroom) =>
-      channel.name.toLowerCase().includes(searchText.toLowerCase())
-    ); */
-
-/*     filteredChannels.forEach((channel: Chatroom) => {
-      alert(channel.name)
-    }) */
-
-    socket.on("connected", () => {
-      socket.on("refresh", () => {
-        setRefresh(refresh => refresh + 1);
-      })
-    });
-    
     return (
       <List>
-        {user?.Chatroom?.map((channel: Chatroom) => {
+        {channels.map((channel: Chatroom) => {
           const decodedName = decodeURIComponent(channel.name);
           const encodedName = encodeURIComponent(channel.name);
           return (

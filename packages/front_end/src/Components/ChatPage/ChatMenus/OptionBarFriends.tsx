@@ -165,8 +165,9 @@ const OptionBarFriends: React.FC = () => {
             senderId: user?.id,
             recipientId: username,
           };
+          socket.emit("getFriends", { id: user?.id});
           socket.emit("getPrivateHistory", newMessage);
-          socket.emit("refresh2")
+          socket.emit("refresh2");
         }).catch((error) => {
           console.error('Error adding new friend', error);
           alert('Error adding new friend: ' + error);

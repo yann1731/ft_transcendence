@@ -13,6 +13,7 @@ import { CreatePrivateMessageDto } from 'src/privatemessage/dto/createprivatemes
 import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, BadRequestException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserblocksService } from 'src/userblocks/userblocks.service';
+import { UserfriendshipService } from 'src/userfriendship/userfriendship.service';
 import { ChatroomService } from 'src/chatroom/chatroom.service';
 import { subscribe } from 'diagnostics_channel';
 
@@ -28,6 +29,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly privateMessageService: PrivatemessageService,
     private readonly chatroomUserService: ChatroomuserService,
     private readonly userblocksService: UserblocksService,
+    private readonly userfriendshipService: UserfriendshipService,
     private readonly userService: UserService) {};
 
   @WebSocketServer()
@@ -39,6 +41,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return (key);
       }
     }
+    // console.log();
     return ("null");
   }
 
@@ -75,20 +78,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket) {
     console.log("Client ( " + client.id + " ) connected to chat");
     this.server.to(client.id).emit("connected");
-    this.server.emit("refresh2");
   }
 
   @SubscribeMessage("connected")
-  async handleConnected(client: Socket, id: string) {
-    if (typeof id !== "string") {
-     // console.log("ID !== string: " + id);
+  async handleConnected(client: Socket, data: any) {
+    if (typeof data.id !== "string") {
+      console.log("Not string!");
       return ;
     }
-    //console.log(this.users);
-    this.users.set(id, client.id);
-    //console.log("Handling connection for: " + id);
-    await this.registerUser(client, id);
-    this.server.emit("refresh2");
+    console.log("ID from connection: " + data.id);
+    this.users.set(data.id, client.id);
+    await this.userService.updateSocketID(client.id, data.id);
+    await this.userService.updateStatus("online", data.id);
+    this.server.emit("reloadFriends");
   }
 
   async handleDisconnect(client: Socket) {
@@ -96,7 +98,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (user) {
       this.registerDisconnect(client, user.id);
       this.server.to(client.id).emit("closeSocket");
-      this.server.emit("refresh2");
     } else {
       console.log("Could not find user from socket: " + client.id);
     }
@@ -107,7 +108,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log("Registering disconnect for: " + id);
     // await this.userService.updateSocketID(client.id, id);
     await this.userService.updateStatus("offline", id);
-    this.server.emit("refresh2");
+    this.server.emit("reloadFriends");
   }
 
   @SubscribeMessage("registerUser")
@@ -116,10 +117,22 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       //console.log("Registering: " + id + " (" + client.id + ")");
       await this.userService.updateSocketID(client.id, id);
       await this.userService.updateStatus("online", id);
-      this.server.emit("refresh2");
+      this.server.emit("reloadFriends");
     } else {
       console.log("username is undefined");
     }
+  }
+
+  @SubscribeMessage("getFriends")
+  async sendFriends(client: Socket, data: any) {
+    const friends = await this.userfriendshipService.findAllUF(data.id);
+    this.server.to(client.id).emit("updateFriends", { friends: friends});
+  }
+
+  @SubscribeMessage("getChannels")
+  async sendChannels(client: Socket, data: any) {
+    const channels = await this.chatroomUserService.findAllChatroomsByUserID(data.id);
+    this.server.to(client.id).emit("updateChannels", {channels: channels});
   }
 
   @SubscribeMessage("getChatroomUsers")
@@ -139,13 +152,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const _msgInfo = {
       text: createPrivateMessageDto.content,
       timestamp: time,
-      nickname: _user.username,
+      nickname: _user.nickname,
+      username: _user.username,
       avatar: _user.avatar,
       type: "friend",
       recipient: _recipient.username,
       // channelID: createPrivateMessageDto.chatroomId
     };
-    this.server.emit("messageResponse", _msgInfo);
+    this.server.to(_user.socketID).emit("messageResponse", _msgInfo);
+    this.server.to(_recipient.socketID).emit("messageResponse", _msgInfo);
   }
 
   @SubscribeMessage("clearHistory")
@@ -187,7 +202,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const _msgInfo = {
       text: createChatroomMessageDto.content,
       timestamp: time,
-      nickname: _user.username,
+      nickname: _user.nickname,
       avatar: _user.avatar,
       channelID: createChatroomMessageDto.chatroomId,
       chatName: _chat.name,
@@ -201,6 +216,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  // console.log();
   async blockExists(userID: string, senderID: string) {
     const _user = await this.prisma.user.findUnique({
       where: {
@@ -233,22 +249,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("unmuteUser")
   async unmuteUser(client: Socket, data: any) {
     const _updatedUser = await this.chatroomUserService.updateMuteStatus(data.mute.id, false);
-  }
-
-  @SubscribeMessage("getUserBlocks")
-  async getUserBlocks(client: Socket, data: any) {
-    // userID, senderID
-    const _users = await this.userblocksService.findAll();
-    const _blocks: any[] = [];
-    for (const element of _users) {
-      const _block: any = {
-        id: element.id,
-        blockerID: element.blockerId,
-        blockedUserID: element.blockedUserId
-      };
-      _blocks.push(_block);
-    };
-    this.server.emit("receiveBlocks", {blocks: _blocks});
   }
 
   @SubscribeMessage("getHistory")
@@ -319,8 +319,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async deleteHistory(client: Socket, data: any) {
     this.server.emit("clearOtherHistory", { chat: data.channel});
   }
-
-
 
   @SubscribeMessage("inGame")
   async setInGame(client: Socket, data: any) {
@@ -401,10 +399,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("blocked")
-  handleBlocked(client: Socket, data: any){
-    console.log(data.id, data.blocked, this.users.get(data.blocked));
+  async handleBlocked(client: Socket, data: any){
+    const friends = await this.userfriendshipService.findAllUF(data.blocked);
     this.server.to(this.users.get(data.blocked)).emit("blocked", data.id);
     this.server.to(this.users.get(data.blocked)).emit("clearOtherHistory", { chat: data.id});
+    this.server.to(this.users.get(data.blocked)).emit("updateFriends", { friends: friends});
   }
 
   @SubscribeMessage("user left")

@@ -84,6 +84,7 @@ function DashboardAppBar() {
     gamesocket.emit("connected", {name: user?.id})
   })
 
+
   return (
     <div className="toolbar">
     <AppBar sx={{ height: '64px' }}>

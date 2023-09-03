@@ -34,8 +34,6 @@ const Chat = () => {
   const [ inviter, setInviter] = useState("null");
   const navigate = useNavigate();
 
-  
-
   // Handles the scrollbar to the bottom on scrolling chat messages
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
@@ -44,15 +42,22 @@ const Chat = () => {
     }
   }, [messages]);
 
-  // socket.on("Testing", () => alert("Wuddup!"));
+  useEffect(() => {
+    socket.on("messageResponse", (data: any) => displayMessage(data));
+    socket.on("connected", () => socket.emit("connected", { id: user?.id}));
+    return () => {
+      socket.off("messageResponse");
+      socket.off("connected");
+    }
+  }, [socket]);
+
+
   useEffect(() => {
     socket.on("refused", () => {
       setShowInvitation(false)
       setInviter("null")
     })
-    socket.on('messageResponse', (data: any) => displayMessage(data));
     socket.on("sendHistory", (data: any) => makeHistory(data));
-    socket.on("connected", () => socket.emit("connected"));
     // socket.on("disconnected", () => socket.emit("registerDisconnect", {id: user?.id}));
     socket.on("clearHistory", () => clearHistory());
     socket.on("clearOtherHistory", (data: any) => clearOtherHistory(data));
@@ -68,12 +73,6 @@ const Chat = () => {
 
     localStorage.setItem("host" + user?.username, "false")
     localStorage.setItem("invite" + user?.username, "false")
-
-    return () => {
-      /* socket.off("messageResponse");
-      socket.off("connected");
-      socket.off("displayFailure"); */
-    }
   }, [])
 
   const handleInvitation = (inviterID: string, acknowledge: any) => {
@@ -81,13 +80,6 @@ const Chat = () => {
     acknowledge(true);
     setShowInvitation(true);
     setInviter(inviterID);
-  }
-
-  const makeConnection = () => {
-    const updatedUser: Partial<User> = {...user, userStatus: true};
-    updateUser(updatedUser);
-    socket.emit("connected", user?.id);
-    socket.emit("refresh2");
   }
 
   const clearHistory = () => {
@@ -145,15 +137,6 @@ const Chat = () => {
     });
     setMessages(msgHistory);
   };
-  
-  const blockExists = (userID: string, senderID: string): boolean => {
-    for (const block of userBlocks) {
-      if (block.blockedUserId === senderID) {
-        return true;
-      }
-    }
-    return false;
-  };
 
   // _chatInfo: chatName, chatID, chatType, username
   const displayMessage = (message: any) => {
@@ -169,11 +152,10 @@ const Chat = () => {
           userId: message.userId
           };
           setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
-          // endif
         }
       } else if (message.type === "friend") {
-        console.log("chatinUse on DISPLAY = " + user?.chatInUse?.chat.name)
-      if ((_chatInfo[0] === message.recipient && message.nickname === user?.username) || (_chatInfo[0] === message.nickname && message.recipient === user?.username)) {
+        console.log(_chatInfo[0], message.recipient, message.username, user?.username);
+      if (_chatInfo[0] === message.username || _chatInfo[0] === message.recipient) {
           const newMessage: Message = {
             text: message.text,
             timestamp: message.timestamp,
@@ -182,7 +164,6 @@ const Chat = () => {
           userId: message.userId
           };
           setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
-          // endif
         }
       }
     }
@@ -191,7 +172,6 @@ const Chat = () => {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       if (user?.username) {
-        // console.log("keydown: " + user?.chatInUse?.chat.name);
         const messageInput = event.target as HTMLInputElement;
         const messageText = messageInput.value.trim();
         if (user?.chatInUse?.type === "friend") {
@@ -246,7 +226,6 @@ const Chat = () => {
             chatroomId: user?.chatInUse?.chat.id,
             chatroom: user?.chatInUse?.chat,
           };
-          // socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
           socket.emit("sendMessage", newMessage);
           messageInput.value = '';
         }
