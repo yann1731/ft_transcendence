@@ -24,6 +24,8 @@ export default class pong extends Phaser.Scene{
     paddle2!: Phaser.Physics.Arcade.Sprite;
     paddle3!: Phaser.Physics.Arcade.Sprite;
     paddle4!: Phaser.Physics.Arcade.Sprite;
+    sidePaddle1!: Phaser.Physics.Arcade.Sprite;
+    sidePaddle2!: Phaser.Physics.Arcade.Sprite;
     power!: Phaser.Physics.Arcade.Sprite;
     wall1!: Phaser.Physics.Arcade.Sprite;
     wall2!: Phaser.Physics.Arcade.Sprite;
@@ -88,7 +90,7 @@ export default class pong extends Phaser.Scene{
 	rateSpeed: number = 0.0006;
 	points1: number = 0;
     points2: number = 0;
-    win: number = 1;
+    win: number = 5;
     rotation: number = 1;
     paddlespeed: number = 450;
     modifier: number = 1;
@@ -822,6 +824,49 @@ export default class pong extends Phaser.Scene{
 		this.disconnect.setOrigin(0.5);
 		this.disconnect.setVisible(false);
 
+
+		this.ball = this.physics.add.sprite(
+			this.physics.world.bounds.width / 2,
+			this.physics.world.bounds.height / 2,
+			"ball"
+		)
+
+		this.ball.setDamping(true);
+		this.ball.setScale(0.2);
+		this.ball.setCollideWorldBounds(true);
+		this.ball.setBounce(1, 1);
+		this.ball.setDrag(1.05);
+
+		this.paddle1 = this.physics.add.sprite(
+			(this.ball.width * 0.2) / 2 + 1,
+			this.physics.world.bounds.height / 2,
+			"paddle"
+		)
+		this.paddle2 = this.physics.add.sprite(
+			this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
+			this.physics.world.bounds.height / 2,
+			"paddle"
+		)
+		this.oldPosition = this.physics.world.bounds.height / 2;
+
+		
+
+		this.paddle1.setImmovable(true);
+		this.paddle1.setOrigin(0.5);
+		this.paddle1.setScale(0.15, 0.25);
+		this.paddle1.setCollideWorldBounds(true);
+		
+		this.paddle2.setImmovable(true);
+		this.paddle2.setOrigin(0.5);
+		this.paddle2.setScale(0.15, 0.25);
+		this.paddle2.setCollideWorldBounds(true);
+
+		
+
+		this.paddle1.setVisible(false)
+		this.paddle2.setVisible(false)
+		this.ball.setVisible(false)
+
 		this.shutdown()
 
 		this.keys.w  = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -1044,6 +1089,8 @@ export default class pong extends Phaser.Scene{
 			);
 			this.multiBall.setOrigin(0.5);
 			this.multiBall.setVisible(false);
+
+			this.ball.setPosition(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2)
 		}
 
 		if (this.oneHost === true)
@@ -1100,19 +1147,18 @@ export default class pong extends Phaser.Scene{
 					this.wall3.setOrigin(0.5);
 			   }
 
-				this.ball = this.physics.add.sprite(
-					this.physics.world.bounds.width / 2,
-					this.physics.world.bounds.height / 2,
-					"ball"
-				)
-				
+
+			   	this.ball.enableBody()
+				this.ball.setVisible(true)
 				this.ball.setVelocityX(this.ballX);
 				this.ball.setVelocityY(this.ballY);
-				this.ball.setDamping(true);
-				this.ball.setScale(0.2);
-				this.ball.setCollideWorldBounds(true);
-				this.ball.setBounce(1, 1);
-				this.ball.setDrag(1.05);
+				this.paddle1.setY(this.physics.world.bounds.height / 2)
+				this.paddle2.setY(this.physics.world.bounds.height / 2)
+
+				this.paddle1.enableBody()
+				this.paddle1.setVisible(true)
+				this.paddle2.enableBody()
+				this.paddle2.setVisible(true)
 				
 				if (this.wall === true || this.random === true){
 					this.physics.add.collider(this.ball, this.wall1);
@@ -1123,27 +1169,7 @@ export default class pong extends Phaser.Scene{
 					}
 				}
 
-				this.paddle1 = this.physics.add.sprite(
-					(this.ball.width * 0.2) / 2 + 1,
-					this.physics.world.bounds.height / 2,
-					"paddle"
-				)
-				this.paddle2 = this.physics.add.sprite(
-					this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
-					this.physics.world.bounds.height / 2,
-					"paddle"
-				)
-				this.oldPosition = this.physics.world.bounds.height / 2;
-				
-				this.paddle1.setImmovable(true);
-				this.paddle1.setOrigin(0.5);
-				this.paddle1.setScale(0.15, 0.25);
-				this.paddle1.setCollideWorldBounds(true);
 				this.physics.add.collider(this.ball, this.paddle1);
-				
-				this.paddle2.setImmovable(true);
-				this.paddle2.setOrigin(0.5);
-				this.paddle2.setScale(0.15, 0.25);
 				this.physics.add.collider(this.ball, this.paddle2);
 
 				this.socket.on("movement", (newPos: number) => {
@@ -1320,24 +1346,16 @@ export default class pong extends Phaser.Scene{
        		)
         	this.ball.setScale(0.2);
 
-			this.paddle1 = this.physics.add.sprite(
-				(this.ball.width * 0.2) / 2 + 1,
-				this.physics.world.bounds.height / 2,
-				"paddle"
-			)
-			this.paddle2 = this.physics.add.sprite(
-				this.physics.world.bounds.width - (this.ball.width * 0.2) / 2 - 1,
-				this.physics.world.bounds.height / 2,
-				"paddle"
-			)
-			this.oldPosition = this.physics.world.bounds.height / 2;
-	
-			this.paddle1.setOrigin(0.5);
-			this.paddle1.setScale(0.15, 0.25);
-			
-			this.paddle2.setOrigin(0.5);
-			this.paddle2.setScale(0.15, 0.25);
-			this.paddle2.setCollideWorldBounds(true)
+			this.ball.enableBody()
+			this.ball.setVisible(true)
+
+		
+			this.paddle1.setY(this.physics.world.bounds.height / 2)
+			this.paddle2.setY(this.physics.world.bounds.height / 2)
+			this.paddle1.enableBody()
+				this.paddle1.setVisible(true)
+				this.paddle2.enableBody()
+				this.paddle2.setVisible(true)
 			
 			this.socket.on("movement", (newPos: number) => {
 				if (this.paddle1.body)
@@ -1488,9 +1506,15 @@ export default class pong extends Phaser.Scene{
 				if (this.points2 === this.win){
 					this.player1VictoryText.setVisible(true);
 					this.menu.setVisible(true);
-					this.ball.destroy(true);
-					this.paddle1.destroy(true);
-					this.paddle2.destroy(true);
+					//this.ball.destroy(true);
+					//this.paddle1.destroy(true);
+					//this.paddle2.destroy(true);
+					this.ball.setVisible(false)
+					this.paddle1.setVisible(false);
+					this.paddle2.setVisible(false);
+					this.ball.disableBody()
+					this.paddle1.disableBody()
+					this.paddle2.disableBody()
 					if (this.multi === true)
 							this.multiball.destroy(true);
 					if (this.wall || this.random){
@@ -1510,9 +1534,15 @@ export default class pong extends Phaser.Scene{
 				else if (this.points1 === this.win){
 					this.player2VictoryText.setVisible(true);
 					this.menu.setVisible(true);
-					this.ball.destroy(true);
-					this.paddle1.destroy(true);
-					this.paddle2.destroy(true);
+					//this.ball.destroy(true);
+					//this.paddle1.destroy(true);
+					//this.paddle2.destroy(true);
+					this.ball.setVisible(false)
+					this.paddle1.setVisible(false);
+					this.paddle2.setVisible(false);
+					this.ball.disableBody()
+					this.paddle1.disableBody()
+					this.paddle2.disableBody()
 					if (this.multi === true)
 							this.multiball.destroy(true);
 					if (this.wall || this.random){
@@ -3191,13 +3221,19 @@ export default class pong extends Phaser.Scene{
 			else
             	this.team1VictoryText.setVisible(true);
 		}
-        this.paddle1.destroy();
-        this.paddle2.destroy();
+        //this.paddle1.destroy();
+        //this.paddle2.destroy();
 		if (this.two || this.multiple){
 			this.paddle3.destroy();
 			this.paddle4.destroy();
 		}
-        this.ball.destroy()
+        //this.ball.destroy()
+		this.ball.setVisible(false)
+					this.ball.disableBody()
+					this.paddle1.disableBody()
+					this.paddle2.disableBody()
+					this.paddle1.setVisible(false);
+					this.paddle2.setVisible(false);
         this.menu.setVisible(true);
     }
 

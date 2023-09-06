@@ -35,6 +35,10 @@ export default function PongGame() {
 
       const game = new Phaser.Game(config);
       game.scene.start('pong', {name: user?.id, socket: gamesocket});
+
+      return () => {
+        game.destroy(true);
+      }
     }
     else{
       const config: Phaser.Types.Core.GameConfig = {
@@ -60,6 +64,10 @@ export default function PongGame() {
         game.scene.start('invited', {socket: gamesocket, invited: true});
       else
         game.scene.start('invited', {socket: gamesocket, invited: false});
+
+      return () => {
+        game.destroy(true);
+      }
     }
   }, []);
 
