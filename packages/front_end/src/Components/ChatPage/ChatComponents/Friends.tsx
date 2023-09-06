@@ -72,12 +72,12 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
         chat: newChatroom,
         type: chatroomType.friend
       }
-
       const updatedUser: Partial<User> = {
         ...user,
         chatInUse: newChatInUse,
       };
-    updateUser(updatedUser);
+      updateUser(updatedUser);
+      console.log("chatInUse onClick = " + newChatroom.name);
 
     let _chats: Array<string>;
     if (updatedUser.username && updatedUser.chatInUse?.type) {

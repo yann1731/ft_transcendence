@@ -53,7 +53,7 @@ interface MyChannelsProps {
       
       if (user !== null)
       {
-        const chatroom = user?.Chatroom?.find((chat: Chatroom) => {
+        const chatroom = channels.find((chat: Chatroom) => {
           console.log("chatInUse onClick = " + decodedName);
           return chat.name === decodedName;
         });
@@ -76,6 +76,8 @@ interface MyChannelsProps {
             localStorage.setItem(updatedUser.username, JSON.stringify(_chat));
           }
           setHistory(updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.chat);
+        } else {
+          console.log("Obivously the chatinuse doesn't work.");
         }
       }
     };
