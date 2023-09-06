@@ -88,7 +88,7 @@ export default class pong extends Phaser.Scene{
 	rateSpeed: number = 0.0006;
 	points1: number = 0;
     points2: number = 0;
-    win: number = 1;
+    win: number = 5;
     rotation: number = 1;
     paddlespeed: number = 450;
     modifier: number = 1;
