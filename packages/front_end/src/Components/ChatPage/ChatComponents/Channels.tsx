@@ -20,9 +20,19 @@ interface MyChannelsProps {
     socket.on("updateChannels", (data: any) => {
       setChannels(data.channels);
     });
+
+    useEffect(() => {
+      socket.on("reloadChannels", () => {
+        socket.emit("getChannels", { id: user?.id });
+      });
+      socket.off("reloadChannels");
+    });
     
     useEffect(() => {
       socket.emit("getChannels", {id: user?.id});
+      return () => {
+        socket.off("getChannels");
+      }
     }, []);
     
     const setHistory = (id: string | undefined, chat: any) => {

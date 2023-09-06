@@ -166,6 +166,7 @@ const OptionBarFriends: React.FC = () => {
             recipientId: username,
           };
           socket.emit("getFriends", { id: user?.id});
+          socket.emit("friendUpdate", { id: friendToModify?.id });
           socket.emit("getPrivateHistory", newMessage);
           socket.emit("refresh2");
         }).catch((error) => {

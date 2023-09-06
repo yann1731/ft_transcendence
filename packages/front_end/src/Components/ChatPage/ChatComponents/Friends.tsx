@@ -25,12 +25,20 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
     setFriends(data.friends);
   });
 
-  socket.on("reloadFriends", (data: any) => {
-    socket.emit("getFriends", { id: user?.id });
+  useEffect(() => {
+    socket.on("reloadFriends", (data: any) => {
+      socket.emit("getFriends", { id: user?.id });
+    });
+    return () => {
+      socket.off("reloadFriends");
+    }
   });
 
   useEffect(() => {
     socket.emit("getFriends", { id: user?.id});
+    return () => {
+      socket.off("getFriends");
+    }
   }, []);
 
   const setPrivateHistory = (channelName: string | undefined) => {

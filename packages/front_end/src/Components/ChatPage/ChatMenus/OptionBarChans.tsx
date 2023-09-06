@@ -326,17 +326,14 @@ const OptionBarChans: React.FC = () => {
         if (user?.username) {
           const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
           _prevChannelID = _chatInfo[1];
-          //alert(_chatInfo);
         }
         console.log('Chatroom deleted:', response.data);
-        //socket.emit("delete chatroom", {chanName: channelName});
         // Change ChatInUse to NULL
         let _chat: Array<string>;
         if (user?.username) {
-          _chat = ["null", "null", "null", user?.username]
-          localStorage.setItem(user?.username, JSON.stringify(_chat));
-          socket.emit("clearHistory");
-          if (_prevChannelID !== undefined) {
+          if (_prevChannelID === channelName) {
+            _chat = ["null", "null", "null", user?.username]
+            localStorage.setItem(user?.username, JSON.stringify(_chat));
             socket.emit("deleteHistory", {channel: _prevChannelID});
           }
         }

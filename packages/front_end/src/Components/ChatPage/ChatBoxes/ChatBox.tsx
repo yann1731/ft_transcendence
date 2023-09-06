@@ -49,8 +49,7 @@ const Chat = () => {
       socket.off("messageResponse");
       socket.off("connected");
     }
-  }, [socket]);
-
+  }, []);
 
   useEffect(() => {
     socket.on("refused", () => {
@@ -94,7 +93,6 @@ const Chat = () => {
 
   const clearOtherHistory = (data: any) => {
     if (user?.username) {
-      console.log("Catching here!");
       const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
       if (_chatInfo[0] === data.chat) {
         const _cleared: Message[] = [];
@@ -140,6 +138,7 @@ const Chat = () => {
 
   // _chatInfo: chatName, chatID, chatType, username
   const displayMessage = (message: any) => {
+    console.log("Displaying message: " + message);
     if (user?.username) {
       const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
       if (message.type === "channel") {
@@ -155,13 +154,13 @@ const Chat = () => {
         }
       } else if (message.type === "friend") {
         console.log(_chatInfo[0], message.recipient, message.username, user?.username);
-      if (_chatInfo[0] === message.username || _chatInfo[0] === message.recipient) {
+        if (_chatInfo[0] === message.username || _chatInfo[0] === message.recipient) {
           const newMessage: Message = {
             text: message.text,
             timestamp: message.timestamp,
             nickname: message.nickname,
             UserAvatar: message.avatar,
-          userId: message.userId
+            userId: message.userId
           };
           setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
         }
@@ -245,7 +244,7 @@ const Chat = () => {
       <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
         <List>
         {messages.map((message: Message, index: number) => {
-            const shouldAlignLeft = message.nickname === user?.username;
+            const shouldAlignLeft = message.nickname === user?.nickname;
 
             return (
               <ListItem key={index}>
