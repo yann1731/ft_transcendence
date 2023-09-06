@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Post, Query, Res, Param, Headers, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { responseEncoding } from 'axios';
 import { TokenGuard } from 'src/guard/token.guard';
 
-@Controller()
+@Controller("/api/")
 export class AuthController {
   constructor(private authService: AuthService) {}
 

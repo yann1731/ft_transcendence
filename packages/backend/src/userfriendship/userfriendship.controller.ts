@@ -4,7 +4,7 @@ import { CreateUserfriendshipDto } from './dto/create-userfriendship.dto';
 import { TokenGuard } from 'src/guard/token.guard';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('userfriendship')
+@Controller('api/userfriendship')
 @ApiTags('userfriendship')
 // @UseGuards(TokenGuard)
 export class UserfriendshipController {

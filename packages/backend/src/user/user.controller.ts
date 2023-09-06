@@ -7,7 +7,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { TokenGuard } from 'src/guard/token.guard';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('user')
+@Controller('api/user')
 @ApiTags('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

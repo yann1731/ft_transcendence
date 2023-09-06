@@ -38,7 +38,7 @@ const PictureHandler: React.FC = () => {
           const updatedUser = { ...user, avatar: imageDataUrl };
           updateUser(updatedUser);
           try {
-            const response: AxiosResponse = await axios.patch('http://localhost:4242/user/' + user?.id,
+            const response: AxiosResponse = await axios.patch('/api/user/' + user?.id,
               updatedUser, {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id

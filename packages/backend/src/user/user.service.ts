@@ -24,6 +24,18 @@ export class UserService { //creates a new user
 		}});
 	  
 		if (!check) {
+			const data: Prisma.UserCreateInput = {
+				email: response.data.email, 
+				refresh_token: refresh_token,
+				username: response.data.login,
+				nickname: response.data.login,
+				avatar: response.data.image.link,
+				token: code,
+				token_expires_in: expires_in,
+				token_created_at: created_at,
+				token_expires_at: created_at + expires_in
+			}
+			
 			const user = await this.prisma.user.create({
 				data: {
 					email: response.data.email, 

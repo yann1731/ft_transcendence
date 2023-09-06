@@ -3,7 +3,7 @@ import { PrivatemessageService } from './privatemessage.service';
 import { TokenGuard } from 'src/guard/token.guard';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('privatemessage')
+@Controller('api/privatemessage')
 @ApiTags('private messages')
 // @UseGuards(TokenGuard)
 export class PrivatemessageController {

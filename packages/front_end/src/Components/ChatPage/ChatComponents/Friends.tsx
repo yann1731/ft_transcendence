@@ -35,13 +35,13 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   React.useEffect(() => {
     const fetchUsers = async () => {
       
-      axios.get('http://localhost:4242/user', {headers: {
+      axios.get('/api/user', {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }}).then((response: any) => {
           const UsersData: User[] = response.data;
           setUsers(UsersData);
-          axios.get('http://localhost:4242/userblocks', {headers: {
+          axios.get('/api/userblocks', {headers: {
           'Authorization': user?.token,
           'userId': user?.id
       }}).then((response: any) => {
@@ -71,7 +71,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
             }
           });
           setBlockedUsers(tempBlockedUsers);
-          axios.get(`http://localhost:4242/userfriendship`, {headers: {
+          axios.get(`/api/userfriendship`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
           }}).then((response: any) => {

@@ -8,6 +8,23 @@ export class UserfriendshipService {
 
   async create(createUserfriendshipDto: CreateUserfriendshipDto) { //creates a friendship relationship between a pair of users
 	try {
+		const check = await this.prisma.userFriendship.findMany({
+			where: {
+				OR: [
+				  {
+					userAId: createUserfriendshipDto.userAId,
+					userBId: createUserfriendshipDto.userBId
+				  },
+				  {
+					userAId: createUserfriendshipDto.userBId,
+					userBId: createUserfriendshipDto.userAId
+				  }
+				]
+			  }});
+	
+		if (check.length !== 0)
+			  throw new InternalServerErrorException('userfriendship already created');
+
 		const userfriendship = await this.prisma.userFriendship.create({
 			data: {
 			  userA: {

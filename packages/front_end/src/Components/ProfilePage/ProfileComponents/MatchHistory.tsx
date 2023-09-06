@@ -36,7 +36,7 @@ export default function MatchHistory() {
 
                 setMatchDataTwo(dataTwo.matchData);
                 setWinnerUsernamesTwo(dataTwo.winnerUsernames);
-                setLoserUsernamesOne(dataOne.loserUsernames);
+                setLoserUsernamesTwo(dataTwo.loserUsernames);
 
                 setMatchDataThree(dataThree.matchData);
                 setWinnerUsernamesThree(dataThree.winnerUsernames);
@@ -62,7 +62,7 @@ export default function MatchHistory() {
 
     const getMatchDataOne = async() => {
         try {
-            const response = await axios.get('http://localhost:4242/match-history/one', {headers: {
+            const response = await axios.get('/api/match-history/one', {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
             }});
@@ -82,8 +82,8 @@ export default function MatchHistory() {
                     loserUsernames: loserUsernamesOne
                 };
 
-                setWinnerUsernamesOne(winnerUsernamesOne);
-                setLoserUsernamesOne(loserUsernamesOne);
+                //setWinnerUsernamesOne(winnerUsernamesOne);
+                //setLoserUsernamesOne(loserUsernamesOne);
         } catch (error) {
             console.error("Error fetching match data:", error);
             return {
@@ -96,7 +96,7 @@ export default function MatchHistory() {
 
     const getMatchDataTwo = async() => {
         try {
-            const response = await axios.get('http://localhost:4242/match-history/two', {headers: {
+            const response = await axios.get('/api/match-history/two', {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
             }});
@@ -130,7 +130,7 @@ export default function MatchHistory() {
 
     const getMatchDataThree = async() => {
         try {
-            const response = await axios.get('http://localhost:4242/match-history/three', {headers: {
+            const response = await axios.get('/api/match-history/three', {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
             }});
@@ -167,7 +167,7 @@ export default function MatchHistory() {
             const usernames: string[] = [];
 
             for (const userId of userIds) {
-                const response = await axios.get(`http://localhost:4242/user/${userId}`);
+                const response = await axios.get(`/api/user/${userId}`);
                 const userData = response.data;
                 usernames.push(userData.username);
             }

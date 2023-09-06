@@ -13,7 +13,7 @@ export default function GetSecret() {
   useEffect(() => {
     const secretRequest = async () => {
       try {
-        const response = await axios.post('http://localhost:4242/enable2fa', {info: 'information'}, {headers: {
+        const response = await axios.post('/api/enable2fa', {info: 'information'}, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
         }});

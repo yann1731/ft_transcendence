@@ -7,7 +7,7 @@ import { BanChatroomuserDto } from './dto/ban-chatroomuser.dto';
 import { TokenGuard } from 'src/guard/token.guard';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller('chatroomuser')
+@Controller('api/chatroomuser')
 @ApiTags('chatroomuser')
 // @UseGuards(TokenGuard)
 export class ChatroomuserController {
@@ -36,6 +36,7 @@ export class ChatroomuserController {
   @Get('chatroom/:id') // returns all chatroomusers associated to the chatroomid
   findAllChatroomUsersByChatroomId(@Param('id') id: string) {
     return this.chatroomuserService.findAllChatroomUsersByChatroomId(id);
+    
   }
 
   @Get('user/:id') //returns all chatroomusers associated to the user id

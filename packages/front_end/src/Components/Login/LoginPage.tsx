@@ -2,8 +2,12 @@ import { useEffect } from "react";
 import { ThemeProvider, Container, Box, Button } from '@mui/material/';
 import { theme } from "../../Theme";
 
-export default function SignIn() {
 
+export default function SignIn() {
+  const port = process.env.REACT_APP_FRONTEND_PORT;
+  const ip = process.env.REACT_APP_IP;
+  const uid = process.env.REACT_APP_UID;
+  
   useEffect(() => {
     const handleResize = () => {
       const root = document.documentElement;
@@ -24,7 +28,7 @@ export default function SignIn() {
   }, []);
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    window.location.assign('https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-47600cc08a77769cea8bec6cacdd6ef77df4be8fbb4984a8b9435f3cdddee480&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fwait&response_type=code');
+    window.location.assign(`https://api.intra.42.fr/oauth/authorize?client_id=${uid}&redirect_uri=http%3A%2F%2F${ip}%3A${port}%2Fwait&response_type=code&scope=public`);
   };
   
 

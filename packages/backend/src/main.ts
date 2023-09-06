@@ -5,6 +5,7 @@ import * as cors from "cors"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const port: string = process.env.BACKEND_PORT
 
   app.use(cors())
   app.enableCors({
@@ -23,6 +24,6 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
-  await app.listen(4242);
+  await app.listen(port);
 }
 bootstrap();
