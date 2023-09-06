@@ -72,6 +72,12 @@ const Chat = () => {
 
     localStorage.setItem("host" + user?.username, "false")
     localStorage.setItem("invite" + user?.username, "false")
+
+    return () => {
+       socket.off("messageResponse");
+      /*socket.off("connected");
+      socket.off("displayFailure"); */
+    }
   }, [])
 
   const handleInvitation = (inviterID: string, acknowledge: any) => {

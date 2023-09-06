@@ -6,6 +6,7 @@ import React from 'react'
 import axios from 'axios'
 import { PrivateMessage } from 'Components/Interfaces';
 import { SocketContext } from 'Contexts/socketContext';
+import { gameSocketContext } from 'Contexts/gameSocketContext';
 
 interface MyFriendsProps {
     searchText: string;
@@ -18,6 +19,8 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   const {user, updateUser} = useContext(UserContext);
   const [refresh, setRefresh] = React.useState(1);
   const [friends, setFriends] = useState<User[]>([]);
+  const game = React.useContext(gameSocketContext)
+  
 
   const socket = useContext(SocketContext);
 
@@ -86,6 +89,23 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
     }
   };
   
+  socket.on("connected", () => {
+    socket.on("blocked", (id: string) => {
+      if (user?.chatInUse?.chat.name === id){
+        const updatedUser: Partial<User> = {
+          ...user,
+          chatInUse: undefined,
+        };
+        updateUser(updatedUser);
+      }
+    })
+    socket.on("refresh2", () => {
+      setRefresh(refresh => refresh + 1)
+    })
+    game.on("refresh2", () => {
+      setRefresh(refresh => refresh + 1)
+    })
+  })
 
     return (
       <List>

@@ -403,4 +403,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleLeaving(client: Socket){
     client.broadcast.emit("user left");
   }
+
+  @SubscribeMessage("allo")
+  handleAllo(client: Socket){
+    console.log("marche salope")
+  }
 }

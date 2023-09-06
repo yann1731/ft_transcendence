@@ -58,6 +58,8 @@ function DashboardAppBar() {
     handleCloseUserMenu();
   };
 
+  socket.connect();
+
 /*   useEffect(() => {
 		const fetchUserStatistics = async () => {
 			try {
