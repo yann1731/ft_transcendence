@@ -177,6 +177,7 @@ export default class pong extends Phaser.Scene{
 				this.socket.emit("3v1", {start: false})
 			this.socket.on("start", (data: any) => {
 				this.socket.off("start")
+				this.socket.emit("inGame", {id: this.name})
 				waiting.destroy();
 
 				this.wall = data.wall
@@ -294,6 +295,7 @@ export default class pong extends Phaser.Scene{
 				this.socket.emit("3v1", {start: true, name: this.name})
 			this.socket.on("start", (data: any) =>{
 				this.socket.off("start")
+				this.socket.emit("inGame", {id: this.name})
 				this.ballX = data.ballX
 				this.ballY = data.ballY
 
@@ -574,6 +576,7 @@ export default class pong extends Phaser.Scene{
 				this.socket.emit("2v2", {wall: this.wall, random: this.random, power: this.powerUp, faces: this.faces, start: true, name: this.name});
 					
 			this.socket.on("start", (data: any) =>{
+				this.socket.emit("inGame", {id: this.name})
 				this.socket.off("start")
 				this.ballX = data.ballX
 				this.ballY = data.ballY
@@ -733,6 +736,7 @@ export default class pong extends Phaser.Scene{
 			}
 			this.socket.emit("3v1", {scale: this.rateSpeed, power: this.powerUp, name: this.name, start: true});
 			this.socket.on("start", (data: any) => {
+				this.socket.emit("inGame", {id: this.name})
 				waiting.destroy()
 				this.socket.off("start")
 				this.ballX = data.ballX
@@ -832,6 +836,7 @@ export default class pong extends Phaser.Scene{
 		this.socket.on("player", (player: number) => {this.player = player;})
 
 		this.socket.on("disconnected", () => {
+			this.end2 = true;
 			this.menu.setVisible(true);
 			this.disconnect.setVisible(true);
 			if (this.event1){
@@ -1505,6 +1510,8 @@ export default class pong extends Phaser.Scene{
         			this.socket.off("multi");
         			this.socket.off("power");
         			this.socket.off("point");
+					this.socket.emit("outGame", {id: this.name})
+					this.input.keyboard?.removeAllKeys()
 					this.end2 = true;
 				}
 				else if (this.points1 === this.win){
@@ -1527,6 +1534,8 @@ export default class pong extends Phaser.Scene{
         			this.socket.off("multi");
         			this.socket.off("power");
         			this.socket.off("point");
+					this.socket.emit("outGame", {id: this.name})
+					this.input.keyboard?.removeAllKeys()
 					this.end2 = true;
 				}
 				else if (which === 1)
@@ -1541,23 +1550,30 @@ export default class pong extends Phaser.Scene{
 						this.rotation = 1;
 						this.player1Score.setVisible(false);
 						this.player2Score.setVisible(false);
-						this.paddle2.enableBody();
-						this.ball.setX(this.physics.world.bounds.width / 2);
-						this.ball.setY(this.physics.world.bounds.height / 2);
-						this.paddle2.setY(this.physics.world.bounds.height / 2);
+						if (this.end2 === false)
+							this.paddle2.enableBody();
+						if (this.ball.body){
+							this.ball.setX(this.physics.world.bounds.width / 2);
+							this.ball.setY(this.physics.world.bounds.height / 2);
+							this.ball.setTexture("ball")
+							this.ball.setScale(0.2);
+						}
 						if (this.multi === true)
 							this.multiball.destroy(true);
 						this.multi = false;
 						this.paddlespeed = 400;
 						this.modifier = 1;
-						this.paddle1.setScale(0.15, 0.25);
-						this.paddle2.setScale(0.15, 0.25);
-						this.ball.setTexture("ball")
-						this.ball.setScale(0.2);
+						if (this.paddle1.body && this.paddle2.body){
+							this.paddle1.setScale(0.15, 0.25);
+							this.paddle2.setScale(0.15, 0.25);
+							this.paddle2.setY(this.physics.world.bounds.height / 2);
+						}
 						if (this.random === true || this.wall === true){
-							this.wall1.setVisible(true);
-							this.wall2.setVisible(true);
-							this.wall3.setVisible(true);
+							if (this.wall1.body){
+								this.wall1.setVisible(true);
+								this.wall2.setVisible(true);
+								this.wall3.setVisible(true);
+							}
 						}
 					}, [], this);
 				}
@@ -2097,6 +2113,8 @@ export default class pong extends Phaser.Scene{
         			this.socket.off("newPower");
         			this.socket.off("multi");
         			this.socket.off("power");
+					this.socket.emit("outGame", {id: this.name})
+					this.input.keyboard?.removeAllKeys()
         			this.socket.off("point");
 					this.end2 = true;
 				}
@@ -2121,6 +2139,8 @@ export default class pong extends Phaser.Scene{
         			this.socket.off("newPower");
         			this.socket.off("multi");
         			this.socket.off("power");
+					this.socket.emit("outGame", {id: this.name})
+					this.input.keyboard?.removeAllKeys()
         			this.socket.off("point");
 					this.end2 = true;
 				}
@@ -2136,27 +2156,35 @@ export default class pong extends Phaser.Scene{
 						this.rotation = 1;
 						this.team1Score.setVisible(false);
 						this.team2Score.setVisible(false);
-						this.paddle2.enableBody();
-						this.ball.setX(this.physics.world.bounds.width / 2);
-						this.ball.setY(this.physics.world.bounds.height / 2);
-						this.paddle2.setY(this.physics.world.bounds.height / 4);
-                    	this.paddle3.setY(this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4);
-                    	this.paddle4.setY(this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4);
+						if (this.end2 !== true){
+							this.paddle2.enableBody();
+							this.paddle3.enableBody();
+							this.paddle4.enableBody();
+							this.paddle2.setY(this.physics.world.bounds.height / 4);
+							this.paddle3.setY(this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4);
+							this.paddle4.setY(this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 4);
+							this.paddle1.setScale(0.15, 0.25);
+							this.paddle2.setScale(0.15, 0.25);
+							this.paddle3.setScale(0.15, 0.25);
+							this.paddle4.setScale(0.15, 0.25);
+						}
+						if (this.ball.body){
+							this.ball.setX(this.physics.world.bounds.width / 2);
+							this.ball.setY(this.physics.world.bounds.height / 2);
+							this.ball.setTexture("ball")
+							this.ball.setScale(0.2);
+						}
 						if (this.multi === true)
 							this.multiball.destroy(true);
 						this.multi = false;
 						this.paddlespeed = 400;
 						this.modifier = 1;
-						this.paddle1.setScale(0.15, 0.25);
-						this.paddle2.setScale(0.15, 0.25);
-						this.paddle3.setScale(0.15, 0.25);
-						this.paddle4.setScale(0.15, 0.25);
-						this.ball.setTexture("ball")
-						this.ball.setScale(0.2);
 						if (this.random === true || this.wall === true){
-							this.wall1.setVisible(true);
-							this.wall2.setVisible(true);
-							this.wall3.setVisible(true);
+							if (this.wall1.body){
+								this.wall1.setVisible(true);
+								this.wall2.setVisible(true);
+								this.wall3.setVisible(true);
+							}
 						}
 					}, [], this);
 				}
@@ -2676,6 +2704,8 @@ export default class pong extends Phaser.Scene{
 				 this.socket.off("multi");
 				 this.socket.off("power");
 				 this.socket.off("point");
+				 this.input.keyboard?.removeAllKeys()
+				 this.socket.emit("outGame", {id: this.name})
 				 this.end2 = true;
 			 }
 			 else if (this.points1 === this.win){
@@ -2700,6 +2730,8 @@ export default class pong extends Phaser.Scene{
 				 this.socket.off("multi");
 				 this.socket.off("power");
 				 this.socket.off("point");
+				 this.input.keyboard?.removeAllKeys()
+				 this.socket.emit("outGame", {id: this.name})
 				 this.end2 = true;
 			 }
 			 else if (which === 1)
@@ -2709,32 +2741,41 @@ export default class pong extends Phaser.Scene{
 			 this.rotation = 0;
 			 if (this.end2 !== true){
 				 this.time.delayedCall(1500, () => {
-					 if (this.multi === true)
-							 this.multiball.destroy();
-					 this.rotation = 1;
-					 this.team1Score.setVisible(false);
-					 this.team2Score.setVisible(false);
-					 this.paddle2.enableBody();
-					 this.ball.setX(this.physics.world.bounds.width / 2);
-					 this.ball.setY(this.physics.world.bounds.height / 2);
-					 this.paddle2.setY(this.physics.world.bounds.height / 2);
-                    this.paddle3.setX(this.physics.world.bounds.width / 2);
-                    this.paddle4.setY(this.physics.world.bounds.height / 2);
-					 if (this.multi === true)
-						 this.multiball.destroy(true);
-					 this.multi = false;
-					 this.paddlespeed = 400;
-					 this.modifier = 1;
-					 this.paddle2.setScale(0.15, 0.25);
+					if (this.multi === true)
+						 this.multiball.destroy();
+					this.rotation = 1;
+					this.team1Score.setVisible(false);
+					this.team2Score.setVisible(false);
+					if (this.end2 === false){
+						this.paddle2.enableBody();
+						this.paddle3.enableBody();
+						this.paddle4.enableBody();
+						this.paddle2.setY(this.physics.world.bounds.height / 2);
+                    	this.paddle3.setX(this.physics.world.bounds.width / 2);
+                    	this.paddle4.setY(this.physics.world.bounds.height / 2);
+						this.paddle2.setScale(0.15, 0.25);
                     	this.paddle3.setScale(0.35, 0.15);
                     	this.paddle4.setScale(0.15, 0.25);
-					 this.ball.setTexture("ball")
-					 this.ball.setScale(0.2);
-					 if (this.random === true || this.wall === true){
-						 this.wall1.setVisible(true);
-						 this.wall2.setVisible(true);
-						 this.wall3.setVisible(true);
-					 }
+					}
+					if (this.ball.body){
+						this.ball.setX(this.physics.world.bounds.width / 2);
+						this.ball.setY(this.physics.world.bounds.height / 2);
+						this.ball.setScale(0.2);
+						this.ball.setTexture("ball")
+					}
+					if (this.multi === true)
+					 this.multiball.destroy(true);
+					this.multi = false;
+					this.paddlespeed = 400;
+					this.modifier = 1;
+					
+					if (this.random === true || this.wall === true){
+						if (this.wall1.body){
+							this.wall1.setVisible(true);
+							this.wall2.setVisible(true);
+							this.wall3.setVisible(true);
+						}
+					}
 				 }, [], this);
 			 }
 		 })
@@ -3059,17 +3100,24 @@ export default class pong extends Phaser.Scene{
 
 	new_point(player: number, which: number) {
         if (this.random === true || this.wall === true){
-            this.wall1.setVisible(false);
-            this.wall2.setVisible(false);
-            this.wall3.setVisible(false);
+			if (this.wall1.body && this.wall2.body && this.wall3.body){
+            	this.wall1.setVisible(false);
+            	this.wall2.setVisible(false);
+            	this.wall3.setVisible(false);
+			}
         }
-        this.paddle1.disableBody();
-        this.paddle2.disableBody();
+		if (this.paddle1.body)
+        	this.paddle1.disableBody();
+		if (this.paddle2.body)
+        	this.paddle2.disableBody();
 		if (this.two || this.multiple){
-			this.paddle3.disableBody();
-			this.paddle4.disableBody();
+			if (this.paddle3.body)
+				this.paddle3.disableBody();
+			if (this.paddle4.body)
+				this.paddle4.disableBody();
 		}
-        this.ball.disableBody();
+		if (this.ball.body)
+        	this.ball.disableBody();
         if (this.power)
             this.power.setVisible(false);
         if (player === 1){
@@ -3102,9 +3150,9 @@ export default class pong extends Phaser.Scene{
 				this.paddle4.enableBody();
 			}
 			if (this.ball.body){
-            this.ball.enableBody();
-            this.ball.setX(this.physics.world.bounds.width / 2);
-            this.ball.setY(this.physics.world.bounds.height / 2);
+            	this.ball.enableBody();
+            	this.ball.setX(this.physics.world.bounds.width / 2);
+            	this.ball.setY(this.physics.world.bounds.height / 2);
 			}
 			if (this.single){
             	this.paddle1.setY(this.physics.world.bounds.height / 2);
@@ -3125,33 +3173,44 @@ export default class pong extends Phaser.Scene{
             if (this.multi === true)
                 this.multiball.destroy(true);
             this.multi = false;
-            if (player === 1)
-                this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
-            else
-                this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2);
-            let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
-            if (Math.floor(Math.random() * 2) === 0)
-                y *= -1;
-            this.ball.setVelocityY(y);
+			if (this.ball.body){
+            	if (player === 1)
+            	    this.ball.setVelocityX(Math.random() * (this.XVelocityMax1 - this.XVelocityMin1) + this.XVelocityMin1);
+            	else
+            	    this.ball.setVelocityX(Math.random() * (this.XVelocityMax2 - this.XVelocityMin2) + this.XVelocityMin2);
+            	let y: number = Math.random() * (this.YvelocityMax - this.YvelocityMin) + this.YvelocityMin;
+            	if (Math.floor(Math.random() * 2) === 0)
+            	    y *= -1;
+				if (this.ball.body)
+            		this.ball.setVelocityY(y);
+			}
             this.paddlespeed = 400;
             this.modifier1 = 1;
             this.modifier2 = 1;
 			if (this.one || this.two){
-            	this.paddle1.setScale(0.15, 0.25);
-            	this.paddle2.setScale(0.15, 0.25);
+				if (this.paddle1.body)
+            		this.paddle1.setScale(0.15, 0.25);
+				if (this.paddle2.body)
+            		this.paddle2.setScale(0.15, 0.25);
 				if (this.two){
-					this.paddle3.setScale(0.15, 0.25);
-					this.paddle4.setScale(0.15, 0.25);
+					if (this.paddle3.body)
+						this.paddle3.setScale(0.15, 0.25);
+					if (this.paddle4.body)
+						this.paddle4.setScale(0.15, 0.25);
 				}
 			}
 			if (this.multiple){
-				this.paddle1.setScale(1.5, 0.25);
-            	this.paddle2.setScale(0.15, 0.25);
-				this.paddle3.setScale(0.35, 0.15);
-				this.paddle4.setScale(0.15, 0.25);
+				if (this.paddle1.body && this.paddle2.body && this.paddle3.body && this.paddle4.body){
+					this.paddle1.setScale(1.5, 0.25);
+            		this.paddle2.setScale(0.15, 0.25);
+					this.paddle3.setScale(0.35, 0.15);
+					this.paddle4.setScale(0.15, 0.25);
+				}
 			}
-            this.ball.setTexture("ball")
-            this.ball.setScale(0.2);
+			if (this.ball.body){
+            	this.ball.setTexture("ball")
+            	this.ball.setScale(0.2);
+			}
             if (this.random === true || this.wall === true){
                 this.wall1.setVisible(true);
                 this.wall2.setVisible(true);
@@ -3171,6 +3230,8 @@ export default class pong extends Phaser.Scene{
 		this.end2 = true;
 		this.socket.off("movement");
 		this.socket.off("movement2");
+		this.socket.emit("outGame", {id: this.name})
+		this.input.keyboard?.removeAllKeys()
         this.socket.emit("end", {which: which, name: this.name, player: player, score1: this.points1, score2: this.points2 })
         if (this.power)
             this.power.destroy();

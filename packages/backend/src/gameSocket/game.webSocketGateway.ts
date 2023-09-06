@@ -1,6 +1,7 @@
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { PrismaClient } from "@prisma/client";
 import { Server, Socket } from "socket.io";
+import { UserService } from "src/user/user.service";
 
 const prisma = new PrismaClient();
 
@@ -33,6 +34,10 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
     XVelocityMax2: number = -400;
     YvelocityMin: number = 125;
     YvelocityMax: number = 225;
+
+	constructor(
+		private readonly userService: UserService) {};
+
 
 	handleConnection(client: Socket) {
 		console.log('New client connected to gameSocket');
@@ -650,5 +655,19 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	handleInviteEnd(client: Socket){
 		const room = Array.from(client.rooms).filter(room => room !== client.id)
 		this.server.to(String(room[0])).emit("invite end");
+	}
+
+	@SubscribeMessage("inGame")
+	async setInGame(client: Socket, data: any) {
+	  console.log("in in game")
+	  await this.userService.updateStatus("inGame", data.id);
+	  this.server.emit("refresh2");
+	}
+  
+	@SubscribeMessage("outGame")
+	async setOutGame(client: Socket, data: any) {
+	  console.log("in out")
+	  await this.userService.updateStatus("online", data.id);
+	  this.server.emit("refresh2");
 	}
 }

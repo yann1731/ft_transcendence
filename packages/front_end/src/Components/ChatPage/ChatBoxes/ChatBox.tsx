@@ -70,8 +70,8 @@ const Chat = () => {
     localStorage.setItem("invite" + user?.username, "false")
 
     return () => {
-      /* socket.off("messageResponse");
-      socket.off("connected");
+       socket.off("messageResponse");
+      /*socket.off("connected");
       socket.off("displayFailure"); */
     }
   }, [])
