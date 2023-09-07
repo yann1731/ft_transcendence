@@ -10,4 +10,4 @@ RUN npm i -g @nestjs/cli --silent
 
 COPY . .
 
-ENTRYPOINT ["/bin/sh", "./script/dbstartup.sh"]
+ENTRYPOINT [ "dumb-init", "/bin/sh", "./script/dbstartup.sh"]

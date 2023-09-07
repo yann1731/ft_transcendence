@@ -8,5 +8,5 @@ COPY . .
 
 RUN yarn install
 
-CMD [ "yarn", "start"]
+CMD [ "dumb-init", "yarn", "start"]
 

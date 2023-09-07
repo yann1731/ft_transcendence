@@ -82,7 +82,7 @@ export default class invited extends Phaser.Scene{
 		this.menu = this.add.text(
 			this.physics.world.bounds.width / 2,
 			this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8,
-			'Return to Menu',
+			'Return to Chat',
 			{
 				fontFamily: 'pong',
 				fontSize: '25px',
