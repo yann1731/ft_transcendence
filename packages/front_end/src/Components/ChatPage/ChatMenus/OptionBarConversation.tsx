@@ -225,7 +225,6 @@ const OptionBarConversation: React.FC = () => {
           const ChatroomUsersData: ChatroomUser = response.data;
           setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
           socket.emit("refresh", {id: newChatroomuser.userId});
-          console.log(response.data);
           socket.emit("channelUpdate", { id: newChatroomuser.userId });
         }).catch((error: any) => {
           console.error('Error adding user to channel', error);

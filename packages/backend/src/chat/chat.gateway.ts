@@ -126,7 +126,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("channelUpdate")
   async updateChannelList(client: Socket, data: any) {
+    console.log("Updating channels for: " + data.id);
     const _user = await this.userService.findOne(data.id);
+    console.log("user: " + _user.id + " " + _user.socketID);
     this.server.to(_user.socketID).emit("reloadChannels");
   }
 

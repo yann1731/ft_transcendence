@@ -144,7 +144,6 @@ const Chat = () => {
 
   // _chatInfo: chatName, chatID, chatType, username
   const displayMessage = (message: any) => {
-    console.log("Displaying message: " + message);
     if (user?.username) {
       const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
       if (message.type === "channel") {
@@ -176,6 +175,7 @@ const Chat = () => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
+      console.log("My Socket is: " + socket.id);
       if (user?.username) {
         const messageInput = event.target as HTMLInputElement;
         const messageText = messageInput.value.trim();

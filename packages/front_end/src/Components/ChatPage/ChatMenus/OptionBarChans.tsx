@@ -322,18 +322,22 @@ const OptionBarChans: React.FC = () => {
         'userId': user?.id
       }})
       .then((response: any) => {
+        const newchatrooms = adminChatroom.filter(item:  => item !== itemToRemove);
         let _prevChannelID = undefined;
+        let _prevChannelName = undefined;
         if (user?.username) {
           const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
           _prevChannelID = _chatInfo[1];
+          _prevChannelName = _chatInfo[0];
         }
-        console.log('Chatroom deleted:', response.data);
         // Change ChatInUse to NULL
         let _chat: Array<string>;
         if (user?.username) {
-          if (_prevChannelID === channelName) {
+          console.log(_prevChannelName, channelName);
+          if (_prevChannelName === channelName) {
             _chat = ["null", "null", "null", user?.username]
             localStorage.setItem(user?.username, JSON.stringify(_chat));
+            socket.emit("clearHistory");
             socket.emit("deleteHistory", {channel: _prevChannelID});
           }
         }
