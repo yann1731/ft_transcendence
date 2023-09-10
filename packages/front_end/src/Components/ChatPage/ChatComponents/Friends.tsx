@@ -12,6 +12,8 @@ interface MyFriendsProps {
     searchText: string;
 }
 
+// add getFriends when game stops to refersh user status.
+
 const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   const [Users, setUsers] = React.useState<User[]>([]);
   const [FriendUsers, setFriendUsers] = React.useState<User[]>([]);

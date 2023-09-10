@@ -322,9 +322,8 @@ const OptionBarChans: React.FC = () => {
         'userId': user?.id
       }})
       .then((response: any) => {
-        const newchatrooms = adminChatroom.filter(item:  => item !== itemToRemove);
         let _prevChannelID = undefined;
-        let _prevChannelName = undefined;
+        let _prevChannelName: string = "null";
         if (user?.username) {
           const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
           _prevChannelID = _chatInfo[1];
@@ -347,6 +346,7 @@ const OptionBarChans: React.FC = () => {
         }
         socket.emit("getChannels", {id: user?.id});
         socket.emit("refresh");
+        setRefresh(refresh => refresh + 1)
       })
       .catch((error: any) => {
         console.error('Error deleting chatroom:', error);
