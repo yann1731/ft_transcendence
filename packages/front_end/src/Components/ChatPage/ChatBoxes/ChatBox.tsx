@@ -146,6 +146,7 @@ const Chat = () => {
   const displayMessage = (message: any) => {
     if (user?.username) {
       const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
+      console.log("info: " + _chatInfo);
       if (message.type === "channel") {
         if (message.channelID === _chatInfo[1]) {
           const newMessage: Message = {

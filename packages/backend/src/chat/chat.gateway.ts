@@ -132,6 +132,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(_user.socketID).emit("reloadChannels");
   }
 
+  @SubscribeMessage("deleteChannel")
+  async deleteChannel(client: Socket, data: any) {
+    const channelID = data.channelID;
+    console.log("Deleting channel: " + channelID);
+    this.server.emit("reloadChannels");
+  }
+
   @SubscribeMessage("getChatroomUsers")
   async getChatroomUsers(client: Socket, data: any) {
     console.log("Getting chatroom users!");
@@ -385,7 +392,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   
   @SubscribeMessage("refresh2")
   refreshPage2(client: Socket, data: any) {
-    console.log("allo");
     this.server.emit("refresh2");
   }
   

@@ -98,6 +98,10 @@ const OptionBarChans: React.FC = () => {
     fetchChannels();
   }, [refresh]);
   
+  socket.on("refresh", () => {
+    setRefresh(refresh => refresh + 1);
+  })
+
   socket.on("connected", () => {
     socket.emit("connected", user?.id);
     socket.on("chatroom deleted", (data: any) => {
@@ -108,9 +112,7 @@ const OptionBarChans: React.FC = () => {
         socket.emit("refresh")
       }
     })
-    socket.on("refresh", () => {
-      setRefresh(refresh => refresh + 1);
-    })
+    
   });
   
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -219,7 +221,7 @@ const OptionBarChans: React.FC = () => {
             };
             socket.emit("getChannels", {id: user?.id});
             socket.emit("getHistory", newMessage);
-            socket.emit("refresh2");
+            socket.emit("refresh");
           }
         })
         .catch((error: any) => {
@@ -261,6 +263,8 @@ const OptionBarChans: React.FC = () => {
             };
             socket.emit("getChannels", {id: user?.id});
             socket.emit("getHistory", newMessage);
+            socket.emit("refresh");
+            socket.emit("refresh2");
           }
         })
         .catch((error: any) => {
@@ -337,12 +341,11 @@ const OptionBarChans: React.FC = () => {
             _chat = ["null", "null", "null", user?.username]
             localStorage.setItem(user?.username, JSON.stringify(_chat));
             socket.emit("clearHistory");
+            socket.emit("deleteChannel", { channelID: _prevChannelID});
             socket.emit("deleteHistory", {channel: _prevChannelID});
           }
-        }
-        if (user?.username) {
-          const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
-          //alert(_chatInfo);
+          const updatedUser: Partial<User> = { ...user, chatInUse: undefined};
+          updateUser(updatedUser);
         }
         socket.emit("getChannels", {id: user?.id});
         socket.emit("refresh");
@@ -455,6 +458,7 @@ const OptionBarChans: React.FC = () => {
                 };
                 socket.emit("getChannels", {id: user?.id});
                 socket.emit("getHistory", newMessage);
+                socket.emit("refresh");
               }
             }
             setDialog(false);

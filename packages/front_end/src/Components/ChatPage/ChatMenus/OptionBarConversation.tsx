@@ -287,6 +287,8 @@ const OptionBarConversation: React.FC = () => {
           }}).then((response: any) => {
           if (response.status === 200){
             console.log('User removed from channel', response.data);
+            socket.emit("channelUpdate", { id: chatUser.userId });
+            socket.emit("clearOtherHistory", { chat: user?.chatInUse?.chat.name, otherID: chatUser.userId });
             socket.emit("refresh");
             socket.emit("blocked", {id: user?.chatInUse?.chat?.name, blocked: Friend?.id})
           } else {

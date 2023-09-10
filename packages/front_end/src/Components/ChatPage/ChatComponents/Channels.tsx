@@ -21,13 +21,13 @@ interface MyChannelsProps {
       setChannels(data.channels);
     });
 
-    useEffect(() => {
+    // useEffect(() => {
       socket.on("reloadChannels", () => {
         console.log("Reloading channels");
         socket.emit("getChannels", { id: user?.id });
       });
-      socket.off("reloadChannels");
-    }, []);
+    //   socket.off("reloadChannels");
+    // }, [socket]);
     
     useEffect(() => {
       socket.emit("getChannels", {id: user?.id});
