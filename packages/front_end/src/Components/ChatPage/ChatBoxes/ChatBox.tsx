@@ -34,8 +34,6 @@ const Chat = () => {
   const [ inviter, setInviter] = useState("null");
   const navigate = useNavigate();
 
-  
-
   // Handles the scrollbar to the bottom on scrolling chat messages
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
@@ -44,15 +42,21 @@ const Chat = () => {
     }
   }, [messages]);
 
-  // socket.on("Testing", () => alert("Wuddup!"));
+  useEffect(() => {
+    socket.on("messageResponse", (data: any) => displayMessage(data));
+    socket.on("connected", () => socket.emit("connected", { id: user?.id}));
+    return () => {
+      socket.off("messageResponse");
+      socket.off("connected");
+    }
+  }, []);
+
   useEffect(() => {
     socket.on("refused", () => {
       setShowInvitation(false)
       setInviter("null")
     })
-    socket.on('messageResponse', (data: any) => displayMessage(data));
     socket.on("sendHistory", (data: any) => makeHistory(data));
-    socket.on("connected", () => socket.emit("connected"));
     // socket.on("disconnected", () => socket.emit("registerDisconnect", {id: user?.id}));
     socket.on("clearHistory", () => clearHistory());
     socket.on("clearOtherHistory", (data: any) => clearOtherHistory(data));
@@ -83,13 +87,6 @@ const Chat = () => {
     setInviter(inviterID);
   }
 
-  const makeConnection = () => {
-    const updatedUser: Partial<User> = {...user, userStatus: true};
-    updateUser(updatedUser);
-    socket.emit("connected", user?.id);
-    socket.emit("refresh2");
-  }
-
   const clearHistory = () => {
     const _cleared: Message[] = [];
     setMessages(_cleared);
@@ -102,7 +99,6 @@ const Chat = () => {
 
   const clearOtherHistory = (data: any) => {
     if (user?.username) {
-      console.log("Catching here!");
       const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
       if (_chatInfo[0] === data.chat) {
         const _cleared: Message[] = [];
@@ -145,20 +141,12 @@ const Chat = () => {
     });
     setMessages(msgHistory);
   };
-  
-  const blockExists = (userID: string, senderID: string): boolean => {
-    for (const block of userBlocks) {
-      if (block.blockedUserId === senderID) {
-        return true;
-      }
-    }
-    return false;
-  };
 
   // _chatInfo: chatName, chatID, chatType, username
   const displayMessage = (message: any) => {
     if (user?.username) {
       const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
+      console.log("info: " + _chatInfo);
       if (message.type === "channel") {
         if (message.channelID === _chatInfo[1]) {
           const newMessage: Message = {
@@ -169,20 +157,18 @@ const Chat = () => {
           userId: message.userId
           };
           setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
-          // endif
         }
       } else if (message.type === "friend") {
-        console.log("chatinUse on DISPLAY = " + user?.chatInUse?.chat.name)
-      if ((_chatInfo[0] === message.recipient && message.nickname === user?.username) || (_chatInfo[0] === message.nickname && message.recipient === user?.username)) {
+        console.log(_chatInfo[0], message.recipient, message.username, user?.username);
+        if (_chatInfo[0] === message.username || _chatInfo[0] === message.recipient) {
           const newMessage: Message = {
             text: message.text,
             timestamp: message.timestamp,
             nickname: message.nickname,
             UserAvatar: message.avatar,
-          userId: message.userId
+            userId: message.userId
           };
           setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
-          // endif
         }
       }
     }
@@ -190,8 +176,8 @@ const Chat = () => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
+      console.log("My Socket is: " + socket.id);
       if (user?.username) {
-        // console.log("keydown: " + user?.chatInUse?.chat.name);
         const messageInput = event.target as HTMLInputElement;
         const messageText = messageInput.value.trim();
         if (user?.chatInUse?.type === "friend") {
@@ -246,7 +232,6 @@ const Chat = () => {
             chatroomId: user?.chatInUse?.chat.id,
             chatroom: user?.chatInUse?.chat,
           };
-          // socket.emit("getUserBlocks", {userID: user?.id, name: user?.username});
           socket.emit("sendMessage", newMessage);
           messageInput.value = '';
         }
@@ -266,7 +251,7 @@ const Chat = () => {
       <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
         <List>
         {messages.map((message: Message, index: number) => {
-            const shouldAlignLeft = message.nickname === user?.username;
+            const shouldAlignLeft = message.nickname === user?.nickname;
 
             return (
               <ListItem key={index}>

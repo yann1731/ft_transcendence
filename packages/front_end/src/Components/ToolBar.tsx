@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router-dom';
 import { gameSocketContext } from 'Contexts/gameSocketContext';
 import { SocketContext } from 'Contexts/socketContext';
 
-
 const pages = [
   { label: 'Home', link: '/Home' },
   { label: 'Chat', link: '/Chat'},
@@ -26,7 +25,7 @@ function DashboardAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const {user, setUser, updateUser} = useContext(UserContext);
   const gamesocket = useContext(gameSocketContext)
-  const socket = useContext(SocketContext)
+  const socket = useContext(SocketContext);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -88,6 +87,7 @@ function DashboardAppBar() {
   gamesocket.on("connected", () => {
     gamesocket.emit("connected", {name: user?.id})
   })
+
 
   return (
     <div className="toolbar">

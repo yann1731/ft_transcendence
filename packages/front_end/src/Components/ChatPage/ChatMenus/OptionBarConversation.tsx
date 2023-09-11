@@ -225,6 +225,7 @@ const OptionBarConversation: React.FC = () => {
           const ChatroomUsersData: ChatroomUser = response.data;
           setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
           socket.emit("refresh", {id: newChatroomuser.userId});
+          socket.emit("channelUpdate", { id: newChatroomuser.userId });
         }).catch((error: any) => {
           console.error('Error adding user to channel', error);
           alert('Error adding user to channel');
@@ -260,6 +261,8 @@ const OptionBarConversation: React.FC = () => {
               console.log('User removed from channel', response.data);
               socket.emit("refresh");
               socket.emit("blocked", {id: user?.chatInUse?.chat?.name, blocked: Friend?.id})
+              socket.emit("channelUpdate", { id: Friend?.id});
+              socket.emit("clearOtherHistory", { otherID: Friend?.id});
           }).catch((error: any) => {
             console.error('Error occurred while removing user from channel: ', error);
           })
@@ -284,6 +287,8 @@ const OptionBarConversation: React.FC = () => {
           }}).then((response: any) => {
           if (response.status === 200){
             console.log('User removed from channel', response.data);
+            socket.emit("channelUpdate", { id: chatUser.userId });
+            socket.emit("clearOtherHistory", { chat: user?.chatInUse?.chat.name, otherID: chatUser.userId });
             socket.emit("refresh");
             socket.emit("blocked", {id: user?.chatInUse?.chat?.name, blocked: Friend?.id})
           } else {
@@ -383,6 +388,7 @@ const OptionBarConversation: React.FC = () => {
               const updatedUser: Partial<User> = { ...user, chatInUse: undefined};
               updateUser(updatedUser);
               socket.emit("clearHistory");
+              socket.emit("getChannels", { id: user?.id});
               socket.emit("refresh");
             } else {
              console.error('Deleting channel failed');
@@ -401,6 +407,7 @@ const OptionBarConversation: React.FC = () => {
             const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
             updateUser(updatedUser);
             socket.emit("clearHistory");
+            socket.emit("getChannels", { id: user?.id});
             socket.emit("refresh");
           }).catch((error: any) => {
             console.error('Error occurred while removing user from channel: ', error);
@@ -417,14 +424,16 @@ const OptionBarConversation: React.FC = () => {
         console.log('User successfuly blocked', response.data);
         const id = user?.nickname;
         const blocked = friendChat?.id;
-        socket.emit("blocked", {id: id, blocked: blocked});
-        socket.emit("clearOtherHistory", { chat: user?.chatInUse?.chat.name, otherID: blocked });
         let _chat: Array<string>;
         if (user?.username) {
           _chat = ["null", "null", "friend", user?.username];
           localStorage.setItem(user?.username, JSON.stringify(_chat));
         }
+        socket.emit("getFriends", { id: user?.id});
+        socket.emit("friendUpdate", { id: blocked });
         socket.emit("clearHistory");
+        socket.emit("blocked", {id: id, blocked: blocked});
+        socket.emit("clearOtherHistory", { chat: user?.chatInUse?.chat.name, otherID: blocked });
         socket.emit("refresh2");
       } catch (error) {
         console.error('Error blocking user', error);

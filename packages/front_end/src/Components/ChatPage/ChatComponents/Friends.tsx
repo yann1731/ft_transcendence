@@ -1,6 +1,6 @@
 import { Avatar, List, ListItemIcon, ListItemText, ListItemButton } from '@mui/material';
 import { UserContext, User } from 'Contexts/userContext';
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Chatroom, ChatInUse, chatroomType, UserFriendship, UserBlocks } from 'Components/Interfaces';
 import React from 'react'
 import axios from 'axios'
@@ -12,6 +12,7 @@ interface MyFriendsProps {
     searchText: string;
 }
 
+// add getFriends when game stops to refersh user status.
 
 const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   const [Users, setUsers] = React.useState<User[]>([]);
@@ -19,117 +20,32 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   const [BlockedUsers, setBlockedUsers] = React.useState<User[]>([]);
   const {user, updateUser} = useContext(UserContext);
   const [refresh, setRefresh] = React.useState(1);
+  const [friends, setFriends] = useState<User[]>([]);
   const game = React.useContext(gameSocketContext)
   
 
   const socket = useContext(SocketContext);
 
-  socket.on("connected", () => {
-    const updatedUser: Partial<User> = {
-      ...user,
-      userStatus: true,
-    };
-  updateUser(updatedUser);
-  })
+  socket.on("updateFriends", (data: any) => {
+    setFriends(data.friends);
+  });
 
-  React.useEffect(() => {
-    const fetchUsers = async () => {
-      
-      axios.get('/api/user', {headers: {
-          'Authorization': user?.token,
-          'userId': user?.id
-        }}).then((response: any) => {
-          const UsersData: User[] = response.data;
-          setUsers(UsersData);
-          axios.get('/api/userblocks', {headers: {
-          'Authorization': user?.token,
-          'userId': user?.id
-      }}).then((response: any) => {
-          const BlockedUsersData: UserBlocks[] = response.data;
-          let tempBlockedUsers: User[] = [];
-          BlockedUsersData.forEach((users: UserBlocks) => {
-            if (user?.id === users.blockerId)
-            {
-              const isBlocked = UsersData.find((blockedUser: User) => {
-                return users.blockedUserId === blockedUser.id;
-              })
-              if (isBlocked !== undefined)
-              {
-                tempBlockedUsers.push(isBlocked);
-              }
-              
-            }
-            else if (user?.id === users.blockedUserId)
-            {
-              const isBlocked = UsersData.find((blockedUser: User) => {
-                return users.blockerId === blockedUser.id;
-              })
-              if (isBlocked !== undefined)
-              {
-                tempBlockedUsers.push(isBlocked);
-              }
-            }
-          });
-          setBlockedUsers(tempBlockedUsers);
-          axios.get(`/api/userfriendship`, {headers: {
-            'Authorization': user?.token,
-            'userId': user?.id
-          }}).then((response: any) => {
-            const FriendshipData: UserFriendship[] = response.data;
-            let tempFriends: User[] = [];
-            if (FriendshipData.length !== 0)
-            {
-              FriendshipData.forEach((friend: UserFriendship) => {
-                if (user !== null && user.id === friend.userAId)
-                {
-                  const isFriend = UsersData.find((users: User) => {
-                    return (users.id === friend.userBId)
-                  })
-                  if (isFriend !== undefined)
-                  {
-                    let isBlocked = tempBlockedUsers.find((friend: User) => {
-                      return friend.id === isFriend.id;})
-                    if (isBlocked === undefined)
-                    {
-                      tempFriends.push(isFriend);
-                    }
-                  }
-                }
-                else if (user !== null && user.id === friend.userBId)
-                {
-                  const isFriend = UsersData.find((users: User) => {
-                    return (users.id === friend.userAId)
-                  })
-                  if (isFriend !== undefined)
-                  {
-                    let isBlocked = tempBlockedUsers.find((friend: User) => {
-                      return friend.id === isFriend.id;})
-                      if (isBlocked === undefined)
-                      {
-                        tempFriends.push(isFriend);
-                      }
-                    }
-                  }
-                })
-              }
-              setFriendUsers(tempFriends);
-          }).catch((error: any) => {
-          console.error('Error getting Friends: ', error);
-      })
-      }).catch((error: any) => {
-        console.error('Error fetching blocked users', error);
-      })
-        }).catch((error: any) => {
-        console.error('Error fetching users', error);
-      })    
-    };
-    fetchUsers();
-  }, [user, refresh]);
+  useEffect(() => {
+    socket.on("reloadFriends", (data: any) => {
+      socket.emit("getFriends", { id: user?.id });
+    });
+    return () => {
+      socket.off("reloadFriends");
+    }
+  });
 
-  const filteredFriends = FriendUsers.filter((friend: User) =>
-  friend.username.toLowerCase().includes(searchText.toLowerCase())
-  );
-  
+  useEffect(() => {
+    socket.emit("getFriends", { id: user?.id});
+    return () => {
+      socket.off("getFriends");
+    }
+  }, []);
+
   const setPrivateHistory = (channelName: string | undefined) => {
     let newMessage: Partial<PrivateMessage> = {
       content: "messageText",
@@ -158,12 +74,12 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
         chat: newChatroom,
         type: chatroomType.friend
       }
-
       const updatedUser: Partial<User> = {
         ...user,
         chatInUse: newChatInUse,
       };
-    updateUser(updatedUser);
+      updateUser(updatedUser);
+      console.log("chatInUse onClick = " + newChatroom.name);
 
     let _chats: Array<string>;
     if (updatedUser.username && updatedUser.chatInUse?.type) {
@@ -195,12 +111,12 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
 
     return (
       <List>
-        {filteredFriends.map((friend: User) => (
+        {friends.map((friend: User) => (
          <ListItemButton key={friend.id} onClick={() => SetChatInUse(friend.username, friend.avatar)}>
             <ListItemIcon>
               <Avatar alt={friend.username} src={friend.avatar} />
             </ListItemIcon>
-            <ListItemText primary={friend.username} />
+            <ListItemText primary={friend.nickname} />
             <ListItemText secondary={friend.userStatus} sx={{ textAlign: 'right' }} />
         </ListItemButton>
         ))}

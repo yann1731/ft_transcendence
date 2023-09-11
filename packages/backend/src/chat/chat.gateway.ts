@@ -13,9 +13,9 @@ import { CreatePrivateMessageDto } from 'src/privatemessage/dto/createprivatemes
 import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, BadRequestException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserblocksService } from 'src/userblocks/userblocks.service';
+import { UserfriendshipService } from 'src/userfriendship/userfriendship.service';
 import { ChatroomService } from 'src/chatroom/chatroom.service';
 import { subscribe } from 'diagnostics_channel';
-
 
 @WebSocketGateway({ cors: true, namespace: 'chatsocket' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -28,6 +28,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly privateMessageService: PrivatemessageService,
     private readonly chatroomUserService: ChatroomuserService,
     private readonly userblocksService: UserblocksService,
+    private readonly userfriendshipService: UserfriendshipService,
     private readonly userService: UserService) {};
 
   @WebSocketServer()
@@ -39,6 +40,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return (key);
       }
     }
+    // console.log();
     return ("null");
   }
 
@@ -51,15 +53,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async inviteToPlay(client: Socket, data: any) {
     // this socket call invites another user to play pong
     // it receives the client making the request
-    const _inviterID = this.findIDBySocket(client.id);
+    const _inviter = await this.userService.findBySocketID(client.id);
     const _invitedUser = await this.userService.findUsername(data.username);
     console.log("try to send invite")
-    if (_inviterID !== "null") {
-      if (_inviterID === _invitedUser.id) {
+    if (_inviter) {
+      if (_inviter.id === _invitedUser.id) {
         this.server.to(client.id).emit("displayFailure", {msg: "You can't invite yourself to play, dummy!"});
         return ;
       }
-      this.server.timeout(15000).to(_invitedUser.socketID).emit("invitedToPlay", { inviterID: _inviterID }, (err, response) => {
+      this.server.timeout(15000).to(_invitedUser.socketID).emit("invitedToPlay", { inviterID: _inviter.id }, (err, response) => {
           if (err) {
             console.log("here")
             this.server.to(client.id).emit("displayFailure", {msg: "Invitation timed out or user declined."});
@@ -73,53 +75,68 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleConnection(client: Socket) {
-    console.log("Client ( " + client.id + " ) connected to chat");
-    this.server.to(client.id).emit("connected");
-    this.server.emit("refresh2");
   }
 
-  @SubscribeMessage("connected")
-  async handleConnected(client: Socket, id: string) {
-    if (typeof id !== "string") {
-     // console.log("ID !== string: " + id);
-      return ;
-    }
-    //console.log(this.users);
-    this.users.set(id, client.id);
-    //console.log("Handling connection for: " + id);
-    await this.registerUser(client, id);
-    this.server.emit("refresh2");
+  @SubscribeMessage("connectMe")
+  async makeConnection(client: Socket, data: any) {
+    console.log("Connecting: " + client.id + " " + data.id);
+    await this.userService.updateSocketID(client.id, data.id);
+    await this.userService.updateStatus("online", data.id);
+    this.server.emit("reloadFriends");
+    // console.log();
   }
 
   async handleDisconnect(client: Socket) {
+    console.log("Handling disconnect for: " + client.id);
     const user = await this.userService.findBySocketID(client.id);
     if (user) {
-      this.registerDisconnect(client, user.id);
-      this.server.to(client.id).emit("closeSocket");
-      this.server.emit("refresh2");
+      await this.userService.updateStatus("offline", user.id);
+      this.server.emit("reloadFriends");
     } else {
       console.log("Could not find user from socket: " + client.id);
     }
 	}
 
-  @SubscribeMessage("registerDisconnect")
-  async registerDisconnect(client: Socket, id: string) {
-    console.log("Registering disconnect for: " + id);
-    // await this.userService.updateSocketID(client.id, id);
-    await this.userService.updateStatus("offline", id);
-    this.server.emit("refresh2");
+  @SubscribeMessage("getFriends")
+  async sendFriends(client: Socket, data: any) {
+    if (data.id === undefined) {
+      console.log("ID is undefined when fetching friends...");
+      return ;
+    }
+    try {
+      const friends = await this.userfriendshipService.findAllUF(data.id);
+      this.server.to(client.id).emit("updateFriends", { friends: friends});
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  @SubscribeMessage("registerUser")
-  async registerUser(client: Socket, id: string) {
-    if (id !== undefined) {
-      //console.log("Registering: " + id + " (" + client.id + ")");
-      await this.userService.updateSocketID(client.id, id);
-      await this.userService.updateStatus("online", id);
-      this.server.emit("refresh2");
-    } else {
-      console.log("username is undefined");
-    }
+  @SubscribeMessage("getChannels")
+  async sendChannels(client: Socket, data: any) {
+    const channels = await this.chatroomUserService.findAllChatroomsByUserID(data.id);
+    console.log("Channels: " + channels);
+    this.server.to(client.id).emit("updateChannels", {channels: channels});
+  }
+
+  @SubscribeMessage("friendUpdate")
+  async updateFriendList(client: Socket, data: any) {
+    const _user = await this.userService.findOne(data.id);
+    this.server.to(_user.socketID).emit("reloadFriends");
+  }
+
+  @SubscribeMessage("channelUpdate")
+  async updateChannelList(client: Socket, data: any) {
+    console.log("Updating channels for: " + data.id);
+    const _user = await this.userService.findOne(data.id);
+    console.log("user: " + _user.id + " " + _user.socketID);
+    this.server.to(_user.socketID).emit("reloadChannels");
+  }
+
+  @SubscribeMessage("deleteChannel")
+  async deleteChannel(client: Socket, data: any) {
+    const channelID = data.channelID;
+    console.log("Deleting channel: " + channelID);
+    this.server.emit("reloadChannels");
   }
 
   @SubscribeMessage("getChatroomUsers")
@@ -139,13 +156,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const _msgInfo = {
       text: createPrivateMessageDto.content,
       timestamp: time,
-      nickname: _user.username,
+      nickname: _user.nickname,
+      username: _user.username,
       avatar: _user.avatar,
       type: "friend",
       recipient: _recipient.username,
       // channelID: createPrivateMessageDto.chatroomId
     };
-    this.server.emit("messageResponse", _msgInfo);
+    this.server.to(_user.socketID).emit("messageResponse", _msgInfo);
+    this.server.to(_recipient.socketID).emit("messageResponse", _msgInfo);
   }
 
   @SubscribeMessage("clearHistory")
@@ -167,9 +186,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("sendMessage")
   async SendChatMessage(client: Socket, createChatroomMessageDto: CreateChatroomMessageDto) {
+    console.log("Attempting to send message.");
     const _chatUsers = await this.chatroomUserService.findAllChatroomUsersByChatroomId(createChatroomMessageDto.chatroomId);
     const _chatUser = _chatUsers.find(element => element.userId === createChatroomMessageDto.senderId);
-    //console.log("muteStatus: " + _chatUser.muteStatus);
     if (_chatUser.muteStatus === true) {
       const _now = new Date();
       if (_now.getMinutes() - _chatUser.mutedAt.getMinutes() >= 5) {
@@ -187,7 +206,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const _msgInfo = {
       text: createChatroomMessageDto.content,
       timestamp: time,
-      nickname: _user.username,
+      nickname: _user.nickname,
       avatar: _user.avatar,
       channelID: createChatroomMessageDto.chatroomId,
       chatName: _chat.name,
@@ -235,26 +254,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const _updatedUser = await this.chatroomUserService.updateMuteStatus(data.mute.id, false);
   }
 
-  @SubscribeMessage("getUserBlocks")
-  async getUserBlocks(client: Socket, data: any) {
-    // userID, senderID
-    const _users = await this.userblocksService.findAll();
-    const _blocks: any[] = [];
-    for (const element of _users) {
-      const _block: any = {
-        id: element.id,
-        blockerID: element.blockerId,
-        blockedUserID: element.blockedUserId
-      };
-      _blocks.push(_block);
-    };
-    this.server.emit("receiveBlocks", {blocks: _blocks});
-  }
-
   @SubscribeMessage("getHistory")
   async getChatHistory(client: Socket, createChatroomMessageDto: CreateChatroomMessageDto) {
     const channelID: string = createChatroomMessageDto.chatroomId;
-    console.log("Getting Chat History");
+    console.log("Getting Chat History for: " + channelID);
     const userID: string = createChatroomMessageDto.senderId;
 
     // senderID is actually the userID
@@ -320,9 +323,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit("clearOtherHistory", { chat: data.channel});
   }
 
+  @SubscribeMessage("inGame")
+  async setInGame(client: Socket, data: any) {
+    await this.userService.updateStatus("inGame", data.username);
+    this.server.emit("refresh");
+  }
 
-
- 
+  @SubscribeMessage("outGame")
+  async setOutGame(client: Socket, data: any) {
+    await this.userService.updateStatus("online", data.username);
+    this.server.emit("refresh");
+  }
 
   @SubscribeMessage("chatroom")
   createChatroomMessage(@MessageBody() message: any): void {
@@ -381,7 +392,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   
   @SubscribeMessage("refresh2")
   refreshPage2(client: Socket, data: any) {
-    console.log("allo");
     this.server.emit("refresh2");
   }
   
@@ -391,10 +401,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("blocked")
-  handleBlocked(client: Socket, data: any){
-    console.log(data.id, data.blocked, this.users.get(data.blocked));
+  async handleBlocked(client: Socket, data: any){
+    const friends = await this.userfriendshipService.findAllUF(data.blocked);
     this.server.to(this.users.get(data.blocked)).emit("blocked", data.id);
     this.server.to(this.users.get(data.blocked)).emit("clearOtherHistory", { chat: data.id});
+    this.server.to(this.users.get(data.blocked)).emit("updateFriends", { friends: friends});
   }
 
   @SubscribeMessage("user left")

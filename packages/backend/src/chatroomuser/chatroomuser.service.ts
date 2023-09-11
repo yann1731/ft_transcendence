@@ -8,6 +8,7 @@ import * as argon from 'argon2'
 import internal from 'stream';
 import { ENTRY_PROVIDER_WATERMARK } from '@nestjs/common/constants';
 import { ChatroomUser } from './entities/chatroomuser.entity';
+import { Chatroom } from '@prisma/client';
 
 @Injectable()
 export class ChatroomuserService {
@@ -140,6 +141,30 @@ export class ChatroomuserService {
 	} catch (error) {
 		console.log(error);
 		throw error;
+	}
+  }
+
+  async findAllChatroomsByUserID(id: string) {
+	try {
+		const chatroomUsers = await this.prisma.chatroomUser.findMany({
+			where: {
+				userId: id,
+			},
+			include: {
+				chatroom: true,
+				user: true
+			}
+		});
+
+		const chatrooms: Chatroom[] = [];
+		chatroomUsers.forEach((element) => {
+			if (!element.chatroom.bannedUsers.includes(element.user.username)) {
+				chatrooms.push(element.chatroom);
+			}
+		})
+		return (chatrooms);
+	} catch (error) {
+		console.log(error);
 	}
   }
 

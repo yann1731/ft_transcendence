@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
 import OptionBarFriends from './ChatMenus/OptionBarFriends';
@@ -20,28 +20,30 @@ import { useNavigate } from 'react-router-dom';
 function ChatPage() {
 	const { user, updateUser } = useContext(UserContext);
 	const socket = useContext(SocketContext);
-	const gamesocket = useContext(gameSocketContext)
-	const navigate = useNavigate()
+	const gamesocket = useContext(gameSocketContext);
+	const navigate = useNavigate();
 
-	
+	useEffect(() => {
+		socket.emit("connectMe", { id: user?.id});
+	}, []);
 
-	 /*  const newUser: Partial<User> = {
-		...user,
-		isInvited: false,
-		host: false
-	}
-	updateUser(newUser) */
+	// const newUser: Partial<User> = {
+	// 	...user,
+	// 	isInvited: false,
+	// 	host: false
+	// }
+	// updateUser(newUser)
 
-	if (!user) {
-		return (
-			<div>
-            	<BackgroundContainer>
-                	<LoginToolBar />
-                    <SignIn />
-                </BackgroundContainer>
-            </div>
-		)
-	}
+	// if (!user) {
+	// 	return (
+	// 		<div>
+    //         	<BackgroundContainer>
+    //             	<LoginToolBar />
+    //                 <SignIn />
+    //             </BackgroundContainer>
+    //         </div>
+	// 	)
+	// }
 	return (
 	  	<React.Fragment>
 				<CssBaseline />
