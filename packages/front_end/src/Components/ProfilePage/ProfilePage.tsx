@@ -8,7 +8,7 @@ import { LimitedStats } from '../ProfilePage/ProfileComponents/UserStats';
 import axios, { AxiosResponse } from 'axios';
 import { useRouteLoaderData } from 'react-router-dom';
 import { UserContext, User } from '../../Contexts/userContext';
-import { LimitedProfileProps } from './Profile';
+import { statsProps } from '../Interfaces';
 
 export default function ProfileContainer() {
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -84,7 +84,7 @@ export default function ProfileContainer() {
 	)
 }
 
-export function ReadOnlyProfile({ userAvatar, userId, nickname }: LimitedProfileProps) {
+export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPlayed, userAvatar }: statsProps) {
 	const [open, setOpen] = useState(false);
  	const {user} = useContext(UserContext);
 	
@@ -99,10 +99,8 @@ export function ReadOnlyProfile({ userAvatar, userId, nickname }: LimitedProfile
 			flexDirection: "column",
 			alignItems: 'center',
 		}}>
-		<LimitedStats/>
+		<LimitedStats userId={userId} username={username} nickname={nickname} win={win} loss={loss} gamesPlayed={gamesPlayed} userAvatar={userAvatar}/>
 		</Box>
 	</div>	
 	)
 }
-
-

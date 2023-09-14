@@ -12,6 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import axios, { AxiosResponse } from 'axios';
 import { SocketContext } from 'Contexts/socketContext';
+import { statsProps } from '../../Interfaces'
 
 const Item = styled(Paper)(({ theme }) => ({
 	...theme.typography.body2,
@@ -54,7 +55,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default MyStats;
 
-export function LimitedStats() {
+export function LimitedStats({ userId, username, nickname, win, loss, gamesPlayed, userAvatar }: statsProps) {
     const { user } = useContext(UserContext);
     const winRatio = user && user.gamesPlayed > 0 ? (user.win / user.gamesPlayed) * 100 : 0;
     const [open, setOpen] = React.useState(false);
@@ -77,13 +78,13 @@ export function LimitedStats() {
         <Box sx={{ width: '95%', marginTop: '15px', marginBottom: '15px' }} className="profileButtonBox">
             <Grid container rowSpacing={3}>
                 <Grid item sx={{width: '99%' }}>
-                    <Item>Nb Games Played: {user?.gamesPlayed} </Item>
+                    <Item>Nb Games Played: {gamesPlayed} </Item>
                 </Grid>
                 <Grid item sx={{width: '99%'}}>
-                    <Item>Wins: {user?.win}</Item>
+                    <Item>Wins: {win}</Item>
                 </Grid>
                 <Grid item sx={{width: '99%'}}>
-                    <Item>Losses: {user?.loss}</Item>
+                    <Item>Losses: {loss}</Item>
                 </Grid>
                 <Grid item sx={{width: '99%'}}>
                     <Item>Win Ratio: {winRatio.toFixed(2)}</Item>

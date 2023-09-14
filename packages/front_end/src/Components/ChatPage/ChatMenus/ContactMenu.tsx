@@ -1,10 +1,23 @@
 import * as React from 'react';
 import { Avatar, Tooltip, IconButton, Box, Popover } from '@mui/material';
 import { LimitedProfile } from '../../ProfilePage/Profile'
-import { Message } from '../../Interfaces';
+import { Message, statsProps } from '../../Interfaces';
+import axios from 'axios';
 
-export default function ContactMenu({ UserAvatar, userId, nickname }: Message) {
+export default function ContactMenu({ UserAvatar, nickname }: Message) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [userData, setUserData] = React.useState<statsProps[]>([])
+
+  React.useEffect(() => {
+    axios.get('api/user')
+      .then((response) => {
+        const userDataFromAPI: statsProps[] = response.data;
+        setUserData(userDataFromAPI);
+      })
+      .catch((error) => {
+        console.error('Error fetching user data', error);
+      });
+  }, []);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -16,6 +29,8 @@ export default function ContactMenu({ UserAvatar, userId, nickname }: Message) {
 
   const open = Boolean(anchorEl);
   const id = open ? 'contact-options-popover' : undefined;
+  const userToDisplay = userData.find((user) => user.nickname === nickname);
+
 
   return (
     <React.Fragment>
@@ -46,7 +61,20 @@ export default function ContactMenu({ UserAvatar, userId, nickname }: Message) {
         }}
       >
         <Box sx={{ p: 2 }}>
-          <LimitedProfile userAvatar={UserAvatar} userId={userId} nickname={nickname} />
+          {userData.map((user) => (
+            <li key={user.userId}>
+            <strong>Nickname:</strong> {user.nickname}
+            <br />
+            <strong>Username:</strong> {user.username}
+            <br />
+            <strong>Wins:</strong> {user.win}
+            <br />
+            <strong>Losses:</strong> {user.loss}
+            <br />
+            <strong>Games Played:</strong> {user.gamesPlayed}
+          </li>
+          ))}
+          {userToDisplay && <LimitedProfile userAvatar={userToDisplay.userAvatar} nickname={userToDisplay.nickname} userId={userToDisplay.userId} />}
         </Box>
       </Popover>
     </React.Fragment>
