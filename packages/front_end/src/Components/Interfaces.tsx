@@ -53,7 +53,7 @@ export interface statsProps {
 	win?: number,
 	loss?: number,
 	gamesPlayed?: number,
-	userAvatar: string,
+	avatar: string,
 }
 
 // Variables private message pour messages privés

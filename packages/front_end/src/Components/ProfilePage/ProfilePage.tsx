@@ -84,13 +84,13 @@ export default function ProfileContainer() {
 	)
 }
 
-export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPlayed, userAvatar }: statsProps) {
+export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
 	const [open, setOpen] = useState(false);
  	const {user} = useContext(UserContext);
 	
 	return (
 	<div>
-		<Avatar alt={nickname} src={userAvatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}} />
+		<Avatar alt={nickname} src={avatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}} />
 		<Box sx={{textAlign: 'center', mt: 1}}>Nickname: {nickname}</Box>
 		<Box className="profileSection" sx={{
 			borderRadius: 2.5,
@@ -99,7 +99,7 @@ export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPl
 			flexDirection: "column",
 			alignItems: 'center',
 		}}>
-		<LimitedStats userId={userId} username={username} nickname={nickname} win={win} loss={loss} gamesPlayed={gamesPlayed} userAvatar={userAvatar}/>
+		<LimitedStats userId={userId} username={username} nickname={nickname} win={win} loss={loss} gamesPlayed={gamesPlayed} avatar={avatar}/>
 		</Box>
 	</div>	
 	)

@@ -61,20 +61,7 @@ export default function ContactMenu({ UserAvatar, nickname }: Message) {
         }}
       >
         <Box sx={{ p: 2 }}>
-          {userData.map((user) => (
-            <li key={user.userId}>
-            <strong>Nickname:</strong> {user.nickname}
-            <br />
-            <strong>Username:</strong> {user.username}
-            <br />
-            <strong>Wins:</strong> {user.win}
-            <br />
-            <strong>Losses:</strong> {user.loss}
-            <br />
-            <strong>Games Played:</strong> {user.gamesPlayed}
-          </li>
-          ))}
-          {userToDisplay && <LimitedProfile userAvatar={userToDisplay.userAvatar} nickname={userToDisplay.nickname} userId={userToDisplay.userId} />}
+          {userToDisplay && <LimitedProfile userId={userToDisplay?.userId} username={userToDisplay?.username} nickname={userToDisplay?.nickname} win={userToDisplay?.win} loss={userToDisplay?.loss} gamesPlayed={userToDisplay?.gamesPlayed} avatar={userToDisplay?.avatar} />}
         </Box>
       </Popover>
     </React.Fragment>

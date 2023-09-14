@@ -55,7 +55,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default MyStats;
 
-export function LimitedStats({ userId, username, nickname, win, loss, gamesPlayed, userAvatar }: statsProps) {
+export function LimitedStats({ userId, username, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
     const { user } = useContext(UserContext);
     const winRatio = user && user.gamesPlayed > 0 ? (user.win / user.gamesPlayed) * 100 : 0;
     const [open, setOpen] = React.useState(false);

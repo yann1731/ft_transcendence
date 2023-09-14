@@ -37,10 +37,10 @@ export default function DividerProfile() {
     )
 }
 
-export function LimitedProfile({ userId, username, nickname, win, loss, gamesPlayed, userAvatar }: statsProps) {
+export function LimitedProfile({ userId, username, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
     return (
         <div>
-            <ReadOnlyProfile userId={userId} username={username} nickname={nickname} win={win} loss={loss} gamesPlayed={gamesPlayed} userAvatar={userAvatar}/>
+            <ReadOnlyProfile userId={userId} username={username} nickname={nickname} win={win} loss={loss} gamesPlayed={gamesPlayed} avatar={avatar}/>
         </div>
     )
 }
