@@ -634,7 +634,7 @@ const OptionBarConversation: React.FC = () => {
       }}
       >
         <Box sx={{ p: 2 }}>
-          <LimitedProfile userAvatar={getAvatar?.avatar || 'default'} userId={getId?.id || 'default'} nickname={getNickname?.nickname || 'default'} />
+          <LimitedProfile avatar={getAvatar?.avatar || 'default'} userId={getId?.id || 'default'} nickname={getNickname?.nickname || 'default'} />
         </Box>
       </Popover>
     </Box>

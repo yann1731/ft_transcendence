@@ -57,7 +57,7 @@ export default MyStats;
 
 export function LimitedStats({ userId, username, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
     const { user } = useContext(UserContext);
-    const winRatio = user && user.gamesPlayed > 0 ? (user.win / user.gamesPlayed) * 100 : 0;
+    const winRatio = gamesPlayed > 0 ? (win / gamesPlayed) * 100 : 0;
     const [open, setOpen] = React.useState(false);
     const socket = useContext(SocketContext);
 
