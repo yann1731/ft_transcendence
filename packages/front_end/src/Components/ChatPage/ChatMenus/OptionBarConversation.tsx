@@ -170,7 +170,9 @@ const OptionBarConversation: React.FC = () => {
   })
 
   const getId = Users.find((friend: User) => {
-    return friend.id;
+    if (user?.chatInUse?.type === chatroomType.friend)
+      if (user.chatInUse.chat.name === friend.username)
+        return friend.id;
   })
 
   const getAvatar = Users.find((friend: User) => {

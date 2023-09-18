@@ -95,7 +95,6 @@ export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPl
 	const [games, setGames] = useState(0)
 	const [userAvatar, setUserAvatar] = useState("")
 
-
 	React.useEffect(() => {
 		const fecthUser = async () => {
 			axios.get(`/api/user/${userId}`, {headers: {

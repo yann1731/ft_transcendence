@@ -4,7 +4,7 @@ import { LimitedProfile } from '../../ProfilePage/Profile'
 import { Message, statsProps } from '../../Interfaces';
 import axios from 'axios';
 
-export default function ContactMenu({ UserAvatar, nickname }: Message) {
+export default function ContactMenu({ UserAvatar, nickname, userId }: Message) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [userData, setUserData] = React.useState<statsProps[]>([])
 
@@ -29,41 +29,16 @@ export default function ContactMenu({ UserAvatar, nickname }: Message) {
 
   const open = Boolean(anchorEl);
   const id = open ? 'contact-options-popover' : undefined;
-  const userToDisplay = userData.find((user) => user.nickname === nickname);
+  const userToDisplay = userData.find((user) => user.username === nickname);
 
-
+  console.log(userId)
   return (
     <React.Fragment>
       <Box sx={{}}>
-        <Tooltip title="Contact Profile">
-          <IconButton
-            onClick={handleClick}
-            aria-controls={id}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-          >
+          <IconButton>
             <Avatar src={UserAvatar} sx={{ width: 32, height: 32 }} />
           </IconButton>
-        </Tooltip>
       </Box>
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      >
-        <Box sx={{ p: 2 }}>
-          {userToDisplay && <LimitedProfile userId={userToDisplay?.userId} username={userToDisplay?.username} nickname={userToDisplay?.nickname} win={userToDisplay?.win} loss={userToDisplay?.loss} gamesPlayed={userToDisplay?.gamesPlayed} avatar={userToDisplay?.avatar} />}
-        </Box>
-      </Popover>
     </React.Fragment>
   );
 }

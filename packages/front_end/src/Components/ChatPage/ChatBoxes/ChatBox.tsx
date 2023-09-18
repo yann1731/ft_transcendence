@@ -267,7 +267,6 @@ const Chat = () => {
         <List>
         {messages.map((message: Message, index: number) => {
             const shouldAlignLeft = message.nickname === user?.username;
-
             return (
               <ListItem key={index}>
                 <Box sx={{ marginLeft: shouldAlignLeft ? 'auto' : '0' }}>

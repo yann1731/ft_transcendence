@@ -10,6 +10,7 @@ import { statsProps } from '../Interfaces';
 export interface LimitedProfileProps { 
     userAvatar: string | undefined;
     nickname: string;
+    userId: string;
 }
 
 export default function DividerProfile() {
@@ -38,6 +39,7 @@ export default function DividerProfile() {
 }
 
 export function LimitedProfile({ userId, username, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
+    console.log(userId)
     return (
         <div>
             <ReadOnlyProfile userId={userId} username={username} nickname={nickname} win={win} loss={loss} gamesPlayed={gamesPlayed} avatar={avatar}/>
