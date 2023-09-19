@@ -36,9 +36,11 @@ function DashboardAppBar() {
   };
 
   const handleCloseNavMenu = (where: string) => {
-    
-    if (where !== "Home")
+    if (where !== "Home"){
+      const updatedUser: Partial<User> = {...user, host: false, isInvited: false};
+      updateUser(updatedUser)
       gamesocket.emit("disconnected")
+    }
     setAnchorElNav(null);
   };
 

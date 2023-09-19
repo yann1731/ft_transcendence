@@ -13,7 +13,7 @@ export default function PongGame() {
   const navigate = useNavigate()
 
   React.useEffect(() => {
-    if (localStorage.getItem("invite" + user?.username) !== "true"){
+    if (user?.isInvited === false){
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         parent: 'PONG',
@@ -38,7 +38,7 @@ export default function PongGame() {
       game.scene.start('pong', {name: user?.id, socket: gamesocket});
 
       return () => {
-        game.destroy(true);
+        game.destroy(true, false);
       }
     }
     else{
@@ -62,20 +62,20 @@ export default function PongGame() {
         ]
       };
       const game = new Phaser.Game(config);
-      if (localStorage.getItem("host" + user?.username) === "true")
+      if (user?.host === true)
         game.scene.start('invited', {socket: gamesocket, invited: true, id: user?.id});
       else
         game.scene.start('invited', {socket: gamesocket, invited: false});
 
       return () => {
-        game.destroy(true);
+        game.destroy(true, false);
       }
     }
   }, []);
 
   gamesocket.on("invite end", () => {
-    localStorage.setItem("host" + user?.username, "false")
-    localStorage.setItem("invite" + user?.username, "false")
+    const updatedUser: Partial<User> = {...user, host: false, isInvited: false};
+    updateUser(updatedUser)
     gamesocket.off("invite end")
   })
 

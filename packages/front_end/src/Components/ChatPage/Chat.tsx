@@ -25,12 +25,7 @@ function ChatPage() {
 
 	
 
-	 /*  const newUser: Partial<User> = {
-		...user,
-		isInvited: false,
-		host: false
-	}
-	updateUser(newUser) */
+
 
 	if (!user) {
 		return (

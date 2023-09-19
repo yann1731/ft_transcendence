@@ -2,7 +2,7 @@ import { Typography, Container } from "@mui/material/";
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import { keyframes } from "@emotion/react";
 import axios from 'axios';
-import { UserContext } from "Contexts/userContext";
+import { User, UserContext } from "Contexts/userContext";
 import { useContext, useEffect } from "react";
 import { gameSocketContext } from "../../Contexts/gameSocketContext";
 
@@ -12,7 +12,7 @@ const spin = keyframes`
 `;
 
 export default function GetToken() {
-  const {user, setUser} = useContext(UserContext);
+  const {user, setUser, updateUser} = useContext(UserContext);
   const socket = useContext(gameSocketContext);
 
 
@@ -34,8 +34,9 @@ export default function GetToken() {
           expires_in: response.data.expires_in
         });
         console.log(newUser);
-
         setUser(newUser.data);
+        const updatedUser: Partial<User> = {...user, host: false, isInvited: false};
+        updateUser(updatedUser)
         if (newUser.data.twoFaEnabled === true) {
           window.location.assign("/otp"); //changetoip
         }
