@@ -39,7 +39,6 @@ export default function DividerProfile() {
 }
 
 export function LimitedProfile({ userId, username, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
-    console.log(userId)
     return (
         <div>
             <ReadOnlyProfile userId={userId} username={username} nickname={nickname} win={win} loss={loss} gamesPlayed={gamesPlayed} avatar={avatar}/>

@@ -309,15 +309,16 @@ export default function MatchHistory({userId}:LimitedProfileProps) {
     const [winnerUsernamesThree, setWinnerUsernamesThree] = React.useState<string[]>([]);
     const [loserUsernamesThree, setLoserUsernamesThree] = React.useState<string[]>([]);
     const {user, updateUser} = useContext(UserContext);
+    const [refresh, setRefresh] = React.useState(1)
+
 
     useEffect(() => {
-
         const fetchData = async () => {
             try {
                 const [dataOne, dataTwo, dataThree] = await Promise.all([
-                    getMatchDataOne(userId),
-                    getMatchDataTwo(userId),
-                    getMatchDataThree(userId)
+                    getMatchDataOne(),
+                    getMatchDataTwo(),
+                    getMatchDataThree()
                 ]);
 
                 setMatchDataOne(dataOne.matchData);
@@ -340,6 +341,7 @@ export default function MatchHistory({userId}:LimitedProfileProps) {
         fetchData();
     }, []);
     
+
     const handleClickOpen = (dialogType: string) => {
         setOpenDialog(dialogType);
         setOpen(true);
@@ -350,7 +352,7 @@ export default function MatchHistory({userId}:LimitedProfileProps) {
         setOpen(false);
     }
 
-    const getMatchDataOne = async(userId: string) => {
+    const getMatchDataOne = async() => {
         try {
             const response = await axios.get(`/api/match-history/one/${userId}`, {headers: {
                 'Authorization': user?.token,
@@ -383,7 +385,7 @@ export default function MatchHistory({userId}:LimitedProfileProps) {
         }
     }
 
-    const getMatchDataTwo = async(userId: string) => {
+    const getMatchDataTwo = async() => {
         try {
             const response = await axios.get(`/api/match-history/two/${userId}`, {headers: {
                 'Authorization': user?.token,
@@ -417,7 +419,7 @@ export default function MatchHistory({userId}:LimitedProfileProps) {
         }
     }
 
-    const getMatchDataThree = async(userId: string) => {
+    const getMatchDataThree = async() => {
         try {
             const response = await axios.get(`/api/match-history/three/${userId}`, {headers: {
                 'Authorization': user?.token,

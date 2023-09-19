@@ -87,7 +87,6 @@ export default function ProfileContainer() {
 export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
 	const [open, setOpen] = useState(false);
  	const {user} = useContext(UserContext);
-	const [id, setId] = useState("")
 	const [userName, setUserName] = useState("")
 	const [nickName, setNickName] = useState("")
 	const [userWin, setUserWin] = useState(0)
@@ -101,8 +100,6 @@ export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPl
 				'Authorization': user?.token,
 				'userId': user?.id
 			}}).then((response: any) => {
-				console.log(response.data.username)
-				setId(response.data.id)
 				setUserName(response.data.username)
 				setNickName(response.data.nickname)
 				setUserWin(response.data.win)
@@ -127,7 +124,7 @@ export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPl
 			flexDirection: "column",
 			alignItems: 'center',
 		}}>
-		<LimitedStats userId={id} username={userName} nickname={nickName} win={userWin} loss={userLoss} gamesPlayed={games} avatar={userAvatar}/>
+		<LimitedStats userId={userId} username={userName} nickname={nickName} win={userWin} loss={userLoss} gamesPlayed={games} avatar={userAvatar}/>
 		</Box>
 	</div>	
 	)

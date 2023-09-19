@@ -187,6 +187,7 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
     })
     socket.on("refresh2", () => {
       setRefresh(refresh => refresh + 1)
+      console.log()
     })
     game.on("refresh2", () => {
       setRefresh(refresh => refresh + 1)
