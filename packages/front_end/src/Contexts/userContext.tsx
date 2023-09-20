@@ -73,23 +73,6 @@ export const UserContext = createContext<UserContextType>({
   updateUser: () => {}
 });
 
-/* Peut-être inutile... À voir! 
-  const defaultState = {
-  user: {
-    avatar: '',
-    nickname: '',
-    username: '',
-    email: '',
-    win: 0,
-    loss: 0,
-    gamesPlayed: 0,
-    userStatus: true,
-    twoFaEnabled: false,
-    id: '',
-  },
-  setUser: (user: User | null) => {},
-  updateUser: (newUserData: Partial<User>) => {}
-} as UserContextType; */
   
 type UserProviderProps = {
   children: ReactNode;
@@ -114,7 +97,7 @@ export default function UserProvider({ children }: UserProviderProps) {
   }, []);
   
   useEffect(() => {
-    //localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
   }, [user]);
 
   const userContextValue: UserContextType = {

@@ -34,16 +34,16 @@ function App() {
 		<UserProvider>
 			<SocketContext.Provider value={socket}>
 			<ThemeProvider theme={theme}>
-			<ResponsiveAppBar />
+				<ResponsiveAppBar />
 				<Routes>
 					<Route path='/' element={ <Login />} />
-					<Route path='/Home' element={ <Home /> } />
-					<Route path='/Profile' element={ <Profile /> } />
-					<Route path='/Chat' element={ <Chat /> } />
 					<Route path='/FatCat' element={ <FatCat /> } />
 					<Route path='/wait' element={<Wait /> } />
 					<Route path='/Enable2Fa' element={ <Enable2Fa />} />
 					<Route path='/otp' element={ <Otp /> } />
+					<Route path='/Home' element={ <Home /> } />
+					<Route path='/Profile' element={ <Profile /> } />
+					<Route path='/Chat' element={ <Chat /> } />
 				</Routes>
 			</ThemeProvider>
 			</SocketContext.Provider>

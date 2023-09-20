@@ -8,9 +8,10 @@ import { useContext } from 'react';
 import { useDispatch, useStore } from "react-redux";
 import { asyncToggleTheme } from "../store/reducers/themeSlice";
 import { User, UserContext } from '../Contexts/userContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { gameSocketContext } from 'Contexts/gameSocketContext';
 import { SocketContext } from 'Contexts/socketContext';
+import axios from 'axios';
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -80,6 +81,8 @@ function ResponsiveAppBar() {
     gamesocket.emit("connected", {name: user?.id})
   })
 
+  console.log(useLocation())
+  if (useLocation().pathname === "/Home" || useLocation().pathname === "/Chat" || useLocation().pathname === "/Profile"){
   return (
     <div className="toolbar">
     <AppBar sx={{ height: '64px' }}>
@@ -219,6 +222,10 @@ function ResponsiveAppBar() {
     </AppBar>
     </div>
   );
+  } else {
+    return (<div></div>);
+  }
+          
 }
 
 export default ResponsiveAppBar;
