@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
 import OptionBarFriends from './ChatMenus/OptionBarFriends';
@@ -8,23 +8,18 @@ import OptionBarChans from './ChatMenus/OptionBarChans';
 import { CssBaseline } from '@mui/material';
 import Chat from './ChatBoxes/ChatBox';
 import OptionBarConversation from './ChatMenus/OptionBarConversation';
-import { io, Socket } from "socket.io-client";
-import { SocketContext, socket} from "../../Contexts/socketContext";
-import { User, UserContext } from 'Contexts/userContext';
-import SignIn from 'Components/Login/LoginPage';
+import { SocketContext} from "../../Contexts/socketContext";
+import { UserContext } from 'Contexts/userContext';
 import LoginToolBar from 'Components/Login/LoginToolBar';
-import { Message } from '../Interfaces';
-import { gameSocketContext } from 'Contexts/gameSocketContext';
-import { useNavigate } from 'react-router-dom';
+import SignIn from 'Components/Login/LoginPage';
 
 function ChatPage() {
-	const { user, updateUser } = useContext(UserContext);
+	const { user } = useContext(UserContext);
 	const socket = useContext(SocketContext);
-	const gamesocket = useContext(gameSocketContext)
-	const navigate = useNavigate()
 
-	
-
+	useEffect(() => {
+		socket.emit("connectMe", { id: user?.id});
+	}, []);
 
 
 	if (!user) {
@@ -42,7 +37,6 @@ function ChatPage() {
 				<CssBaseline />
 				<BackgroundContainer>
 					<div>
-					<ResponsiveAppBar />
 						<div className="mainContainerStyle">
 							<div className="friendsAndChannelStyle">
 								<OptionBarFriends />

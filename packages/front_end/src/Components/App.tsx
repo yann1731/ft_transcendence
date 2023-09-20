@@ -14,6 +14,7 @@ import { RootState } from 'store/store';
 import { getDesignTokens } from '../Theme';
 import UserProvider from 'Contexts/userContext';
 import { SocketContext } from 'Contexts/socketContext';
+import ResponsiveAppBar from './ToolBar';
 
 function App() {
 	const [mode, setMode] = useState<PaletteMode>("dark");
@@ -33,6 +34,7 @@ function App() {
 		<UserProvider>
 			<SocketContext.Provider value={socket}>
 			<ThemeProvider theme={theme}>
+			<ResponsiveAppBar />
 				<Routes>
 					<Route path='/' element={ <Login />} />
 					<Route path='/Home' element={ <Home /> } />

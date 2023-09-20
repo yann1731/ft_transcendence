@@ -30,6 +30,7 @@ export interface User {
   chatInUse?: ChatInUse;
   isInvited: boolean;
   host: boolean;
+  button: boolean;
 }
 
 export interface MatchHistoryOne {
@@ -113,7 +114,7 @@ export default function UserProvider({ children }: UserProviderProps) {
   }, []);
   
   useEffect(() => {
-    localStorage.setItem('user', JSON.stringify(user));
+    //localStorage.setItem('user', JSON.stringify(user));
   }, [user]);
 
   const userContextValue: UserContextType = {

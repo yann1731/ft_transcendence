@@ -13,6 +13,17 @@ export default function PongGame() {
   const navigate = useNavigate()
 
   React.useEffect(() => {
+    gamesocket.off("start")
+    gamesocket.off("player")
+    gamesocket.off("disconnected")
+    gamesocket.off("mouvement")
+    gamesocket.off("mouvement2")
+    gamesocket.off("update")
+    gamesocket.off("random")
+    gamesocket.off("newPower")
+    gamesocket.off("multi")
+    gamesocket.off("power")
+    gamesocket.off("point")
     if (user?.isInvited === false){
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,

@@ -5,13 +5,12 @@ import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import ThemeModeIcon from '@mui/icons-material/DarkMode'
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
-import { useDispatch } from "react-redux";
+import { useDispatch, useStore } from "react-redux";
 import { asyncToggleTheme } from "../store/reducers/themeSlice";
 import { User, UserContext } from '../Contexts/userContext';
 import { useNavigate } from 'react-router-dom';
 import { gameSocketContext } from 'Contexts/gameSocketContext';
 import { SocketContext } from 'Contexts/socketContext';
-
 
 const pages = [
   { label: 'Home', link: '/Home' },
@@ -20,13 +19,35 @@ const pages = [
 ];
 const settings = ['Profile settings', 'Logout'];
 
-function DashboardAppBar() {
+function ResponsiveAppBar() {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const {user, setUser, updateUser} = useContext(UserContext);
   const gamesocket = useContext(gameSocketContext)
-  const socket = useContext(SocketContext)
+  const socket = useContext(SocketContext);
+  const [button, setButton] = React.useState(true);
+  
+  const handleCloseNavMenu = (where: string, to: string) => {
+      if (button === true) {
+        setButton(false)
+        setTimeout(() => {
+          setButton(true)
+        }, 500)
+        if (where !== "Home"){
+          const updatedUser: Partial<User> = {...user, host: false, isInvited: false};
+          updateUser(updatedUser)
+          gamesocket.emit("disconnected")
+        }
+        setAnchorElNav(null);
+        navigate(to)
+      }
+  };
+
+  React.useEffect(() => {
+    const updatedUser: Partial<User> = {...user, host: false, isInvited: false};
+    updateUser(updatedUser)
+  }, [])
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -34,20 +55,11 @@ function DashboardAppBar() {
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
-
-  const handleCloseNavMenu = (where: string) => {
-    if (where !== "Home"){
-      const updatedUser: Partial<User> = {...user, host: false, isInvited: false};
-      updateUser(updatedUser)
-      gamesocket.emit("disconnected")
-    }
-    setAnchorElNav(null);
-  };
-
+  
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
+  
   const handleSettingClick = (setting: string) => {
     if (setting === 'Profile settings') {
       navigate('/profile');
@@ -56,34 +68,11 @@ function DashboardAppBar() {
     else if (setting === 'Logout') {
       setUser(null);
       navigate('/');
-      console.log('Clicked on Logout');
     }
     handleCloseUserMenu();
   };
 
   socket.connect();
-
-/*   useEffect(() => {
-		const fetchUserStatistics = async () => {
-			try {
-				const response = await fetch('http://localhost:4242/user/e26900d2-d2cb-40e7-905c-cf9e1f7fdbd3');
-				if(response.ok)
-				{
-					const data = await response.json();
-					setUserStatistics(data);
-				}
-				else
-				{
-					console.error('Could not fetch user');
-				}
-			}
-			catch (err) {
-				console.error(err);
-			}
-		};
-
-		fetchUserStatistics();
-	}, [userStatistics]); */
   
   const dispatch = useDispatch();
 
@@ -122,7 +111,6 @@ function DashboardAppBar() {
             <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/632d52a6376a2b001d128f18.jpg" alt="fat cat" width={65} style={{ position: 'fixed', top: 1, left: 55}}>
 			      </img>
           </Typography>
-
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -186,19 +174,16 @@ function DashboardAppBar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, position: 'fixed', left: 150 }}>
             {pages.map((page) => (
-              <Link style={{textDecoration: 'none'}} to={page.link}>
                 <Button variant="outlined"
                   key={page.label}
-                  onClick={() => handleCloseNavMenu(page.label)}
+                  onClick={() => handleCloseNavMenu(page.label, page.link)}
                   className="toolbarButtons"
                   sx={{ marginRight: '15px', marginTop: '14px', width: 'auto', fontWeight: 'bold', ":hover": { bgcolor: "white"} }}
                   >
                   {page.label}
                 </Button>
-              </Link>
             ))}
           </Box>
-
           <Box sx={{ flexGrow: 0}}>
             <Tooltip title="Open settings">
               <div id="anim" className="profileButtonStyle">
@@ -236,4 +221,4 @@ function DashboardAppBar() {
   );
 }
 
-export default DashboardAppBar;
+export default ResponsiveAppBar;

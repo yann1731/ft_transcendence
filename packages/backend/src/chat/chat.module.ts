@@ -9,9 +9,10 @@ import { PrivatemessageModule } from 'src/privatemessage/privatemessage.module';
 import { ChatroomuserModule } from 'src/chatroomuser/chatroomuser.module';
 import { UserblocksModule } from 'src/userblocks/userblocks.module';
 import { ChatroomModule } from 'src/chatroom/chatroom.module';
+import { UserfriendshipModule } from 'src/userfriendship/userfriendship.module';
 
 @Module({
   providers: [ChatGateway, ChatService],
-  imports: [PrismaModule, ChatroommessageModule, UserModule, PrivatemessageModule, ChatroomuserModule, UserblocksModule, ChatroomModule],
+  imports: [PrismaModule, ChatroommessageModule, UserModule, PrivatemessageModule, ChatroomuserModule, UserblocksModule, ChatroomModule, UserfriendshipModule],
 })
 export class ChatModule {}

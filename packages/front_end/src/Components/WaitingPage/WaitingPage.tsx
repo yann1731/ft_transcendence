@@ -35,7 +35,7 @@ export default function GetToken() {
         });
         console.log(newUser);
         setUser(newUser.data);
-        const updatedUser: Partial<User> = {...user, host: false, isInvited: false};
+        const updatedUser: Partial<User> = {...user, host: false, isInvited: false, button: true};
         updateUser(updatedUser)
         if (newUser.data.twoFaEnabled === true) {
           window.location.assign("/otp"); //changetoip

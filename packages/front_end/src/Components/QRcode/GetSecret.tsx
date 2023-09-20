@@ -21,7 +21,7 @@ export default function GetSecret() {
       } catch (error) {
         console.error(error);
         alert('Error while generating QRcode');
-        window.location.assign('http://localhost:3000/profile');
+        window.location.assign('/profile');
       }
     };
 
@@ -34,7 +34,7 @@ export default function GetSecret() {
             Please scan with google authenticator
             </Typography>
             <QRCode value={otpUrl} />
-            <button onClick={() => {window.location.assign('http://localhost:3000/profile')}}>Ok</button>
+            <button onClick={() => {window.location.assign('/profile')}}>Ok</button>
         </Container>
         );
 }

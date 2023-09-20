@@ -44,14 +44,12 @@ const OptionBarChans: React.FC = () => {
         'userId': user?.id
       }})
       .then( async (response: any) => {
-        console.log('Chatrooms fetched');
         const chatroomData: Chatroom[] = response.data;
         await axios.get(`/api/chatroomuser/user/${user?.id}`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }})
         .then((response: any) => {
-          console.log('ChatroomUsers fetched: ', response.data);
           
           const chatroomUsersData: ChatroomUser[] = response.data;
           const adminChatroom: Chatroom[] = [];
@@ -98,6 +96,10 @@ const OptionBarChans: React.FC = () => {
     fetchChannels();
   }, [refresh]);
   
+  socket.on("refresh", () => {
+    setRefresh(refresh => refresh + 1);
+  })
+
   socket.on("connected", () => {
     socket.emit("connected", user?.id);
     socket.on("chatroom deleted", (data: any) => {
@@ -108,9 +110,7 @@ const OptionBarChans: React.FC = () => {
         socket.emit("refresh")
       }
     })
-    socket.on("refresh", () => {
-      setRefresh(refresh => refresh + 1);
-    })
+    
   });
   
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -217,7 +217,9 @@ const OptionBarChans: React.FC = () => {
               chatroomId: newChatInUse.chat.id,
               chatroom: newChatInUse.chat,
             };
+            socket.emit("getChannels", {id: user?.id});
             socket.emit("getHistory", newMessage);
+            socket.emit("refresh");
           }
         })
         .catch((error: any) => {
@@ -257,7 +259,10 @@ const OptionBarChans: React.FC = () => {
               chatroomId: newChatInUse.chat.id,
               chatroom: newChatInUse.chat,
             };
+            socket.emit("getChannels", {id: user?.id});
             socket.emit("getHistory", newMessage);
+            socket.emit("refresh");
+            socket.emit("refresh2");
           }
         })
         .catch((error: any) => {
@@ -287,6 +292,7 @@ const OptionBarChans: React.FC = () => {
         }})
         .then((response: any) => {
           console.log('Chatroom modified:', response.data);
+          socket.emit("getChannels", {id: user?.id});
           socket.emit("refresh");
         })
         .catch((error: any) => {
@@ -302,6 +308,7 @@ const OptionBarChans: React.FC = () => {
         }})
         .then((response: any) => {
           console.log('Chatroom modified:', response.data);
+          socket.emit("getChannels", {id: user?.id});
           socket.emit("refresh");
         })
         .catch((error: any) => {
@@ -318,28 +325,29 @@ const OptionBarChans: React.FC = () => {
       }})
       .then((response: any) => {
         let _prevChannelID = undefined;
+        let _prevChannelName: string = "null";
         if (user?.username) {
           const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
           _prevChannelID = _chatInfo[1];
-          //alert(_chatInfo);
+          _prevChannelName = _chatInfo[0];
         }
-        console.log('Chatroom deleted:', response.data);
-        //socket.emit("delete chatroom", {chanName: channelName});
         // Change ChatInUse to NULL
         let _chat: Array<string>;
         if (user?.username) {
-          _chat = ["null", "null", "null", user?.username]
-          localStorage.setItem(user?.username, JSON.stringify(_chat));
-          socket.emit("clearHistory");
-          if (_prevChannelID !== undefined) {
+          console.log(_prevChannelName, channelName);
+          if (_prevChannelName === channelName) {
+            _chat = ["null", "null", "null", user?.username]
+            localStorage.setItem(user?.username, JSON.stringify(_chat));
+            socket.emit("clearHistory");
+            socket.emit("deleteChannel", { channelID: _prevChannelID});
             socket.emit("deleteHistory", {channel: _prevChannelID});
           }
+          const updatedUser: Partial<User> = { ...user, chatInUse: undefined};
+          updateUser(updatedUser);
         }
-        if (user?.username) {
-          const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
-          //alert(_chatInfo);
-        }
+        socket.emit("getChannels", {id: user?.id});
         socket.emit("refresh");
+        setRefresh(refresh => refresh + 1)
       })
       .catch((error: any) => {
         console.error('Error deleting chatroom:', error);
@@ -397,6 +405,7 @@ const OptionBarChans: React.FC = () => {
                   chatroomId: newChatInUse.chat.id,
                   chatroom: newChatInUse.chat,
                 };
+                socket.emit("getChannels", {id: user?.id});
                 socket.emit("getHistory", newMessage);
               }
             }
@@ -445,7 +454,9 @@ const OptionBarChans: React.FC = () => {
                   chatroomId: newChatInUse.chat.id,
                   chatroom: newChatInUse.chat,
                 };
+                socket.emit("getChannels", {id: user?.id});
                 socket.emit("getHistory", newMessage);
+                socket.emit("refresh");
               }
             }
             setDialog(false);

@@ -1,4 +1,4 @@
-import DashboardAppBar from '../ToolBar';
+import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
 import DashboardContainer from './Dashboard';
 import { CssBaseline } from '@mui/material';
@@ -32,7 +32,6 @@ export default function Home() {
 					<BackgroundContainer>
 						<div className="homeDashboard">
 							<div className="homeDashboardBoxes">
-								<DashboardAppBar />
 								<DashboardContainer/>
 							</div>
 							<div className="homeGameNChat">
