@@ -166,7 +166,7 @@ const Chat = () => {
             timestamp: message.timestamp,
             nickname: message.nickname,
             UserAvatar: message.avatar,
-            userId: message.userId
+              userId: message.userId
           };
           setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
         }
