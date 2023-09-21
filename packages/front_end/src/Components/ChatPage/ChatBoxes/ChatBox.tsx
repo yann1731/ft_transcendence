@@ -57,7 +57,6 @@ const Chat = () => {
       setInviter("null")
     })
     socket.on("sendHistory", (data: any) => makeHistory(data));
-    // socket.on("disconnected", () => socket.emit("registerDisconnect", {id: user?.id}));
     socket.on("clearHistory", () => clearHistory());
     socket.on("clearOtherHistory", (data: any) => clearOtherHistory(data));
     socket.on("closeSocket", () => socket.close());
@@ -88,6 +87,7 @@ const Chat = () => {
   }
 
   const clearHistory = () => {
+    console.log("Clearing history!");
     const _cleared: Message[] = [];
     setMessages(_cleared);
     const updatedUser: Partial<User> = {
@@ -95,6 +95,12 @@ const Chat = () => {
       chatInUse: undefined,
     }
     updateUser(updatedUser);
+    let _chat: Array<string>;
+    if (user?.username) {
+      _chat = ["null", "null", "channel", user?.username];
+      localStorage.setItem(user?.username, JSON.stringify(_chat));
+    }
+    socket.emit("refresh");
   }
 
   const clearOtherHistory = (data: any) => {

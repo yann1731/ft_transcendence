@@ -293,6 +293,7 @@ const OptionBarChans: React.FC = () => {
         .then((response: any) => {
           console.log('Chatroom modified:', response.data);
           socket.emit("getChannels", {id: user?.id});
+          socket.emit("channelEdit", { channelID: newChan.id});
           socket.emit("refresh");
         })
         .catch((error: any) => {
@@ -309,6 +310,7 @@ const OptionBarChans: React.FC = () => {
         .then((response: any) => {
           console.log('Chatroom modified:', response.data);
           socket.emit("getChannels", {id: user?.id});
+          socket.emit("channelEdit", { channelID: response.data.id});
           socket.emit("refresh");
         })
         .catch((error: any) => {
@@ -319,6 +321,9 @@ const OptionBarChans: React.FC = () => {
     }
     else if (mode === "Delete")
     {
+      const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
+      let _prevChannelID = _chatInfo[1];
+      socket.emit("deleteChannel", { channelID: _prevChannelID});
       await axios.delete(`/api/chatroom/${channelName}`, {headers: {
         'Authorization': user?.token,
         'userId': user?.id
@@ -339,7 +344,7 @@ const OptionBarChans: React.FC = () => {
             _chat = ["null", "null", "null", user?.username]
             localStorage.setItem(user?.username, JSON.stringify(_chat));
             socket.emit("clearHistory");
-            socket.emit("deleteChannel", { channelID: _prevChannelID});
+            // socket.emit("deleteChannel", { channelID: _prevChannelID});
             socket.emit("deleteHistory", {channel: _prevChannelID});
           }
           const updatedUser: Partial<User> = { ...user, chatInUse: undefined};
@@ -347,7 +352,7 @@ const OptionBarChans: React.FC = () => {
         }
         socket.emit("getChannels", {id: user?.id});
         socket.emit("refresh");
-        setRefresh(refresh => refresh + 1)
+        setRefresh(refresh => refresh + 1);
       })
       .catch((error: any) => {
         console.error('Error deleting chatroom:', error);

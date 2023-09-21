@@ -83,7 +83,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     await this.userService.updateSocketID(client.id, data.id);
     await this.userService.updateStatus("online", data.id);
     this.server.emit("reloadFriends");
-    // console.log();
   }
 
   async handleDisconnect(client: Socket) {
@@ -113,9 +112,27 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("getChannels")
   async sendChannels(client: Socket, data: any) {
-    const channels = await this.chatroomUserService.findAllChatroomsByUserID(data.id);
-    console.log("Channels: " + channels);
-    this.server.to(client.id).emit("updateChannels", {channels: channels});
+    try {
+      const channels = await this.chatroomUserService.findAllChatroomsByUserID(data.id);
+      console.log("Channels: " + channels);
+      this.server.to(client.id).emit("updateChannels", {channels: channels});
+    } catch (error) {
+      console.log("Failed getting channels: " + error);
+    }
+  }
+
+  @SubscribeMessage("channelEdit")
+  async editChannel(client: Socket, data: any) {
+    console.log("EditChannelID: " + data.channelID);
+    // console.log();
+    const channelID = data.channelID;
+    const channel = await this.chatroomService.findOne(channelID);
+    for (const u of channel.users) {
+      if (u.user.socketID !== client.id) {
+        console.log("Updating for: " + u.user.username);
+        this.server.to(u.user.socketID).emit("reloadChannels");
+      }
+    }
   }
 
   @SubscribeMessage("friendUpdate")
@@ -128,15 +145,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async updateChannelList(client: Socket, data: any) {
     console.log("Updating channels for: " + data.id);
     const _user = await this.userService.findOne(data.id);
-    console.log("user: " + _user.id + " " + _user.socketID);
     this.server.to(_user.socketID).emit("reloadChannels");
   }
 
   @SubscribeMessage("deleteChannel")
   async deleteChannel(client: Socket, data: any) {
     const channelID = data.channelID;
-    console.log("Deleting channel: " + channelID);
-    this.server.emit("reloadChannels");
+    const channel = await this.chatroomService.findOne(channelID);
+    for (const u of channel.users) {
+      if (u.user.socketID !== client.id) {
+        this.server.to(u.user.socketID).emit("clearOtherHistory", { chat: channel.name});
+        this.server.to(u.user.socketID).emit("reloadChannels");
+      }
+    }
+    this.server.to(client.id).emit("clearHistory");
   }
 
   @SubscribeMessage("getChatroomUsers")
@@ -174,8 +196,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("clearOtherHistory")
   async clearOtherHistory(client: Socket, data: any) {
-    const otherSocket = this.users.get(data.otherID);
-    this.server.to(otherSocket).emit("clearHistory");
+    const otherUser = await this.userService.findOne(data.otherID);
+    this.server.to(otherUser.socketID).emit("clearHistory");
   }
 
   formatDate(date: Date): string {
