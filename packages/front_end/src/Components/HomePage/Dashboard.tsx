@@ -93,7 +93,7 @@ const DashboardContainer: React.FC = () => {
                 setNicknameLowScore(score?.nickname);
               else
                 setNicknameLowScore("Tied");
-              HighestScore = score.win;
+              LowestScore = score.win;
               setGamesPlayedLowestScore(score.gamesPlayed);
             }
           }

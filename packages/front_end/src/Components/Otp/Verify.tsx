@@ -26,8 +26,7 @@ function OTPInputPage() {
       // handle the error
       console.error('Error verifying the OTP: ', error);
       alert('Something went wrong verifying your one time password');
-      //window.location.assign('http://localhost:3000/');
-      window.location.assign('/home')
+      window.location.assign('/');
     }
   };
 

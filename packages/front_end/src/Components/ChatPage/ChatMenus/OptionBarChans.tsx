@@ -44,14 +44,12 @@ const OptionBarChans: React.FC = () => {
         'userId': user?.id
       }})
       .then( async (response: any) => {
-        console.log('Chatrooms fetched');
         const chatroomData: Chatroom[] = response.data;
         await axios.get(`/api/chatroomuser/user/${user?.id}`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
         }})
         .then((response: any) => {
-          console.log('ChatroomUsers fetched: ', response.data);
           
           const chatroomUsersData: ChatroomUser[] = response.data;
           const adminChatroom: Chatroom[] = [];

@@ -26,20 +26,27 @@ const UsernameHandler = () => {
 
   const handleChangeUsername = async () => {
     try {
-      const response: AxiosResponse = await axios.patch(`/api/user/${user?.id}`,
-        { ...user, nickname: newNickname }, {headers: {
-          'Authorization': user?.token,
-          'userId': user?.id
-        }});
-
-      if (response.status === 200) {
-        const updatedUser = response.data;
-        updateUser(updatedUser);
+      const currentDataResponse = await axios.get(`/api/user/`, {headers: {
+        'Authorization': user?.token,
+        'userId': user?.id
+      }});
+      const isNicknameInUse = currentDataResponse.data.some(userData => userData.nickname === newNickname)
+      if (isNicknameInUse) {
+        alert("Nickname is already used by another user");
       } else {
-        console.error('Could not update username');
+        const response: AxiosResponse = await axios.patch(`/api/user/${user?.id}`,
+          { ...user, nickname: newNickname }, {headers: {
+            'Authorization': user?.token,
+            'userId': user?.id
+          }});
+        if (response.status === 200) {
+          const updatedUser = response.data;
+          updateUser(updatedUser);
+        } else {
+          console.error('Could not update username');
+        }
+        handleClose();
       }
-  
-      handleClose();
     } catch (error) {
       console.error('Error occurred while updating username:', error);
     }

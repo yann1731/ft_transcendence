@@ -16,7 +16,6 @@ export interface LimitedProfileProps {
 export default function DividerProfile() {
     const { user } = useContext(UserContext);
 
-    console.log(user);
 	if (!user) {
 		return (
             <div>
@@ -30,7 +29,7 @@ export default function DividerProfile() {
     return (
         <div>
             <BackgroundContainer>
-                <ResponsiveAppBar />
+            
                 <br></br>
                 <ProfileContainer />
             </BackgroundContainer>

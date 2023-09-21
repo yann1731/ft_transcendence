@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as React from 'react';
-import {Popover, useTheme, Avatar, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, List, ListItemIcon, ListItemButton, ListItemText } from '@mui/material';
+import {Popover, useTheme, Avatar, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, List, ListItemIcon, ListItemButton, ListItemText, ListItem } from '@mui/material';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import ClearIcon from '@mui/icons-material/Clear';
 import { UserContext, User } from 'Contexts/userContext';
@@ -445,7 +445,6 @@ const OptionBarConversation: React.FC = () => {
     }
     else if (mode === "Invite to Play")
     {
-      
       socket.emit("inviteToPlay", { username: friendChat?.nickname });
     }
 
@@ -547,12 +546,12 @@ const OptionBarConversation: React.FC = () => {
       {mode === 'View Members' && (
         <List>
           {usersInCurrentChat.map((user: User) => (
-            <ListItemButton key={user.id}>
-              <ListItemIcon>
+            <ListItem key={user.id} >
+              <ListItemIcon >
                 <Avatar alt={user?.nickname} src={user?.avatar || undefined} />
               </ListItemIcon>
               <ListItemText primary={user?.nickname} />
-            </ListItemButton>
+            </ListItem>
           ))}
         </List>
       )}
