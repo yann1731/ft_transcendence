@@ -1,10 +1,12 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateUserfriendshipDto } from './dto/create-userfriendship.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { User } from '@prisma/client';
+import { UserblocksService } from 'src/userblocks/userblocks.service';
 
 @Injectable()
 export class UserfriendshipService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private readonly userblocksService: UserblocksService) {}
 
   async create(createUserfriendshipDto: CreateUserfriendshipDto) { //creates a friendship relationship between a pair of users
 	try {
@@ -57,6 +59,29 @@ export class UserfriendshipService {
 	}
   }
 
+  async blockExists(userID: string, senderID: string) {
+    const _user = await this.prisma.user.findUnique({
+      where: {
+        id: userID,
+      },
+      include: {
+        blockedUsers: true,
+        blockedBy: true
+      }
+    });
+    for (const b of _user.blockedUsers) {
+      if (b.blockedUserId === senderID) {
+        return (true);
+      }
+    }
+    for (const b of _user.blockedBy) {
+      if (b.blockerId === senderID) {
+        return (true);
+      }
+    }
+    return (false);
+  }
+
   async findAllUF(id: string) {
 	try {
 		const userfriendships = await this.prisma.userFriendship.findMany({
@@ -65,9 +90,25 @@ export class UserfriendshipService {
 				{ userAId: id },
 				{ userBId: id }
 			  ]
+			},
+			include: {
+				userA: true,
+				userB: true
 			}
 		});
-		return userfriendships;	
+
+		const ufs: User[] = [];
+		for (const uf of userfriendships) {
+			if (uf.userA.id !== id) {
+				if (await this.blockExists(id, uf.userA.id) === false)
+					ufs.push(uf.userA);
+			}
+			if (uf.userB.id !== id) {
+				if (await this.blockExists(id, uf.userB.id) === false)
+					ufs.push(uf.userB);
+			}
+		}
+		return ufs;	
 	} catch (error) {
 		console.log(error);
 		throw new InternalServerErrorException('Something went wrong getting user friendships with specified user id');
