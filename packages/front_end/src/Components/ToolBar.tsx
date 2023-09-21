@@ -81,8 +81,7 @@ function ResponsiveAppBar() {
     gamesocket.emit("connected", {name: user?.id})
   })
 
-  console.log(useLocation())
-  if (useLocation().pathname === "/Home" || useLocation().pathname === "/Chat" || useLocation().pathname === "/Profile"){
+  if (useLocation().pathname.toLowerCase() === "/home" || useLocation().pathname.toLowerCase() === "/chat" || useLocation().pathname.toLowerCase() === "/profile"){
   return (
     <div className="toolbar">
     <AppBar sx={{ height: '64px' }}>
@@ -147,7 +146,7 @@ function ResponsiveAppBar() {
             >
               {pages.map((page) => (
                   <Link style={{textDecoration: 'none'}} to={page.link}>
-                    <MenuItem key={page.label} onClick={() => handleCloseNavMenu(page.label)}>
+                    <MenuItem key={page.label} onClick={() => handleCloseNavMenu(page.label, page.link)}>
                       <Typography textAlign="center">{page.label}</Typography>
                     </MenuItem>
                 </Link>
