@@ -18,6 +18,7 @@ const OptionBarFriends: React.FC = () => {
     const theme = useTheme();
     const createChannelcolors = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1';
     const [UserName, setUserName] = React.useState('');
+    const [viewProfile, setViewProfile] = React.useState('');
     const [Users, setUsers] = React.useState<User[]>([]);
     const [NonFriendUsers, setNonFriendUsers] = React.useState<User[]>([]);
     const {user, updateUser} = React.useContext(UserContext);
@@ -75,8 +76,8 @@ const OptionBarFriends: React.FC = () => {
       })
     })
         
-    const handleMode = (mode: string) => {
-      setMode(mode);
+    const handleMode = (option: string) => {
+      setMode(option);
       setRefresh(refresh => refresh + 1);
       setWindowIsOpen(true);
     };
@@ -86,16 +87,25 @@ const OptionBarFriends: React.FC = () => {
     })
 
     const getId = Users.find((friend: User) => {
+      if (friend.nickname === UserName)
       return friend.id;
-    })
-
+    });
+    /* Users.find((friend: User) => {
+      return friend.id;
+    }) */
     const getAvatar = Users.find((friend: User) => {
       return friend.avatar === user?.chatInUse?.chat?.picture;
     })
     
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-      if (mode === "View Profile")
+      if (mode === "View Profile" && UserName)
       {
+        const hold = Users.find((friend: User) => {
+          return friend.nickname === UserName;
+        });
+        if (hold)
+          setViewProfile(hold?.id)
+        console.log(hold?.id)
         setAnchorEl(event.currentTarget);
       }
       else
@@ -292,7 +302,7 @@ const OptionBarFriends: React.FC = () => {
       </Box>
       <Modal open={isFriendManagementWindowOpen} onClose={handleCloseWindow}>{friendHandlerWindow}</Modal>
       <Popover
-        id={id}
+        id={viewProfile}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
@@ -306,7 +316,7 @@ const OptionBarFriends: React.FC = () => {
         }}
       >
         <Box sx={{ p: 2 }}>
-          <LimitedProfile userAvatar={getAvatar?.avatar || 'default'} userId={getId?.id || 'default'} nickname={getNickname?.nickname || 'default'} />
+          <LimitedProfile avatar={getAvatar?.avatar || 'default'} userId={getId?.id || 'default'} nickname={getNickname?.nickname || 'default'} />
         </Box>
       </Popover>
     </AppBar>

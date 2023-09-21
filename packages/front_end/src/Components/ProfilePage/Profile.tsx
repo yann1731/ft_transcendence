@@ -6,16 +6,16 @@ import { useContext } from 'react';
 import SignIn from 'Components/Login/LoginPage';
 import LoginToolBar from 'Components/Login/LoginToolBar';
 import { ReadOnlyProfile } from './ProfilePage';
+import { statsProps } from '../Interfaces';
 export interface LimitedProfileProps { 
-    userId: string;
     userAvatar: string | undefined;
     nickname: string;
+    userId: string;
 }
 
 export default function DividerProfile() {
     const { user } = useContext(UserContext);
 
-    console.log(user);
 	if (!user) {
 		return (
             <div>
@@ -29,7 +29,7 @@ export default function DividerProfile() {
     return (
         <div>
             <BackgroundContainer>
-                <ResponsiveAppBar />
+            
                 <br></br>
                 <ProfileContainer />
             </BackgroundContainer>
@@ -37,10 +37,10 @@ export default function DividerProfile() {
     )
 }
 
-export function LimitedProfile({ userAvatar, userId, nickname }: LimitedProfileProps) {
+export function LimitedProfile({ userId, username, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
     return (
         <div>
-            <ReadOnlyProfile userAvatar={userAvatar} userId={userId} nickname={nickname}/>
+            <ReadOnlyProfile userId={userId} username={username} nickname={nickname} win={win} loss={loss} gamesPlayed={gamesPlayed} avatar={avatar}/>
         </div>
     )
 }

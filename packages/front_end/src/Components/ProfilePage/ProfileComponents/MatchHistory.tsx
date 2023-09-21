@@ -1,10 +1,12 @@
+
 import * as React from 'react';
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import axios from 'axios';
 import { UserContext, MatchHistoryOne, MatchHistoryTwo, MatchHistoryThree, User } from 'Contexts/userContext';
 import { useContext, useEffect } from 'react';
+import { LimitedProfileProps } from '../Profile';
 
-export default function MatchHistory() {
+export default function MatchHistory({userId}:LimitedProfileProps) {
     
     const [open, setOpen] = React.useState(false);
     const [openDialog, setOpenDialog] = React.useState<string | null>(null);
@@ -18,10 +20,10 @@ export default function MatchHistory() {
     const [winnerUsernamesThree, setWinnerUsernamesThree] = React.useState<string[]>([]);
     const [loserUsernamesThree, setLoserUsernamesThree] = React.useState<string[]>([]);
     const {user, updateUser} = useContext(UserContext);
+    const [refresh, setRefresh] = React.useState(1)
+
 
     useEffect(() => {
-        let cancelRequest = false;
-
         const fetchData = async () => {
             try {
                 const [dataOne, dataTwo, dataThree] = await Promise.all([
@@ -50,6 +52,7 @@ export default function MatchHistory() {
         fetchData();
     }, []);
     
+
     const handleClickOpen = (dialogType: string) => {
         setOpenDialog(dialogType);
         setOpen(true);
@@ -62,7 +65,7 @@ export default function MatchHistory() {
 
     const getMatchDataOne = async() => {
         try {
-            const response = await axios.get('/api/match-history/one', {headers: {
+            const response = await axios.get(`/api/match-history/one/${userId}`, {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
             }});
@@ -70,20 +73,19 @@ export default function MatchHistory() {
             const matchDataOne: MatchHistoryOne[] = response.data;
                 //setMatchDataOne(matchDataOne);
 
-                const winnerIds = matchDataOne.map(match => match.winnerId);
-                const loserIds = matchDataOne.map(match => match.loserId);
+            const winnerIds = matchDataOne.map(match => match.winnerId);
+            const loserIds = matchDataOne.map(match => match.loserId);
+            const winnerUsernamesOne: string[] = await fetchUsernames(winnerIds);
+            const loserUsernamesOne: string[] = await fetchUsernames(loserIds);
+            
+            return {
+                matchData: matchDataOne,
+                winnerUsernames: winnerUsernamesOne,
+                loserUsernames: loserUsernamesOne
+            };
 
-                const winnerUsernamesOne: string[] = await fetchUsernames(winnerIds);
-                const loserUsernamesOne: string[] = await fetchUsernames(loserIds);
-
-                return {
-                    matchData: matchDataOne,
-                    winnerUsernames: winnerUsernamesOne,
-                    loserUsernames: loserUsernamesOne
-                };
-
-                //setWinnerUsernamesOne(winnerUsernamesOne);
-                //setLoserUsernamesOne(loserUsernamesOne);
+            //setWinnerUsernamesOne(winnerUsernamesOne);
+            //setLoserUsernamesOne(loserUsernamesOne);
         } catch (error) {
             console.error("Error fetching match data:", error);
             return {
@@ -96,7 +98,7 @@ export default function MatchHistory() {
 
     const getMatchDataTwo = async() => {
         try {
-            const response = await axios.get('/api/match-history/two', {headers: {
+            const response = await axios.get(`/api/match-history/two/${userId}`, {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
             }});
@@ -130,7 +132,7 @@ export default function MatchHistory() {
 
     const getMatchDataThree = async() => {
         try {
-            const response = await axios.get('/api/match-history/three', {headers: {
+            const response = await axios.get(`/api/match-history/three/${userId}`, {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
             }});

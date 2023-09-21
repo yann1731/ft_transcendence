@@ -1,10 +1,24 @@
 import * as React from 'react';
 import { Avatar, Tooltip, IconButton, Box, Popover } from '@mui/material';
 import { LimitedProfile } from '../../ProfilePage/Profile'
-import { Message } from '../../Interfaces';
+import { Message, statsProps } from '../../Interfaces';
+import axios from 'axios';
+import { User } from 'Contexts/userContext';
 
-export default function ContactMenu({ UserAvatar, userId, nickname }: Message) {
+export default function ContactMenu({ UserAvatar, nickname }: Message) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [userData, setUserData] = React.useState<User[]>([])
+
+  React.useEffect(() => {
+    axios.get('api/user')
+      .then((response) => {
+        const userDataFromAPI: User[] = response.data;
+        setUserData(userDataFromAPI);
+      })
+      .catch((error) => {
+        console.error('Error fetching user data', error);
+      });
+  }, []);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -16,6 +30,7 @@ export default function ContactMenu({ UserAvatar, userId, nickname }: Message) {
 
   const open = Boolean(anchorEl);
   const id = open ? 'contact-options-popover' : undefined;
+  const userToDisplay = userData.find((user) => user.nickname === nickname);
 
   return (
     <React.Fragment>
@@ -32,7 +47,7 @@ export default function ContactMenu({ UserAvatar, userId, nickname }: Message) {
         </Tooltip>
       </Box>
       <Popover
-        id={id}
+        id={userToDisplay?.id}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
@@ -46,7 +61,7 @@ export default function ContactMenu({ UserAvatar, userId, nickname }: Message) {
         }}
       >
         <Box sx={{ p: 2 }}>
-          <LimitedProfile userAvatar={UserAvatar} userId={userId} nickname={nickname} />
+          {userToDisplay && <LimitedProfile userId={userToDisplay?.id} username={userToDisplay?.username} nickname={userToDisplay?.nickname} win={userToDisplay?.win} loss={userToDisplay?.loss} gamesPlayed={userToDisplay?.gamesPlayed} avatar={userToDisplay?.avatar} />}
         </Box>
       </Popover>
     </React.Fragment>

@@ -8,7 +8,7 @@ import { LimitedStats } from '../ProfilePage/ProfileComponents/UserStats';
 import axios, { AxiosResponse } from 'axios';
 import { useRouteLoaderData } from 'react-router-dom';
 import { UserContext, User } from '../../Contexts/userContext';
-import { LimitedProfileProps } from './Profile';
+import { statsProps } from '../Interfaces';
 
 export default function ProfileContainer() {
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -84,14 +84,39 @@ export default function ProfileContainer() {
 	)
 }
 
-export function ReadOnlyProfile({ userAvatar, userId, nickname }: LimitedProfileProps) {
+export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
 	const [open, setOpen] = useState(false);
  	const {user} = useContext(UserContext);
-	
+	const [userName, setUserName] = useState("")
+	const [nickName, setNickName] = useState("")
+	const [userWin, setUserWin] = useState(0)
+	const [userLoss, setUserLoss] = useState(0)
+	const [games, setGames] = useState(0)
+	const [userAvatar, setUserAvatar] = useState("")
+
+	React.useEffect(() => {
+		const fecthUser = async () => {
+			axios.get(`/api/user/${userId}`, {headers: {
+				'Authorization': user?.token,
+				'userId': user?.id
+			}}).then((response: any) => {
+				setUserName(response.data.username)
+				setNickName(response.data.nickname)
+				setUserWin(response.data.win)
+				setUserLoss(response.data.loss)
+				setGames(response.data.gamesPlayed)
+				setUserAvatar(response.data.avatar)
+			}).catch((error: any) => {
+				console.error("Could not fetch user")
+			})
+		}
+		fecthUser()
+	}, [])
+
 	return (
 	<div>
-		<Avatar alt={nickname} src={userAvatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}} />
-		<Box sx={{textAlign: 'center', mt: 1}}>Nickname: {nickname}</Box>
+		<Avatar alt={nickName} src={userAvatar} sx={{mt: 10, width: 200, height: 200, boxShadow: 10, margin: '0 auto'}} />
+		<Box sx={{textAlign: 'center', mt: 1}}>Nickname: {nickName}</Box>
 		<Box className="profileSection" sx={{
 			borderRadius: 2.5,
 			mt: 3,
@@ -99,10 +124,8 @@ export function ReadOnlyProfile({ userAvatar, userId, nickname }: LimitedProfile
 			flexDirection: "column",
 			alignItems: 'center',
 		}}>
-		<LimitedStats/>
+		<LimitedStats userId={userId} username={userName} nickname={nickName} win={userWin} loss={userLoss} gamesPlayed={games} avatar={userAvatar}/>
 		</Box>
 	</div>	
 	)
 }
-
-

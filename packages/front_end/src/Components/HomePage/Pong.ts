@@ -190,6 +190,7 @@ export default class pong extends Phaser.Scene{
 				this.powerUp = data.power
 				this.random = data.random
 
+				
 				this.starting = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, 'game starting in 3', {
 					fontFamily: 'pong',
 					fontSize: '50px',
@@ -789,6 +790,7 @@ export default class pong extends Phaser.Scene{
 	}
 				
 	create() {
+		if (this.physics.world !== null){
 		this.load.on('complete', this.all, this);
 			
 		this.menu = this.add.text(
@@ -886,6 +888,7 @@ export default class pong extends Phaser.Scene{
 				this.team2VictoryText.setVisible(false)
 			}
 		})
+	}
 	}
 
 	update() {

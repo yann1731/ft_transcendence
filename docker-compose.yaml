@@ -47,8 +47,6 @@ services:
       - REACT_APP_UID=${UID}
     volumes:
       - ./packages/front_end/src:/app/src/
-    ports:
-      - 3000:3000
 
   nginx:
     image: nginx:1.21-alpine

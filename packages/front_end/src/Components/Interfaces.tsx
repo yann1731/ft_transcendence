@@ -46,6 +46,16 @@ export interface limitedProfile {
 	avatar: string,
 }
 
+export interface statsProps {
+	userId: string,
+	username?: string,
+	nickname: string,
+	win?: number,
+	loss?: number,
+	gamesPlayed?: number,
+	avatar: string,
+}
+
 // Variables private message pour messages privés
 export interface PrivateMessage {
     id: string ;

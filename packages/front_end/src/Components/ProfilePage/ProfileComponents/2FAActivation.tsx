@@ -33,7 +33,7 @@ const Handler2FA = () => {
       updateUser(updatedUser);
       try {
         if (user.twoFaEnabled === false) {
-          window.location.assign('http://localhost:3000/Enable2Fa');
+          window.location.assign('/Enable2Fa');
           updatedUser = { ...user, twoFaEnabled: true};
           await updateUser2FA(updatedUser);
           toggleActive();

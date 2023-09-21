@@ -65,13 +65,13 @@ const Chat = () => {
     socket.on("displayFailure", (data: any) => alert(data.msg));
 
     gamesocket.on("invite", () => {
-      localStorage.setItem("host" + user?.username, "true")
-      localStorage.setItem("invite" + user?.username, "true")
+      const updatedUser: Partial<User> = {...user, host: true, isInvited: true};
+      updateUser(updatedUser)
       navigate("/home")
     })
 
-    localStorage.setItem("host" + user?.username, "false")
-    localStorage.setItem("invite" + user?.username, "false")
+    const updatedUser: Partial<User> = {...user, host: false, isInvited: false};
+    updateUser(updatedUser)
 
     return () => {
        socket.off("messageResponse");
@@ -154,7 +154,7 @@ const Chat = () => {
             timestamp: message.timestamp,
             nickname: message.nickname,
             UserAvatar: message.avatar,
-          userId: message.userId
+            userId: message.userId
           };
           setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
         }
@@ -252,7 +252,6 @@ const Chat = () => {
         <List>
         {messages.map((message: Message, index: number) => {
             const shouldAlignLeft = message.nickname === user?.nickname;
-
             return (
               <ListItem key={index}>
                 <Box sx={{ marginLeft: shouldAlignLeft ? 'auto' : '0' }}>

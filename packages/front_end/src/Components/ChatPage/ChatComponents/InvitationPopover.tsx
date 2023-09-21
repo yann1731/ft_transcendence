@@ -58,14 +58,12 @@ function InvitationPopover({ onClose, userA, userB }: any) {
 
     const createInvitation = () => {
         gameSocket.emit("invite", { userA: userA, userB: userB });
-
-        localStorage.setItem("host" + user?.username, "false")
-        localStorage.setItem("invite" + user?.username, "true")
+        const updatedUser: Partial<User> = {...user, host: false, isInvited: true};
+        updateUser(updatedUser)
         navigate("/home")
         onClose();
     }
 
-    console.log("youpi")
     return (
         <div>
             <div ref={anchorRef} id="invitation-popover-anchor">
