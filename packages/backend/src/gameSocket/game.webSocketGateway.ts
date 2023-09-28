@@ -39,12 +39,12 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 		private readonly userService: UserService) {};
 
 
-	handleConnection(client: Socket) {
+	handleConnection(client: Socket): void {
 		console.log('New client connected to gameSocket');
 		this.server.to(client.id).emit("connected");
 	}
 	 
-	handleDisconnect(client: Socket) {
+	handleDisconnect(client: Socket): void {
 		console.log('Client disconnected from gameSocket');
 
 		for (let i = 0; i < this.oneHost.length; i++)
@@ -147,13 +147,13 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	}
 
 	@SubscribeMessage("movement")
-	handleMovement(client: Socket, newpos: number) {
+	handleMovement(client: Socket, newpos: number): void {
 		const room = Array.from(client.rooms).filter(room => room !== client.id)
 		client.broadcast.to(String(room[0])).emit("movement", newpos);
 	}
 
 	@SubscribeMessage("movement2")
-	handleMovement2(client: Socket, data: any) {
+	handleMovement2(client: Socket, data: any): void {
 		const room = Array.from(client.rooms).filter(room => room !== client.id)
 		client.broadcast.to(String(room[0])).emit("movement2", data);
 	}
@@ -635,7 +635,7 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	}
 
 	@SubscribeMessage("invite")
-	handleInvitation(client: Socket, data: any) {
+	handleInvitation(client: Socket, data: any): void {
 		console.log("Handling Invitation!");
 		
 		console.log(this.users2.get(data.userA).id, this.users2.get(data.userB).id)
@@ -658,14 +658,14 @@ export class gameSocket implements OnGatewayConnection, OnGatewayDisconnect{
 	}
 
 	@SubscribeMessage("inGame")
-	async setInGame(client: Socket, data: any) {
+	async setInGame(client: Socket, data: any): Promise<void> {
 	  console.log("in in game")
 	  await this.userService.updateStatus("inGame", data.id);
 	  this.server.emit("refresh2");
 	}
   
 	@SubscribeMessage("outGame")
-	async setOutGame(client: Socket, data: any) {
+	async setOutGame(client: Socket, data: any): Promise<void> {
 	  console.log("in out")
 	  await this.userService.updateStatus("online", data.id);
 	  this.server.emit("refresh2");

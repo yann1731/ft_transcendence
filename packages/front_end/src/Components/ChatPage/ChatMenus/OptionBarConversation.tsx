@@ -9,6 +9,7 @@ import { LimitedProfile } from 'Components/ProfilePage/Profile';
 import { SocketContext } from 'Contexts/socketContext';
 import { useNavigate } from 'react-router-dom';
 import { Message } from '../../Interfaces';
+import { AxiosResponse } from 'axios';
 
 interface OptionBarConversationProps { 
   message: Message;
@@ -44,13 +45,13 @@ const OptionBarConversation: React.FC = () => {
         await axios.get(`/api/chatroomuser/chatroom/${user?.chatInUse?.chat?.id}`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }}).then((response: any) => {
+        }}).then((response: AxiosResponse) => {
           const ChatroomUsersData: ChatroomUser[] = response.data;
           setChatroomUsers(ChatroomUsersData);
           axios.get('/api/user', {headers: {
               'Authorization': user?.token,
               'userId': user?.id
-            }}).then((response: any) => {
+            }}).then((response: AxiosResponse) => {
               const UsersData: User[] = response.data;
               setUsers(UsersData);
               const tempUsersInChan: User[] = [];
@@ -71,10 +72,10 @@ const OptionBarConversation: React.FC = () => {
               });
               setUsersInCurrentChat(tempUsersInChan);
               setUsersNotInCurrentChat(tempUsersNotInChan);
-            }).catch((error: any) => {
+            }).catch((error: Error) => {
             console.error('Error fetching chatroom users', error);
         })
-      }).catch((error: any) => {
+      }).catch((error: Error) => {
         console.error('Error fetching chatroom users', error);
         })
     }
@@ -82,10 +83,10 @@ const OptionBarConversation: React.FC = () => {
       axios.get('/api/user', {headers: {
         'Authorization': user?.token,
         'userId': user?.id
-      }}).then((response: any) => {
+      }}).then((response: AxiosResponse) => {
         const UsersData: User[] = response.data;
         setUsers(UsersData);
-      }).catch((error: any) => {
+      }).catch((error: Error) => {
         console.error('Error fetching chatroom users', error);
       })
     }};
@@ -221,14 +222,14 @@ const OptionBarConversation: React.FC = () => {
         await axios.post(`/api/chatroomuser`, newChatroomuser, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }}).then((response: any) =>
+        }}).then((response: AxiosResponse) =>
         {
           console.log('User added to chatroom', response.data);
           const ChatroomUsersData: ChatroomUser = response.data;
           setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
           socket.emit("refresh", {id: newChatroomuser.userId});
           socket.emit("channelUpdate", { id: newChatroomuser.userId });
-        }).catch((error: any) => {
+        }).catch((error: Error) => {
           console.error('Error adding user to channel', error);
           alert('Error adding user to channel');
       })
@@ -246,7 +247,7 @@ const OptionBarConversation: React.FC = () => {
         axios.get(`/api/user/${chatUser.userId}`, {headers: {
           'Authorization': user?.token,
           'userId': user?.id
-        }}).then((response: any) => {
+        }}).then((response: AxiosResponse) => {
           const userData: User = response.data;
           console.log(userData.username)
         
@@ -259,16 +260,16 @@ const OptionBarConversation: React.FC = () => {
           axios.post(`/api/chatroomuser/ban/${chatUser.id}`, newChatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }}).then((response: any) => {
+          }}).then((response: AxiosResponse) => {
               console.log('User removed from channel', response.data);
               socket.emit("refresh");
               socket.emit("blocked", {id: user?.chatInUse?.chat?.name, blocked: Friend?.id})
               socket.emit("channelUpdate", { id: Friend?.id});
               socket.emit("clearOtherHistory", { otherID: Friend?.id});
-          }).catch((error: any) => {
+          }).catch((error: Error) => {
             console.error('Error occurred while removing user from channel: ', error);
           })
-        }).catch((error: any) => {
+        }).catch((error: Error) => {
           console.error('Error occurred while removing user from channel: ', error);
         })
 
@@ -286,7 +287,7 @@ const OptionBarConversation: React.FC = () => {
           await axios.delete(`/api/chatroomuser/${chatUser.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }}).then((response: any) => {
+          }}).then((response: AxiosResponse) => {
           if (response.status === 200){
             console.log('User removed from channel', response.data);
             socket.emit("channelUpdate", { id: chatUser.userId });
@@ -296,7 +297,7 @@ const OptionBarConversation: React.FC = () => {
           } else {
             console.error('Removing user from channel failed');
           }
-        }).catch((error: any) => {
+        }).catch((error: Error) => {
           console.error('Error occurred while removing user from channel: ', error);
         })
       }
@@ -316,11 +317,11 @@ const OptionBarConversation: React.FC = () => {
         await axios.patch(`/api/chatroomuser/${chatUser.id}`, newChatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }}).then((response: any) => {
+          }}).then((response: AxiosResponse) => {
             const ChatroomUsersData: ChatroomUser = response.data;
             setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
             socket.emit("refresh");
-          }).catch((error: any) => {
+          }).catch((error: Error) => {
           console.error('Error fetching chatroom users', error);
         })
       }        
@@ -343,12 +344,12 @@ const OptionBarConversation: React.FC = () => {
         await axios.patch(`/api/chatroomuser/${chatUser.id}`, chatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }}).then((response: any) => {
+          }}).then((response: AxiosResponse) => {
             const ChatroomUsersData: ChatroomUser = response.data;
             setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
             socket.emit("muteUser", {mute: chatUser});
             socket.emit("refresh")
-          }).catch((error: any) => {
+          }).catch((error: Error) => {
           console.error('Error fetching chatroom users', error);
         })
       }                
@@ -366,12 +367,12 @@ const OptionBarConversation: React.FC = () => {
         await axios.patch(`/api/chatroomuser/${chatUser.id}`, chatUser, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }}).then((response: any) => {
+          }}).then((response: AxiosResponse) => {
             const ChatroomUsersData: ChatroomUser = response.data;
             setChatroomUsers((prevChatUsers: any) => [...prevChatUsers, ChatroomUsersData]);
             socket.emit("unmuteUser", {mute: chatUser});
             socket.emit("refresh")
-          }).catch((error: any) => {
+          }).catch((error: Error) => {
           console.error('Error fetching chatroom users', error);
         })
       }                
@@ -383,7 +384,7 @@ const OptionBarConversation: React.FC = () => {
         await axios.delete(`/api/chatroom/${user?.chatInUse?.chat?.name}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }}).then((response: any) => {
+          }}).then((response: AxiosResponse) => {
             if (response.status){
               console.log('Channel deleted', response.data);
               socket.emit("delete chatroom", {chanName: user?.chatInUse?.chat?.name});
@@ -395,7 +396,7 @@ const OptionBarConversation: React.FC = () => {
             } else {
              console.error('Deleting channel failed');
             }
-          }).catch((error: any) => {
+          }).catch((error: Error) => {
             console.error('Error occurred while deleting channel: ', error);
           })
       }
@@ -404,14 +405,14 @@ const OptionBarConversation: React.FC = () => {
           await axios.delete(`/api/chatroomuser/${selfChatroomUser?.id}`, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }}).then((response: any) => {
+          }}).then((response: AxiosResponse) => {
             console.log('User removed from channel', response.data);
             const updatedUser: Partial<User> = { ...user, chatInUse: undefined };
             updateUser(updatedUser);
             socket.emit("clearHistory");
             socket.emit("getChannels", { id: user?.id});
             socket.emit("refresh");
-          }).catch((error: any) => {
+          }).catch((error: Error) => {
             console.error('Error occurred while removing user from channel: ', error);
           });
       }

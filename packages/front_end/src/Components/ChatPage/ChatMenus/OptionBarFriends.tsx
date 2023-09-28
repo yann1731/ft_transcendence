@@ -9,6 +9,7 @@ import { LimitedProfile } from 'Components/ProfilePage/Profile';
 import { PrivateMessage } from 'Components/Interfaces';
 import { SocketContext } from 'Contexts/socketContext';
 import { useContext } from 'react';
+import { AxiosResponse } from 'axios';
 
 const OptionBarFriends: React.FC = () => {
     const settings = ['Add Friend', 'View Profile'];
@@ -33,7 +34,7 @@ const OptionBarFriends: React.FC = () => {
       axios.get('/api/user', {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }}).then((response: any) => {
+          }}).then((response: AxiosResponse) => {
             const UsersData: User[] = response.data;
             let otherUsers: User[] = [];
             UsersData.forEach((users: User) => {
@@ -46,7 +47,7 @@ const OptionBarFriends: React.FC = () => {
             axios.get(`/api/userfriendship/user/${user?.id}`, {headers: {
                 'Authorization': user?.token,
                 'userId': user?.id
-              }}).then((response: any) => {
+              }}).then((response: AxiosResponse) => {
                 const FriendshipData: UserFriendship[] = response.data;
                 const tempIsNotFriend: User[] = [];
                 otherUsers.forEach((users: User) => {
@@ -59,11 +60,11 @@ const OptionBarFriends: React.FC = () => {
                   }
                 });
                 setNonFriendUsers(tempIsNotFriend);
-              }).catch((error: any) => {
+              }).catch((error: Error) => {
               alert(error)
               console.error('Error fetching friendships', error);
             });
-          }).catch((error: any) => {
+          }).catch((error: Error) => {
           console.error('Error fetching users', error);
           });
       }
@@ -148,7 +149,7 @@ const OptionBarFriends: React.FC = () => {
           await axios.post(`/api/userfriendship`, {userAId: user?.id, userBId: friendToModify?.id}, {headers: {
             'Authorization': user?.token,
             'userId': user?.id
-          }}).then((response: any) => {
+          }}).then((response: AxiosResponse) => {
           console.log('Friend successfuly added', response.data);
           const username = friendToModify?.username === undefined ? "pouet" : friendToModify?.username;
           const newChannel: Chatroom = {

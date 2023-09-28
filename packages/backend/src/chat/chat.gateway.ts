@@ -11,11 +11,20 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 import { CreateChatroomMessageDto } from 'src/chatroommessage/dto/createmessage.dto';
 import { CreatePrivateMessageDto } from 'src/privatemessage/dto/createprivatemessage.dto';
 import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, BadRequestException } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { ChatroomUser, User } from '@prisma/client';
 import { UserblocksService } from 'src/userblocks/userblocks.service';
 import { UserfriendshipService } from 'src/userfriendship/userfriendship.service';
 import { ChatroomService } from 'src/chatroom/chatroom.service';
 import { subscribe } from 'diagnostics_channel';
+
+interface userData {
+  id: string,
+}
+
+interface channelData {
+  channelID: string,
+  name: string,
+}
 
 @WebSocketGateway({ cors: true, namespace: 'chatsocket' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -34,7 +43,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  findIDBySocket(socketID: string) {
+  findIDBySocket(socketID: string): string {
     for (let [key, value] of this.users.entries()) {
       if (value === socketID) {
         return (key);
@@ -45,12 +54,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("refused")
-  handleRefused(client: Socket) {
+  handleRefused(client: Socket): void {
     this.server.to(client.id).emit("refused")
   }
 
   @SubscribeMessage("inviteToPlay")
-  async inviteToPlay(client: Socket, data: any) {
+  async inviteToPlay(client: Socket, data: any): Promise<void> {
     // this socket call invites another user to play pong
     // it receives the client making the request
     const _inviter = await this.userService.findBySocketID(client.id);
@@ -78,14 +87,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("connectMe")
-  async makeConnection(client: Socket, data: any) {
+  async makeConnection(client: Socket, data: userData): Promise<void> {
     console.log("Connecting: " + client.id + " " + data.id);
     await this.userService.updateSocketID(client.id, data.id);
     await this.userService.updateStatus("online", data.id);
     this.server.emit("reloadFriends");
   }
 
-  async handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket): Promise<void> {
     console.log("Handling disconnect for: " + client.id);
     const user = await this.userService.findBySocketID(client.id);
     if (user) {
@@ -97,7 +106,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
   @SubscribeMessage("getFriends")
-  async sendFriends(client: Socket, data: any) {
+  async sendFriends(client: Socket, data: userData): Promise<void> {
     if (data.id === undefined) {
       console.log("ID is undefined when fetching friends...");
       return ;
@@ -111,7 +120,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("getChannels")
-  async sendChannels(client: Socket, data: any) {
+  async sendChannels(client: Socket, data: any): Promise<void> {
     try {
       const channels = await this.chatroomUserService.findAllChatroomsByUserID(data.id);
       console.log("Channels: " + channels);
@@ -122,7 +131,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("channelEdit")
-  async editChannel(client: Socket, data: any) {
+  async editChannel(client: Socket, data: channelData): Promise<void> {
     console.log("EditChannelID: " + data.channelID);
     // console.log();
     const channelID = data.channelID;
@@ -136,40 +145,40 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("friendUpdate")
-  async updateFriendList(client: Socket, data: any) {
+  async updateFriendList(client: Socket, data: userData): Promise<void> {
     const _user = await this.userService.findOne(data.id);
     this.server.to(_user.socketID).emit("reloadFriends");
   }
 
   @SubscribeMessage("channelUpdate")
-  async updateChannelList(client: Socket, data: any) {
-    console.log("Updating channels for: " + data.id);
-    const _user = await this.userService.findOne(data.id);
+  async updateChannelList(client: Socket, data: channelData): Promise<void> {
+    console.log("Updating channels for: " + data.channelID);
+    const _user = await this.userService.findOne(data.channelID);
     this.server.to(_user.socketID).emit("reloadChannels");
   }
 
   @SubscribeMessage("deleteChannel")
-  async deleteChannel(client: Socket, data: any) {
+  async deleteChannel(client: Socket, data: channelData): Promise<void> {
     const channelID = data.channelID;
-    const channel = await this.chatroomService.findOne(channelID);
+    // const channel = await this.chatroomService.findOne(channelID);
+    const channel = await this.chatroomService.findByName(data.name);
     for (const u of channel.users) {
-      if (u.user.socketID !== client.id) {
+      // if (u.user.socketID !== client.id) {
         this.server.to(u.user.socketID).emit("clearOtherHistory", { chat: channel.name});
         this.server.to(u.user.socketID).emit("reloadChannels");
-      }
+      // }
     }
-    this.server.to(client.id).emit("clearHistory");
   }
 
   @SubscribeMessage("getChatroomUsers")
-  async getChatroomUsers(client: Socket, data: any) {
+  async getChatroomUsers(client: Socket, data: channelData): Promise<ChatroomUser[]> {
     console.log("Getting chatroom users!");
     const _chatUsers = await this.chatroomUserService.findAllChatroomUsersByChatroomId(data.channelID);
     return _chatUsers;
   }
 
   @SubscribeMessage("sendPrivateMessage")
-  async SendPrivateMessage(client: Socket, createPrivateMessageDto: CreatePrivateMessageDto) {
+  async SendPrivateMessage(client: Socket, createPrivateMessageDto: CreatePrivateMessageDto): Promise<void> {
     const _msg = await this.privateMessageService.createPrivateMessage(createPrivateMessageDto);
     const _user = await this.userService.findOne(createPrivateMessageDto.senderId);
     const _recipient = await this.userService.findUsername(createPrivateMessageDto.recipientId);
@@ -190,12 +199,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("clearHistory")
-  async clearHistory(client: Socket) {
+  async clearHistory(client: Socket): Promise<void> {
     this.server.to(client.id).emit("clearHistory");
   }
 
   @SubscribeMessage("clearOtherHistory")
-  async clearOtherHistory(client: Socket, data: any) {
+  async clearOtherHistory(client: Socket, data: any): Promise<void> {
     const otherUser = await this.userService.findOne(data.otherID);
     this.server.to(otherUser.socketID).emit("clearHistory");
   }
@@ -207,7 +216,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("sendMessage")
-  async SendChatMessage(client: Socket, createChatroomMessageDto: CreateChatroomMessageDto) {
+  async SendChatMessage(client: Socket, createChatroomMessageDto: CreateChatroomMessageDto): Promise<void> {
     console.log("Attempting to send message.");
     const _chatUsers = await this.chatroomUserService.findAllChatroomUsersByChatroomId(createChatroomMessageDto.chatroomId);
     const _chatUser = _chatUsers.find(element => element.userId === createChatroomMessageDto.senderId);
@@ -242,7 +251,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  async blockExists(userID: string, senderID: string) {
+  async blockExists(userID: string, senderID: string): Promise<boolean> {
     const _user = await this.prisma.user.findUnique({
       where: {
         id: userID,
@@ -266,18 +275,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("muteUser")
-  async muteUser(client: Socket, data: any) {
+  async muteUser(client: Socket, data: any): Promise<void> {
     console.log(data);
     const _updatedUser = await this.chatroomUserService.updateMuteStatus(data.mute.id, true);
   }
 
   @SubscribeMessage("unmuteUser")
-  async unmuteUser(client: Socket, data: any) {
+  async unmuteUser(client: Socket, data: any): Promise<void> {
     const _updatedUser = await this.chatroomUserService.updateMuteStatus(data.mute.id, false);
   }
 
   @SubscribeMessage("getHistory")
-  async getChatHistory(client: Socket, createChatroomMessageDto: CreateChatroomMessageDto) {
+  async getChatHistory(client: Socket, createChatroomMessageDto: CreateChatroomMessageDto): Promise<void> {
     const channelID: string = createChatroomMessageDto.chatroomId;
     console.log("Getting Chat History for: " + channelID);
     const userID: string = createChatroomMessageDto.senderId;
@@ -313,7 +322,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("getPrivateHistory")
-  async getPrivateHistory(client: Socket, createPrivateMessageDto: CreatePrivateMessageDto) {
+  async getPrivateHistory(client: Socket, createPrivateMessageDto: CreatePrivateMessageDto): Promise<void> {
     const _recipient = await this.userService.findUsername(createPrivateMessageDto.recipientId);
     const _user = await this.userService.findOne(createPrivateMessageDto.senderId);
     // console.log("" + _user.socketID);
@@ -341,18 +350,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("deleteHistory")
-  async deleteHistory(client: Socket, data: any) {
+  async deleteHistory(client: Socket, data: any): Promise<void> {
     this.server.emit("clearOtherHistory", { chat: data.channel});
   }
 
   @SubscribeMessage("inGame")
-  async setInGame(client: Socket, data: any) {
+  async setInGame(client: Socket, data: any): Promise<void> {
     await this.userService.updateStatus("inGame", data.username);
     this.server.emit("refresh");
   }
 
   @SubscribeMessage("outGame")
-  async setOutGame(client: Socket, data: any) {
+  async setOutGame(client: Socket, data: any): Promise<void> {
     await this.userService.updateStatus("online", data.username);
     this.server.emit("refresh");
   }
@@ -423,7 +432,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("blocked")
-  async handleBlocked(client: Socket, data: any){
+  async handleBlocked(client: Socket, data: any): Promise<void> {
     const friends = await this.userfriendshipService.findAllUF(data.blocked);
     this.server.to(this.users.get(data.blocked)).emit("blocked", data.id);
     this.server.to(this.users.get(data.blocked)).emit("clearOtherHistory", { chat: data.id});
@@ -433,10 +442,5 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("user left")
   handleLeaving(client: Socket){
     client.broadcast.emit("user left");
-  }
-
-  @SubscribeMessage("allo")
-  handleAllo(client: Socket){
-    console.log("marche salope")
   }
 }

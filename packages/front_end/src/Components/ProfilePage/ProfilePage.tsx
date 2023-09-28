@@ -99,14 +99,14 @@ export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPl
 			axios.get(`/api/user/${userId}`, {headers: {
 				'Authorization': user?.token,
 				'userId': user?.id
-			}}).then((response: any) => {
+			}}).then((response: AxiosResponse) => {
 				setUserName(response.data.username)
 				setNickName(response.data.nickname)
 				setUserWin(response.data.win)
 				setUserLoss(response.data.loss)
 				setGames(response.data.gamesPlayed)
 				setUserAvatar(response.data.avatar)
-			}).catch((error: any) => {
+			}).catch((error: Error) => {
 				console.error("Could not fetch user")
 			})
 		}

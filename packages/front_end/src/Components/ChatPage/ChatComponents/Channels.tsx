@@ -36,6 +36,11 @@ interface MyChannelsProps {
         socket.off("getChannels");
       }
     }, []);
+
+    socket.on("reloadChannels", () => {
+      console.log("Reloading channels");
+      socket.emit("getChannels", { id: user?.id });
+    });
     
     const setHistory = (id: string | undefined, chat: any) => {
       if (id === undefined) {

@@ -182,7 +182,6 @@ const Chat = () => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      console.log("My Socket is: " + socket.id);
       if (user?.username) {
         const messageInput = event.target as HTMLInputElement;
         const messageText = messageInput.value.trim();
