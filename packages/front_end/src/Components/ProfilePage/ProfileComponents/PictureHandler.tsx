@@ -3,7 +3,8 @@ import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/
 import MenuItem from "@mui/material/MenuItem";
 import { useContext } from "react";
 import { UserContext } from "Contexts/userContext";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
+import myAxios from "Components/axiosInstance";
 
 const PictureHandler: React.FC = () => {
   const {user, updateUser} = useContext(UserContext);
@@ -38,14 +39,12 @@ const PictureHandler: React.FC = () => {
           const updatedUser = { ...user, avatar: imageDataUrl };
           updateUser(updatedUser);
           try {
-            const response: AxiosResponse = await axios.patch('/api/user/' + user?.id,
+            const response: AxiosResponse = await myAxios.patch(`/api/user/${user?.id}`,
               updatedUser, {headers: {
-                'Authorization': user?.token,
+                'Authorization': sessionStorage.getItem("at"),
                 'userId': user?.id
               }});
-            if (response.status === 200) {
-              console.log('Image uploaded successfully!');
-            } else {
+            if (response.status === 200) {} else {
               console.error('Image upload failed.');
             }
           } catch (error) {

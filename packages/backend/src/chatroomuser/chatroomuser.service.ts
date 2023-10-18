@@ -23,7 +23,7 @@ export class ChatroomuserService {
 		chatroom.bannedUsers.forEach((user: string) => {
 			if (user === createChatroomuserDto.userName)
 				throw new BadRequestException("User is banned")
-		}) 
+		})
 		try {
 			const chatroomuser = await this.prisma.chatroomUser.create({data: {
 			user: {
@@ -42,7 +42,7 @@ export class ChatroomuserService {
 				throw new BadRequestException('Could not create chatroom user');
 			return chatroomuser;
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 			throw error;
 		}
 	} catch (error) {
@@ -82,7 +82,7 @@ export class ChatroomuserService {
 		}
 		return newUser;
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
@@ -91,7 +91,7 @@ export class ChatroomuserService {
 	try {
 		return await this.prisma.chatroomUser.findMany();
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
@@ -105,7 +105,7 @@ export class ChatroomuserService {
 			throw new BadRequestException('Could not find specified chatroom user');
 		return chatroomuser;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
@@ -124,7 +124,7 @@ export class ChatroomuserService {
 			throw new BadRequestException('Failed to find users with that chatroom id');
 		return chatroomusers;
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
@@ -139,7 +139,7 @@ export class ChatroomuserService {
 		}
 		return chatroomusers;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
@@ -164,7 +164,7 @@ export class ChatroomuserService {
 		})
 		return (chatrooms);
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 	}
   }
 
@@ -182,7 +182,7 @@ export class ChatroomuserService {
 			throw new BadRequestException('Could not update specified chatroom user');
 		return chatroomuser;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
@@ -204,13 +204,12 @@ export class ChatroomuserService {
 				muteUntil: _user.muteUntil
 			},
 		});
-		console.log(_updatedChatUser);
 		if (!_updatedChatUser) {
 			throw new BadRequestException("Could not update user status");
 		}
 		return _updatedChatUser;
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw (error);
 	}
   }
@@ -224,7 +223,7 @@ export class ChatroomuserService {
 			throw new BadRequestException('Could not remove specified chatroom user');
 		return chatroomuser;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }

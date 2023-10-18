@@ -7,7 +7,6 @@ import { useContext } from "react";
 import { UserContext } from "Contexts/userContext";
 import MatchHistory from './MatchHistory';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { SocketContext } from 'Contexts/socketContext';
 import { statsProps } from '../../Interfaces'
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -62,8 +61,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default MyStats;
 
-export function LimitedStats({ userId, username, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
-    const { user } = useContext(UserContext);
+export function LimitedStats({ userId, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
     let ratio: number;
     if (gamesPlayed && win)
         ratio = gamesPlayed > 0 ? (win / gamesPlayed) * 100 : 0;
@@ -71,7 +69,6 @@ export function LimitedStats({ userId, username, nickname, win, loss, gamesPlaye
         ratio = 0;
     const winRatio = ratio
     const [open, setOpen] = React.useState(false);
-    const socket = useContext(SocketContext);
 
     const handleClickOpen = () => {
         setOpen(true);

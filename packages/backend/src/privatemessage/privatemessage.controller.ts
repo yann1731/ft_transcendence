@@ -5,12 +5,16 @@ import { ApiTags } from '@nestjs/swagger';
 
 @Controller('api/privatemessage')
 @ApiTags('private messages')
-// @UseGuards(TokenGuard)
+@UseGuards(TokenGuard)
 export class PrivatemessageController {
   constructor(private readonly privatemessageService: PrivatemessageService) {}
 
   @Get(':senderId/:recipientId') //returns all private messages between 2 users
   findAll(@Param() params: {senderId: string, recipientId: string}) {
-    return this.privatemessageService.findAll(params.senderId, params.recipientId);
+    try {
+      return this.privatemessageService.findAll(params.senderId, params.recipientId);
+    } catch (error) {
+      throw error;
+    }
   }
 }

@@ -1,108 +1,103 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotAcceptableException, UnauthorizedException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import axios, { Axios, AxiosResponse } from "axios";
 import * as speakeasy from 'speakeasy';
+import { JwtService } from "@nestjs/jwt"
+import { User } from "@prisma/client";
 
-//POST request to the https://api.intra.42.fr/oauth/token
+
 @Injectable({})
 export class AuthService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
-    async oauthCallback(code: string): Promise<AxiosResponse['data']> { //calls 42 api to exchange code for token
-        const uid: string =  process.env.UID;
-        const secret: string = process.env.SECRET;
-        const port: string = process.env.FRONTEND_PORT
-        const ip: string = process.env.IP
-           
-
-        try {
-            const response = await axios.post('https://api.intra.42.fr/oauth/token', {
-                grant_type: 'authorization_code',
-                client_id: uid,
-                client_secret: secret,
-                redirect_uri: "http://" + ip + ":" + port + "/wait", 
-                code: code
-            });
-
-            return response.data;
-        } catch (error) {
-            throw new BadRequestException('Failed getting token', error);
-        }
+    async generateToken(id: string) {
+        const access = await this.jwtService.signAsync({
+            sub: id,
+        }, 
+        {
+            secret: process.env.SECRET,
+            expiresIn: 100
+        })
+    
+        const refresh = await this.jwtService.signAsync({
+            sub: id,
+        }, 
+        {
+            secret: process.env.SECRET,
+            expiresIn: 43200
+        })
+    
+        return {access, refresh}
     }
 
-    async refreshCallback(id: string): Promise<AxiosResponse['data']> { //calls 42 api to exchange refresh_token for new token
-        const uid: string =  process.env.UID;
-        const secret: string = process.env.SECRET;
-        const port: string = process.env.FRONTEND_PORT
-        const ip: string = process.env.IP
 
-        let response: AxiosResponse;
-        let user
+    async refreshCallback(id: string, token: string) {
+        let user: User;
+
         try {
-            user = await this.prisma.user.findUnique({where: { id }});
+            user = await this.prisma.user.findUnique({where: {id: id}})
         } catch (error) {
             throw new BadRequestException('Could not find specified user');
         }
-        try {
-            response = await axios.post('https://api.intra.42.fr/oauth/token', {
-                grant_type: 'refresh_token',
-                client_id: uid,
-                client_secret: secret,
-                redirect_uri: "http://" + ip + ":" + port + "/wait",
-                refresh_token: user.refresh_token
-            });
-        } catch (error) {
-            throw new BadRequestException('Failed to refresh token');
-        }
-        try {
-            const update = await this.prisma.user.update({where: { id },
-                data: {
-                    token: response.data.token,
-                    refresh_token: response.data.refresh_token,
-                    token_created_at: response.data.created_at,
-                    token_expires_in: response.data.expires_in,
-                    token_expires_at: response.data.created_at + response.data.expires_in
-                }});
-        } catch (error) {
-            throw new InternalServerErrorException('Could not update specified user with new token');
-        }
-        return response.data;
+        if (user.refresh_token !== token)
+            throw new BadRequestException("Tokens do not match")
+        
+        const payload = await this.jwtService.verifyAsync(token, { secret: process.env.SECRET })
+        if (Date.now() / 1000 >= payload.exp)
+            throw new UnauthorizedException("Refresh token is not valid anymore");
+        
+        const tokens = await this.generateToken(id);
+
+        return tokens
     }
     
+    secrets: Map<string, string> = new Map<string, string>();
+
     async enable2Fa(userid: string): Promise<String> { //enbles 2fa
         let secret: any;
         try {
             secret = speakeasy.generateSecret({length: 20});
-            const storeSecret = await this.prisma.user.update({ where: { id: userid, },
-                data: {
-                    twoFaSecret: secret.base32,
-                    twoFaEnabled: true
-            }});
+            this.secrets.set(userid, secret.base32);
         } catch (error) {
             throw new InternalServerErrorException('Could not generate QR code');
         }
         return secret.otpauth_url;
     }
 
-    async disable2Fa(userid: string): Promise<void> { //disables 2fa
+    async firstValidation(userid: string, otp:string) {
         try {
-            const user = await this.prisma.user.update({where: { id: userid },
+            const verified = speakeasy.totp.verify({
+                secret: this.secrets.get(userid),
+                encoding: 'base32',
+                token: otp
+            })
+            if (!verified) {
+                throw new BadRequestException('Invalid otp')
+            }
+            await this.prisma.user.update({
+                where: {
+                    id: userid
+                },
                 data: {
-                    twoFaSecret: null,
-                    twoFaEnabled: false
-                }});
-        }
-        catch (error) {
-            throw new InternalServerErrorException('Could not disable two factor authentication');
+                    twoFaEnabled: true,
+                    twoFaSecret: this.secrets.get(userid)
+                }
+            })
+            this.secrets.delete(userid);
+            return verified
+        } catch (error){
+            throw error;
         }
     }
 
     async verifyOtp(userid: string, otp: string): Promise<any> { //verifies otp
         let user: any;
         try {
+            
             user = await this.prisma.user.findUnique({where: { id: userid }});
+            
         } catch (error) {
-            throw new InternalServerErrorException('Could not find specified user');
+            
+            throw new BadRequestException('Could not find specified user');
         }
         try {
             const verified = speakeasy.totp.verify({ //verifies otp
@@ -110,11 +105,15 @@ export class AuthService {
                 encoding: 'base32',
                 token: otp
             });
-            if (!verified)
-                throw new InternalServerErrorException('Invalid otp')
+            
+            if (!verified) {
+                
+                throw new InternalServerErrorException('Invalid otp');
+            }
             return verified;
         }
         catch (error) {
+            
             throw error;
         }
     }

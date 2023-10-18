@@ -1,50 +1,38 @@
 import React from 'react';
-import axios from 'axios';
 import { Box, Button } from "@mui/material";
 import { SocketContext } from 'Contexts/socketContext';
-import { gameSocketContext } from 'Contexts/gameSocketContext';
 import { useContext } from "react";
 import Popover from '@mui/material/Popover';
 import { useNavigate } from 'react-router-dom';
 import { User, UserContext } from 'Contexts/userContext';
 import { useEffect, useRef, useState } from 'react';
+import myAxios from 'Components/axiosInstance';
+import toggleShowInvitation  from '../ChatBoxes/ChatBox';
 
-function InvitationPopover({ onClose, userA, userB }: any) {
+function InvitationPopover({ onClose, userA, userB}: any) {
     const anchorRef = useRef<HTMLDivElement | null>(null);
     const socket = useContext(SocketContext);
-    const gameSocket = useContext(gameSocketContext);
+    const [ game, setGame ] = useState("invited")
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     }
     const handleClose = () => {
         setAnchorEl(null);
-        socket.emit("refused");
+        socket.emit("refused", userB);
+        onClose(false);
     }
-    const open = Boolean(anchorEl);
-    const id = open ? 'invitation-popover' : undefined;
     const navigate = useNavigate();
-    const {user, updateUser} = useContext(UserContext)
-    const [userAName, setUserAName] = useState("")
+    const { user } = useContext(UserContext)
     const [userBName, setUserBName] = useState("")
 
     useEffect(() => {
         if (anchorRef.current) {
             setAnchorEl(anchorRef.current);
         }
-
         const fetchUsers = async () => {
-              await axios.get(`/api/user/${userA}`, {headers: {
-                'Authorization': user?.token,
-                'userId': user?.id
-                 }}).then((response: any) => {
-                setUserAName(response.data.nickname)
-                }).catch((error: any) => {
-              console.error('Error fetching users', error);
-              })
-
-              await axios.get(`/api/user/${userB}`, {headers: {
-                'Authorization': user?.token,
+              await myAxios.get(`/api/user/${userB}`, {headers: {
+                'Authorization': sessionStorage.getItem("at"),
                 'userId': user?.id
               }}).then((response: any) => {
                 setUserBName(response.data.nickname)
@@ -57,11 +45,9 @@ function InvitationPopover({ onClose, userA, userB }: any) {
 
 
     const createInvitation = () => {
-        gameSocket.emit("invite", { userA: userA, userB: userB });
-        const updatedUser: Partial<User> = {...user, host: false, isInvited: true};
-        updateUser(updatedUser)
-        navigate("/home")
+        socket.emit("invite", { userA: userA, userB: userB });
         onClose();
+        navigate("/home", {state: { game }})
     }
 
     return (

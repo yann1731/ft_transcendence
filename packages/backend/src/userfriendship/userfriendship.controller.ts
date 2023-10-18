@@ -6,32 +6,52 @@ import { ApiTags } from '@nestjs/swagger';
 
 @Controller('api/userfriendship')
 @ApiTags('userfriendship')
-// @UseGuards(TokenGuard)
+@UseGuards(TokenGuard)
 export class UserfriendshipController {
   constructor(private readonly userfriendshipService: UserfriendshipService) {}
 
   @Post() //creates new userfriendship using the information contained within createUserfriendshipDto
   create(@Body() createUserfriendshipDto: CreateUserfriendshipDto) {
-    return this.userfriendshipService.create(createUserfriendshipDto);
+    try {
+      return this.userfriendshipService.create(createUserfriendshipDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get() //returns all userfriendship relations
   findAll() {
-    return this.userfriendshipService.findAll();
+    try {
+      return this.userfriendshipService.findAll();
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get('user/:id')
   findAllUF(@Param('id') id: string) { //returns all userfriendships associated with id
-    return this.userfriendshipService.findAllUF(id);
+    try {
+      return this.userfriendshipService.findAllUF(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get(':id') //returns single userfriendship relation by id
   findOne(@Param('id') id: string) {
-    return this.userfriendshipService.findOne(id);
+    try {
+      return this.userfriendshipService.findOne(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Delete(':id') //delete single userfriendship relation by id
   remove(@Param('id') id: string) {
-    return this.userfriendshipService.remove(id);
+    try {
+      return this.userfriendshipService.remove(id);
+    } catch (error) {
+      throw error;
+    }
   }
 }

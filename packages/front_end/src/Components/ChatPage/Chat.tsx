@@ -1,5 +1,4 @@
 import React, { useContext, useEffect } from 'react';
-import ResponsiveAppBar from '../ToolBar';
 import BackgroundContainer from '../../Background';
 import OptionBarFriends from './ChatMenus/OptionBarFriends';
 import FriendBox from './ChatBoxes/FriendBox';
@@ -18,20 +17,26 @@ function ChatPage() {
 	const socket = useContext(SocketContext);
 
 	useEffect(() => {
-		socket.emit("connectMe", { id: user?.id});
-	}, []);
+			socket.emit("connectMe", { 
+				id: sessionStorage.getItem('id'),
+				at: sessionStorage.getItem('at')});
+		return () => {
+			socket.offAny()
+		}
+	}, [user]);
 
 
-	if (!user) {
+	    if (user === null) {
 		return (
-			<div>
-            	<BackgroundContainer>
-                	<LoginToolBar />
+            <div>
+                <BackgroundContainer>
+                    <LoginToolBar />
                     <SignIn />
                 </BackgroundContainer>
             </div>
-		)
-	}
+        )
+		}
+	
 	return (
 	  	<React.Fragment>
 				<CssBaseline />
@@ -46,7 +51,7 @@ function ChatPage() {
 							</div>
 							<div className="conversationStyle">
 								<OptionBarConversation />
-								<Chat />
+								<Chat/>
 							</div>
 						</div>
 				  	</div>

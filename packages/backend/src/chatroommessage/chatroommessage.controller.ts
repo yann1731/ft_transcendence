@@ -3,12 +3,16 @@ import { ChatroommessageService } from './chatroommessage.service';
 import { TokenGuard } from 'src/guard/token.guard';
 
 @Controller('api/chatroommessage')
-@UseGuards(TokenGuard)
+//@UseGuards(TokenGuard)
 export class ChatroommessageController {
   constructor(private readonly chatroommessageService: ChatroommessageService) {}
   
   @Get(':chatroomId')
   findAll(@Param('chatroomId') chatroomId: string) {
-    return this.chatroommessageService.findAll(chatroomId);
+    try {
+      return this.chatroommessageService.findAll(chatroomId);
+    } catch (error) {
+      throw error;
+    }
   }
 }

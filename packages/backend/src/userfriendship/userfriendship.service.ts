@@ -3,10 +3,11 @@ import { CreateUserfriendshipDto } from './dto/create-userfriendship.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { UserblocksService } from 'src/userblocks/userblocks.service';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class UserfriendshipService {
-  constructor(private prisma: PrismaService, private readonly userblocksService: UserblocksService) {}
+  constructor(private prisma: PrismaService, private readonly userblocksService: UserblocksService, private userService: UserService) {}
 
   async create(createUserfriendshipDto: CreateUserfriendshipDto) { //creates a friendship relationship between a pair of users
 	try {
@@ -45,7 +46,7 @@ export class UserfriendshipService {
 			throw new BadRequestException('Could not create user friendship');
 		return userfriendship;
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
@@ -54,7 +55,7 @@ export class UserfriendshipService {
 	try {
 		return await this.prisma.userFriendship.findMany();	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw new InternalServerErrorException('Something went wrong getting user friendships');
 	}
   }
@@ -108,12 +109,17 @@ export class UserfriendshipService {
 					ufs.push(uf.userB);
 			}
 		}
-		return ufs;	
+		const users: any[] = [];
+		for (const user of ufs){
+			users.push(await this.userService.findOne(user.id))
+		}	
+		return users
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw new InternalServerErrorException('Something went wrong getting user friendships with specified user id');
 	}
   }
+
 
   async findOne(id: string) { //returns a friendship pair by id
 	try {
@@ -122,7 +128,7 @@ export class UserfriendshipService {
 			throw new BadRequestException;
 		return userfriendship;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
@@ -134,7 +140,7 @@ export class UserfriendshipService {
 			throw new BadRequestException('Could not delete specified user');
 		return deluf;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }

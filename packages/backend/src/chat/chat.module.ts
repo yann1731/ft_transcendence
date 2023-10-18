@@ -10,9 +10,10 @@ import { ChatroomuserModule } from 'src/chatroomuser/chatroomuser.module';
 import { UserblocksModule } from 'src/userblocks/userblocks.module';
 import { ChatroomModule } from 'src/chatroom/chatroom.module';
 import { UserfriendshipModule } from 'src/userfriendship/userfriendship.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   providers: [ChatGateway, ChatService],
-  imports: [PrismaModule, ChatroommessageModule, UserModule, PrivatemessageModule, ChatroomuserModule, UserblocksModule, ChatroomModule, UserfriendshipModule],
+  imports: [PrismaModule, ChatroommessageModule, UserModule, PrivatemessageModule, ChatroomuserModule, UserblocksModule, ChatroomModule, UserfriendshipModule, JwtModule],
 })
 export class ChatModule {}

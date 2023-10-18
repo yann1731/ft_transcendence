@@ -24,7 +24,7 @@ export class UserblocksService {
 			throw new BadRequestException("Could not create user block");
 		return userblocks; 
 	} catch (error) {
-	  console.log(error);
+	  console.error(error);
 	  throw error;
 	}
   }
@@ -33,7 +33,7 @@ export class UserblocksService {
 	try {
 		return await this.prisma.userBlocks.findMany();
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw new InternalServerErrorException(error);
 	}
   }
@@ -47,7 +47,7 @@ export class UserblocksService {
 			throw new BadRequestException('Could not find specified user block');
 		return userblocks;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
@@ -61,7 +61,7 @@ export class UserblocksService {
 			throw new BadRequestException('Could not delete specified user block');
 		return userblocks;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }

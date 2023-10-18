@@ -1,10 +1,11 @@
 import { Typography, Container } from "@mui/material/";
 import PokeBallIcon from '@mui/icons-material/CatchingPokemonTwoTone'
 import { keyframes } from "@emotion/react";
-import axios from 'axios';
+import axios from 'axios'
 import { User, UserContext } from "Contexts/userContext";
 import { useContext, useEffect } from "react";
-import { gameSocketContext } from "../../Contexts/gameSocketContext";
+import Cookies from 'universal-cookie'
+import { useNavigate } from "react-router-dom";
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
@@ -13,7 +14,8 @@ const spin = keyframes`
 
 export default function GetToken() {
   const {user, setUser, updateUser} = useContext(UserContext);
-  const socket = useContext(gameSocketContext);
+  const cookies = new Cookies()
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -21,31 +23,23 @@ export default function GetToken() {
     let authorizationCode = urlParams.get("code");
     const fetchTokenAndUser = async () => {
       try {
-        const response = await axios.post("/api/oauth", {
+        const newUser = await axios.post("/api/user", {
           code: authorizationCode,
         });
-        console.log("here's the access token");
-        console.log(response);
-        
-        const newUser = await axios.post("/api/user", {
-          code: response.data.access_token,
-          refresh_token: response.data.refresh_token,
-          created_at: response.data.created_at,
-          expires_in: response.data.expires_in
-        });
-        console.log(newUser);
+        sessionStorage.setItem("id", newUser.data.id)
+        sessionStorage.setItem("at", newUser.data.token)
+        cookies.set("rt", newUser.data.refresh_token)
         setUser(newUser.data);
         const updatedUser: Partial<User> = {...user, host: false, isInvited: false, button: true};
         updateUser(updatedUser)
         if (newUser.data.twoFaEnabled === true) {
-          window.location.assign("/otp"); //changetoip
+          navigate("/otp"); //changetoip
         }
         else
-          window.location.assign("/home"); //changetoip
+          navigate("/home"); //changetoip
       } catch (error) {
-        alert('Something went wrong, please try again later');
         console.error(error);
-        window.location.assign("/"); //changetoip
+        navigate("/"); //changetoip
       }
     };
 

@@ -6,27 +6,43 @@ import { ApiTags } from '@nestjs/swagger';
 
 @Controller('api/userblocks')
 @ApiTags('userblocks')
-// @UseGuards(TokenGuard)
+@UseGuards(TokenGuard)
 export class UserblocksController {
   constructor(private readonly userblocksService: UserblocksService) {}
 
   @Post() //create userblock relation based on the infos within createUserblockDto
   create(@Body() createUserblockDto: CreateUserblockDto) {
-    return this.userblocksService.create(createUserblockDto);
+    try {
+      return this.userblocksService.create(createUserblockDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get() //returns all userblockrelations
   findAll() {
-    return this.userblocksService.findAll();
+    try {
+      return this.userblocksService.findAll();
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get(':id') //returns a single userblock relation by id
   findOne(@Param('id') id: string) {
-    return this.userblocksService.findOne(id);
+    try {
+      return this.userblocksService.findOne(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Delete(':id') //deletes a single userblock relation by id
   remove(@Param('id') id: string) {
-    return this.userblocksService.remove(id);
+    try {
+      return this.userblocksService.remove(id);
+    } catch (error) {
+      throw error;
+    }
   }
 }

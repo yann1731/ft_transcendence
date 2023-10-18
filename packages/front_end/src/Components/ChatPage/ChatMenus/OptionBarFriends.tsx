@@ -1,15 +1,16 @@
-import axios from 'axios';
+
 import * as React from 'react';
-import { Popover, useTheme, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar, setRef } from '@mui/material';
+import { Popover, useTheme, Button, Modal, Autocomplete, TextField, Menu, IconButton, Typography, Box, MenuItem, Tooltip, AppBar } from '@mui/material';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import '../../../App.css';
 import { UserContext, User } from 'Contexts/userContext';
-import { UserFriendship, Chatroom, chatroomType, ChatInUse, UserBlocks } from 'Components/Interfaces';
+import { UserFriendship, Chatroom, chatroomType, ChatInUse } from 'Components/Interfaces';
 import { LimitedProfile } from 'Components/ProfilePage/Profile';
 import { PrivateMessage } from 'Components/Interfaces';
 import { SocketContext } from 'Contexts/socketContext';
 import { useContext } from 'react';
 import { AxiosResponse } from 'axios';
+import myAxios from 'Components/axiosInstance';
 
 const OptionBarFriends: React.FC = () => {
     const settings = ['Add Friend', 'View Profile'];
@@ -26,13 +27,12 @@ const OptionBarFriends: React.FC = () => {
     const [refresh, setRefresh] = React.useState(1);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
-    const id = open ? 'contact-options-popover' : undefined;
     const socket = useContext(SocketContext);
 
     React.useEffect(() => {
       const fetchUsers = async () => {
-      axios.get('/api/user', {headers: {
-            'Authorization': user?.token,
+      myAxios.get('/api/user', {headers: {
+            'Authorization': sessionStorage.getItem("at"),
             'userId': user?.id
           }}).then((response: AxiosResponse) => {
             const UsersData: User[] = response.data;
@@ -44,15 +44,15 @@ const OptionBarFriends: React.FC = () => {
               }
             })
             setUsers(otherUsers);
-            axios.get(`/api/userfriendship/user/${user?.id}`, {headers: {
-                'Authorization': user?.token,
+            myAxios.get(`/api/userfriendship/user/${user?.id}`, {headers: {
+                'Authorization': sessionStorage.getItem("at"),
                 'userId': user?.id
               }}).then((response: AxiosResponse) => {
-                const FriendshipData: UserFriendship[] = response.data;
+                const FriendshipData: any[] = response.data;
                 const tempIsNotFriend: User[] = [];
                 otherUsers.forEach((users: User) => {
-                  const notFriend = FriendshipData.find((friend: UserFriendship) => {
-                    return (users?.id === friend?.userAId || users?.id === friend?.userBId)
+                  const notFriend = FriendshipData.find((friend: any) => {
+                    return (users?.id === friend.id)
                   })
                   if (notFriend === undefined)
                   {
@@ -106,7 +106,6 @@ const OptionBarFriends: React.FC = () => {
         });
         if (hold)
           setViewProfile(hold?.id)
-        console.log(hold?.id)
         setAnchorEl(event.currentTarget);
       }
       else
@@ -146,11 +145,10 @@ const OptionBarFriends: React.FC = () => {
       });
       if (mode === 'Add Friend')
       {
-          await axios.post(`/api/userfriendship`, {userAId: user?.id, userBId: friendToModify?.id}, {headers: {
-            'Authorization': user?.token,
+          await myAxios.post(`/api/userfriendship/`, {userAId: user?.id, userBId: friendToModify?.id}, {headers: {
+            'Authorization': sessionStorage.getItem("at"),
             'userId': user?.id
           }}).then((response: AxiosResponse) => {
-          console.log('Friend successfuly added', response.data);
           const username = friendToModify?.username === undefined ? "pouet" : friendToModify?.username;
           const newChannel: Chatroom = {
             id: "",

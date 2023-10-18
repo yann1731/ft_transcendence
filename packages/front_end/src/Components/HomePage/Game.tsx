@@ -4,27 +4,33 @@ import pong from './Pong'
 import invited from './Invited';
 import Box from '@mui/material/Box';
 import { User, UserContext } from 'Contexts/userContext';
-import { gamesocket } from 'Contexts/gameSocketContext';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { createBrowserHistory } from 'history'
 import { SocketContext } from 'Contexts/socketContext';
 
 export default function PongGame() {
   const {user, updateUser} = React.useContext(UserContext);
   const navigate = useNavigate()
-
+  const socket = React.useContext(SocketContext)
+  const location = useLocation()
+  const history = createBrowserHistory()
+  const gameType = location.state?.game || "false"
+  history.replace("/Home")
+  
+  
   React.useEffect(() => {
-    gamesocket.off("start")
-    gamesocket.off("player")
-    gamesocket.off("disconnected")
-    gamesocket.off("mouvement")
-    gamesocket.off("mouvement2")
-    gamesocket.off("update")
-    gamesocket.off("random")
-    gamesocket.off("newPower")
-    gamesocket.off("multi")
-    gamesocket.off("power")
-    gamesocket.off("point")
-    if (user?.isInvited === false){
+    socket.off("start")
+    socket.off("player")
+    socket.off("disconnected")
+    socket.off("movement")
+    socket.off("movement2")
+    socket.off("update")
+    socket.off("random")
+    socket.off("newPower")
+    socket.off("multi")
+    socket.off("power")
+    socket.off("point")
+    if (gameType === "false"){
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         parent: 'PONG',
@@ -43,17 +49,16 @@ export default function PongGame() {
           pong
         ]
       };
-    
-
+      
+      
       const game = new Phaser.Game(config);
-      game.scene.start('pong', {name: user?.id, socket: gamesocket});
-
+      game.scene.start('pong', {name: sessionStorage.getItem('id'), socket: socket});
+      
       return () => {
         game.destroy(true, false);
       }
     }
     else{
-      gamesocket.emit("inGame", {id: user?.id})
       const config: Phaser.Types.Core.GameConfig = {
         type: Phaser.AUTO,
         parent: 'PONG',
@@ -73,10 +78,10 @@ export default function PongGame() {
         ]
       };
       const game = new Phaser.Game(config);
-      if (user?.host === true)
-        game.scene.start('invited', {socket: gamesocket, invited: true, id: user?.id});
+      if (gameType === "inviter")
+        game.scene.start('invited', {socket: socket, invited: true, id: sessionStorage.getItem('id')});
       else
-        game.scene.start('invited', {socket: gamesocket, invited: false});
+        game.scene.start('invited', {socket: socket, invited: false});
 
       return () => {
         game.destroy(true, false);
@@ -84,14 +89,14 @@ export default function PongGame() {
     }
   }, []);
 
-  gamesocket.on("invite end", () => {
+  socket.on("invite end", () => {
     const updatedUser: Partial<User> = {...user, host: false, isInvited: false};
     updateUser(updatedUser)
-    gamesocket.off("invite end")
+    socket.off("invite end")
   })
 
-  gamesocket.on("finished", () => {
-    gamesocket.off("finished")
+  socket.on("finished", () => {
+    socket.off("finished")
     navigate("/chat")
   })
 

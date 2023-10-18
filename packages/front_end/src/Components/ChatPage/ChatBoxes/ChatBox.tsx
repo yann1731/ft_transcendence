@@ -6,33 +6,31 @@ import ContactMenu from '../ChatMenus/ContactMenu';
 import '../../../App.css';
 import { UserContext } from 'Contexts/userContext';
 import { Message, PrivateMessage } from 'Components/Interfaces';
-import { Socket } from "socket.io"
 import { SocketContext } from "../../../Contexts/socketContext";
 import { ChatroomMessage } from 'Components/Interfaces';
-import axios from 'axios';
-import { UserBlocks } from 'Components/Interfaces';
-import { Chatroom, ChatInUse, chatroomType } from 'Components/Interfaces';
 import { User } from 'Contexts/userContext';
-import { Popover } from '@mui/material';
 import InvitationPopover from "../ChatComponents/InvitationPopover"
-import { allowedNodeEnvironmentFlags } from 'process';
-import { gameSocketContext } from 'Contexts/gameSocketContext';
 import { useNavigate } from 'react-router-dom';
+
+export const toggleShowInvitation = (setShowInvitation: React.Dispatch<React.SetStateAction<boolean>>) => {
+  setShowInvitation((prevShowInvitation: boolean) => !prevShowInvitation);
+}
 
 const Chat = () => {
   const theme = useTheme();
   const buttonColor = theme.palette.mode === 'dark' ? '#FFFFFF' : '#2067A1'
-
   const {updateUser, user} = useContext(UserContext);
   const socket = useContext(SocketContext);
-  const gamesocket = useContext(gameSocketContext)
   const [messages, setMessages] = useState<Message[]>([]);
-  const [userBlocks, setUserBlocks] = useState<UserBlocks[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const [isBlocked, setIsBlocked] = useState<boolean>(false);
   const [ showInvitation, setShowInvitation ] = useState(false);
   const [ inviter, setInviter] = useState("null");
+  const [ game, setGame ] = useState("inviter")
   const navigate = useNavigate();
+
+  const toggleInvitation = (value:boolean) => {
+    setShowInvitation(value);
+  };
 
   // Handles the scrollbar to the bottom on scrolling chat messages
   useEffect(() => {
@@ -43,7 +41,9 @@ const Chat = () => {
   }, [messages]);
 
   useEffect(() => {
-    socket.on("messageResponse", (data: any) => displayMessage(data));
+    socket.on("messageResponse", (data: any) => {
+      displayMessage(data)
+    });
     socket.on("connected", () => socket.emit("connected", { id: user?.id}));
     return () => {
       socket.off("messageResponse");
@@ -53,8 +53,9 @@ const Chat = () => {
 
   useEffect(() => {
     socket.on("refused", () => {
-      setShowInvitation(false)
-      setInviter("null")
+        setShowInvitation(false)
+        setInviter("null")
+        alert("invitation was refused")
     })
     socket.on("sendHistory", (data: any) => makeHistory(data));
     socket.on("clearHistory", () => clearHistory());
@@ -62,32 +63,28 @@ const Chat = () => {
     socket.on("closeSocket", () => socket.close());
     socket.on("invitedToPlay", (data: any, acknowledge: any) => handleInvitation(data.inviterID, acknowledge));
     socket.on("displayFailure", (data: any) => alert(data.msg));
-
-    gamesocket.on("invite", () => {
-      const updatedUser: Partial<User> = {...user, host: true, isInvited: true};
-      updateUser(updatedUser)
-      navigate("/home")
+    socket.on("invite", () => {
+      navigate("/home", {state: { game }})
     })
 
     const updatedUser: Partial<User> = {...user, host: false, isInvited: false};
     updateUser(updatedUser)
 
     return () => {
-       socket.off("messageResponse");
-      /*socket.off("connected");
-      socket.off("displayFailure"); */
+        socket.off('refused')
+        socket.off("messageResponse");
+        setInviter("null");
     }
   }, [])
 
+
   const handleInvitation = (inviterID: string, acknowledge: any) => {
-    console.log('getting invite');
-    acknowledge(true);
-    setShowInvitation(true);
-    setInviter(inviterID);
+      acknowledge(true);
+      setShowInvitation(true);
+      setInviter(inviterID);
   }
 
   const clearHistory = () => {
-    console.log("Clearing history!");
     const _cleared: Message[] = [];
     setMessages(_cleared);
     const updatedUser: Partial<User> = {
@@ -152,7 +149,6 @@ const Chat = () => {
   const displayMessage = (message: any) => {
     if (user?.username) {
       const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
-      console.log("info: " + _chatInfo);
       if (message.type === "channel") {
         if (message.channelID === _chatInfo[1]) {
           const newMessage: Message = {
@@ -165,7 +161,6 @@ const Chat = () => {
           setMessages((prevMessages: Message[]) => [...prevMessages, newMessage]);
         }
       } else if (message.type === "friend") {
-        console.log(_chatInfo[0], message.recipient, message.username, user?.username);
         if (_chatInfo[0] === message.username || _chatInfo[0] === message.recipient) {
           const newMessage: Message = {
             text: message.text,
@@ -251,7 +246,7 @@ const Chat = () => {
           userA={user?.id}
           userB={inviter}
           open={showInvitation}
-          onClose={() => setShowInvitation(false)}/>}
+          onClose={toggleInvitation}/>}
       </Box>
       <Box sx={{ flex: 1, overflow: 'auto' }} ref={chatContainerRef}>
         <List>

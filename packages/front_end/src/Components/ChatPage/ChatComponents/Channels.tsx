@@ -1,11 +1,9 @@
-import { List, ListItemButton, ListItemText, ListItemIcon, Avatar, setRef } from '@mui/material';
+import { List, ListItemButton, ListItemText, ListItemIcon, Avatar } from '@mui/material';
 import React, { useState, useEffect, useContext } from 'react';
-import { Chatroom, ChatroomUser, ChatInUse, chatroomType } from 'Components/Interfaces';
-import axios from 'axios';
+import { Chatroom, ChatInUse, chatroomType } from 'Components/Interfaces';
 import { UserContext, User } from 'Contexts/userContext';
 import { SocketContext } from 'Contexts/socketContext';
 import { ChatroomMessage } from 'Components/Interfaces';
-import { socket } from 'Contexts/socketContext';
 
 interface MyChannelsProps {
     searchText: string;
@@ -14,7 +12,6 @@ interface MyChannelsProps {
   const MyChannels: React.FC<MyChannelsProps> = ({ searchText }) => {
     const {updateUser, user} = useContext(UserContext);
     const socket = useContext(SocketContext);
-    const [refresh, setRefresh] = useState(1);
     const [channels, setChannels] = useState<Chatroom[]>([]);
 
     socket.on("updateChannels", (data: any) => {
@@ -23,7 +20,6 @@ interface MyChannelsProps {
 
     useEffect(() => {
       socket.on("reloadChannels", () => {
-        console.log("Reloading channels");
         socket.emit("getChannels", { id: user?.id });
       });
       socket.off("reloadChannels");
@@ -38,7 +34,6 @@ interface MyChannelsProps {
     }, []);
 
     socket.on("reloadChannels", () => {
-      console.log("Reloading channels");
       socket.emit("getChannels", { id: user?.id });
     });
     
@@ -61,12 +56,10 @@ interface MyChannelsProps {
       if (user !== null)
       {
         const chatroom = channels.find((chat: Chatroom) => {
-          console.log("chatInUse onClick = " + decodedName);
           return chat.name === decodedName;
         });
         if (chatroom !== undefined)
         {
-           console.log("Chatroom name: " + chatroom.name);
           const newChatInUse: ChatInUse = {
             chat: chatroom,
             type: chatroomType.channel
@@ -83,15 +76,15 @@ interface MyChannelsProps {
             localStorage.setItem(updatedUser.username, JSON.stringify(_chat));
           }
           setHistory(updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.chat);
-        } else {
-          console.log("Obivously the chatinuse doesn't work.");
         }
       }
     };
-    
+    let filteredChannels : any = user?.Chatroom?.filter((channel: Chatroom) =>
+    channel.name.toLowerCase().includes(searchText.toLowerCase())
+  );
     return (
       <List>
-        {channels.map((channel: Chatroom) => {
+        {filteredChannels?.map((channel: Chatroom) => {
           const decodedName = decodeURIComponent(channel.name);
           const encodedName = encodeURIComponent(channel.name);
           return (

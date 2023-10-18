@@ -9,53 +9,89 @@ import { ApiTags } from '@nestjs/swagger';
 
 @Controller('api/chatroomuser')
 @ApiTags('chatroomuser')
-// @UseGuards(TokenGuard)
+@UseGuards(TokenGuard)
 export class ChatroomuserController {
   constructor(private readonly chatroomuserService: ChatroomuserService) {}
 
   @Post() //create chatroomuser joined to particular user id and chatroom id
   create(@Body() createChatroomuserDto: CreateChatroomuserDto) {
-    return this.chatroomuserService.create(createChatroomuserDto);
+    try {
+      return this.chatroomuserService.create(createChatroomuserDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Post('/password')
   createPass(@Body() createChatroomuserpassDto: CreateChatroomuserPassDto) {
-    return this.chatroomuserService.createPass(createChatroomuserpassDto);
+    try {
+      return this.chatroomuserService.createPass(createChatroomuserpassDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get() //returns all currently created chatroomusers
   findAll() {
-    return this.chatroomuserService.findAll();
+    try {
+      return this.chatroomuserService.findAll();
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get(':id') //returns single chatroomuser by it's id
   findOne(@Param('id') id: string) {
-    return this.chatroomuserService.findOne(id);
+    try {
+      return this.chatroomuserService.findOne(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get('chatroom/:id') // returns all chatroomusers associated to the chatroomid
   findAllChatroomUsersByChatroomId(@Param('id') id: string) {
-    return this.chatroomuserService.findAllChatroomUsersByChatroomId(id);
+    try {
+      return this.chatroomuserService.findAllChatroomUsersByChatroomId(id);
+    } catch (error) {
+      throw error;
+    }
     
   }
 
   @Get('user/:id') //returns all chatroomusers associated to the user id
   findAllChatroomUsersByUserId(@Param('id') id: string) {
-    return this.chatroomuserService.findAllChatroomUsersByUserId(id);
+    try {
+      return this.chatroomuserService.findAllChatroomUsersByUserId(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Patch(':id') //updates chatroomuser by id
   update(@Param('id') id: string , @Body() updateChatroomuserDto: UpdateChatroomuserDto) {
-    return this.chatroomuserService.update(id, updateChatroomuserDto);
+    try {
+      return this.chatroomuserService.update(id, updateChatroomuserDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Delete(':id') //deletes single chatroomuser by id provided
   remove(@Param('id') id: string) {
-    return this.chatroomuserService.remove(id);
+    try {
+      return this.chatroomuserService.remove(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Post('ban/:id') //ban and deletes single chatroomuser by id provided
   ban(@Param('id') id: string, @Body() banChatroomuserDto: BanChatroomuserDto) {
-    return this.chatroomuserService.ban(id, banChatroomuserDto);
+    try {
+      return this.chatroomuserService.ban(id, banChatroomuserDto);
+    } catch (error) {
+      throw error;
+    }
   }
 }

@@ -9,7 +9,6 @@ import { UserfriendshipModule } from './userfriendship/userfriendship.module';
 import { UserblocksModule } from './userblocks/userblocks.module';
 import { ChatModule } from './chat/chat.module';
 import { AuthModule } from './auth/auth.module';
-import { GameModule } from './gameSocket/game.module';
 import { ConfigModule } from '@nestjs/config';
 import { MatchHistoryModule } from './match-history/match-history.module';
 
@@ -25,7 +24,6 @@ import { MatchHistoryModule } from './match-history/match-history.module';
     UserblocksModule,
     ChatModule,
     AuthModule,
-    GameModule,
     MatchHistoryModule]
 })
 export class AppModule {}

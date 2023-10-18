@@ -1,35 +1,32 @@
+import myAxios from 'axiosInstance';
+import Box from '@mui/material/Box';
 import { useState, useContext } from 'react';
 import { UserContext } from "Contexts/userContext";
-import myAxios from 'Components/axiosInstance';
-import { useNavigate } from 'react-router-dom';
-import { Button, TextField } from '@mui/material';
-import Box from '@mui/material/Box';
-import { AxiosError } from 'axios';
+import { Button, TextField } from '@mui/material';;
 
-function OTPInputPage() {
+function OTPLoginPage() {
   const [otp, setOtp] = useState('');  // to store the OTP input
   const {user} = useContext(UserContext);
-  const navigate = useNavigate()
 
   const handleChange = (event: any) => {
     setOtp(event.target.value);  // update the OTP input
   };
-  
+
   const handleSubmit = async (event: any) => {
     event.preventDefault();  // prevent the default form submission
 
     // do the API call to verify the OTP
     try {
-      await myAxios.patch('/api/firstValidation', { otp }, { headers: {
+      await myAxios.patch('/api/verifyOtp', { otp }, {headers: {
         'Authorization': sessionStorage.getItem("at"),
-        'userId': sessionStorage.getItem('id')
+        'userId': user?.id,
       }});
-      navigate('/Profile');
-    } catch (error: any) {
+      window.location.assign('/home');
+    } catch (error) {
       // handle the error
-      console.error('Error verifying the OTP: ', error.message);
+      console.error('Error verifying the OTP: ', error);
       alert('Something went wrong verifying your one time password');
-      navigate('/profile');
+      window.location.assign('/');
     }
   };
 
@@ -55,4 +52,4 @@ function OTPInputPage() {
   )
 }
 
-export default OTPInputPage;
+export default OTPLoginPage;

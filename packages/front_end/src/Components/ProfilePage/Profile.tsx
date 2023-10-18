@@ -1,12 +1,13 @@
 import BackgroundContainer from '../../Background'
 import ProfileContainer from './ProfilePage';
-import ResponsiveAppBar from '../ToolBar';
 import { UserContext } from 'Contexts/userContext';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import SignIn from 'Components/Login/LoginPage';
 import LoginToolBar from 'Components/Login/LoginToolBar';
 import { ReadOnlyProfile } from './ProfilePage';
 import { statsProps } from '../Interfaces';
+import { SocketContext } from 'Contexts/socketContext';
+
 export interface LimitedProfileProps { 
     userAvatar: string | undefined;
     nickname: string;
@@ -15,6 +16,17 @@ export interface LimitedProfileProps {
 
 export default function DividerProfile() {
     const { user } = useContext(UserContext);
+    const socket = useContext(SocketContext);
+
+	useEffect(() => {
+		    socket.emit("connectMe", { 
+		    	id: sessionStorage.getItem('id'),
+		    	at: sessionStorage.getItem('at')});
+
+        return () => {
+           socket.offAny()
+        }
+	}, [user]);
 
 	if (!user) {
 		return (
@@ -26,6 +38,7 @@ export default function DividerProfile() {
             </div>
         )
 	}
+    
     return (
         <div>
             <BackgroundContainer>

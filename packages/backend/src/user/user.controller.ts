@@ -5,7 +5,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { promises } from 'dns';
 import { ValidationPipe } from '@nestjs/common';
 import { TokenGuard } from 'src/guard/token.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { meGuard } from 'src/guard/me.guard ';
 
 @Controller('api/user')
 @ApiTags('user')
@@ -13,31 +14,62 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body('code') code: string, @Body('refresh_token') refresh_token: string, @Body('expires_in') expires_in: number, @Body('created_at') created_at: number) { //creates a new user using token, refresh_token, expires_in and created_at. Also calls 42 api to get more info on user
-    return this.userService.create(code, refresh_token, expires_in, created_at);
+  async create(@Body('code') code: string) { //creates a new user using token, refresh_token, expires_in and created_at. Also calls 42 api to get more info on user
+    try {
+      const user = await this.userService.create(code);
+      return user;
+    } catch (error) {
+      throw error
+    }
   }
 
   @Get() //returns all users
-  // @UseGuards(TokenGuard)
-  findAll() {
-    return this.userService.findAll();
+  @UseGuards(TokenGuard)
+  async findAll() {
+    try {
+      return await this.userService.findAll();
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get(':id') //returns single user by id
-  // @UseGuards(TokenGuard)
+  @UseGuards(TokenGuard)
   findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
+    try {
+      return this.userService.findOne(id);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Get('/me/:id')
+  @UseGuards(meGuard)
+  findMe(@Param('id') id: string) {
+    try {
+      return this.userService.findMe(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Patch(':id') //updates single by id
-  // @UseGuards(TokenGuard)
+  @UseGuards(TokenGuard)
   update(@Param('id') id: string, @Body(new ValidationPipe({ transform: true })) updateUserDto: UpdateUserDto) {
-    return this.userService.update(id, updateUserDto);
+    try {
+      return this.userService.update(id, updateUserDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Delete(':id') //deletes single user by id
-  // @UseGuards(TokenGuard)
+  @UseGuards(TokenGuard)
   remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+    try {
+      return this.userService.remove(id);
+    } catch (error) {
+      throw error;
+    }
   }
 }

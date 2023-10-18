@@ -8,5 +8,7 @@ COPY . .
 
 RUN yarn install
 
+ENV WDS_SOCKET_PORT=3000
+
 CMD [ "dumb-init", "yarn", "start"]
 

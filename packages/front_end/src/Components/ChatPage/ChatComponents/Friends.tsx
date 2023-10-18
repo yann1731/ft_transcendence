@@ -1,12 +1,10 @@
 import { Avatar, List, ListItemIcon, ListItemText, ListItemButton } from '@mui/material';
 import { UserContext, User } from 'Contexts/userContext';
 import { useContext, useState, useEffect } from 'react';
-import { Chatroom, ChatInUse, chatroomType, UserFriendship, UserBlocks } from 'Components/Interfaces';
+import { Chatroom, ChatInUse, chatroomType } from 'Components/Interfaces';
 import React from 'react'
-import axios from 'axios'
 import { PrivateMessage } from 'Components/Interfaces';
 import { SocketContext } from 'Contexts/socketContext';
-import { gameSocketContext } from 'Contexts/gameSocketContext';
 
 interface MyFriendsProps {
     searchText: string;
@@ -15,13 +13,8 @@ interface MyFriendsProps {
 // add getFriends when game stops to refersh user status.
 
 const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
-  const [Users, setUsers] = React.useState<User[]>([]);
-  const [FriendUsers, setFriendUsers] = React.useState<User[]>([]);
-  const [BlockedUsers, setBlockedUsers] = React.useState<User[]>([]);
   const {user, updateUser} = useContext(UserContext);
-  const [refresh, setRefresh] = React.useState(1);
   const [friends, setFriends] = useState<User[]>([]);
-  const game = React.useContext(gameSocketContext)
   
 
   const socket = useContext(SocketContext);
@@ -31,14 +24,15 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
   });
 
   useEffect(() => {
-    socket.on("reloadFriends", (data: any) => {
-      socket.emit("getFriends", { id: user?.id });
+    socket.on("reloadFriends", () => {
+    socket.emit("getFriends", { id: user?.id });
     });
+    // socket.emit("getFriends", { id: user?.id });
     return () => {
       socket.off("reloadFriends");
     }
-  });
-
+  }, []);
+  
   useEffect(() => {
     socket.emit("getFriends", { id: user?.id});
     return () => {
@@ -79,14 +73,12 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
         chatInUse: newChatInUse,
       };
       updateUser(updatedUser);
-      console.log("chatInUse onClick = " + newChatroom.name);
 
     let _chats: Array<string>;
     if (updatedUser.username && updatedUser.chatInUse?.type) {
       _chats = [updatedUser.chatInUse?.chat.name, updatedUser.chatInUse?.chat.id, updatedUser.chatInUse?.type, updatedUser.username]
       localStorage.setItem(updatedUser.username, JSON.stringify(_chats));
     }
-    const _chatInfo = JSON.parse(localStorage.getItem(user?.username) || "[]");
     setPrivateHistory(updatedUser.chatInUse?.chat.name);
     }
   };
@@ -101,18 +93,14 @@ const MyFriends: React.FC<MyFriendsProps> = ({ searchText }) => {
         updateUser(updatedUser);
       }
     })
-    socket.on("refresh2", () => {
-      setRefresh(refresh => refresh + 1)
-      console.log()
-    })
-    game.on("refresh2", () => {
-      setRefresh(refresh => refresh + 1)
-    })
   })
 
+  const filteredFriends = friends.filter((friend: any) =>
+  friend.nickname.toLowerCase().includes(searchText.toLowerCase())
+  );
     return (
       <List>
-        {friends.map((friend: User) => (
+        {filteredFriends?.map((friend: User) => (
          <ListItemButton key={friend.id} onClick={() => SetChatInUse(friend.username, friend.avatar)}>
             <ListItemIcon>
               <Avatar alt={friend.username} src={friend.avatar} />

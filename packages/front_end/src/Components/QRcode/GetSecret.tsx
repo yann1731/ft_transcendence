@@ -1,27 +1,32 @@
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import axios from 'axios';
 import { UserContext } from "Contexts/userContext";
 import { useContext, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
+import myAxios from "Components/axiosInstance";
+import { Button, TextField } from '@mui/material';
+import Verify from '../Otp/Verify';
+import { useNavigate } from "react-router-dom";
 
 
 export default function GetSecret() {
   const { user } = useContext(UserContext);
   const [otpUrl, setOtpUrl] = useState('');
+  const navigate = useNavigate()
   
   useEffect(() => {
     const secretRequest = async () => {
       try {
-        const response = await axios.post('/api/enable2fa', {info: 'information'}, {headers: {
-            'Authorization': user?.token,
+        const response = await myAxios.post('/api/enable2fa', {info: 'information'}, {headers: {
+          'Authorization': sessionStorage.getItem("at"),
             'userId': user?.id
         }});
         setOtpUrl(response.data);
       } catch (error) {
-        console.error(error);
-        alert('Error while generating QRcode');
-        window.location.assign('/profile');
+        console.error("ERROR SECRET REQUEST generating QR Code" + error);
+        //alert('Error while generating QRcode');
+        alert(error);
+        navigate('/profile');
       }
     };
 
@@ -34,7 +39,10 @@ export default function GetSecret() {
             Please scan with google authenticator
             </Typography>
             <QRCode value={otpUrl} />
-            <button onClick={() => {window.location.assign('/profile')}}>Ok</button>
+            <div>
+              <Verify />
+              <Button className="profilePageButtons" sx={{ maxWidth:"100px", minWidth:"100px", marginTop:"10px" }} onClick={() => {navigate('/profile')}}>Cancel</Button>
+            </div>
         </Container>
         );
 }

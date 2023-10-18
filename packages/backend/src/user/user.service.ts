@@ -1,99 +1,156 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { validate } from 'class-validator';
 import axios from 'axios';
-import { onlineStatus, Prisma } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime';
+import { onlineStatus } from '@prisma/client';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UserService { //creates a new user
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService, private auth: AuthService) { }
 
-  async create(code: string, refresh_token: string, expires_in: number, created_at: number) { //creates a new user using token, refresh_token, expires_in and created_at. Also calls 42 api to get more info on user
+  
+
+  async create(code: string) { //creates a new user using token, refresh_token, expires_in and created_at. Also calls 42 api to get more info on user
+	const uid: string =  process.env.UID;
+    const secret: string = process.env.SECRET;
+    const port: string = process.env.FRONTEND_PORT
+    const ip: string = process.env.IP
+
 	try {
-		const response = await axios.get('https://api.intra.42.fr/v2/me', {
-			headers: {
-			  Authorization: `Bearer ${code}`
-			}
-		});
-	  
-		const check = await this.prisma.user.findUnique({where: {
-			username: response.data.login
-		}});
-	  
-		if (!check) {
-			const data: Prisma.UserCreateInput = {
-				email: response.data.email, 
-				refresh_token: refresh_token,
-				username: response.data.login,
-				nickname: response.data.login,
-				avatar: response.data.image.link,
-				token: code,
-				token_expires_in: expires_in,
-				token_created_at: created_at,
-				token_expires_at: created_at + expires_in
-			}
-			
-			const user = await this.prisma.user.create({
+		const Token42 = await axios.post('https://api.intra.42.fr/oauth/token', {
+			grant_type: 'authorization_code',
+            client_id: uid,
+            client_secret: secret,
+            redirect_uri: "http://" + ip + ":" + port + "/wait", 
+            code: code
+        });
+
+        const UserData = await axios.get('https://api.intra.42.fr/v2/me', {
+            headers: {
+                Authorization: `Bearer ${Token42.data.access_token}`
+            }
+        });
+		
+        const check = await this.prisma.user.findUnique({
+            where: {
+                username: UserData.data.login
+            }
+		})
+        const tokens = await this.auth.generateToken(UserData.data.id);
+
+        if (!check){
+            const user = await this.prisma.user.create({
+                data: {
+                    email: UserData.data.email, 
+                    refresh_token: tokens.refresh,
+                    username: UserData.data.login,
+                    nickname: UserData.data.login,
+                    avatar: UserData.data.image.link,
+                }
+            });
+            
+            const final = { ...user, token: tokens.access, refresh_token: tokens.refresh};
+            return final;
+        } 
+		else {
+
+			await this.prisma.user.update({
+				where: { id: check.id },
 				data: {
-					email: response.data.email, 
-					refresh_token: refresh_token,
-					username: response.data.login,
-					nickname: response.data.login,
-					avatar: response.data.image.link,
-					token: code,
-					token_expires_in: expires_in,
-					token_created_at: created_at,
-					token_expires_at: created_at + expires_in
-				}
-			});
-			if (!user) {
-				throw new BadRequestException('Could not create user');
-			}
-			return user;
+					refresh_token: tokens.refresh
+			}})
+
+			const final = { ...check, token: tokens.access, refresh_token: tokens.refresh };
+			return final;
 		}
-		else
-			return check; 
-	} catch (error) {
-		console.log(error);
-		throw error;
-	}
+
+    } catch (error) {
+        throw error;
+    }
   }
 
   async findAll() { //returns a list of all users
 	try {
-		const user = await this.prisma.user.findMany();
+		const user = await this.prisma.user.findMany({
+				select: {
+					id: true,
+					socketID: true,
+					avatar: true,
+					username: true,
+					nickname: true,
+					win: true,
+					loss: true,
+					gamesPlayed: true,
+					userStatus: true,
+				}
+			}
+		);
 		if (!user)
 			throw new BadRequestException('Could not fetch users');
 		return user;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
 
   async findOne(id: string) { //returns one user by id
 	try {
+		const user = await this.prisma.user.findUnique({where: { id },
+			select: {
+				id: true,
+				socketID: true,
+				avatar: true,
+				username: true,
+				nickname: true,
+				win: true,
+				loss: true,
+				gamesPlayed: true,
+				userStatus: true,
+			}} );
+		if (!user)
+		  throw new BadRequestException('Could not find specified user');
+		return user;	
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+  }
+
+  async findMe(id: string) { //returns one user by id
+	try {
 		const user = await this.prisma.user.findUnique({where: { id }} );
 		if (!user)
 		  throw new BadRequestException('Could not find specified user');
 		return user;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
 
   async findUsername(username: string) {
 	try {
-		const user = await this.prisma.user.findUnique({where: {username}});
+		const user = await this.prisma.user.findUnique(
+			{where: {username},
+			select: {
+				id: true,
+				socketID: true,
+				avatar: true,
+				username: true,
+				nickname: true,
+				win: true,
+				loss: true,
+				gamesPlayed: true,
+				userStatus: true,
+			}});
 		if (!user)
 			throw new BadRequestException('Could not find specified user');
 		return user;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
@@ -103,11 +160,22 @@ export class UserService { //creates a new user
 		const user = await this.prisma.user.findFirst({
 			where: {
 				socketID: socketID,
+			},
+			select: {
+				id: true,
+				socketID: true,
+				avatar: true,
+				username: true,
+				nickname: true,
+				win: true,
+				loss: true,
+				gamesPlayed: true,
+				userStatus: true,
 			}
 		});
 		return (user);
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw (BadRequestException);
 	}
   }
@@ -140,7 +208,7 @@ export class UserService { //creates a new user
 			throw new BadRequestException('Could not create user');
 		return user;	
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }
@@ -159,7 +227,7 @@ export class UserService { //creates a new user
 		  }
 		});
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 	}
   }
 
@@ -168,7 +236,7 @@ export class UserService { //creates a new user
 		return;
 	}
 	try {
-		const _updatedUser = await this.prisma.user.update({
+		await this.prisma.user.update({
 		  where: {
 			id: id,
 		  },
@@ -176,9 +244,8 @@ export class UserService { //creates a new user
 			userStatus: _status,
 		  }
 		});
-		console.log("userStatus: " + _updatedUser.userStatus);
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 	}
   }
 
@@ -186,7 +253,7 @@ export class UserService { //creates a new user
 	try {
 		return await this.prisma.user.delete({where: {id}});
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		throw error;
 	}
   }

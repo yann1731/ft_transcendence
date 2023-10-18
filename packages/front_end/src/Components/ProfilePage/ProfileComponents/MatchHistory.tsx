@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import axios from 'axios';
 import { UserContext, MatchHistoryOne, MatchHistoryTwo, MatchHistoryThree, User } from 'Contexts/userContext';
 import { useContext, useEffect } from 'react';
 import { LimitedProfileProps } from '../Profile';
+import myAxios from 'Components/axiosInstance';
 
 export default function MatchHistory({userId}:LimitedProfileProps) {
     
@@ -18,8 +18,7 @@ export default function MatchHistory({userId}:LimitedProfileProps) {
     const [loserUsernamesTwo, setLoserUsernamesTwo] = React.useState<string[]>([]);
     const [winnerUsernamesThree, setWinnerUsernamesThree] = React.useState<string[]>([]);
     const [loserUsernamesThree, setLoserUsernamesThree] = React.useState<string[]>([]);
-    const {user, updateUser} = useContext(UserContext);
-    const [refresh, setRefresh] = React.useState(1)
+    const {user } = useContext(UserContext);
 
 
     useEffect(() => {
@@ -64,8 +63,8 @@ export default function MatchHistory({userId}:LimitedProfileProps) {
 
     const getMatchDataOne = async() => {
         try {
-            const response = await axios.get(`/api/match-history/one/${userId}`, {headers: {
-                'Authorization': user?.token,
+            const response = await myAxios.get(`/api/match-history/one/${userId}`, {headers: {
+                'Authorization': sessionStorage.getItem("at"),
                 'userId': user?.id
             }});
 
@@ -97,8 +96,8 @@ export default function MatchHistory({userId}:LimitedProfileProps) {
 
     const getMatchDataTwo = async() => {
         try {
-            const response = await axios.get(`/api/match-history/two/${userId}`, {headers: {
-                'Authorization': user?.token,
+            const response = await myAxios.get(`/api/match-history/two/${userId}`, {headers: {
+                'Authorization': sessionStorage.getItem("at"),
                 'userId': user?.id
             }});
 
@@ -131,8 +130,8 @@ export default function MatchHistory({userId}:LimitedProfileProps) {
 
     const getMatchDataThree = async() => {
         try {
-            const response = await axios.get(`/api/match-history/three/${userId}`, {headers: {
-                'Authorization': user?.token,
+            const response = await myAxios.get(`/api/match-history/three/${userId}`, {headers: {
+                'Authorization': sessionStorage.getItem("at"),
                 'userId': user?.id
             }});
 
@@ -168,7 +167,10 @@ export default function MatchHistory({userId}:LimitedProfileProps) {
             const usernames: string[] = [];
 
             for (const userId of userIds) {
-                const response = await axios.get(`/api/user/${userId}`);
+                const response = await myAxios.get(`/api/user/${userId}`, {headers: {
+                    'Authorization': sessionStorage.getItem("at"),
+                    'userId': user?.id
+                }});
                 const userData = response.data;
                 usernames.push(userData.username);
             }
@@ -246,7 +248,6 @@ export default function MatchHistory({userId}:LimitedProfileProps) {
 
         return MatchesThree.map((match, index) => {
             const isTeamWinner = match.winnerId.length > 1;
-            console.log("TEAM WINNER = " + isTeamWinner);
             const winnerUsernamesShow = winnerUsernamesThree;
             const loserUsernamesShow = loserUsernamesThree;
 

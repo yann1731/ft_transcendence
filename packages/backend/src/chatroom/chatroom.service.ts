@@ -58,7 +58,7 @@ export class ChatroomService { //specifically to create a password protected cha
 				}});
 				return chatroom ;
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 			throw error;
 		}
 	}
@@ -87,7 +87,7 @@ export class ChatroomService { //specifically to create a password protected cha
 			});
 			return chatroom;
 		} catch (error) {
-			console.log("Error: ", error);
+			console.error(error);
 		}
 	}
 
@@ -156,7 +156,6 @@ export class ChatroomService { //specifically to create a password protected cha
 				throw new BadRequestException('Could not fetch chatrooms');
 			}
 			else {
-				console.log("updated " + name);
 				return chatroom;
 			}
 		}

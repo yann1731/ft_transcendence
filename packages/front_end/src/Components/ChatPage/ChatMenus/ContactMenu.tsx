@@ -1,16 +1,20 @@
 import * as React from 'react';
 import { Avatar, Tooltip, IconButton, Box, Popover } from '@mui/material';
 import { LimitedProfile } from '../../ProfilePage/Profile'
-import { Message, statsProps } from '../../Interfaces';
-import axios from 'axios';
-import { User } from 'Contexts/userContext';
+import { Message } from '../../Interfaces';
+import { User, UserContext } from 'Contexts/userContext';
+import myAxios from 'Components/axiosInstance';
 
 export default function ContactMenu({ UserAvatar, nickname }: Message) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [userData, setUserData] = React.useState<User[]>([])
+  const {user} = React.useContext(UserContext)
 
   React.useEffect(() => {
-    axios.get('api/user')
+    myAxios.get('api/user', {headers: {
+      'Authorization': sessionStorage.getItem("at"),
+      'userId': user?.id
+       }})
       .then((response) => {
         const userDataFromAPI: User[] = response.data;
         setUserData(userDataFromAPI);

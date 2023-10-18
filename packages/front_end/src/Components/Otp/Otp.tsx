@@ -1,12 +1,13 @@
 import BackgroundContainer from '../../Background';
-import Verify from './Verify'
+import OTPLoginPage from './VerifyLogin';
+import Verify from './Verify';
 
 export default function Otp() {
     return (
-        <div>
-            <BackgroundContainer>
-                <Verify />
-            </BackgroundContainer>
-        </div>
+        <BackgroundContainer>
+            <div>
+                <OTPLoginPage />
+            </div>
+        </BackgroundContainer>
     )
 }

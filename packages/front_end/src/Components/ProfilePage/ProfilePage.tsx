@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { Box, IconButton, Menu, Typography, Avatar, Modal, Tooltip, MenuItem } from '@mui/material';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import MyStats from './ProfileComponents/UserStats';
 import PictureHandler from './ProfileComponents/PictureHandler';
 import { LimitedStats } from '../ProfilePage/ProfileComponents/UserStats';
-import axios, { AxiosResponse } from 'axios';
-import { useRouteLoaderData } from 'react-router-dom';
-import { UserContext, User } from '../../Contexts/userContext';
+import { AxiosResponse } from 'axios';
+import { UserContext } from '../../Contexts/userContext';
 import { statsProps } from '../Interfaces';
+import myAxios from 'Components/axiosInstance';
 
 export default function ProfileContainer() {
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -84,8 +84,7 @@ export default function ProfileContainer() {
 	)
 }
 
-export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPlayed, avatar }: statsProps) {
-	const [open, setOpen] = useState(false);
+export function ReadOnlyProfile({ userId }: statsProps) {
  	const {user} = useContext(UserContext);
 	const [userName, setUserName] = useState("")
 	const [nickName, setNickName] = useState("")
@@ -96,8 +95,8 @@ export function ReadOnlyProfile({ userId, username, nickname, win, loss, gamesPl
 
 	React.useEffect(() => {
 		const fecthUser = async () => {
-			axios.get(`/api/user/${userId}`, {headers: {
-				'Authorization': user?.token,
+			myAxios.get(`/api/user/${userId}`, {headers: {
+				'Authorization': sessionStorage.getItem("at"),
 				'userId': user?.id
 			}}).then((response: AxiosResponse) => {
 				setUserName(response.data.username)

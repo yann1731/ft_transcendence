@@ -2,14 +2,15 @@ import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Divider } from '@mui/material/';
 import DashboardBar from './DashboardBar';
-import { User, UserContext } from 'Contexts/userContext';
+import { UserContext } from 'Contexts/userContext';
 import { HallOfFame } from 'Components/Interfaces';
 import { useEffect, useState, useContext } from 'react';
-import axios, { AxiosResponse } from 'axios';
-import { gamesocket } from 'Contexts/gameSocketContext';
-import { GamesOutlined } from '@mui/icons-material';
+import { AxiosError, AxiosResponse } from 'axios';
+import myAxios from 'Components/axiosInstance';
+import { SocketContext } from 'Contexts/socketContext';
 
 const DashboardContainer: React.FC = () => {
+  const socket = useContext(SocketContext)
   const [highestScore, setHighestScore] = useState<number>(0);
   const [highestGamesPlayed, setHighestGamesPlayed] = useState<number>(0);
   const [lowestScore, setLowestScore] = useState<number>(0);
@@ -25,26 +26,24 @@ const DashboardContainer: React.FC = () => {
 
   useEffect(() => {
     const fetchHallOfFame = async () => {
-      axios.get(`/api/user/${user?.id}`, {headers: {
-        'Authorization': user?.token,
+      myAxios.get(`/api/user/${user?.id}`, {headers: {
+        'Authorization': sessionStorage.getItem("at"),
         'userId': user?.id
       }}).then((response: any) => {
           updateUser(response.data);
-          if (user)
-            if (user.gamesPlayed !== 0)
-              setWinRatio((user.win / user.gamesPlayed) * 100 + "%")
-            else
-              setWinRatio("N/A")
-      }).catch((error: any) => {
-        console.log("could not fetch user:", error)
+          if (response.data.gamesPlayed !== 0)
+            setWinRatio((response.data.win / response.data.gamesPlayed) * 100 + "%")
+          else
+            setWinRatio("N/A")
+      }).catch((error: AxiosError) => {
+        console.error("could not fetch user:", error.message)
       })
 
 
       try {
-        const token = user?.token;
         const userId = user?.id;
-        const response: AxiosResponse = await axios.get(`/api/user/`, {headers: {
-          'Authorization': token,
+        const response: AxiosResponse = await myAxios.get(`/api/user/`, {headers: {
+          'Authorization': sessionStorage.getItem("at"),
           'userId': userId
         }});
         const data: HallOfFame[] = response.data;
@@ -123,13 +122,15 @@ const DashboardContainer: React.FC = () => {
       }
     };
     fetchHallOfFame();
-  }, [refresh]);
-
-  gamesocket.on("connected", () => {
-    gamesocket.on("refresh", () => {
+    socket.on("refresh", () => {
       setRefresh(refresh => refresh + 1)
     })
-  })
+
+    return() => {
+      socket.off("refresh")
+    }
+  }, [refresh]);
+
 
   return (
     <React.Fragment>

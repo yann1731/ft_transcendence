@@ -1,48 +1,54 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Button } from '@mui/material';
 import { UserContext, User } from "Contexts/userContext";
-import axios from 'axios';
+import myAxios from 'Components/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 type ToggleActive = () => void;
 
 const Handler2FA = () => {
-  const {user, updateUser} = useContext(UserContext);
-  
-  const Handle2FA = (): [boolean, ToggleActive] => {
-    const storedValue = localStorage.getItem('twoFaEnabled');
-    const initialValue = storedValue !== null ? JSON.parse(storedValue) : user?.twoFaEnabled;
-    const [active, setActive] = useState(initialValue);
-    
-    const toggleActive: ToggleActive = () => {
-      setActive((prevActive: boolean) => {
-        const updatedValue = !prevActive;
-        localStorage.setItem('twoFaEnabled', JSON.stringify(updatedValue));
-        return updatedValue;
-      });
-    };
-    return [active, toggleActive];
-  };
-  
-  const [isActive, toggleActive] = Handle2FA();
-  const buttonText = isActive ? "Deactivate 2FA" : "Activate 2FA";
-  
-  const handleToggleActive = async () => {
-    
+  const { user, updateUser } = useContext(UserContext);
+  const [isActive, setIsActive] = useState<boolean | null>(null);
+  const navigate = useNavigate()
+
+  useEffect(() => { // fetch the status of 2FA for this user
+    fetch2FAStatus();
+  }, []);
+
+  const buttonText = isActive === null ? "Loading state..." : isActive ? "Deactivate 2FA" : "Activate 2FA"; // Loading state is necessary for 1st login
+
+  const fetch2FAStatus = async () => {
     if (user) {
-      let updatedUser = { ...user, twoFaEnabled: !isActive };
-      updateUser(updatedUser);
       try {
-        if (user.twoFaEnabled === false) {
-          window.location.assign('/Enable2Fa');
-          updatedUser = { ...user, twoFaEnabled: true};
+        const response = await myAxios.get('/api/user/me/' + user.id, {headers: {
+          'Authorization': sessionStorage.getItem("at"),
+          'userId': user?.id,
+        }});
+
+        const userWith2FAStatus = response.data;
+        setIsActive(userWith2FAStatus.twoFaEnabled);
+      } catch (err) {
+        console.error("MARCHE PAS " + err);
+      }
+    }
+  };
+
+  const handleToggleActive = async () => {
+    if (user && isActive !== null) {
+      try {
+        let updatedUser = { ...user };
+  
+        if (!isActive) {
           await updateUser2FA(updatedUser);
-          toggleActive();
-        }
-        else if (user.twoFaEnabled === true) { //updates the user to remove twoFa. destroys secret, sets twoFaEnabled to false
-          updatedUser = { ...user, twoFaEnabled: false, twoFaSecret: null};
+          navigate('/Enable2Fa');
+        } else {
+          updatedUser = { ...user, twoFaEnabled: false, twoFaSecret: null };
           await updateUser2FA(updatedUser);
-          toggleActive();
+          setIsActive(updatedUser.twoFaEnabled);
         }
+  
+        await update2FAStatusOnServer(updatedUser);
+  
       } catch (err) {
         console.error(err);
       }
@@ -50,17 +56,36 @@ const Handler2FA = () => {
   };
 
   const updateUser2FA = async (updatedUser: User) => {
-     try {
-      const response = await axios.patch('/api/user/' + user?.id, updatedUser, {headers: {
-        'Authorization': user?.token,
-        'userId': user?.id
-      }});
-    } catch (error){
-      console.error('Erreur lors de la mise à jour de twoFaEnabled' + error)
+    try {
+      await myAxios.patch('/api/user/' + user?.id, updatedUser, {headers: {
+          'Authorization': sessionStorage.getItem("at"),
+          'userId': user?.id,
+        },
+      });
+    } catch (error) {
+      console.error('Error updating twoFaEnabled: ' + error);
     }
   };
+
+  const update2FAStatusOnServer = async (updatedUser: User) => {
+    try {
+      await myAxios.patch('/api/user/' + user?.id, {
+        twoFaEnabled: updatedUser.twoFaEnabled,
+      }, {
+        headers: {
+          'Authorization': sessionStorage.getItem("at"),
+          'userId': user?.id,
+        },
+      });
+    } catch (error) {
+      console.error('Error updating 2FA status on the server: ' + error);
+    }
+  };
+
   return (
-      <Button variant="outlined" className="profilePageButtons" onClick={handleToggleActive}>{buttonText}</Button>
+    <Button variant="outlined" className="profilePageButtons" onClick={handleToggleActive}>
+      {buttonText}
+    </Button>
   );
 };
 

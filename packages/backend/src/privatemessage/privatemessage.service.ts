@@ -24,7 +24,7 @@ export class PrivatemessageService {
 			throw new BadRequestException('Could not fetch messages');
 		return messages; 
 	} catch (error) {
-	  console.log(error);
+	  console.error(error);
 	  throw error;
 	}
   }
@@ -36,7 +36,6 @@ export class PrivatemessageService {
 			  username: createPrivateMessageDto.recipientId,
 			}
 		});
-		console.log(_recipient.id);
 		let messageData: Prisma.PrivateMessageCreateInput;
 		messageData = {
 		content: createPrivateMessageDto.content,
@@ -57,7 +56,7 @@ export class PrivatemessageService {
 		else
 			return _msg;
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 			throw error;
 		}
 	}

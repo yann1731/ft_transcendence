@@ -1,6 +1,10 @@
 
-import React, { createContext, useState, Dispatch, SetStateAction, ReactNode, useCallback, useEffect } from 'react';
+import { createContext, useState, Dispatch, SetStateAction, ReactNode, useCallback, useEffect } from 'react';
 import { ChatInUse, Chatroom, ChatroomMessage, ChatroomUser, PrivateMessage, UserBlocks, UserFriendship } from 'Components/Interfaces';
+import myAxios from 'Components/axiosInstance';
+import axios from 'axios';
+import Cookies from 'universal-cookie';
+
 
 export interface User {
   id: string ;
@@ -14,9 +18,6 @@ export interface User {
   userStatus: boolean;
   twoFaEnabled: boolean;
   twoFaSecret: string | null;
-  token: string;
-  token_created_at: number;
-  token_expires_at: number;
 	friendListA?: UserFriendship[] ;
 	friendListB?: UserFriendship[] ;
 	blockedUsers?: UserBlocks[] ;
@@ -26,7 +27,6 @@ export interface User {
 	receivedMessages?: PrivateMessage[] ;
 	sentChatroomMessages?: ChatroomMessage[] ;
 	Chatroom?: Chatroom[] ;
-	refresh_token?: string;
   chatInUse?: ChatInUse;
   isInvited: boolean;
   host: boolean;
@@ -77,13 +77,36 @@ export const UserContext = createContext<UserContextType>({
 type UserProviderProps = {
   children: ReactNode;
 };
-  
+
+const cookies = new Cookies()
+
 export default function UserProvider({ children }: UserProviderProps) {
-  const [user, setUser] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem('user');
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+    const [user, setUser] = useState<User | null>(null)
+
+    useEffect(() => {
+      const getUser = async () => {
+        const id = sessionStorage.getItem('id');
   
+        try {
+          const tokens = await axios.get(`/api/refresh/${id}`, {});
+          sessionStorage.setItem("at", tokens.data.access);
+  
+          const user = await myAxios.get(`/api/user/me/${id}`, {
+            headers: {
+              Authorization: tokens.data.access,
+              userId: id
+            }
+          });
+          setUser(user.data);
+        } catch (error) {
+          setUser(null);
+        }
+      };
+  
+      getUser();
+    }, []);
+
+    
   const updateUser = useCallback((newUserData: Partial<User>) => {
     setUser((prevUser: User | null) => {
       if (prevUser === null) {
@@ -97,8 +120,16 @@ export default function UserProvider({ children }: UserProviderProps) {
   }, []);
   
   useEffect(() => {
-    localStorage.setItem('user', JSON.stringify(user));
-  }, [user]);
+    if (user)
+      myAxios.patch(`/api/user/${user.id}`, {
+        data: { ...user},
+        headers: {
+            Authorization: sessionStorage.getItem("at"),
+            userId: user.id
+        }
+        
+      })
+  }, []);
 
   const userContextValue: UserContextType = {
     user,

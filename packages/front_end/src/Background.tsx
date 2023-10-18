@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useTheme, Container, CssBaseline } from '@mui/material/';
+import { Container, CssBaseline } from '@mui/material/';
 import './App.css';
 
 export default function BackgroundContainer({ children }: { children: React.ReactNode }) {

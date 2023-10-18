@@ -9,15 +9,6 @@ interface gameData {
 	id: string
 }
 
-class PowerUp extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene: Phaser.Scene, x: number, y: number) {
-      super(scene, x, y, "power");
-      this.setScale(0.1, 0.1);
-      scene.add.existing(this);
-      scene.physics.add.existing(this);
-    }
-}
-
 export default class invited extends Phaser.Scene{
 	ball!: Phaser.Physics.Arcade.Sprite;
     paddle1!: Phaser.Physics.Arcade.Sprite;
@@ -52,14 +43,14 @@ export default class invited extends Phaser.Scene{
     XVelocityMax2: number = -400;
     YvelocityMin: number = 125;
     YvelocityMax: number = 225;
+	frame: number = 0;
 	name!: string;
 	socket!: Socket; 
 	event1!: any;
 	event2!: any;
 	event3!: any;
     keys: any = {};
-	
-
+	event!: Phaser.Time.TimerEvent
 
 	constructor() {
         super('invited');
@@ -123,7 +114,19 @@ export default class invited extends Phaser.Scene{
 	}
 				
 	create() {
-		
+		this.score = this.add.text(
+			this.physics.world.bounds.width / 2,
+			this.physics.world.bounds.height / 8,
+			`${this.points2}          ${this.points1}`,
+			{
+				color: '#0000ff',
+				fontFamily: 'pong',
+				fontSize: '20px',
+			}
+		);
+		this.score.setOrigin(0.5);
+		this.score.setVisible(false)
+
 		this.player1VictoryText = this.add.text(
 			this.physics.world.bounds.width / 2,
 			this.physics.world.bounds.height / 2,
@@ -172,17 +175,6 @@ export default class invited extends Phaser.Scene{
 		this.player2Score.setOrigin(0.5);
 		this.player2Score.setVisible(false);
 
-		this.score = this.add.text(
-			this.physics.world.bounds.width / 2,
-			this.physics.world.bounds.height / 8,
-			`${this.points2}          ${this.points1}`,
-			{
-				fontFamily: 'pong',
-				fontSize: '20px',
-			}
-		);
-		this.score.setOrigin(0.5);
-
 		this.socket.on("disconnected", () => {
 			this.menu.setVisible(true);
 			this.disconnect.setVisible(true);
@@ -191,6 +183,18 @@ export default class invited extends Phaser.Scene{
 			this.event3.remove(false)
 			this.starting.destroy()
 			this.position.destroy()
+			if (this.event)
+				this.event.remove(false)
+			if (this.start === true) {
+				this.paddle1.destroy()
+				this.paddle2.destroy()
+				this.ball.destroy()
+				this.score.destroy()
+				this.player1Score.destroy()
+				this.player1VictoryText.destroy()
+				this.player2Score.destroy()
+				this.player2VictoryText.destroy()
+			}
 		})
 
 		
@@ -207,7 +211,7 @@ export default class invited extends Phaser.Scene{
 		});
 		this.starting.setOrigin(0.5);
 
-		this.position = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8, 'You are positionned right', {
+		this.position = this.add.text(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2 + this.physics.world.bounds.height / 8, 'You are positioned right', {
 			fontFamily: 'pong',
 			fontSize: '25px',
 			color: '#ffffff',
@@ -220,7 +224,7 @@ export default class invited extends Phaser.Scene{
 		this.position.setOrigin(0.5);
 
 		if (this.invited === true)
-			this.position.setText("You are positionned left")
+			this.position.setText("You are positioned left")
 
 		this.event1 = this.time.delayedCall(1000, () => {
 			this.starting.setText('game starting in 2');
@@ -232,6 +236,7 @@ export default class invited extends Phaser.Scene{
 			this.starting.destroy()
 			this.position.destroy()
 			this.start = true;
+			this.score.setVisible(true)
 
 			if (this.invited === false){
 				this.socket.on("movement", (newPos: number) => {
@@ -247,7 +252,6 @@ export default class invited extends Phaser.Scene{
 				})
 		
 				this.socket.on("point", (which: number) => {
-					
 					this.paddle2.disableBody();
 					if (which === 1)
 						this.points2++;
@@ -268,7 +272,10 @@ export default class invited extends Phaser.Scene{
 						this.socket.off("multi");
 						this.socket.off("power");
 						this.socket.off("point");
+						this.socket.off("disconnected")
 						this.socket.emit("outGame", {id: this.name})
+						if (this.event)
+							this.event.remove(false)
 						this.end2 = true;
 					}
 					else if (this.points1 === this.win){
@@ -284,7 +291,10 @@ export default class invited extends Phaser.Scene{
 						this.socket.off("multi");
 						this.socket.off("power");
 						this.socket.off("point");
+						this.socket.off("disconnected")
 						this.socket.emit("outGame", {id: this.name})
+						if (this.event)
+							this.event.remove(false)
 						this.end2 = true;
 					}
 					else if (which === 1)
@@ -292,22 +302,26 @@ export default class invited extends Phaser.Scene{
 					else
 						this.player2Score.setVisible(true);
 					if (this.end2 !== true){
-						this.time.delayedCall(1500, () => {
-						
-			
+						this.event = this.time.delayedCall(1500, () => {
+							if (this.end2 !== true){
 							this.player1Score.setVisible(false);
 							this.player2Score.setVisible(false);
-							this.paddle2.enableBody();
-							this.ball.setX(this.physics.world.bounds.width / 2);
-							this.ball.setY(this.physics.world.bounds.height / 2);
-							this.paddle2.setY(this.physics.world.bounds.height / 2);
+							if(this.paddle2){
+								this.paddle2.enableBody();
+								this.paddle2.setY(this.physics.world.bounds.height / 2);
+								this.paddle1.setScale(0.15, 0.25);
+								this.paddle2.setScale(0.15, 0.25);
+							}
+							if (this.ball)
+								if (this.ball.body){
+									this.ball.setX(this.physics.world.bounds.width / 2);
+									this.ball.setY(this.physics.world.bounds.height / 2);
+									this.ball.setTexture("ball")
+									this.ball.setScale(0.2);
+								}
 							
 							this.paddlespeed = 400;
-							
-							this.paddle1.setScale(0.15, 0.25);
-							this.paddle2.setScale(0.15, 0.25);
-							this.ball.setTexture("ball")
-							this.ball.setScale(0.2);
+							}
 							
 						}, [], this);
 					}
@@ -482,26 +496,29 @@ export default class invited extends Phaser.Scene{
 						}
 					if(this.ball.body.velocity.x >= 1000)
 						this.ball.setDrag(1);
-				}
-			
-				this.socket.emit("update", {x: this.ball.body?.x, y: this.ball.body?.y});
+					this.socket.emit("update", {x: this.ball.body?.x, y: this.ball.body?.y});
+				}	
 		}
 		}
+		if (this.frame === 20){
+			this.socket.emit("ping")
+			this.frame = 0;
+		}
+		this.frame++;
 	}
 
 	new_point(player: number) {
 
         this.paddle1.disableBody();
         this.paddle2.disableBody();
-
-        this.ball.disableBody();
+		this.ball.disableBody();
 
         if (player === 1)
             this.player1Score.setVisible(true);
         else
             this.player2Score.setVisible(true);
 
-        this.time.delayedCall(1500, () => {
+        this.event = this.time.delayedCall(1500, () => {
             this.player1Score.setVisible(false);
             this.player2Score.setVisible(false);
             this.paddle1.enableBody();
@@ -519,6 +536,7 @@ export default class invited extends Phaser.Scene{
             if (Math.floor(Math.random() * 2) === 0)
                 y *= -1;
             this.ball.setVelocityY(y);
+			this.ball.setDrag(1.05)
             this.paddlespeed = 400;
             this.paddle1.setScale(0.15, 0.25);
             this.paddle2.setScale(0.15, 0.25);
@@ -529,6 +547,7 @@ export default class invited extends Phaser.Scene{
 
     end(player: number) {
 		this.socket.off("movement");
+		this.socket.off("disconnected")
 
         this.socket.emit("end", {which: 1, name: this.name, player: player, score1: this.points1, score2: this.points2 })
 		this.socket.emit("invite end")

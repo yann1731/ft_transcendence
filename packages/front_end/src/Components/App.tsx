@@ -6,7 +6,7 @@ import FatCat from './FatCat';
 import Login from './Login/Login';
 import Wait from './WaitingPage/Wait';
 import Enable2Fa from './QRcode/Enable2Fa';
-import Otp from './Otp/Verify'
+import Otp from './Otp/Otp';
 import { useSelector } from "react-redux";
 import React, { useState, useMemo } from "react";
 import { createTheme, ThemeProvider, PaletteMode } from '@mui/material/';
@@ -28,6 +28,8 @@ function App() {
 			setMode("dark");
 		}
 	}, [lightMode]);
+
+
 	
 	const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 	return (
